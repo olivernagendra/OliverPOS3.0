@@ -1,52 +1,73 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import { useNavigate } from 'react-router-dom';
-import imglogo from '../images/svg/Oliver-Horizontal.svg'
-import imgGoogle from '../images/svg/google-logo.svg'
-import imgFaceBook from '../images/svg/facebook-logo.svg'
-import imgApple from '../images/svg/apple-logo.svg'
-
-import {useLoginMutation,useGetAllRegisterQuery} from '../services/loginService'
-
+import imglogo from '../../images/svg/Oliver-Horizontal.svg'
+import imgGoogle from '../../images/svg/google-logo.svg'
+import imgFaceBook from '../../images/svg/facebook-logo.svg'
+import imgApple from '../../images/svg/apple-logo.svg'
+import { useDispatch, useSelector,shallowEqual } from 'react-redux';
+//import {useLoginMutation,useGetAllRegisterQuery} from './loginService'
+import {loginPanding, loginSuccess, loginFail,userLogin} from '../../app/features/login/loginSlice';
 
 function Login(){
   const navigate = useNavigate();
    const [userEmail,setName]=useState("")
-   const [password,setPassword]=useState("")
- 
-   const [userLogin,response]=useLoginMutation();
+   const [password,setPassword]=useState("") 
+   const [error,setError]=useState("") 
+   //const [userLogin,loginResponse]=useLoginMutation(); 
+    const dispatch= useDispatch();
+    const loginResponse = useSelector((state) => state.login,shallowEqual);
+    // console.log("loginResponse",loginResponse)
+    if(loginResponse){
+        const [data,error,status]=Object.entries(loginResponse);
+        console.log("data",data,"error",error,"status",status)
+    }
+    // if(loginResponse.status==='error'){
+    //    // setError(loginResponse.error  )
+    // }
 
-
-   const handleUserLogin=()=>{
-     userLogin({email:userEmail,password:password})
-
-   }
-   console.log("response",response)
+const handleUserLogin=()=>{     
+   // console.log("userEmail,password",userEmail,password) 
+    dispatch (userLogin({"email":userEmail,"password":password}) )
+            //    console.log("res",res)
+            //    if( res && res.data.is_success==false){
+            //    setError(res.data.exceptions[0]);  
+            //    }    
+       }
+  
     const handleNameChange=(e)=> {
-        console.log("event",e.target.value);
+       // console.log("event",e.target.value);
         setName(e.target.value);
     }
 
     const handlePasswordChange=(e)=> {
-        console.log("event",e.target.value);
+       // console.log("event",e.target.value);
         setPassword(e.target.value);
     }
- 
+  
+    // if (loginResponse.status==='pending'){      
+    //     dispatch(loginPanding())
+    //     }
+    // if (loginResponse.status==='fulfilled'){
+    //     console.log(loginResponse.status)   
+    //     if(loginResponse.data.is_success==false){
+    //         //dispatch(loginFail(loginResponse.data.exceptions[0]))
+           
+            
+    //     }else{
+    //         //dispatch(loginSuccess(loginResponse.data))
+    //          console.log("loginResponse",loginResponse.data);
+    //         localStorage.setItem("clientDetail", JSON.stringify(loginResponse.data))
+    //         navigate('/site')
+    //     }
+    // }
 
-if (response.status==='loading'){
-  return <div><h1> Loading....</h1></div>
-}
-if (response.status==='pending'){
-  return <div><h1> waiting....</h1></div>
-}
-if (response.status==='fulfilled'){
-  //return <div><h1> Login Successfully..</h1></div>
- // navigate('/site')
-}
+
 return  ( <div className="login-wrapper">
     <div className="auto-margin-top"></div>
     {/* counter: {counter} */}
     <img src={imglogo}/>
     <p >Sign in to your Oliver POS Account</p>
+    {error !=="" && <div className="danger">{error} </div> }
     <form className="login-form">
         <label htmlFor="email">Email</label>
         <input type="text" id="email" placeholder="Enter Email"  onChange={(e)=>handleNameChange(e)}/>

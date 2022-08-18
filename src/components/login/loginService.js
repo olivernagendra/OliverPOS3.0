@@ -1,5 +1,7 @@
 import {createApi,fetchBaseQuery} from '@reduxjs/toolkit/query/react'
+//import Config from '../Config'
 
+//const API_URL = Config.key.OP_API_URL
 export const loginApi=createApi({
     reducerPath:'loginApi',
     baseQuery:fetchBaseQuery({

@@ -2,7 +2,8 @@ import React,{useState} from "react";
 import { useSelector } from 'react-redux'
 const Site=()=>{
 
-   // const siteData=useSelector(state=>state.)
+    const siteData=useSelector(state=>state)
+    console.log("siteData",siteData)
     return <div className="choose-wrapper">
     <div className="choose-header">
         <button id="backButton">

@@ -8,8 +8,8 @@ import {
 import logo from './logo.svg';
 import { Counter } from './features/counter/Counter';
 import './App.css';
-import APICall from './APICall';
-import Login from './components/Login'
+
+import Login from './components/login/Login'
 import Site from './components/Site'
 import NoPage from './components/NoPage'
 function App() {
