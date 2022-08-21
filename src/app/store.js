@@ -10,6 +10,9 @@ export const store = configureStore({
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,
   }
-  // ,
-  // middleware: (getDefaultMiddleware)=>getDefaultMiddleware().concat(loginApi.middleware)
+   ,
+  middleware: getDefaultMiddleware =>
+  getDefaultMiddleware({
+    serializableCheck: false,
+  }),
 });
