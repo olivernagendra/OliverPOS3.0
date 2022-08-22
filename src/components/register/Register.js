@@ -7,8 +7,11 @@ import Kiosk_Icon_White from '../../images/svg/Kiosk-Icon-White.svg'
 
 import STATUSES from "../../constants/apiStatus";
 import { register } from "./registerSlice";
+import { useNavigate } from 'react-router-dom';
+import { get_UDid } from "../common/localSettings";
 const Register = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     var registers = [];
     var self_registers = [];
     const { status, data, error, is_success } = useSelector((state) => state.register)
@@ -29,7 +32,18 @@ const Register = () => {
     }, []);
 
     const handleSubmit = (item) => {
-
+        // if (item.id) {
+            var arry = [];
+        arry.push(item)
+        localStorage.setItem('pdf_format', JSON.stringify(arry))
+        localStorage.setItem('register', item.id);
+        localStorage.setItem('registerName', item.name);
+        var getudid = get_UDid('UDID');
+        localStorage.setItem(`last_login_register_id_${getudid}`, item.id);
+        localStorage.setItem(`last_login_register_name_${getudid}`, item.name);
+        localStorage.setItem('selectedRegister',JSON.stringify(item))
+            navigate('/pin')
+        // }
     }
     return (
         <React.Fragment>
@@ -49,7 +63,7 @@ const Register = () => {
                         <div className="divider"></div>
                         <div className="button-group col">
                             {registers.map((item, index) => {
-                                return <button className="option">
+                                return <button className="option" onClick={()=>handleSubmit(item)}>
                                     <div className="img-container background-blue">
                                         <img src={Register_Icon_White} alt="" className="register-icon" />
                                     </div>
@@ -68,7 +82,7 @@ const Register = () => {
                         <div className="divider"></div>
                         <div className="button-group">
                             {self_registers.map((item, index) => {
-                                return <button className="option">
+                                return <button className="option" onClick={()=>handleSubmit(item)}>
                                     <div className="img-container background-violet">
                                         <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
                                     </div>
