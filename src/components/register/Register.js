@@ -17,12 +17,12 @@ const Register = () => {
     const { status, data, error, is_success } = useSelector((state) => state.register)
     // console.log("status", status, "data", data, "error", error, "is_success", is_success)
 
-    if (status == STATUSES.error) {
+    if (status === STATUSES.error) {
         console.log(error)
     }
-    if (status == STATUSES.IDLE && is_success) {
-        registers = data && data.content && data.content.filter(a => a.IsSelfCheckout == false);
-        self_registers = data && data.content && data.content.filter(a => a.IsSelfCheckout == true);
+    if (status === STATUSES.IDLE && is_success) {
+        registers = data && data.content && data.content.filter(a => a.IsSelfCheckout === false);
+        self_registers = data && data.content && data.content.filter(a => a.IsSelfCheckout === true);
 
     }
 

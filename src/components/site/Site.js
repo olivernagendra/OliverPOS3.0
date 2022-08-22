@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-import Oliver_Icon_White from '../../images/svg/Oliver-Icon-White.svg'
+//import Oliver_Icon_White from '../../images/svg/Oliver-Icon-White.svg'
 import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
 import WWW_Icon from '../../images/svg/WWW-Icon.svg'
 import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg'

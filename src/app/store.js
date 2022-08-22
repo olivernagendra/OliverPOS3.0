@@ -1,6 +1,6 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import counterReducer from '../features/counter/counterSlice';
-import loginSlice from './features/login/loginSlice';
+import loginSlice from '../components/login/loginSlice';
 import locationSlice from '../components/location/locationSlice';
 
 import pinSlice from '../components/pinPage/pinSlice';
