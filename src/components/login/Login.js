@@ -20,6 +20,17 @@ function Login(){
             console.log(error)
         }
         if(status ==STATUSES.IDLE && is_success){
+            var loginRes=data && data.content;
+            if (loginRes && loginRes.subscriptions !== undefined && loginRes.subscriptions.length>0){
+                var userSubscription=loginRes.subscriptions[0];
+                userSubscription && sessionStorage.setItem("AUTH_KEY",userSubscription.subscription_detail.client_guid + ":" +  userSubscription.subscription_detail.server_token);
+                var lang =  userSubscription && userSubscription.subscription_permission.language ? userSubscription.subscription_permission.language :'en';
+                localStorage.setItem("LANG", lang);
+                localStorage.setItem('sitelist', JSON.stringify(loginRes))
+                localStorage.setItem('userId', loginRes.UserId)
+                localStorage.setItem("clientDetail",JSON.stringify(userSubscription));
+                localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
+        }
             navigate('/site')
         }
    
