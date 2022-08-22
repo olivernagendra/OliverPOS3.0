@@ -9,3 +9,13 @@ export function registerAPI( parameter) {
       return error
   });
 }
+
+export function registerAPI_FirebaseRegister(parameter) {
+
+  return serverRequest.clientServiceRequest('GET', `/Firebase/GetRegisters`)
+  .then(registerRes => {
+      return registerRes;
+  }).catch(error => {
+      return error
+  });
+}
