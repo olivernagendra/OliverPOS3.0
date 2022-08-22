@@ -5,10 +5,10 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+// import logo from './logo.svg';
+// import { Counter } from './features/counter/Counter';
 import './App.css';
-
+import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
 import Site from './components/Site'
 import NoPage from './components/NoPage'
