@@ -12,6 +12,7 @@ import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
 import Site from './components/site/Site'
 import Location from './components/location/location'
+import Register from './components/register/Register'
 import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 function App() {
@@ -22,7 +23,9 @@ function App() {
       <Route path="/login" element={<Login/>} /> 
       <Route path="/site" element={<Site/>} /> 
       <Route path="/location" element={<Location/>} /> 
-      <Route path="/pin" element={<Pin/>} /> 
+
+      <Route path="/pin" element={<Pin/>} />
+      <Route path="/register" element={<Register/>} /> 
       <Route path="*" element={<NoPage/>} />
     </Routes>
 </Router>

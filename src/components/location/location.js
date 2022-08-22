@@ -1,30 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import React, {  useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
 import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
 import Store_Icon_White from '../../images/svg/Store-Icon-White.svg'
 import { location } from '../../components/location/locationSlice';
 import { get_UDid } from '../../components/common/localSettings';
 import STATUSES from "../../constants/apiStatus";
+import { useNavigate } from 'react-router-dom';
 const Location = () => {
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
     var decodedString = localStorage.getItem('UDID');
     var decod = decodedString ? atob(decodedString) : '';
     var UDID = decod;
     var userId = localStorage.getItem('userId') ? localStorage.getItem('userId') : 0;
 
     const { status, data, error, is_success } = useSelector((state) => state.location)
-    console.log("status", status, "data", data, "error", error, "is_success", is_success)
+    // console.log("status", status, "data", data, "error", error, "is_success", is_success)
 
     if (status == STATUSES.error) {
         console.log(error)
     }
     if (status == STATUSES.IDLE && is_success) {
-        console.log("data----->" + data)
+        // console.log("data----->" + data)
     }
-
-
     useEffect(() => {
         dispatch(location({ "udid": UDID, "userId": userId }));
 
@@ -37,24 +36,18 @@ const Location = () => {
         localStorage.setItem(`last_login_location_id_${getudid}`, item.id);
         localStorage.setItem(`last_login_location_name_${getudid}`, item.name);
         localStorage.setItem('WarehouseId', item.warehouse_id);
-        //Check IndexDb Exists-------------
-        //----------------------------------  
-        //this.setState({ loading: true })
         if (item.id) {
-
-            // const { dispatch } = this.props;
-            // dispatch(registerActions.getAll());
+            navigate('/register')
         }
-        // history.push('/choose_registration');
     }
 
     return <div className="choose-wrapper">
         <div className="choose-header">
-            <button id="backButton">
+            <button id="backButton" onClick={() => window.location = "/site"}>
                 <img src={AngledBracket_Left_Blue} alt="" />
                 Back
             </button>
-            <p>Sushi Sun</p>
+            <p>{localStorage.getItem('user_full_name')}</p>
         </div>
         <div className="choose-body-default">
             <p>Choose Location</p>
