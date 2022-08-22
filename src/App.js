@@ -13,6 +13,7 @@ import Login from './components/login/Login'
 import Site from './components/site/Site'
 import Location from './components/location/location'
 import NoPage from './components/NoPage'
+import Pin from './components/pinPage/Pin';
 function App() {
   return ( <Router>
     <Routes>
@@ -21,6 +22,7 @@ function App() {
       <Route path="/login" element={<Login/>} /> 
       <Route path="/site" element={<Site/>} /> 
       <Route path="/location" element={<Location/>} /> 
+      <Route path="/pin" element={<Pin/>} /> 
       <Route path="*" element={<NoPage/>} />
     </Routes>
 </Router>
