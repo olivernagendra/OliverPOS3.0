@@ -57,19 +57,19 @@ export const registerSlice = createSlice({
  // extraReducers: () => {}
   extraReducers: (builder) => {    
     builder     
-      .addCase(location.pending, (state) => {
+      .addCase(register.pending, (state) => {
         state.status = STATUSES.LOADING;
         state.data="";
         state.error="";
         state.is_success=false;
       })
-      .addCase(location.fulfilled, (state, action) => {       
+      .addCase(register.fulfilled, (state, action) => {       
           state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
           state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
           state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
           state.is_success=action.payload && action.payload.is_success==true? true: false;      
       })
-      .addCase(location.rejected, (state,action) => {
+      .addCase(register.rejected, (state,action) => {
         state.status = STATUSES.IDLE;
         state.data="";
         state.error = action.error;
