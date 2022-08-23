@@ -58,7 +58,7 @@ const Location = () => {
                     data.content.map((item, index) => {
                         return (
 
-                            <button className="option" onClick={() => handleSubmit(item)}>
+                            <button key={index} className="option" onClick={() => handleSubmit(item)}>
                                 <div className="img-container background-blue">
                                     <img src={Store_Icon_White} alt="" className="store-icon" />
                                 </div>

@@ -1,4 +1,4 @@
-//import Config from '../Config'
+import Config from '../Config'
 // import { get_UDid } from '../ALL_localstorage'
 // import { servicesVersion } from 'typescript';
 
@@ -6,8 +6,9 @@ export const serverRequest = {
     clientServiceRequest
 };
 
-//const API_URL = Config.key.OP_API_URL
-const API_URL ='https://dev1.app.olivertest.com/api/';
+const API_URL = Config.key.OP_API_URL
+
+//const API_URL ='https://dev1.app.olivertest.com/api/';
 function clientServiceRequest(requestType, requestUrl, postParameter,version=1) {
 try {
     
@@ -42,7 +43,7 @@ try {
     if (localStorage.getItem('demoUser') == 'true' && localStorage.getItem('DemoGuid')) {
         requestOptions.headers['demoauth'] = localStorage.getItem('DemoGuid') && localStorage.getItem('DemoGuid')
     }
-
+    
     return  fetch(`${API_URL}v${version}${requestUrl}`, requestOptions).then(handleResponse)
         .then(servericeResponse => {
            // console.log('--------common-service-Res--', servericeResponse);

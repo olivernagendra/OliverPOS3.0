@@ -48,7 +48,7 @@ const Site = () => {
                 {Sitelist !== null && Sitelist !== undefined && Sitelist.subscriptions &&
                     Sitelist.subscriptions.map((link, index) => {
                         return (
-                            <button className="option" onClick={()=>handleSiteClick(link)}>
+                            <button  key={index} className="option" onClick={()=>handleSiteClick(link)}>
                                 <div className="img-container background-blue">
                                     <img src={WWW_Icon} alt="" className="www-icon" />
                                 </div>

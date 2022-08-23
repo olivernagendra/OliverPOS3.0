@@ -61,8 +61,8 @@ const Register = () => {
         setSelRegister(item);
         if (isTakeOver == false)
             navigate('/pin');
-        else
-            toggleSubwindow("takeover-register");
+        // else
+        //     toggleSubwindow("takeover-register");
     }
     const takeOver = () => {
         navigate('/pin');
@@ -96,7 +96,7 @@ const Register = () => {
                                             }
                                         })
                                     }
-                                    return <button className={inr == true ? "option" : "option assigned"} onClick={() => handleSubmit(item, inr == true ? false : true)}>
+                                    return <button key={index} className={inr == true ? "option" : "option assigned"} onClick={() => handleSubmit(item, inr == true ? false : true)}>
                                         <div className="img-container background-blue">
                                             <img src={Register_Icon_White} alt="" className="register-icon" />
                                         </div>
@@ -119,7 +119,7 @@ const Register = () => {
                         <div className="divider"></div>
                         <div className="button-group">
                             {self_registers.map((item, index) => {
-                                return <button className="option" onClick={() => handleSubmit(item)}>
+                                return <button  key={index}  className="option" onClick={() => handleSubmit(item)}>
                                     <div className="img-container background-violet">
                                         <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
                                     </div>
@@ -139,7 +139,8 @@ const Register = () => {
                 <div className="subwindow takeover-register">
                     <div className="subwindow-header">
                         <p>Take Over Register</p>
-                        <button className="close-subwindow" onClick={() => toggleSubwindow()}>
+                        <button className="close-subwindow" > 
+                        {/* onClick={() => toggleSubwindow()} */}
                             <img src={X_Icon_DarkBlue} alt="" />
                         </button>
                     </div>
@@ -151,7 +152,8 @@ const Register = () => {
                             This action will kick out the current user.
                         </p>
                         <button id="takeoverRegister" onClick={() => takeOver()}>Take Over</button>
-                        <button id="cancelTakeover" onClick={() => toggleSubwindow()}>Cancel</button>
+                        <button id="cancelTakeover" >Cancel</button>
+                        {/* onClick={() => toggleSubwindow()} */}
                         <div className="auto-margin-bottom"></div>
                     </div>
                 </div>

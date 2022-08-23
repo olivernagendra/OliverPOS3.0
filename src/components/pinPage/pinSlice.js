@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 //import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/pin/loginService';
-import {pinAPI} from './pinAPI';
+import {pinAPI,createPinAPI} from './pinAPI';
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -14,12 +14,7 @@ const initialState = {
 
 export const validatePin = createAsyncThunk(
   'pin/pinAPI',
-  async (parameter,{rejectWithValue}) => {   
-    // const response =  loginAPI(parameter);
-    // // The value we return becomes the `fulfilled` action payload
-    // console.log("test",response.json())
-    // return response.json();
-
+  async (parameter,{rejectWithValue}) => {  
    try {
      const response = await pinAPI(parameter);
           // The value we return becomes the `fulfilled` action payload
@@ -28,8 +23,21 @@ export const validatePin = createAsyncThunk(
     // Use `err.response.data` as `action.payload` for a `rejected` action,
     // by explicitly returning it using the `rejectWithValue()` utility
     return rejectWithValue(err.response.data)
+  }         
   }
-         
+);
+export const createPin = createAsyncThunk(
+  'pin/createPinAPI',
+  async (parameter,{rejectWithValue}) => {  
+   try {
+     const response = await createPinAPI(parameter);
+          // The value we return becomes the `fulfilled` action payload
+          return response;
+   } catch (err) {
+    // Use `err.response.data` as `action.payload` for a `rejected` action,
+    // by explicitly returning it using the `rejectWithValue()` utility
+    return rejectWithValue(err.response.data)
+  }         
   }
 );
 export const pinSlice = createSlice({
@@ -64,12 +72,31 @@ export const pinSlice = createSlice({
         state.is_success=false;
       })
       .addCase(validatePin.fulfilled, (state, action) => {       
-          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-          state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_success=action.payload && action.payload.is_success==true? true: false;      
+          state.status = action.payload && action.payload.is_success===true? STATUSES.IDLE: STATUSES.ERROR;
+          state.data=(action.payload && action.payload.is_success===true ?action.payload:"");  
+          state.error=action.payload && action.payload.is_success===false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_success=action.payload && action.payload.is_success===true? true: false;      
       })
       .addCase(validatePin.rejected, (state,action) => {
+        state.status = STATUSES.IDLE;
+        state.data="";
+        state.error = action.error;
+        state.is_success=false;
+      })
+      //Create Pin------------------------------
+      .addCase(createPin.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data="";
+        state.error="";
+        state.is_success=false;
+      })
+      .addCase(createPin.fulfilled, (state, action) => {       
+          state.status = action.payload && action.payload.is_success===true? STATUSES.IDLE: STATUSES.ERROR;
+          state.data=(action.payload && action.payload.is_success===true ?action.payload:"");  
+          state.error=action.payload && action.payload.is_success===false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_success=action.payload && action.payload.is_success===true? true: false;      
+      })
+      .addCase(createPin.rejected, (state,action) => {
         state.status = STATUSES.IDLE;
         state.data="";
         state.error = action.error;

@@ -9,3 +9,12 @@ export function pinAPI( parameter) {
       return error
   });
 }
+export function createPinAPI( parameter) {
+
+  return serverRequest.clientServiceRequest('POST', `/Users/RegisterPinReset`, parameter)
+  .then(userRes => {    
+      return userRes;
+  }).catch(error => {
+      return error
+  });
+}

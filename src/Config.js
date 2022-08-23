@@ -1,13 +1,12 @@
 
-//console.log("envournment",API_URL);
-
 exports.key = {  
-    OP_API_URL              : process.env.API_URL,
+    OP_API_URL              : process.env.NODE_ENV=='development'?'https://dev1.app.olivertest.com/api/' : 'https://app.oliverpos.com/api/',
+    BRIDGE_DOMAIN           :  process.env.NODE_ENV=='development'?'https://dev1.shop.olivertest.com/' :'https://hub.oliverpos.com',
     AUTH_KEY                :  sessionStorage.getItem("AUTH_KEY"),
     //"posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6" + ":" +  "poss_5a3f7d8d34dc3605ea5796eda8d6dfcf6cf82254",
     // AUTH_NAME           : "posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6",
     // AUTH_PWD            : "poss_5a3f7d8d34dc3605ea5796eda8d6dfcf6cf82254",
-    ENV                     :  process.env.ENVIRONMENT,
+    ENV                     :  process.env.NODE_ENV,
     PPRODUCT_PAGE_SIZE      :  100,
     CUSTOMER_PAGE_SIZE      :  50,
     ACTIVITY_PAGE_SIZE      : 100, 
@@ -17,11 +16,11 @@ exports.key = {
     DATE_FORMAT_SAFARI      :'YYYY-MM-DD',
     DATETIME_FORMAT_SAFARI  :'YYYY-MM-DDTHH:mm:ss',
     TIMEDATE_FORMAT         :'h:mm A DD, MMMM YYYY',
-    RECIEPT_IMAGE_DOMAIN    : "https://"+ (process.env.ENVIRONMENT=='production'?'app.oliverpos.com' :process.env.ENVIRONMENT=='development'?'qa1.app.olivertest.com':'dev1.app.olivertest.com'),
+    RECIEPT_IMAGE_DOMAIN    : "https://"+ (process.env.NODE_ENV=='production'?'app.oliverpos.com' :process.env.NODE_ENV=='development'?'qa1.app.olivertest.com':'dev1.app.olivertest.com'),
     NOTIFICATION_LIMIT      : 100 ,
     NOTIFICATION_FORMAT     :'DD/MM/YY, h:mm a',
     SYNC_COUNT_LIMIT        :100,
-    BUGSNAG_KEY             : process.env.ENVIRONMENT=='production'?'1b6822fe1472fcdb1089ae3dbbc58d1c' :process.env.ENVIRONMENT=='development'?'36d2896ab825e64ceeffda1d5840cb4d':'44dbab7bfa5373855271ad1de88669dc',
+    BUGSNAG_KEY             : process.env.NODE_ENV=='production'?'1b6822fe1472fcdb1089ae3dbbc58d1c' :process.env.NODE_ENV=='development'?'36d2896ab825e64ceeffda1d5840cb4d':'44dbab7bfa5373855271ad1de88669dc',
     PRODUCT_SEARCH_LENGHT   :2,
     DEMO_USER_PING_INTERVAL : 30000,
     GOOGLE_CLIENT_ID        :'868968713299-g32dlt8ib214vh0ukc88bj909cp9cjp9.apps.googleusercontent.com',
