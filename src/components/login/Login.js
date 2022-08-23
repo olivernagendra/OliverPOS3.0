@@ -28,16 +28,13 @@ function Login() {
         navigate('/site')
     }
 
-<<<<<<< HEAD
+
 
     const handleUserLogin = () => {
         dispatch(userLogin({ "email": userEmail, "password": password }))
 
     }
 
-    const handleNameChange = (e) => {
-        // console.log("event",e.target.value);
-=======
       if(status ==STATUSES.error){
             console.log(error)
         }
@@ -55,17 +52,11 @@ function Login() {
         }
             navigate('/site')
         }
-   
+    
 
-const handleUserLogin=()=>{     
-  
-    dispatch (userLogin({"email":userEmail,"password":password}) )
-      
-       }
-  
+
     const handleNameChange=(e)=> {
        // console.log("event",e.target.value);
->>>>>>> 50b21ea60ff12c025f167e68b548e42d8cc6c4c5
         setName(e.target.value);
     }
 
@@ -119,7 +110,6 @@ const handleUserLogin=()=>{
     // call server on the bassis of facbook and google response 
     const CallService = (FGdata) => {
         console.log("FGdata", FGdata)
-        // dispatch(onboardingActions.OliverExternalLogin(FGdata));
         dispatch(userExternalLogin(FGdata))
     }
 
@@ -129,7 +119,6 @@ const handleUserLogin=()=>{
             access_token: param && param.access_token,
             userId: param && param.userLoginInfo.ProviderKey
         }
-        // dispatch(onboardingActions.GetUserProfile(data));
         dispatch(GetUserProfileLogin(data))
 
 
@@ -346,6 +335,7 @@ const handleUserLogin=()=>{
         }).join(''));
         return JSON.parse(jsonPayload);
     };
+
     const bridgDomain ="https://hub.oliverpos.com";
     const handleSignInClick = () => {
         window.location = bridgDomain + '/Account/Register';
