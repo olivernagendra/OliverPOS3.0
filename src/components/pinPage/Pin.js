@@ -1,21 +1,63 @@
 import React, { useState } from "react"
+import { useDispatch, useSelector } from 'react-redux';
 import {chunkArray} from '../common/localSettings'
 import imgOpenReg from '../../images/svg/OpenSign-BaseBluesvg.svg'
+import imgBackSpace from '../../images/svg/Backspace-BaseBlue.svg'
+
+import {validatePin} from "./pinSlice"
+import { useNavigate } from "react-router-dom";
+import { get_UDid } from "../common/localSettings"; 
+import STATUSES from "../../constants/apiStatus";
+import moment from 'moment';
 const Pin=()=>{
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [totalSize,setTotalSize]=useState(0)
     const [txtValue,setTxtValue]=useState("")
-    const isloading=false;
-    const  pinNumberList= ["1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "0", "c"];
+    const [isloading,setIsloading]=useState(false)
+    const { status, data, error, is_success } = useSelector((state) => state.pin)
+    if (status === STATUSES.error) {
+        console.log(error)
+    }
+    if (status === STATUSES.IDLE && is_success) {       
+       localStorage.setItem('user', JSON.stringify(data.content));
+       if (typeof (Storage) !== "undefined") {
+           localStorage.setItem("check_subscription_status_datetime", new Date());
+       }
 
+        if (localStorage.getItem("PRODUCT_REFRESH_DATE") == null) {
+            localStorage.setItem("PRODUCT_REFRESH_DATE", moment.utc(new Date()).format('YYYY-MM-DD HH:mm:ss'))
+          }
+
+          var _lang = localStorage.getItem("LANG");
+
+          var user = JSON.parse(localStorage.getItem("user"))
+          var lang = user && user.language ? user.language : 'en';
+          localStorage.setItem("LANG", lang);
+
+          //Reloading the component if new language set for the login user.                  
+          if (_lang && _lang !== lang) {
+           // window.location = '/';
+          }
+          navigate('/prodcutloader')
+
+    }
+
+   
+    const  pinNumberList= ["1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "0", "c"];
+    const trshPin= ['txt1', 'txt2', 'txt3', 'txt4']
     
 const NumInput = props =>
     chunkArray(props.numbers, 3).map((num, index) => (
         <div key={index} className="pin-button-row">
             {num.map((nm, i) => {
+                if(nm==" "){ return}
                 return (
                      <button key={"input" + i} type="button" id={props.id} 
                      onClick={() => { addToScreen(nm) }} 
-                     >{nm == 'c' ? '' : nm} </button>
+                     className={nm === 'c'?"backspace":""}> 
+                             {nm === 'c' ? <img src={imgBackSpace}/> : nm} 
+                     </button>
                 )        
                         
             })
@@ -24,12 +66,16 @@ const NumInput = props =>
             </div>
     ))
 
-const TrashPin = props =>
-    props.trshPin.map((pinId, ind) => {
+    // display dot pin
+const TrashPin = () =>
+    trshPin.map((pinId, ind) => {
+        console.log("totalSize",totalSize)
         return (
-            <li key = {ind}>
-                <input style={props.style} key={ind} id={pinId} type={props.type} className={props.className} />
-            </li>
+
+            <div key = {ind} className={"pin-entry " +(totalSize >= ind+1 && "entered" )}></div>
+            // <li key = {ind}>
+            //     <input style={props.style} key={ind} id={pinId} type={props.type} className={props.className} />
+            // </li>
         )
     })
 // show entered number for create pin
@@ -44,10 +90,10 @@ const ShowCreatePin = props =>
         )
     })
   const  addToScreen=(inputNo) =>{
-     if(inputNo == " ") {return} 
+     if(inputNo === " ") {return} 
         //var lenght_is = e.length - 1
         //var newString = inputNo;//e[lenght_is];
-        if (inputNo == "c") {
+        if (inputNo === "c") {
             if (totalSize > 0) {
                // this.resetScreen();
             } else {
@@ -61,11 +107,12 @@ const ShowCreatePin = props =>
             var size=totalSize+ 1
             setTxtValue(value);
             setTotalSize(size );
-            // setTimeout(function () {
-            //     fillPass();
-            // }.bind(this), 100)
+            console.log(txtValue, totalSize)
+           // setTimeout(function () {
+                fillPass(value);
+           // }.bind(this), 100)
         }
-        console.log(txtValue, totalSize)
+      
         // $('#whichkey').focus()
         var _envType = localStorage.getItem('env_type');
         if (_envType && _envType !== "") {
@@ -74,14 +121,14 @@ const ShowCreatePin = props =>
             //$('#whichkey').focus();
         }
     }
-   const fillPass=()=> {
-        var i = 1;
-        for (i = 1; i <= 4; i++) {
-            if (totalSize >= i) {
-                if (totalSize >= 4) {
-                    const { dispatch } = this.props;
-                    if (isloading == false) {
-                        this.setState({ isloading: true })
+   const fillPass=(enteredPin)=> {
+        // var i = 1;
+        // for (i = 1; i <= 4; i++) {
+        //     if (enteredPin.length >= i) {
+                if (enteredPin.length >= 4) {
+                    //const { dispatch } = this.props;
+                    if (isloading === false) {
+                        setIsloading(true)
                         localStorage.removeItem('logoutclick'); //For webview            
                         setTimeout(function () {    //Need delay for reaset text
                             var userID = "";
@@ -103,33 +150,33 @@ const ShowCreatePin = props =>
 
                             //     }
                             // console.log("UserID",userID);
-                            if (txtValue !== null && txtValue !== '' && userID && userID !== '') {
+                            if (enteredPin !== null && enteredPin !== '' && userID && userID !== '') {
                                 // var hasPin = localStorage.getItem('clientDetail') && JSON.parse(localStorage.getItem('clientDetail')).HasPin
-                                this.setState({ creatPinTxt: txtValue })
+                                //this.setState({ creatPinTxt: txtValue })
                                 var hasPin = localStorage.getItem('hasPin')
-                                console.log(typeof (txtValue));
-                                if (hasPin != 'false') {
-                                   // dispatch(pinLoginActions.pinLogin(txtValue, userID));
+                                console.log(typeof (enteredPin));
+                                if (hasPin !== 'false') {
+                                   dispatch(validatePin({"pin":enteredPin,"userid": userID,"UDID":get_UDid('UDID')}));
                                 } else {
-                                  //  dispatch(pinLoginActions.createPin(txtValue, userID));
+                                   //dispatch(validatePin.createPin(txtValue, userID));
                                 }
                             }
 
                             setTxtValue("");
                             setTotalSize (0);
-                        }.bind(this), 100)
+                        }, 100)
                     }
                 }
-                if (totalSize == i) {
-                    var val = txtValue.charAt(totalSize - 1)
-                   // $("#txt" + i + '1').val(val);
-                }
-                //$("#txt" + i).removeClass("bg_trasn");
-            } else {
-               // $("#txt" + i + '1').val('');
-                //$("#txt" + i).addClass("bg_trasn");
-            }
-        }
+            //     if (totalSize == i) {
+            //         var val = txtValue.charAt(totalSize - 1)
+            //        // $("#txt" + i + '1').val(val);
+            //     }
+            //     //$("#txt" + i).removeClass("bg_trasn");
+            // } else {
+            //    // $("#txt" + i + '1').val('');
+            //     //$("#txt" + i).addClass("bg_trasn");
+            // }
+      //  }
     }
 
 
@@ -148,10 +195,11 @@ const ShowCreatePin = props =>
         <p>Enter Your User ID</p>
         <div className="pinpad">
             <div className="pin-entries">
+                <TrashPin />
+                {/* <div className="pin-entry"></div>
                 <div className="pin-entry"></div>
                 <div className="pin-entry"></div>
-                <div className="pin-entry"></div>
-                <div className="pin-entry"></div>
+                <div className="pin-entry"></div> */}
                 {/* <div className="pin-entry"></div>
                 <div className="pin-entry"></div> */}
             </div>

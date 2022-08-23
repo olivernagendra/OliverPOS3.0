@@ -12,7 +12,7 @@ const initialState = {
 };
 
 
-export const userLogin = createAsyncThunk(
+export const validatePin = createAsyncThunk(
   'pin/pinAPI',
   async (parameter,{rejectWithValue}) => {   
     // const response =  loginAPI(parameter);
@@ -57,19 +57,19 @@ export const pinSlice = createSlice({
  // extraReducers: () => {}
   extraReducers: (builder) => {    
     builder     
-      .addCase(userLogin.pending, (state) => {
+      .addCase(validatePin.pending, (state) => {
         state.status = STATUSES.LOADING;
         state.data="";
         state.error="";
         state.is_success=false;
       })
-      .addCase(userLogin.fulfilled, (state, action) => {       
+      .addCase(validatePin.fulfilled, (state, action) => {       
           state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
           state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
           state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
           state.is_success=action.payload && action.payload.is_success==true? true: false;      
       })
-      .addCase(userLogin.rejected, (state,action) => {
+      .addCase(validatePin.rejected, (state,action) => {
         state.status = STATUSES.IDLE;
         state.data="";
         state.error = action.error;

@@ -5,7 +5,7 @@ import imgGoogle from '../../images/svg/google-logo.svg'
 import imgFaceBook from '../../images/svg/facebook-logo.svg'
 import imgApple from '../../images/svg/apple-logo.svg'
 import { useDispatch, useSelector,shallowEqual } from 'react-redux';
-import {userLogin} from '../../app/features/login/loginSlice';
+import {userLogin} from './loginSlice';
 import STATUSES from "../../constants/apiStatus";
 function Login(){
   const navigate = useNavigate();

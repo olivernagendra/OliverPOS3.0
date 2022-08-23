@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 //import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';
 import {loginAPI} from './loginAPI';
-import STATUSES from '../../../constants/apiStatus';
+import STATUSES from '../../constants/apiStatus';
 
 
 const initialState = {

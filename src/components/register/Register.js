@@ -24,7 +24,7 @@ const Register = () => {
     //const { status_fb, data_fb, error_fb, is_success_fb } = useSelector((state) => state.firebaseRegister)
     // console.log("status", status, "data", data, "error", error, "is_success", is_success)
 
-    if (status == STATUSES.error) {
+    if (status === STATUSES.error) {
         console.log(error)
     }
     if (status == STATUSES.IDLE && is_success) {
