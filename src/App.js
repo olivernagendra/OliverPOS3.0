@@ -5,12 +5,13 @@ import {
   Route,
   Link,
 } from 'react-router-dom';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+// import logo from './logo.svg';
+// import { Counter } from './features/counter/Counter';
 import './App.css';
-
+import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
-import Site from './components/Site'
+import Site from './components/site/Site'
+import Location from './components/location/location'
 import NoPage from './components/NoPage'
 function App() {
   return ( <Router>
@@ -19,6 +20,7 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login/>} /> 
       <Route path="/site" element={<Site/>} /> 
+      <Route path="/location" element={<Location/>} /> 
       <Route path="*" element={<NoPage/>} />
     </Routes>
 </Router>

@@ -28,6 +28,7 @@ function Login() {
         navigate('/site')
     }
 
+<<<<<<< HEAD
 
     const handleUserLogin = () => {
         dispatch(userLogin({ "email": userEmail, "password": password }))
@@ -36,6 +37,35 @@ function Login() {
 
     const handleNameChange = (e) => {
         // console.log("event",e.target.value);
+=======
+      if(status ==STATUSES.error){
+            console.log(error)
+        }
+        if(status ==STATUSES.IDLE && is_success){
+            var loginRes=data && data.content;
+            if (loginRes && loginRes.subscriptions !== undefined && loginRes.subscriptions.length>0){
+                var userSubscription=loginRes.subscriptions[0];
+                userSubscription && sessionStorage.setItem("AUTH_KEY",userSubscription.subscription_detail.client_guid + ":" +  userSubscription.subscription_detail.server_token);
+                var lang =  userSubscription && userSubscription.subscription_permission.language ? userSubscription.subscription_permission.language :'en';
+                localStorage.setItem("LANG", lang);
+                localStorage.setItem('sitelist', JSON.stringify(loginRes))
+                localStorage.setItem('userId', loginRes.UserId)
+                localStorage.setItem("clientDetail",JSON.stringify(userSubscription));
+                localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
+        }
+            navigate('/site')
+        }
+   
+
+const handleUserLogin=()=>{     
+  
+    dispatch (userLogin({"email":userEmail,"password":password}) )
+      
+       }
+  
+    const handleNameChange=(e)=> {
+       // console.log("event",e.target.value);
+>>>>>>> 50b21ea60ff12c025f167e68b548e42d8cc6c4c5
         setName(e.target.value);
     }
 
