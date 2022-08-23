@@ -13,6 +13,7 @@ import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
 function Login() {
     var auth2 = ''
+    const bridgDomain ="https://hub.oliverpos.com";
     const googleLoginBtn = useRef(null);
     const navigate = useNavigate();
     const [userEmail, setName] = useState("")
@@ -336,7 +337,7 @@ function Login() {
         return JSON.parse(jsonPayload);
     };
 
-    const bridgDomain ="https://hub.oliverpos.com";
+    
     const handleSignInClick = () => {
         window.location = bridgDomain + '/Account/Register';
     }
