@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 //import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';
-import {loginAPI} from './loginAPI';
+import {loginAPI ,OliverExternalLogin,GetUserProfile} from './loginAPI';
 import STATUSES from '../../../constants/apiStatus';
 
 
@@ -32,6 +32,41 @@ export const userLogin = createAsyncThunk(
          
   }
 );
+
+export const userExternalLogin = createAsyncThunk(
+  'login/OliverExternalLogin',
+  async (parameter,{rejectWithValue}) => { 
+
+   try {
+     const response = await OliverExternalLogin(parameter);
+          // The value we return becomes the `fulfilled` action payload
+          return response;
+   } catch (err) {
+    // Use `err.response.data` as `action.payload` for a `rejected` action,
+    // by explicitly returning it using the `rejectWithValue()` utility
+    return rejectWithValue(err.response.data)
+  }      
+  }
+);
+
+export const GetUserProfileLogin = createAsyncThunk(
+  'login/GetUserProfile',
+  async (parameter,{rejectWithValue}) => { 
+
+   try {
+     const response = await GetUserProfile(parameter);
+          // The value we return becomes the `fulfilled` action payload
+          return response;
+   } catch (err) {
+    // Use `err.response.data` as `action.payload` for a `rejected` action,
+    // by explicitly returning it using the `rejectWithValue()` utility
+    return rejectWithValue(err.response.data)
+  }      
+  }
+);
+
+
+
 export const loginSlice = createSlice({
   name: 'login',
   initialState,
@@ -74,11 +109,51 @@ export const loginSlice = createSlice({
         state.data="";
         state.error = action.error;
         state.is_success=false;
+      })
+      .addCase(userExternalLogin.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data="";
+        state.error="";
+        state.is_success=false;
+      })
+      .addCase(userExternalLogin.fulfilled, (state, action) => {       
+          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_success=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(userExternalLogin.rejected, (state,action) => {
+        state.status = STATUSES.IDLE;
+        state.data="";
+        state.error = action.error;
+        state.is_success=false;
+      })
+      .addCase(GetUserProfileLogin.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data="";
+        state.error="";
+        state.is_success=false;
+      })
+      .addCase(GetUserProfileLogin.fulfilled, (state, action) => {       
+          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_success=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(GetUserProfileLogin.rejected, (state,action) => {
+        state.status = STATUSES.IDLE;
+        state.data="";
+        state.error = action.error;
+        state.is_success=false;
       });
   },
 });
 
+
+
+
  export const { loginPanding, loginSuccess, loginFail } = loginSlice.actions;
+
 
 // // The function below is called a selector and allows us to select a value from
 // // the state. Selectors can also be defined inline where they're used instead of

@@ -7,7 +7,7 @@ export const serverRequest = {
 };
 
 //const API_URL = Config.key.OP_API_URL
-const API_URL ='https://dev1.app.olivertest.com/api/';
+const API_URL ='https://app.oliverpos.com/api/';
 function clientServiceRequest(requestType, requestUrl, postParameter,version=1) {
 try {
     
