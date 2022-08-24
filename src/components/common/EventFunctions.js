@@ -1,3 +1,4 @@
+export const  initFn=()=>{
 if (document.querySelector(".subwindow-wrapper")) {
 	document.querySelector(".subwindow-wrapper").addEventListener("click", (e) => {
 		if (e.target.classList.contains("subwindow-wrapper")) {
@@ -367,9 +368,9 @@ if (document.getElementById("endSessionButton")) {
 
 //End Session Popup Logout Button
 if (document.getElementById("logoutButton")) {
-	document.getElementById("logoutButton").addEventListener("click", () => {
-		location.href = "./Close_Register.html";
-	});
+	// document.getElementById("logoutButton").addEventListener("click", () => {
+	// 	location.href = "./Close_Register.html";
+	// });
 }
 
 function toggleSubwindow(subwindowName = null) {
@@ -420,4 +421,5 @@ function navbarCloseAll() {
 		document.getElementById("mobileNavToggle").classList.remove("opened");
 	}
 	document.querySelector(".navbar").classList.remove("open");
-}
+}}
+initFn();
