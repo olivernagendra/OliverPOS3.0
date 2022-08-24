@@ -17,6 +17,7 @@ import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Home from './components/homePage/Home';
+import OpenRegister from './components/OpenRegister';
 function App() {
   return ( <Router>
     <Routes>
@@ -29,6 +30,7 @@ function App() {
       <Route path="/register" element={<Register/>} /> 
       <Route path="/prodcutloader" element={<ProductLoader/>} /> 
       <Route path="/home" element={<Home/>} /> 
+      <Route path="/openregister" element={<OpenRegister/>} /> 
       <Route path="*" element={<NoPage/>} />
     </Routes>
 </Router>

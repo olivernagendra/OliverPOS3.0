@@ -28,7 +28,6 @@ const TileList = () => {
     if (status == STATUSES.IDLE && is_success) {
 
         favTiles = data && data.content;
-        console.log("----favTiles----" + JSON.stringify(favTiles))
         var FavProduct = favTiles.FavProduct;
         var FavAttribute = favTiles.FavAttribute;
         var FavSubAttribute = favTiles.FavSubAttribute;
@@ -42,12 +41,8 @@ const TileList = () => {
         FavSubCategory = AddTileType(favTiles.FavSubCategory, 'sub-category');
 
         favArrayList = [...FavProduct, ...FavAttribute, ...FavSubAttribute, ...FavCategory, ...FavSubCategory];
-        // const arrayUniqueByKey = [...new Map(favArrayList.map(item =>
-        //     [item['Order'], item])).values()];
-
         favArrayList = [...favArrayList].sort((a, b) => a.Order - b.Order);
 
-        console.log("----fav list----" + JSON.stringify(favArrayList))
     }
     return (
         <div className="products">
@@ -55,7 +50,7 @@ const TileList = () => {
                 favArrayList.map((item, index) => {
                     switch (item.type) {
                         case "product":
-                            return <button className="product">
+                            return <button className="product" key={index} >
                                 <div className="body background-blue">
                                     <img src={item.Image} alt="" />
                                 </div>
@@ -68,7 +63,7 @@ const TileList = () => {
                             break;
                         case "attribute":
                         case "sub-attribute":
-                            return <button className="category">
+                            return <button className="category"  key={index}>
                                 <p>
                                     {item.attribute_slug}
                                 </p>
@@ -76,7 +71,7 @@ const TileList = () => {
                             break;
                         case "category":
                         case "sub-category":
-                            return <button className="category">
+                            return <button className="category"  key={index}>
                                 <p>
                                     {item.name}
                                 </p>

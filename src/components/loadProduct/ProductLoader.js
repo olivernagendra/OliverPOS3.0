@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { get_UDid } from '../common/localSettings'
-import { openDB } from 'idb';
+import { openDB ,unwrap} from 'idb';
 import Config from '../../Config';
 import { receiptSetting } from '../serverSetting/receiptSettingSlice';
 import ActiveUser from '../../settings/ActiveUser';
@@ -130,9 +130,23 @@ const ProductLoader =()=>{
         }
        // this.setState({ loadPerc: _perc });    
         
-        const dbPromise = openDB('ProductDB', 1, upgradeDB => {
-            upgradeDB.createObjectStore(udid);
-        });
+        // const dbPromise = openDB('ProductDB', 1, upgradeDB => {
+        //     upgradeDB.createObjectStore(udid);
+        // });
+        const dbPromise =  openDB("ProductDB", 1, {
+            upgrade(db, oldVersion, newVersion, transaction) {
+                db.createObjectStore(udid);
+            },
+            blocked() {
+              // …
+            },
+            blocking() {
+              // …
+            },
+            terminated() {
+              // …
+            },
+          });
         const idbKeyval = {
             async get(key) {
                 const db = await dbPromise;
@@ -187,6 +201,22 @@ const ProductLoader =()=>{
          if (pcount == null || typeof (pcount) == 'undefined' || pcount == 0) {
             // window.location = RedirectUrl;
          }
+        //  const db =  openDB("ProductDB1", 1, {
+        //     upgrade(db, oldVersion, newVersion, transaction) {
+        //         db.createObjectStore(udid);
+        //     },
+        //     blocked() {
+        //       // …
+        //     },
+        //     blocking() {
+        //       // …
+        //     },
+        //     terminated() {
+        //       // …
+        //     },
+        //   });
+          
+         
          updateIndexDB(udid, [], RedirectUrl);
      }
      //------------------------------------------------
