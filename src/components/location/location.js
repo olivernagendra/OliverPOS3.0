@@ -47,7 +47,7 @@ const Location = () => {
                 <img src={AngledBracket_Left_Blue} alt="" />
                 Back
             </button>
-            <p>{localStorage.getItem('user_full_name')}</p>
+            <p>{localStorage.getItem('user_full_name')?localStorage.getItem('user_full_name'):''}</p>
         </div>
         <div className="choose-body-default">
             <p>Choose Location</p>

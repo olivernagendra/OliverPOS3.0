@@ -195,10 +195,10 @@ const ShowCreatePin = props =>
     <header>
         <img src={imgOpenReg} alt="" />
         <div className="col">
-            <p className="style1">Sushi Sun</p>
+            <p className="style1">{localStorage.getItem('user_full_name')?localStorage.getItem('user_full_name'):''}</p>
             <div className="divider"></div>
-            <p className="style2">Register 1</p>
-            <p className="style3">Water St. Location</p>
+            <p className="style2">{ localStorage.getItem('registerName')?localStorage.getItem('registerName'):''}</p>
+            <p className="style3">{localStorage.getItem('LocationName')?localStorage.getItem('LocationName'):''}</p>
             <button id="closeRegister1">Close Register</button>
         </div>
     </header>
