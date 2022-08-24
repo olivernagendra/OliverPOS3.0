@@ -36,6 +36,7 @@ function Login() {
 
     }
 
+
       if(status ==STATUSES.error){
             console.log(error)
         }
@@ -104,7 +105,8 @@ function Login() {
 
             CallService(sendRes);
         } else {
-            // this.setState({ isLoginSuccess: "false" })
+            //// this.setState({ isLoginSuccess: "false" })
+            //console.log()
         }
     }
 
