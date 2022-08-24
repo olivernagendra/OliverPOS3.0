@@ -11,7 +11,7 @@ import './App.css';
 import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
 import Site from './components/site/Site'
-import Location from './components/location/location'
+import Location from './components/location/Location'
 import Register from './components/register/Register'
 import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';

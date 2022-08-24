@@ -14,8 +14,9 @@ function Login(){
 
     const dispatch= useDispatch();
     const { status, data, error,is_success } = useSelector((state) => state.login)
-      console.log("status",status, "data",data, "error",error,"is_success",is_success)
+      //console.log("status",status, "data",data, "error",error,"is_success",is_success)
 
+      
       if(status ==STATUSES.error){
             console.log(error)
         }
@@ -51,7 +52,10 @@ const handleUserLogin=()=>{
         setPassword(e.target.value);
     }
   
-
+if(status ==STATUSES.LOADING ){
+    //console.log("Loading... ")
+    return <div> Loading... </div>
+}
 return  ( <div className="login-wrapper">
     <div className="auto-margin-top"></div>
     {/* counter: {counter} */}

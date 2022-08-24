@@ -191,7 +191,13 @@ const ShowCreatePin = props =>
             //event.preventDefault();
         }
     }
-    return <div className="idle-register-wrapper">
+
+    
+    if (status == STATUSES.LOADING) {
+        return <div> Loading... </div>
+    }
+    return (
+    <div className="idle-register-wrapper">
     <header>
         <img src={imgOpenReg} alt="" />
         <div className="col">
@@ -219,7 +225,8 @@ const ShowCreatePin = props =>
         </div>
         <button id="closeRegister2">Close Register</button>
     </main>
-</div>
+    </div>
+    )
 }
 
 export default Pin
