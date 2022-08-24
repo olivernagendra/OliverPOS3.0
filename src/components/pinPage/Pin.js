@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from 'react-redux';
-import {chunkArray} from '../common/localSettings'
+import {chunkArray, get_locName, get_regName} from '../common/localSettings'
 import imgOpenReg from '../../images/svg/OpenSign-BaseBluesvg.svg'
 import imgBackSpace from '../../images/svg/Backspace-BaseBlue.svg'
 
@@ -195,10 +195,10 @@ const ShowCreatePin = props =>
     <header>
         <img src={imgOpenReg} alt="" />
         <div className="col">
-            <p className="style1">{localStorage.getItem('user_full_name')?localStorage.getItem('user_full_name'):''}</p>
+            <p className="style1">{get_locName()}</p>
             <div className="divider"></div>
-            <p className="style2">{ localStorage.getItem('registerName')?localStorage.getItem('registerName'):''}</p>
-            <p className="style3">{localStorage.getItem('LocationName')?localStorage.getItem('LocationName'):''}</p>
+            <p className="style2">{ get_regName()}</p>
+            <p className="style3">{get_locName()}</p>
             <button id="closeRegister1">Close Register</button>
         </div>
     </header>
