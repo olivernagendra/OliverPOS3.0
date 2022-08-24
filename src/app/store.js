@@ -9,6 +9,7 @@ import registerSlice from '../components/register/registerSlice';
 import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSlice';
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
+import {tileSlice} from '../components/homePage/tiles/tileSlice';
 // import {postApi} from '../services/post'
  //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -20,6 +21,7 @@ export const store = configureStore({
     firebaseRegister:firebaseRegisterSlice.reducer,
     receiptsetting:  receiptSettingSlice.reducer,
     taxsetting:  taxSettingSlice.reducer,
+    tile:tileSlice.reducer
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,
