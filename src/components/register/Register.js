@@ -67,6 +67,10 @@ const Register = () => {
     const takeOver = () => {
         navigate('/pin');
     }
+
+    if (status == STATUSES.LOADING) {
+        return <div> Loading... </div>
+    }
     return (
         <React.Fragment>
             <div className="choose-wrapper">

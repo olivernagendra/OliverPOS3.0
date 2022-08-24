@@ -5,6 +5,7 @@ import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.
 import Store_Icon_White from '../../images/svg/Store-Icon-White.svg'
 import { location } from '../../components/location/locationSlice';
 import { get_UDid, get_userName } from '../../components/common/localSettings';
+
 import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
 const Location = () => {
@@ -40,7 +41,9 @@ const Location = () => {
             navigate('/register')
         }
     }
-
+    if (status == STATUSES.LOADING) {
+        return <div> Loading... </div>
+    }
     return <div className="choose-wrapper">
         <div className="choose-header">
             <button id="backButton" onClick={() => window.location = "/site"}>
