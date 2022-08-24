@@ -9,11 +9,12 @@ import imgOpenReg from '../../images/svg/OpenSign-BaseBluesvg.svg'
 // import { get_UDid } from "../common/localSettings"; 
 // import STATUSES from "../../constants/apiStatus";
 // import moment from 'moment';
+import { useNavigate } from 'react-router-dom';
 import PinPad from "../PinPad";
 
 const Pin=()=>{
 //     const dispatch = useDispatch();
-//     const navigate = useNavigate();
+    const navigate = useNavigate();
 //     const [totalSize,setTotalSize]=useState(0)
 //     const [txtValue,setTxtValue]=useState("")
 //     const [isloading,setIsloading]=useState(false)
