@@ -5,6 +5,8 @@ import SwitchUser_Icon from '../../images/svg/SwitchUser-Icon.svg';
 import star from '../../images/svg/star.svg';
 import LogOut_Icon from '../../images/svg/LogOut-Icon.svg';
 
+import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png';
+import { get_regName, get_userName } from "../common/localSettings";
 const UserInfo = () => {
     return (
         <div id="userInfoWrapper" className="user-info-wrapper hidden">
@@ -14,8 +16,8 @@ const UserInfo = () => {
                     <img src={avatar} alt="" />
                 </div>
                 <div className="col">
-                    <p className="style1">Freddy Mercury</p>
-                    <p className="style2">Register 2</p>
+                    <p className="style1">{get_userName()}</p>
+                    <p className="style2">{get_regName()}</p>
                 </div>
             </div>
             <div className="body">
@@ -45,16 +47,16 @@ const UserInfo = () => {
                 </div>
                 <div className="button-row">
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                 </div>
             </div>

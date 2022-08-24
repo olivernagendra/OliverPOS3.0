@@ -17,7 +17,7 @@ import HeadereBar from "./HeadereBar";
 import IframeWindow from "./IframeWindow";
 import UserInfo from "./UserInfo";
 import CartList from "./CartList";
-import ProductList from "./ProductList";
+import TileList from "./tiles/TileList";
 const Home = () => {
     // useEffect(() => {
     //     initFn();
@@ -50,7 +50,7 @@ const Home = () => {
             {/* cart list */}
             <LeftNavBar></LeftNavBar>
             <HeadereBar></HeadereBar>
-            <ProductList></ProductList>
+            <TileList></TileList>
              <CartList></CartList>
             <div className="mobile-homepage-footer">
                 <button id="openMobileCart">View Cart (2) - $24.99</button>

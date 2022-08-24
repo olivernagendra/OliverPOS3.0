@@ -9,6 +9,10 @@ import LinkLauncher_Icon from '../../images/svg/LinkLauncher-Icon.svg';
 import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
 import ToggleNavbar_Icon from '../../images/svg/ToggleNavbar-Icon.svg';
 
+import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png';
+import MC_Logo1 from '../../images/Temp/MC_Logo1.png';
+import Quickbooks1 from '../../images/Temp/Quickbooks 1.png';
+
 const LeftNavBar = () => {
     return (
         <div className="navbar">
@@ -59,19 +63,19 @@ const LeftNavBar = () => {
         </button>
         <button id="navApp1" className="launcher app">
             <div className="img-container">
-                <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                <img src={ClockIn_Icon} alt="" />
             </div>
             <p>{"Clock-in App"}</p>
         </button>
         <button id="navApp2" className="launcher app">
             <div className="img-container">
-                <img src="../../images/temp/MC_Logo1.png" alt="" />
+                <img src={MC_Logo1} alt="" />
             </div>
             <p>MailChimp</p>
         </button>
         <button id="navApp3" className="launcher app">
             <div className="img-container">
-                <img src="../../images/temp/Quickbooks1.png" alt="" />
+                <img src={Quickbooks1} alt="" />
             </div>
             <p>Quickbooks Sync</p>
         </button>
