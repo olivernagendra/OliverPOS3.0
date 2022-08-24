@@ -5,6 +5,7 @@ import SwitchUser_Icon from '../../images/svg/SwitchUser-Icon.svg';
 import star from '../../images/svg/star.svg';
 import LogOut_Icon from '../../images/svg/LogOut-Icon.svg';
 
+import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png';
 const UserInfo = () => {
     return (
         <div id="userInfoWrapper" className="user-info-wrapper hidden">
@@ -45,16 +46,16 @@ const UserInfo = () => {
                 </div>
                 <div className="button-row">
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                     <button>
-                        <img src="../../images/temp/ClockIn_Icon.png" alt="" />
+                        <img src={ClockIn_Icon} alt="" />
                     </button>
                 </div>
             </div>
