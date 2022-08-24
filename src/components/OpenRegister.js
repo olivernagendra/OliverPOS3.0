@@ -12,7 +12,7 @@ const OpenRegister = () => {
     useEffect(() => {
         openRegisterFn();
     }, []);
-    return <React.Fragment><div class="open-register-wrapper">
+    return <React.Fragment><div className="open-register-wrapper">
         <button id="cancel">
             <img src={AngledBracket_Left_White} alt="" />
             Cancel
@@ -22,24 +22,24 @@ const OpenRegister = () => {
             Log Out
         </button>
         <header>
-            <div class="auto-margin-top"></div>
+            <div className="auto-margin-top"></div>
             <img src={Closed_Sign_White} alt="" />
-            <div class="col">
-                <p class="style1">{get_userName()}</p>
-                <div class="divider"></div>
-                <p class="style2">{get_regName()}</p>
-                <p class="style3">{get_locName()}</p>
+            <div className="col">
+                <p className="style1">{get_userName()}</p>
+                <div className="divider"></div>
+                <p className="style2">{get_regName()}</p>
+                <p className="style3">{get_locName()}</p>
             </div>
-            <div class="auto-margin-bottom"></div>
+            <div className="auto-margin-bottom"></div>
         </header>
 
         <main>
-            <div class="auto-margin-top"></div>
-            <div class="step1">
+            <div className="auto-margin-top"></div>
+            <div className="step1">
                 <p>Ready to Open?</p>
                 <button id="openRegisterButton">Open Register</button>
             </div>
-            <div class="step2 hidden">
+            <div className="step2 hidden">
                 <p>Start Your Cash Float</p>
                 <label for="floatAmount">Opening float amount ($):</label>
                 <input type="number" id="floatAmount" value="200.00" />
@@ -48,18 +48,18 @@ const OpenRegister = () => {
                 <textarea name="openNote" id="openNote" placeholder="Add your note here"></textarea>
                 <button id="openFloatButton">Open Float</button>
             </div>
-            <div class="step3 hidden">
+            <div className="step3 hidden">
                 {<PinPad></PinPad>}
             </div>
-            <div class="auto-margin-bottom"></div>
+            <div className="auto-margin-bottom"></div>
         </main>
 
 
     </div>
-        <div class="logout-confirmation-wrapper hidden">
-            <div class="auto-margin-top"></div>
-            <p class="style1">Account Logout Confirmation</p>
-            <p class="style2">
+        <div className="logout-confirmation-wrapper hidden">
+            <div className="auto-margin-top"></div>
+            <p className="style1">Account Logout Confirmation</p>
+            <p className="style2">
                 Are you sure you want to logout <br />
                 of the Oliver POS app? <br />
                 <br />
@@ -68,7 +68,7 @@ const OpenRegister = () => {
             </p>
             <button id="logoutConfirm">Logout</button>
             <button id="logoutCancel">Cancel</button>
-            <div class="auto-margin-bottom"></div>
+            <div className="auto-margin-bottom"></div>
         </div>
     </React.Fragment>
 

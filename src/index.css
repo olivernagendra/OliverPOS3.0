@@ -21,3 +21,10 @@ code {
     flex-direction: column;
     align-items: center;
 }
+.choose-wrapper > .choose-body-default button > .col > p.style1{
+    max-width: 11.71vw;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
