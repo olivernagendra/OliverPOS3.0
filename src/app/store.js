@@ -7,6 +7,7 @@ import registerSlice from '../components/register/registerSlice';
 import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSlice';
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
+import {CashmanagementSlice} from '../components/cashmanagement/CashmanagementSlice';
 
 // import {postApi} from '../services/post'
  //import {loginApi} from '../components/login/loginService'
@@ -19,6 +20,7 @@ export const store = configureStore({
     firebaseRegister:firebaseRegisterSlice.reducer,
     receiptsetting:  receiptSettingSlice.reducer,
     taxsetting:  taxSettingSlice.reducer,
+    cashmanagement: CashmanagementSlice.reducer,
 
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,

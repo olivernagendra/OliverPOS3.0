@@ -16,6 +16,8 @@ import Register from './components/register/Register'
 import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
+import Cashmanagement from './components/cashmanagement/Cashmanagement';
+
 function App() {
   return ( <Router>
     <Routes>
@@ -27,6 +29,7 @@ function App() {
       <Route path="/pin" element={<Pin/>} />
       <Route path="/register" element={<Register/>} /> 
       <Route path="/prodcutloader" element={<ProductLoader/>} /> 
+      <Route path="/cashdrawer" element={<Cashmanagement/>} /> 
       <Route path="*" element={<NoPage/>} />
     </Routes>
 </Router>
