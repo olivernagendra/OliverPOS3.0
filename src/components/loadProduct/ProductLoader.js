@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { get_UDid } from '../common/localSettings'
-import { openDB ,unwrap} from 'idb';
+import { deleteDB, openDB } from 'idb';
 import Config from '../../Config';
 import { receiptSetting } from '../serverSetting/receiptSettingSlice';
 import ActiveUser from '../../settings/ActiveUser';
@@ -21,17 +21,71 @@ const ProductLoader =()=>{
     if ( respTaxSetting && respTaxSetting.status == STATUSES.IDLE && respTaxSetting.is_success) {
         localStorage.setItem('TAX_SETTING', JSON.stringify(respTaxSetting.data.content))
     }     
+    
+    var udid = get_UDid(localStorage.getItem("UDID"));
+    var ProductArray=[{"id":1, "name":"nagendra"},{"id":2, "name":"pranav"}]
+     //To Clear indexDB----------------------------
+     var isDemoUser = localStorage.getItem('demoUser') ? localStorage.getItem('demoUser') : false;
+     var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/shopview';
+     var udid = get_UDid(localStorage.getItem("UDID"));
+     var pcount = 2// localStorage.getItem('productcount');
+     
+     //------------------------------------------------
+     localStorage.setItem("ProductLoad", "true");
+     console.log("--------------Product list request First time--------" + new Date());
+
+    var RedirectUrl =""
         useEffect(() => {
             fetchData()
+            //createIndexDB(udid, ProductArray, RedirectUrl);
+            if(isDemoUser ==false){
+                if (pcount == null || typeof (pcount) == 'undefined' || pcount == 0) {
+                   // window.location = RedirectUrl;
+                }
+                updateIndexDB(udid, ProductArray, RedirectUrl);
+            }
         }, []);
-     
+
      const fetchData = async () => { //calling multiple api
         dispatch(receiptSetting());
         dispatch(taxSetting());
+        
      }
      //------------------------------------------------- 
 
+// const createIndexDB=(udid, ProductArray, RedirectUrl)=>{
+//     (async () => {
+//         if (!('indexedDB' in window)) {
+//             console.warn('IndexedDB not supported')
+//             return
+//           }
+         
+//           const dbName = 'POSdb'
+//           const storeName = 'product_'+udid
+//           const version = 1 //versions start at 1
+        
+//           //delete Database
+//           await deleteDB(dbName)
+           
 
+//           const db = await openDB(dbName, version, {
+//             upgrade(db, oldVersion, newVersion, transaction) {
+//               const store = db.createObjectStore(storeName,{ autoIncrement: true })   //  "id"         
+//             }
+//           })
+//           const tx = db.transaction(storeName, 'readwrite')
+//           const store = await tx.objectStore(storeName)
+        
+//           const val = 'hey!'
+//           const key = 'Hello again'
+//           ProductArray.forEach(element => {
+//              const value =  store.put(element)
+//           });
+         
+//           await tx.done
+          
+//         })()
+// }
      
 //     const getProductList=(pn, pz, pl, trc)=> {
 //         if (trc != 0) {
@@ -123,30 +177,29 @@ const ProductLoader =()=>{
 //             })
 //     }
   const  updateIndexDB=(udid, ProductArray, RedirectUrl)=> {
-        var TotaltotalRecord = localStorage.getItem('productcount');        
+        var TotaltotalRecord =2// localStorage.getItem('productcount');        
         var _perc=0;
         if(ProductArray && ProductArray.length>0 && TotaltotalRecord && TotaltotalRecord>0)
         {_perc= ((ProductArray.length*100)/TotaltotalRecord).toFixed(0);
         }
        // this.setState({ loadPerc: _perc });    
-        
+       const dbPromise =  openDB("ProductDB", 1, {
+        upgrade(db, oldVersion, newVersion, transaction) {
+            db.createObjectStore(udid);
+        },
+        blocked() {
+          // …
+        },
+        blocking() {
+          // …
+        },
+        terminated() {
+          // …
+        },
+      });
         // const dbPromise = openDB('ProductDB', 1, upgradeDB => {
         //     upgradeDB.createObjectStore(udid);
         // });
-        const dbPromise =  openDB("ProductDB", 1, {
-            upgrade(db, oldVersion, newVersion, transaction) {
-                db.createObjectStore(udid);
-            },
-            blocked() {
-              // …
-            },
-            blocking() {
-              // …
-            },
-            terminated() {
-              // …
-            },
-          });
         const idbKeyval = {
             async get(key) {
                 const db = await dbPromise;
@@ -192,6 +245,7 @@ const ProductLoader =()=>{
     }
 
 
+
      //To Clear indexDB----------------------------
      var isDemoUser = localStorage.getItem('demoUser') ? localStorage.getItem('demoUser') : false;
      var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/shopview';
@@ -222,6 +276,7 @@ const ProductLoader =()=>{
      //------------------------------------------------
      localStorage.setItem("ProductLoad", "true");
      console.log("--------------Product list request First time--------" + new Date());
+
 
    //  this.getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);
     return <div>

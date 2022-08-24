@@ -10,7 +10,7 @@ import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
 import ToggleNavbar_Icon from '../../images/svg/ToggleNavbar-Icon.svg';
 
 import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png';
-import MC_Logo1 from '../../images/Temp/MC_Logo1.png';
+import MC_Logo1 from '../../images/Temp/MC_Logo 1.png';
 import Quickbooks1 from '../../images/Temp/Quickbooks 1.png';
 
 const LeftNavBar = () => {
