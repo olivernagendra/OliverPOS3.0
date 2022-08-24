@@ -37,10 +37,10 @@ document.querySelectorAll(".pinpad > .pin-button-row > button").forEach((button)
     });
 });
 
-// document.getElementById("closeRegister1").addEventListener("click", () => {
-//     location.href = "./Close_Register.html"
-// })
+document.getElementById("closeRegister1").addEventListener("click", () => {
+    location.href = "./Close_Register.html"
+})
 
-// document.getElementById("closeRegister2").addEventListener("click", () => {
-//     location.href = "./Close_Register.html"
-// })
+document.getElementById("closeRegister2").addEventListener("click", () => {
+    location.href = "./Close_Register.html"
+})

@@ -42,8 +42,7 @@ const Pin=()=>{
            // window.location = '/';
           }
           
-        //   navigate('/prodcutloader')
-          navigate('/home')
+          navigate('/prodcutloader')
 
     }
 
