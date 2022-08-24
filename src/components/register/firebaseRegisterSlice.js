@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 //import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';
-import {registerAPI} from './registerAPI';
+import {registerAPI_FirebaseRegister} from './registerAPI';
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -12,8 +12,8 @@ const initialState = {
 };
 
 
-export const register = createAsyncThunk(
-  'register/registerAPI',
+export const firebaseRegister = createAsyncThunk(
+  'register/registerAPI_FirebaseRegister',
   async (parameter,{rejectWithValue}) => {   
     // const response =  loginAPI(parameter);
     // // The value we return becomes the `fulfilled` action payload
@@ -21,7 +21,7 @@ export const register = createAsyncThunk(
     // return response.json();
 
    try {
-     const response = await registerAPI(parameter);
+     const response = await registerAPI_FirebaseRegister(parameter);
           // The value we return becomes the `fulfilled` action payload
           return response;
    } catch (err) {
@@ -32,8 +32,8 @@ export const register = createAsyncThunk(
          
   }
 );
-export const registerSlice = createSlice({
-  name: 'register',
+export const firebaseRegisterSlice = createSlice({
+  name: 'firebaseRegister',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: { 
@@ -57,19 +57,19 @@ export const registerSlice = createSlice({
  // extraReducers: () => {}
   extraReducers: (builder) => {    
     builder     
-      .addCase(register.pending, (state) => {
+      .addCase(firebaseRegister.pending, (state) => {
         state.status = STATUSES.LOADING;
         state.data="";
         state.error="";
         state.is_success=false;
       })
-      .addCase(register.fulfilled, (state, action) => {       
-          state.status = action.payload && action.payload.is_success===true? STATUSES.IDLE: STATUSES.ERROR;
-          state.data=(action.payload && action.payload.is_success===true ?action.payload:"");  
-          state.error=action.payload && action.payload.is_success===false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_success=action.payload && action.payload.is_success===true? true: false;      
+      .addCase(firebaseRegister.fulfilled, (state, action) => {       
+          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_success=action.payload && action.payload.is_success==true? true: false;      
       })
-      .addCase(register.rejected, (state,action) => {
+      .addCase(firebaseRegister.rejected, (state,action) => {
         state.status = STATUSES.IDLE;
         state.data="";
         state.error = action.error;
@@ -78,7 +78,7 @@ export const registerSlice = createSlice({
   },
 });
 
- export const { loginPanding, loginSuccess, loginFail } = registerSlice.actions;
+ export const { loginPanding, loginSuccess, loginFail } = firebaseRegisterSlice.actions;
 
 // // The function below is called a selector and allows us to select a value from
 // // the state. Selectors can also be defined inline where they're used instead of
@@ -94,4 +94,4 @@ export const registerSlice = createSlice({
 //   }
 // };
 
-export default registerSlice;
+export default firebaseRegisterSlice;

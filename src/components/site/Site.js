@@ -1,19 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-import Oliver_Icon_White from '../../images/svg/Oliver-Icon-White.svg'
+//import Oliver_Icon_White from '../../images/svg/Oliver-Icon-White.svg'
 import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
 import WWW_Icon from '../../images/svg/WWW-Icon.svg'
 import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg'
+import { encode_UDid } from "../common/localSettings";
 
 const Site = () => {
     const navigate = useNavigate();
-    const handleSiteClick=(udid)=>
+    const handleSiteClick=(item)=>
     {
-        var UD_ID=btoa(udid)
-        localStorage.setItem('UDID', UD_ID)
+        var udid=item.subscription_detail.udid;
+        var user_full_name=item.user_full_name
+        localStorage.setItem('user_full_name',user_full_name);
+
+        encode_UDid(udid);
         navigate('/location')
     }
     var Sitelist = localStorage.getItem('sitelist') ? JSON.parse(localStorage.getItem('sitelist')) : null;
@@ -44,7 +48,7 @@ const Site = () => {
                 {Sitelist !== null && Sitelist !== undefined && Sitelist.subscriptions &&
                     Sitelist.subscriptions.map((link, index) => {
                         return (
-                            <button className="option" onClick={()=>handleSiteClick(link.subscription_detail.udid)}>
+                            <button  key={index} className="option" onClick={()=>handleSiteClick(link)}>
                                 <div className="img-container background-blue">
                                     <img src={WWW_Icon} alt="" className="www-icon" />
                                 </div>
