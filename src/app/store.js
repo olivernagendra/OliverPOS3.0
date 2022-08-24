@@ -7,7 +7,8 @@ import pinSlice from '../components/pinPage/pinSlice';
 
 import registerSlice from '../components/register/registerSlice';
 import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSlice';
-
+import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
+import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 // import {postApi} from '../services/post'
  //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -16,8 +17,9 @@ export const store = configureStore({
     location: locationSlice.reducer,
     pin:pinSlice.reducer,
     register: registerSlice.reducer,
-    firebaseRegister:firebaseRegisterSlice.reducer
-
+    firebaseRegister:firebaseRegisterSlice.reducer,
+    receiptsetting:  receiptSettingSlice.reducer,
+    taxsetting:  taxSettingSlice.reducer,
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,
