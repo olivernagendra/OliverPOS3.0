@@ -7,29 +7,31 @@ import registerSlice from '../components/register/registerSlice';
 import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSlice';
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
-import {tileSlice} from '../components/homePage/tiles/tileSlice';
-import {CashmanagementSlice} from '../components/cashmanagement/CashmanagementSlice';
+import { tileSlice } from '../components/homePage/tiles/tileSlice';
+import { CashmanagementSlice } from '../components/cashmanagement/CashmanagementSlice';
+import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 
 // import {postApi} from '../services/post'
- //import {loginApi} from '../components/login/loginService'
+//import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
   reducer: {
     login: loginSlice.reducer,
     location: locationSlice.reducer,
-    pin:pinSlice.reducer,
+    pin: pinSlice.reducer,
     register: registerSlice.reducer,
-    firebaseRegister:firebaseRegisterSlice.reducer,
-    receiptsetting:  receiptSettingSlice.reducer,
-    taxsetting:  taxSettingSlice.reducer,
-    tile:tileSlice.reducer,
+    firebaseRegister: firebaseRegisterSlice.reducer,
+    receiptsetting: receiptSettingSlice.reducer,
+    taxsetting: taxSettingSlice.reducer,
+    tile: tileSlice.reducer,
     cashmanagement: CashmanagementSlice.reducer,
+    productloader: productLoaderSlice.reducer
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,
   }
-   ,
+  ,
   middleware: getDefaultMiddleware =>
-  getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
