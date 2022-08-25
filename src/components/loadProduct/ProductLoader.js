@@ -19,74 +19,7 @@ const ProductLoader = () => {
     const [loadingProducts, setLoadingProducts] = useState(0)
     const [loadPerc, setLoadPerc] = useState(0)
 
-    // const UpdateIndexDB = (udid, ProductArray, RedirectUrl) => {
-    //     var TotaltotalRecord = localStorage.getItem('productcount');
-    //     var _perc = 0;
-    //     if (ProductArray && ProductArray.length > 0 && TotaltotalRecord && TotaltotalRecord > 0) {
-    //         _perc = ((ProductArray.length * 100) / TotaltotalRecord).toFixed(0);
-    //     }
-    //     // this.setState({ loadPerc: _perc });
 
-    //     // const dbPromise = openDB('ProductDB', 1, upgradeDB => {
-    //     //     upgradeDB.createObjectStore(udid);
-    //     // });
-    //     const dbPromise = openDB("ProductDB", 1, {
-    //         upgrade(db, oldVersion, newVersion, transaction) {
-    //             db.createObjectStore(udid);
-    //         },
-    //         blocked() {
-    //             // …
-    //         },
-    //         blocking() {
-    //             // …
-    //         },
-    //         terminated() {
-    //             // …
-    //         },
-    //     });
-    //     const idbKeyval = {
-    //         async get(key) {
-    //             const db = await dbPromise;
-    //             return db.transaction(udid).objectStore(udid).get(key);
-    //         },
-    //         async set(key, val) {
-    //             const db = await dbPromise;
-    //             const tx = db.transaction(udid, 'readwrite');
-    //             tx.objectStore(udid).put(val, key);
-    //             return tx.complete;
-    //         },
-    //     };
-    //     // for unique array----------------------
-    //     const arrayUniqueByKey = [...new Map(ProductArray.map(item =>
-    //         [item['WPID'], item])).values()];
-    //     idbKeyval.set('ProductList', arrayUniqueByKey);
-
-    //     idbKeyval.get('ProductList').then(val => {
-    //         if (ProductArray.length == 0 || !val || val.length == 0 || val == null || val == "") {
-    //             console.log("wait...");
-    //         } else {
-    //             if (ActiveUser.key.isSelfcheckout == true) {
-    //                 // if (isMobileOnly == true) {
-    //                 //     //history.push('/selfcheckout')
-    //                 // } else {
-    //                 //     //  window.location = '/selfcheckout';
-    //                 // }
-
-    //             }
-    //             else {
-    //                 // if (isMobileOnly == true) {
-    //                 //     // history.push('/shopview')
-    //                 // } else {
-    //                 //     //window.location = '/shopview';
-    //                 // }
-    //             }
-    //         }
-    //     })
-
-    //     //------------------------------------------
-
-
-    // }
     const UpdateIndexDB = (udid, ProductArray, RedirectUrl) => {
         var TotaltotalRecord = localStorage.getItem('productcount');
         var _perc = 0;
@@ -233,7 +166,7 @@ const ProductLoader = () => {
                     //console.log("ProductArray2",ProductArray.length)                        
 
                     UpdateIndexDB(udid, ProductArray, RedirectUrl);
-                    // navigate('/home');
+                    navigate('/home');
 
                 }
             })
@@ -247,7 +180,7 @@ const ProductLoader = () => {
                         navigate('/'); //Reload to get product
                         // navigate( '/home')
                     }, 1000)
-                    //navigate('/home')
+                    navigate('/home')
                 }
             })
     }
@@ -280,26 +213,7 @@ const ProductLoader = () => {
         }
     }, []);
 
-    // useEffect(() => {
-    //     var udid = get_UDid(localStorage.getItem("UDID"));
-    //     if (useCancelled == false)
-    //         dispatch(productCount(udid));
-    //     console.log("useEffect1")
 
-    //     return () => {
-    //         useCancelled = true;
-    //     }
-    // }, []);
-    // useEffect(() => {
-    //     dispatch(receiptSetting());
-    //     console.log("useEffect2")
-    // }, []);
-    // useEffect(() => {
-
-    //     dispatch(taxSetting());
-    //     console.log("useEffect3")
-
-    // }, []);
 
     const fetchData = async () => { //calling multiple api
         var isDemoUser = localStorage.getItem('demoUser') == 'true' && localStorage.getItem('DemoGuid');
@@ -373,9 +287,9 @@ const ProductLoader = () => {
 
     //  this.getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);
     return <div>
-        Product Loading...
-        {loadingProducts};
-        {loadPerc};
+        <h1>Product Loading...</h1>
+        <h2> {loadingProducts} ( {loadPerc})% </h2>;
+        ;
     </div>
 }
 

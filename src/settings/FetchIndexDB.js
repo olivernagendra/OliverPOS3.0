@@ -4,7 +4,7 @@ import { get_UDid } from '../components/common/localSettings'
 
 const fetchIndexDb = () => {
     var udid = get_UDid('UDID');
-    const dbPromise = openDB('ProductDB', 1, upgradeDB => {
+    const dbPromise = openDB('POSDB', 1, upgradeDB => {
         upgradeDB.createObjectStore(udid);
     });
 
@@ -25,7 +25,7 @@ export const FetchIndexDB = {
 export default FetchIndexDB;
 
 var udid = get_UDid('UDID');
-const dbPromise = openDB('ProductDB', 1, upgradeDB => {
+const dbPromise = openDB('POSDB', 1, upgradeDB => {
     upgradeDB.createObjectStore(udid);
 });
 
