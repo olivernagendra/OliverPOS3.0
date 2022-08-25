@@ -51,7 +51,7 @@ const TileList = () => {
                     switch (item.type) {
                         case "product":
                             return <button className="product" key={index} >
-                                <div className="body background-blue">
+                                <div className="body">
                                     <img src={item.Image} alt="" />
                                 </div>
                                 <div className="footer">

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { chunkArray, get_locName, get_regName } from './common/localSettings'
-import imgOpenReg from '../images/svg/OpenSign-BaseBluesvg.svg'
+// import imgOpenReg from '../images/svg/OpenSign.svg'
 import imgBackSpace from '../images/svg/Backspace-BaseBlue.svg'
 
 import { createPin, validatePin } from "./pinPage/pinSlice"
