@@ -38,13 +38,13 @@ const Register = () => {
     useEffect(() => {
         fetchData();
     }, []);
- 
+
     const fetchData = async () => { //calling multiple api
         var loc_id = localStorage.getItem('Location');
         dispatch(register({ "id": loc_id }));
         dispatch(firebaseRegister());
-  
-     }
+
+    }
     const handleSubmit = (item, isTakeOver = false) => {
         var arry = [];
         arry.push(item)
@@ -58,8 +58,8 @@ const Register = () => {
         setSelRegister(item);
         if (isTakeOver == false)
             navigate('/pin');
-        // else
-        //     toggleSubwindow("takeover-register");
+        else
+            toggleSubwindow("takeover-register");
     }
     const takeOver = () => {
         navigate('/pin');
