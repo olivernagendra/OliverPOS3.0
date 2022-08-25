@@ -11,13 +11,13 @@ import './App.css';
 import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
 import Site from './components/site/Site'
-import Location from './components/location/location'
+import Location from './components/location/Location'
 import Register from './components/register/Register'
 import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
-
+import Home from './components/homePage/Home';
 function App() {
   return ( <Router>
     <Routes>
@@ -30,7 +30,9 @@ function App() {
       <Route path="/register" element={<Register/>} /> 
       <Route path="/prodcutloader" element={<ProductLoader/>} /> 
       <Route path="/cashdrawer" element={<Cashmanagement/>} /> 
+      <Route path="/home" element={<Home/>} /> 
       <Route path="*" element={<NoPage/>} />
+
     </Routes>
 </Router>
     // <div className="App">

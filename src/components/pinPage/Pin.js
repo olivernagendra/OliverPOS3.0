@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useDispatch, useSelector } from 'react-redux';
-import {chunkArray} from '../common/localSettings'
+import {chunkArray, get_locName, get_regName} from '../common/localSettings'
 import imgOpenReg from '../../images/svg/OpenSign-BaseBluesvg.svg'
 import imgBackSpace from '../../images/svg/Backspace-BaseBlue.svg'
 
@@ -42,7 +42,7 @@ const Pin=()=>{
            // window.location = '/';
           }
           
-          navigate('/prodcutloader')
+          navigate('/home')
 
     }
 
@@ -190,14 +190,20 @@ const ShowCreatePin = props =>
             //event.preventDefault();
         }
     }
-    return <div className="idle-register-wrapper">
+
+    
+    if (status == STATUSES.LOADING) {
+        return <div> Loading... </div>
+    }
+    return (
+    <div className="idle-register-wrapper">
     <header>
         <img src={imgOpenReg} alt="" />
         <div className="col">
-            <p className="style1">Sushi Sun</p>
+            <p className="style1">{get_locName()}</p>
             <div className="divider"></div>
-            <p className="style2">Register 1</p>
-            <p className="style3">Water St. Location</p>
+            <p className="style2">{ get_regName()}</p>
+            <p className="style3">{get_locName()}</p>
             <button id="closeRegister1">Close Register</button>
         </div>
     </header>
@@ -218,7 +224,8 @@ const ShowCreatePin = props =>
         </div>
         <button id="closeRegister2">Close Register</button>
     </main>
-</div>
+    </div>
+    )
 }
 
 export default Pin

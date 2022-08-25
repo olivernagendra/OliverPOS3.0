@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
 import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
 import Store_Icon_White from '../../images/svg/Store-Icon-White.svg'
-import { location } from '../../components/location/locationSlice';
-import { get_UDid } from '../../components/common/localSettings';
+import { location } from './locationSlice';
+import { get_UDid, get_userName } from '../common/localSettings';
+
 import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
 const Location = () => {
@@ -40,14 +41,16 @@ const Location = () => {
             navigate('/register')
         }
     }
-
+    if (status == STATUSES.LOADING) {
+        return <div> Loading... </div>
+    }
     return <div className="choose-wrapper">
         <div className="choose-header">
             <button id="backButton" onClick={() => window.location = "/site"}>
                 <img src={AngledBracket_Left_Blue} alt="" />
                 Back
             </button>
-            <p>{localStorage.getItem('user_full_name')}</p>
+            <p>{get_userName()}</p>
         </div>
         <div className="choose-body-default">
             <p>Choose Location</p>

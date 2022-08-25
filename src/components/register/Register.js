@@ -11,7 +11,7 @@ import STATUSES from "../../constants/apiStatus";
 import { register } from "./registerSlice";
 import { firebaseRegister } from "./firebaseRegisterSlice";
 import { useNavigate } from 'react-router-dom';
-import { get_UDid } from "../common/localSettings";
+import { get_locName, get_UDid, get_userName } from "../common/localSettings";
 const Register = () => {
     const [selRegister,setSelRegister]=useState(null);
     const dispatch = useDispatch();
@@ -67,6 +67,10 @@ const Register = () => {
     const takeOver = () => {
         navigate('/pin');
     }
+
+    if (status == STATUSES.LOADING) {
+        return <div> Loading... </div>
+    }
     return (
         <React.Fragment>
             <div className="choose-wrapper">
@@ -75,7 +79,7 @@ const Register = () => {
                         <img src={AngledBracket_Left_Blue} alt="" />
                         Back
                     </button>
-                    <p>{localStorage.getItem('user_full_name') + " - " + localStorage.getItem('LocationName')}</p>
+                    <p>{get_userName() + " - " + get_locName()}</p>
                 </div>
                 <div className="choose-body-default">
                     <p>Choose Register/Device</p>

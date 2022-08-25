@@ -12,6 +12,17 @@ export const get_UDid = (UDID) => {
   return getudid;
 }
 
+export const get_regName = () => {
+  return localStorage.getItem('registerName') ? localStorage.getItem('registerName') : ''
+}
+
+export const get_locName = () => {
+  return localStorage.getItem('LocationName') ? localStorage.getItem('LocationName') : ''
+}
+
+export const get_userName = () => {
+  return localStorage.getItem('user_full_name') ? localStorage.getItem('user_full_name') : ''
+}
 /*------------------ array ----------------------*/
 export const chunkArray = (myArray, chunk_size) => {
   var index = 0;
