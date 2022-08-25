@@ -1,21 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { cashRecords } from './CashmanagementSlice'
 import moment from 'moment';
 import Config from '../../Config'
+import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import CashManagementIcon from '../../images/svg/CashManagement-Icon.svg'
 import TransactionsIcon from '../../images/svg/Transactions-Icon.svg'
 import CustomersIcon from '../../images/svg/Customers-Icon.svg'
 import RegisterIcon from '../../images/svg/Register-Icon.svg'
 import OliverType from '../../images/svg/Oliver-Type.svg'
-import oliverIcon from '../../images/svg/Oliver-Icon-Color.svg' 
+import oliverIcon from '../../images/svg/Oliver-Icon-Color.svg'
 import LinkLauncherIcon from '../../images/svg/LinkLauncher-Icon.svg'
 import OliverIconBaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg'
- //import ClockIn_Icon from '../../Images/Temp/MC_Logo 1.png'
- //import MC_Logo from '../../images/Temp/MC_Logo 1.svg'
- import MC_LogQuickbooks1 from '../../images/Temp/Quickbooks 1.png'
-// import MC_LogQuickbooks1 from '../../images/svg/Quickbooks 1.svg'
-//import ToggleNavbarIcon from '../../images/svg/ToggleNavbar-Icon.svg.svg'
+import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png'
+import MC_Logo from '../../images/Temp/MC_Logo 1.png'
+import MC_LogQuickbooks1 from '../../images/Temp/Quickbooks 1.png'
+import ToggleNavbarIcon from '../../images/svg/ToggleNavbar-Icon.svg'
 
 
 
@@ -23,6 +23,10 @@ function Cashmanagement() {
 
   const dispatch = useDispatch();
   var registerId = localStorage.getItem('register');
+  var current_date = moment().format(Config.key.DATE_FORMAT);
+
+  //activityBuffer: new Array(),
+  const [ActivityBuffer, setActivityBuffer] = useState(new Array())
 
   const { status, data, error, is_success } = useSelector((state) => state.cashmanagement)
   //console.log("status", status, "data", data, "error", error, "is_success", is_success)
@@ -40,6 +44,79 @@ function Cashmanagement() {
     dispatch(cashRecords({ "registerId": registerId, "pageSize": "1000", "pageNumber": "1" }));
 
   }, []);
+
+
+  // <div className="prev-registers">
+  // <div className="category">Today</div>
+  // {data !== null && data.content !== undefined &&
+  // data.content.Records.map((item, index) => {
+  //   var current_date = moment().format(Config.key.DATE_FORMAT);
+  //   var time = moment.utc(!item.ClosedTime ? item.LogDate : item.ModifyDateTimeUtc).local().format(Config.key.DATE_FORMAT);
+  //   return (
+
+  //   )
+  // })}
+  var allCashRecords = data && data.content && data.content.Records
+  var current_date = moment().format(Config.key.DATE_FORMAT);
+  var _newActivities = allCashRecords;
+
+
+  // if (false) {
+
+  //     _newActivities && _newActivities.map(item => {
+  //         if (item.order_id !== null && item.order_id !== 0) {
+  //             var isExist = false;
+  //             activityBuffer && activityBuffer.map(order => {
+  //                 if (order.order_id === item.order_id) {
+  //                     isExist = true;
+  //                 }
+  //             })
+  //             if (isExist == false) {
+  //                 activityBuffer.push(item);
+  //                 isExist = false;
+  //             }
+  //         }
+  //     })
+  // }
+  var getDistinctActivity = {};
+  var _activity = allCashRecords
+  _activity && _activity.map(item => {
+    var dateKey = FormateDateAndTime.formatDateAndTime(item.LogDate && item.LogDate !== undefined ? item.LogDate : item.LogDateUtc, item.TimeZoneType);
+    if (!getDistinctActivity.hasOwnProperty(dateKey)) {
+      getDistinctActivity[dateKey] = new Array(item);
+    } else {
+      if (typeof getDistinctActivity[dateKey] !== 'undefined' && getDistinctActivity[dateKey].length > 0) {
+        getDistinctActivity[dateKey].push(item)
+      }
+    }
+  })
+
+  
+  console.log("getDistinctActivity---->", getDistinctActivity)
+
+  var ordersDate = new Array();
+  var orders = getDistinctActivity;
+
+  if (typeof orders !== 'undefined') {
+    for (const key in orders) {
+      if (orders.hasOwnProperty(key)) {
+        ordersDate.push(key)
+      }
+    }
+    if (ordersDate.length > 0) {
+      ordersDate.sort(function (a, b) {
+        var keyA = new Date(a),
+          keyB = new Date(b);
+        // Compare the 2 dates
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      });
+      ordersDate.reverse();
+    }
+  }
+
+
 
 
 
@@ -109,13 +186,13 @@ function Cashmanagement() {
           </button>
           <button id="navApp1" className="launcher app">
             <div className="img-container">
-              {/* <img src={ClockIn_Icon} alt="" /> */}
+              <img src={ClockIn_Icon} alt="" />
             </div>
             <p>Clock-in App</p>
           </button>
           <button id="navApp2" className="launcher app">
             <div className="img-container">
-              {/* <img src={MC_Logo} alt="" /> */}
+              <img src={MC_Logo} alt="" />
             </div>
             <p>MailChimp</p>
           </button>
@@ -127,16 +204,11 @@ function Cashmanagement() {
           </button>
           <button id="navToggle" className="toggle-nav">
             <div className="img-container">
-              {/* <img src={ToggleNavbarIcon} alt="" /> */}
+              <img src={ToggleNavbarIcon} alt="" />
             </div>
             <p>Minimize Sidebar</p>
           </button>
         </div>
-
-
-
-
-
 
 
         <div className="cm-header">
@@ -148,84 +220,83 @@ function Cashmanagement() {
         <div className="cm-register-view">
 
 
-
-          
-
-          <button className="no-transform">
-            <p className="style1">Currently Active</p>
-            <div className="row">
-              <p className="style2">Register 1</p>
-              <p className="style3 green">OPEN</p>
-            </div>
-            <p className="style4">User: Freddy Mercury</p>
-          </button>
-
-          <div className="prev-registers">
-            <div className="category">Today</div>
-            {data !== null && data.content !== undefined &&
-            data.content.Records.map((item, index) => {
-              var current_date = moment().format(Config.key.DATE_FORMAT);
-              var time = moment.utc(!item.ClosedTime ? item.LogDate : item.ModifyDateTimeUtc).local().format(Config.key.DATE_FORMAT);
-              return (
-                <button className="no-transform">
+          {((!allCashRecords) || allCashRecords.length == 0) ? <>
+            <h1>hiii</h1>
+          </> :
+            <>
+              <button className="no-transform">
+                <p className="style1">Currently Active</p>
                 <div className="row">
-                  <p className="style1">{item.RegisterName}</p>
-                  <p className="style2"> {!item.ClosedTime ? "OPEN" : "Closed " + item.ClosedTime}</p>
+                  <p className="style2">Register 1</p>
+                  <p className="style3 green">OPEN</p>
                 </div>
-                <div className="row">
-                  <p className="style2">User: {item.SalePersonName}</p>
-                  <p className="style2">{time == current_date ? "Today" : time}</p>
-                </div>
+                <p className="style4">User: Freddy Mercury</p>
               </button>
+              <div className="prev-registers">
 
-              )
-            })}
-{/*             
-            <button className="no-transform">
-              <div className="row">
-                <p className="style1">Register 1</p>
-                <p className="style2">Closed</p>
+
+             {orders && ordersDate && ordersDate.map((getDate, index) => {                     
+                        return  <div key={"date" + index} className="category">   {current_date == getDate ? 'Today' : getDate} </div>
+                   {
+                    getDate &&  orders && orders[getDate] && orders[getDate].map((order, index) => {
+                      //   update date and time according to timeZone;
+                      var time = FormateDateAndTime.formatDateWithTime(order.date_time, order.time_zone);
+                      var _className='activity-order ' +typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null && localStorage.getItem("CUSTOMER_TO_ACTVITY") == order.order_id ?  'table-primary-label' :
+                      typeof localStorage.getItem("CUSTOMER_TO_OrderId") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_OrderId") !== null && localStorage.getItem("CUSTOMER_TO_OrderId") == order.order_id ?  'table-primary-label' : '';
+
+
+                      
+
+                    })
+                   }
+               
+
+                
+                 
+                
+
+
+
+
+                  
+                  
+                  
+                  
+                  
+                  
+
+
+
+
+                
+              })} 
+
+
+
+                <button className="no-transform">
+                  <div className="row">
+                    <p className="style1">Register 1</p>
+                    <p className="style2">Closed</p>
+                  </div>
+                  <div className="row">
+                    <p className="style2">User: Freddy Mercury</p>
+                    <p className="style2">6:15pm</p>
+                  </div>
+                </button>
+                <button className="no-transform">
+                  <div className="row">
+                    <p className="style1">Register 2</p>
+                    <p className="style2">Closed</p>
+                  </div>
+                  <div className="row">
+                    <p className="style2">User: David Bowie</p>
+                    <p className="style2">4:15pm</p>
+                  </div>
+                </button>
               </div>
-              <div className="row">
-                <p className="style2">User: Freddy Mercury</p>
-                <p className="style2">6:15pm</p>
-              </div>
-            </button>
-            <button className="no-transform">
-              <div className="row">
-                <p className="style1">Register 2</p>
-                <p className="style2">Closed</p>
-              </div>
-              <div className="row">
-                <p className="style2">User: David Bowie</p>
-                <p className="style2">4:15pm</p>
-              </div>
-            </button>
-            <div className="category">August 10, 2022</div>
-            <button className="no-transform">
-              <div className="row">
-                <p className="style1">Register 1</p>
-                <p className="style2">Closed</p>
-              </div>
-              <div className="row">
-                <p className="style2">User: Stevie Nicks</p>
-                <p className="style2">6:30pm</p>
-              </div>
-            </button>
-            <button className="no-transform">
-              <div className="row">
-                <p className="style1">Register 2</p>
-                <p className="style2">Closed</p>
-              </div>
-              <div className="row">
-                <p className="style2">User: Ozzy Osborne</p>
-                <p className="style2">2:00pm</p>
-              </div>
-            </button> */}
-          </div>
+            </>
+          }
         </div>
-
-
 
 
 
@@ -303,7 +374,7 @@ function Cashmanagement() {
               <img src="../Assets/Images/SVG/NoApps-Message.svg" alt="" />
               <button>
                 <div className="img-container">
-                  {/* <img src={ClockIn_Icon} alt="" /> */}
+                  <img src={ClockIn_Icon} alt="" />
                 </div>
                 <p>Clock-in App</p>
               </button>
