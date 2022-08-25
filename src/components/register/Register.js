@@ -58,8 +58,8 @@ const Register = () => {
         setSelRegister(item);
         if (isTakeOver == false)
             navigate('/pin');
-        else
-            toggleSubwindow("takeover-register");
+        // else
+        //     toggleSubwindow("takeover-register");
     }
     const takeOver = () => {
         navigate('/pin');

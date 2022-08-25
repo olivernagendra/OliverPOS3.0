@@ -20,27 +20,27 @@ import Cashmanagement from './components/cashmanagement/Cashmanagement';
 import Home from './components/homePage/Home';
 import OpenRegister from './components/OpenRegister';
 function App() {
-  return ( <Router>
+  return (<Router>
     <Routes>
-     
+
       <Route path="/" element={<Login />} />
-      <Route path="/login" element={<Login/>} /> 
-      <Route path="/site" element={<Site/>} /> 
-      <Route path="/location" element={<Location/>} /> 
-      <Route path="/pin" element={<Pin/>} />
-      <Route path="/register" element={<Register/>} /> 
-      <Route path="/prodcutloader" element={<ProductLoader/>} /> 
-      <Route path="/cashdrawer" element={<Cashmanagement/>} /> 
-      <Route path="/home" element={<Home/>} /> 
-      <Route path="/openregister" element={<OpenRegister/>} /> 
-      <Route path="*" element={<NoPage/>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/site" element={<Site />} />
+      <Route path="/location" element={<Location />} />
+      <Route path="/pin" element={<Pin />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/productloader" element={<ProductLoader />} />
+      <Route path="/cashdrawer" element={<Cashmanagement />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/openregister" element={<OpenRegister />} />
+      <Route path="*" element={<NoPage />} />
 
     </Routes>
-</Router>
+  </Router>
     // <div className="App">
     // <header className="App-header"> 
-     
-       
+
+
     //   </header> 
     // </div>
   );

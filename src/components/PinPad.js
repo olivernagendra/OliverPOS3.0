@@ -10,7 +10,7 @@ import { get_UDid } from "./common/localSettings";
 import STATUSES from "../constants/apiStatus";
 import moment from 'moment';
 
-const PinPad = () => {
+const PinPad = React.memo(props => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [totalSize, setTotalSize] = useState(0)
@@ -18,9 +18,8 @@ const PinPad = () => {
     const [isloading, setIsloading] = useState(false)
     const { status, data, error, is_success } = useSelector((state) => state.pin)
     var hasPin = localStorage.getItem('hasPin')
-    if (status === STATUSES.error) {
-        console.log(error)
-    }
+    console.log("status", status, "error", error)
+
     if (status === STATUSES.IDLE && is_success) {
         localStorage.setItem('user', JSON.stringify(data.content));
         if (typeof (Storage) !== "undefined") {
@@ -42,24 +41,24 @@ const PinPad = () => {
             // window.location = '/';
         }
 
-        //   navigate('/prodcutloader')
-        navigate('/home')
+        navigate('/productloader')
+        // navigate('/home')
 
     }
     // else if(totalSize==4 && status === STATUSES.IDLE && is_success==false)
     // {
     //     document.querySelector(".pinpad > .pin-entries")&& document.querySelector(".pinpad > .pin-entries").classList.add("incorrect");
-	// 			setTimeout(() => {
-	// 				// currentPassword = "";
-	// 				document.querySelector(".pinpad > .pin-entries") && document.querySelector(".pinpad > .pin-entries").classList.remove("incorrect");
-	// 				// for (let i = 0; i < pinEntries.length; i++) {
-	// 				// 	if (i < currentPassword.length) {
-	// 				// 		pinEntries[i].classList.add("entered");
-	// 				// 	} else {
-	// 				// 		pinEntries[i].classList.remove("entered");
-	// 				// 	}
-	// 				// }
-	// 			}, 300);
+    // 			setTimeout(() => {
+    // 				// currentPassword = "";
+    // 				document.querySelector(".pinpad > .pin-entries") && document.querySelector(".pinpad > .pin-entries").classList.remove("incorrect");
+    // 				// for (let i = 0; i < pinEntries.length; i++) {
+    // 				// 	if (i < currentPassword.length) {
+    // 				// 		pinEntries[i].classList.add("entered");
+    // 				// 	} else {
+    // 				// 		pinEntries[i].classList.remove("entered");
+    // 				// 	}
+    // 				// }
+    // 			}, 300);
     // }
 
 
@@ -146,7 +145,7 @@ const PinPad = () => {
     }
     const fillPass = (enteredPin) => {
 
-        if (enteredPin.length >= 4) {
+        if (enteredPin && enteredPin.length >= 4) {
             //const { dispatch } = this.props;
             if (isloading === false) {
                 setIsloading(true)
@@ -204,7 +203,15 @@ const PinPad = () => {
             //event.preventDefault();
         }
     }
+    if (status === STATUSES.ERROR) {
+        // console.log(error)
+        // setTotalSize(0)
+        // setTxtValue("")
+        // addToScreen('c')
+        isloading == true && setIsloading(false)
+    }
     return <React.Fragment>
+        {(status === STATUSES.ERROR && <div>{error}</div>)}
         <p>Enter Your User ID</p>
         <div className="pinpad">
             {hasPin !== "true" && <ShowCreatePin />}
@@ -217,8 +224,8 @@ const PinPad = () => {
             <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" onKeyDown={(e) => handleBack(e)} />
 
         </div>
-       
+
     </React.Fragment>
-}
+})
 
 export default PinPad

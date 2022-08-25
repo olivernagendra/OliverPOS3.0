@@ -1,20 +1,20 @@
-import { openDb } from 'idb';
-import { get_UDid } from '../ALL_localstorage'
+import { openDB } from 'idb';
+import { get_UDid } from '../components/common/localSettings'
 
 
 const fetchIndexDb = () => {
-var udid= get_UDid('UDID');
-const dbPromise = openDb('ProductDB', 1, upgradeDB => {
-     upgradeDB.createObjectStore(udid);
- });
+    var udid = get_UDid('UDID');
+    const dbPromise = openDB('ProductDB', 1, upgradeDB => {
+        upgradeDB.createObjectStore(udid);
+    });
 
- const idbKeyval = {
-     async get(key) {
-     const db = await dbPromise;
-     return db.transaction(udid).objectStore(udid).get(key);
-     },                
- };
-   return idbKeyval;
+    const idbKeyval = {
+        async get(key) {
+            const db = await dbPromise;
+            return db.transaction(udid).objectStore(udid).get(key);
+        },
+    };
+    return idbKeyval;
 }
 
 
@@ -25,7 +25,7 @@ export const FetchIndexDB = {
 export default FetchIndexDB;
 
 var udid = get_UDid('UDID');
-const dbPromise = openDb('ProductDB', 1, upgradeDB => {
+const dbPromise = openDB('ProductDB', 1, upgradeDB => {
     upgradeDB.createObjectStore(udid);
 });
 

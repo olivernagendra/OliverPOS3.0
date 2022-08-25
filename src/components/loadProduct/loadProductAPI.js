@@ -1,7 +1,7 @@
 import { serverRequest } from '../../CommonServiceRequest/serverRequest'
 
 export function productCountAPI(udid) {
-    return serverRequest.clientServiceRequest('POST', `/product/count?udid=${udid}`)
+    return serverRequest.clientServiceRequest('GET', `/product/count?udid=${udid}`)
         .then(countRes => {
 
             return countRes;
@@ -10,8 +10,9 @@ export function productCountAPI(udid) {
         });
 }
 
-export function loadProductAPI(udid) {
-    return serverRequest.clientServiceRequest('POST', `/product/count?udid=${udid}`)
+export function loadProductAPI(parameter) {
+    return serverRequest.clientServiceRequest('GET', `/Product/Records?pageNumber=${parameter.pageNumber}&pageSize=${parameter.PageSize}&WarehouseId=${parameter.WarehouseId}}`)
+
         .then(countRes => {
 
             return countRes;
