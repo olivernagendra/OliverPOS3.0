@@ -13,41 +13,38 @@ import { firebaseRegister } from "./firebaseRegisterSlice";
 import { useNavigate } from 'react-router-dom';
 import { get_locName, get_UDid, get_userName } from "../common/localSettings";
 const Register = () => {
-    const [selRegister,setSelRegister]=useState(null);
+    const [selRegister, setSelRegister] = useState(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     var registers = [];
     var self_registers = [];
     var firebase_registers = [];
-    const { status, data, error, is_success } = useSelector((state) => state.register)
 
-    //const { status_fb, data_fb, error_fb, is_success_fb } = useSelector((state) => state.firebaseRegister)
-    // console.log("status", status, "data", data, "error", error, "is_success", is_success)
+    const [respRegister, respFirebaseRegisters] = useSelector((state) => [state.register, state.firebaseRegister])
 
-    if (status === STATUSES.error) {
-        console.log(error)
+    if (respRegister.status === STATUSES.error) {
+        console.log(respRegister.error)
     }
-    if (status == STATUSES.IDLE && is_success) {
+    if (respRegister.status == STATUSES.IDLE && respRegister.is_success) {
+        const data = respRegister.data;
         registers = data && data.content && data.content.filter(a => a.IsSelfCheckout == false);
         self_registers = data && data.content && data.content.filter(a => a.IsSelfCheckout == true);
     }
 
-    var data_Fb = useSelector((state) => state.firebaseRegister.data)
-    var is_success_Fb = useSelector((state) => state.firebaseRegister.is_success)
-    var status_Fb = useSelector((state) => state.firebaseRegister.status)
-
-    if (status_Fb == STATUSES.IDLE && is_success_Fb) {
-        firebase_registers = data_Fb && data_Fb.content;
+    if (respFirebaseRegisters.status == STATUSES.IDLE && respFirebaseRegisters.is_success) {
+        firebase_registers = respFirebaseRegisters.data && respFirebaseRegisters.data.content;
     }
 
     useEffect(() => {
+        fetchData();
+    }, []);
+ 
+    const fetchData = async () => { //calling multiple api
         var loc_id = localStorage.getItem('Location');
         dispatch(register({ "id": loc_id }));
-    }, []);
-    useEffect(() => {
         dispatch(firebaseRegister());
-    }, []);
-
+  
+     }
     const handleSubmit = (item, isTakeOver = false) => {
         var arry = [];
         arry.push(item)
@@ -68,7 +65,7 @@ const Register = () => {
         navigate('/pin');
     }
 
-    if (status == STATUSES.LOADING) {
+    if (respRegister.status == STATUSES.LOADING) {
         return <div> Loading... </div>
     }
     return (
@@ -113,7 +110,7 @@ const Register = () => {
                                                 <div className="fake-button background-blue">Select</div></React.Fragment>
                                             : <React.Fragment>
                                                 <img src={AngledBracket_Right_Grey} alt="" />
-                                                <div class="fake-button background-blue">Take Over</div></React.Fragment>}
+                                                <div className="fake-button background-blue">Take Over</div></React.Fragment>}
                                     </button>
 
                                 })}
@@ -123,7 +120,7 @@ const Register = () => {
                         <div className="divider"></div>
                         <div className="button-group">
                             {self_registers.map((item, index) => {
-                                return <button  key={index}  className="option" onClick={() => handleSubmit(item)}>
+                                return <button key={index} className="option" onClick={() => handleSubmit(item)}>
                                     <div className="img-container background-violet">
                                         <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
                                     </div>
@@ -143,8 +140,8 @@ const Register = () => {
                 <div className="subwindow takeover-register">
                     <div className="subwindow-header">
                         <p>Take Over Register</p>
-                        <button className="close-subwindow" > 
-                        {/* onClick={() => toggleSubwindow()} */}
+                        <button className="close-subwindow" >
+                            {/* onClick={() => toggleSubwindow()} */}
                             <img src={X_Icon_DarkBlue} alt="" />
                         </button>
                     </div>
