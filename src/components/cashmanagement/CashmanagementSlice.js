@@ -11,7 +11,7 @@ const initialState = {
 };
 
 export const getDetails = createAsyncThunk(
-    'cashmanagement/getDetailsAPI',
+    'cashmanagementgetdetail/getDetailsAPI',
     async (parameter,{rejectWithValue}) => {   
       // const response =  getDetailsAPI(parameter);
       // // The value we return becomes the `fulfilled` action payload
@@ -97,31 +97,46 @@ export const CashmanagementSlice = createSlice({
           state.error = action.error;
           state.is_success=false;
         })
-        .addCase(getDetails.pending, (state) => {
-          state.status = STATUSES.LOADING;
-          state.data="";
-          state.error="";
-          state.is_success=false;
-        })
-        .addCase(getDetails.fulfilled, (state, action) => {       
-            state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-            state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
-            state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-            state.is_success=action.payload && action.payload.is_success==true? true: false;      
-        })
-        .addCase(getDetails.rejected, (state,action) => {
-          state.status = STATUSES.IDLE;
-          state.data="";
-          state.error = action.error;
-          state.is_success=false;
-        })
     },
   });
   
-  
-  
-  
    export const { loginPanding, loginSuccess, loginFail } = CashmanagementSlice.actions;
+
+   
+
+export const CashmanagementSecondSlice = createSlice({
+  name: 'cashmanagementgetdetail',
+  initialState,
+  reducers: { 
+   
+  },
+  extraReducers: (builder) => {    
+    builder   
+      .addCase(getDetails.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data="";
+        state.error="";
+        state.is_success=false;
+      })
+      .addCase(getDetails.fulfilled, (state, action) => {       
+          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.getdetail=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_success=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(getDetails.rejected, (state,action) => {
+        state.status = STATUSES.IDLE;
+        state.data="";
+        state.error = action.error;
+        state.is_success=false;
+      })
+  },
+});
+
+ export const {  } = CashmanagementSecondSlice.actions;
+  
+  
+  
   
   
   // // The function below is called a selector and allows us to select a value from
@@ -138,4 +153,4 @@ export const CashmanagementSlice = createSlice({
   //   }
   // };
   
-  export default CashmanagementSlice;
+  export default {CashmanagementSlice,CashmanagementSecondSlice};

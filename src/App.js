@@ -18,7 +18,11 @@ import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
 import Home from './components/homePage/Home';
+import Openregister from './components/openregister/Openregister';
 function App() {
+
+
+
   return ( <Router>
     <Routes>
      
@@ -32,6 +36,8 @@ function App() {
       <Route path="/cashdrawer" element={<Cashmanagement/>} /> 
       <Route path="/home" element={<Home/>} /> 
       <Route path="*" element={<NoPage/>} />
+      <Route path="/openregister" element={<Openregister/>} /> 
+     
 
     </Routes>
 </Router>

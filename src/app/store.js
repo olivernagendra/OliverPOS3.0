@@ -8,8 +8,9 @@ import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSl
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 import { tileSlice } from '../components/homePage/tiles/tileSlice';
-import { CashmanagementSlice } from '../components/cashmanagement/CashmanagementSlice';
+import { CashmanagementSlice ,CashmanagementSecondSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
+import {openRegisterSlice} from '../components/openregister/openRegisterSlice'
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -24,7 +25,9 @@ export const store = configureStore({
     taxsetting: taxSettingSlice.reducer,
     tile: tileSlice.reducer,
     cashmanagement: CashmanagementSlice.reducer,
-    productloader: productLoaderSlice.reducer
+    cashmanagementgetdetail: CashmanagementSecondSlice.reducer,
+    productloader: productLoaderSlice.reducer,
+    openregisterupdate:openRegisterSlice.reducer
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,
