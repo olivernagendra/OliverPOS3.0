@@ -17,7 +17,7 @@ import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
-import Home from './components/homePage/Home';
+import Dashboard from './components/dashboard/Dashboard';
 import OpenRegister from './components/OpenRegister';
 function App() {
   return (<Router>
@@ -31,7 +31,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/productloader" element={<ProductLoader />} />
       <Route path="/cashdrawer" element={<Cashmanagement />} />
-      <Route path="/home" element={<Home />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/openregister" element={<OpenRegister />} />
       <Route path="*" element={<NoPage />} />
 

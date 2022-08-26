@@ -104,7 +104,7 @@ const ProductLoader = () => {
             //redirectToURL()
             // navigate('/loginpin');
         }
-        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
+        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/dashboard';
 
         var udid = get_UDid(localStorage.getItem("UDID"));
         var reloadCount = localStorage.getItem("ReloadCount") ? localStorage.getItem("ReloadCount") : 0;
@@ -166,7 +166,7 @@ const ProductLoader = () => {
                     //console.log("ProductArray2",ProductArray.length)                        
 
                     UpdateIndexDB(udid, ProductArray, RedirectUrl);
-                    navigate('/home');
+                    navigate('/dashboard');
 
                 }
             })
@@ -180,8 +180,88 @@ const ProductLoader = () => {
                         navigate('/'); //Reload to get product
                         // navigate( '/home')
                     }, 1000)
-                    navigate('/home')
+                    navigate('/dashboard')
                 }
+            })
+    }
+    const UpdateCustomerInIndexDB = (udid, ProductArray) => {
+        
+        const dbPromise = openDB('POSDB', 1, {
+            upgrade(db) {
+                db.createObjectStore(udid);
+            },
+        });
+
+
+        const idbKeyval = {
+            async get(key) {
+                const db = await dbPromise;
+                return db.transaction(udid).objectStore(udid).get(key);
+            },
+            async set(key, val) {
+                const db = await dbPromise;
+                const tx = db.transaction(udid, 'readwrite');
+                tx.objectStore(udid).put(val, key);
+                return tx.complete;
+            },
+        };
+        // for unique array----------------------
+        const arrayUniqueByKey = [...new Map(ProductArray.map(item =>
+            [item['WPId'], item])).values()];
+        idbKeyval.set('CustomerList', arrayUniqueByKey);
+
+        
+        //------------------------------------------
+
+
+    }
+    const getCustomerList = (pn,  pl, trc) => {
+        var udid = get_UDid(localStorage.getItem("UDID"));
+        var pageNumber = pn;
+        var PageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
+        var CustomerArray = pl;
+        var TotalRecord = trc;
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                "access-control-allow-origin": "*",
+                "access-control-allow-credentials": "true",
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa(sessionStorage.getItem("AUTH_KEY")),
+            }
+            , mode: 'cors'
+        };
+        var isDemoUser = localStorage.getItem('demoUser') == 'true' && localStorage.getItem('DemoGuid');
+        if (isDemoUser == true) {
+            requestOptions.headers['demoauth'] = localStorage.getItem('DemoGuid') && localStorage.getItem('DemoGuid')
+        }
+        if (TotalRecord == 0 ) {
+            UpdateCustomerInIndexDB(udid, CustomerArray);
+        }
+        // call firstTime------------------
+        //  call common service
+        fetch(`${Config.key.OP_API_URL}/v1/customers/GetPage?pageSize=${PageSize}&pageNumber=${pageNumber}`, requestOptions)
+            .then(response => {
+                if (response.ok) { return response.json(); }
+                throw new Error(response.statusText)  // throw an error if there's something wrong with the response
+            })
+            .then(function handleData(data) {
+                TotalRecord = data.content.Records.length;
+                CustomerArray = [...new Set([...CustomerArray, ...data.content.Records])];
+                //check dataExist into indexdb-------------------------
+                if (isDemoUser == false && (TotalRecord >= PageSize) ) {
+                    pageNumber++;
+                    getCustomerList(pageNumber, CustomerArray, TotalRecord);
+                }
+                else {
+                    console.log("--------------all customer records are done-----------"+CustomerArray.length);
+                    UpdateCustomerInIndexDB(udid, CustomerArray);
+
+                }
+            })
+            .catch(function handleError(error) {
+                console.error('Console.save: No data ' + error + " " + JSON.stringify(error));
             })
     }
 
@@ -217,7 +297,7 @@ const ProductLoader = () => {
 
     const fetchData = async () => { //calling multiple api
         var isDemoUser = localStorage.getItem('demoUser') == 'true' && localStorage.getItem('DemoGuid');
-        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
+        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/dashboard';
         var udid = get_UDid(localStorage.getItem("UDID"));
         var pcount = localStorage.getItem('productcount');
         if (isDemoUser == false) {
@@ -237,6 +317,7 @@ const ProductLoader = () => {
         console.log("--------------Product list request First time--------" + new Date());
 
         getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);
+        getCustomerList(1,  [], 0);
         //------------------------------------------------- 
     }
 

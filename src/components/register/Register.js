@@ -12,6 +12,7 @@ import { register } from "./registerSlice";
 import { firebaseRegister } from "./firebaseRegisterSlice";
 import { useNavigate } from 'react-router-dom';
 import { get_locName, get_UDid, get_userName } from "../common/localSettings";
+import { toggleSubwindow } from "../common/EventFunctions";
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
     const dispatch = useDispatch();
@@ -58,8 +59,8 @@ const Register = () => {
         setSelRegister(item);
         if (isTakeOver == false)
             navigate('/pin');
-        // else
-        //     toggleSubwindow("takeover-register");
+        else
+            toggleSubwindow("takeover-register");
     }
     const takeOver = () => {
         navigate('/pin');

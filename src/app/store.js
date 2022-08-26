@@ -7,12 +7,13 @@ import registerSlice from '../components/register/registerSlice';
 import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSlice';
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
-import { tileSlice } from '../components/homePage/tiles/tileSlice';
+import { tileSlice } from '../components/dashboard/tiles/tileSlice';
 import { CashmanagementSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
+import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -30,8 +31,8 @@ export const store = configureStore({
     productloader: productLoaderSlice.reducer,
     productcount: productCountSlice.reducer,
     attribute: attributeSlice.reducer,
-    category: categorySlice.reducer
-
+    category: categorySlice.reducer,
+    customer: customerSlice.reducer
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,
