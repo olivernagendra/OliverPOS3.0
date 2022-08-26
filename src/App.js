@@ -18,7 +18,21 @@ import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
 import Home from './components/homePage/Home';
+import OpenRegister from './components/openregister/OpenRegister';
+import { indexDatabase } from './components/indexDb';
+import { initDB } from "react-indexed-db";
+import { DBConfig } from "./DBConfig";
+
+initDB(DBConfig);
 function App() {
+
+  // const customerData = [
+  //   { WPID: "111-11-1111", name: "Pranav", age: 10, email: "pranav@company.com" },
+  //   { WPID: "222-22-2222", name: "nagendra", age: 24, email: "nagendra@home.org" }
+  // ];
+  // { WPID: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
+  //   { WPID: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
+  //indexDatabase("2323223", customerData);
   return (<Router>
 
     <Routes>

@@ -11,110 +11,67 @@ import STATUSES from '../../constants/apiStatus';
 import { productCount } from './productCountSlice';
 import { productLoader } from './loadProductSlice';
 import { useNavigate } from 'react-router-dom';
+import { useIndexedDB } from 'react-indexed-db';
 
 //import LoaderOnboarding from '../onboarding/components/LoaderOnboarding'
 const ProductLoader = () => {
+    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
+
     const navigate = useNavigate();
     const dispatch = useDispatch()
     const [loadingProducts, setLoadingProducts] = useState(0)
     const [loadPerc, setLoadPerc] = useState(0)
+    const [productLoading, setProductLoading] = useState(false)
 
-
-    const UpdateIndexDB = (udid, ProductArray, RedirectUrl) => {
-        var TotaltotalRecord = localStorage.getItem('productcount');
-        var _perc = 0;
-        if (ProductArray && ProductArray.length > 0 && TotaltotalRecord && TotaltotalRecord > 0) {
-            _perc = ((ProductArray.length * 100) / TotaltotalRecord).toFixed(0);
-        }
-        // this.setState({ loadPerc: _perc });    
-        // const dbPromise = openDB("ProductDB", 1, {
-        //     upgrade(db, oldVersion, newVersion, transaction) {
-        //         db.createObjectStore(udid);
-        //     },
-        //     blocked() {
-        //         // …
-        //     },
-        //     blocking() {
-        //         // …
-        //     },
-        //     terminated() {
-        //         // …
-        //     },
-        // });
-        const dbPromise = openDB('POSDB', 1, {
-            upgrade(db) {
-                db.createObjectStore(udid);
-            },
-        });
-
-
-        const idbKeyval = {
-            async get(key) {
-                const db = await dbPromise;
-                return db.transaction(udid).objectStore(udid).get(key);
-            },
-            async set(key, val) {
-                const db = await dbPromise;
-                const tx = db.transaction(udid, 'readwrite');
-                tx.objectStore(udid).put(val, key);
-                return tx.complete;
-            },
-        };
-        // for unique array----------------------
-        const arrayUniqueByKey = [...new Map(ProductArray.map(item =>
-            [item['WPID'], item])).values()];
-        idbKeyval.set('ProductList', arrayUniqueByKey);
-
-        idbKeyval.get('ProductList').then(val => {
-            if (ProductArray.length == 0 || !val || val.length == 0 || val == null || val == "") {
-                console.log("wait...");
-            } else {
-                if (ActiveUser.key.isSelfcheckout == true) {
-                    // if(isMobileOnly == true){
-                    //     navigate('/selfcheckout')
-                    // }else{
-                    //  navigate( '/selfcheckout');
-                    //}
-
+    //........Test--------------------------
+    const saveDataIntoIndexDB = (ProductArray) => {
+        ProductArray && ProductArray.length > 0 && ProductArray.map((item) => {
+            add(item).then(
+                (key) => {
+                    console.log("ID Generated: ", key);
+                    //   let newState = Object.assign({}, state);
+                    //   newState.id = key;
+                    //   setState(newState);
+                    //   history.goBack();
+                },
+                (error) => {
+                    console.log(error);
                 }
-                else {
-                    // if(isMobileOnly == true){
-                    //     navigate('/home')
-                    // }else{
-                    //     navigate( '/home');
-                    // }
-                }
-            }
+            )
         })
 
-        //------------------------------------------
-
+        // var _state = { "WPID": 101, "name": "nagendra", "age": 32 }
 
     }
-    const getProductList = (pn, pz, pl, trc) => {
-        if (trc != 0) {
-            var _perc = ((pl.length * 100) / trc).toFixed(0);
-            setLoadingProducts("Synched " + pl.length + " Products, Out of " + trc + "");
+    //........................
+    const displayProductLoadStatus = (total, Synched) => {
+        if (total != 0) {
+            var _perc = ((Synched * 100) / total).toFixed(0);
+            setLoadingProducts("Synched " + Synched + " Products, Out of " + total + "");
             setLoadPerc(_perc);
-            // this.setState({ loadingProducts: "Synched " + pl.length + " Products, Out of " + trc + "",loadPerc: _perc });          
         }
+    }
+    const getProductList = (pn, pz, totalSync) => {
+        var totalRecord = localStorage.getItem("productcount") ? localStorage.getItem("productcount") : 0;
+        displayProductLoadStatus(totalRecord, totalSync)
 
-        var self = this;
-        if (!localStorage.getItem('user') || !sessionStorage.getItem("issuccess")) {
-            //redirectToURL()
-            // navigate('/loginpin');
-        }
+
+        //if (!localStorage.getItem('user') || !sessionStorage.getItem("issuccess")) {
+        //redirectToURL()
+        // navigate('/loginpin');
+        //}
         var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
 
         var udid = get_UDid(localStorage.getItem("UDID"));
-        var reloadCount = localStorage.getItem("ReloadCount") ? localStorage.getItem("ReloadCount") : 0;
+
         var WarehouseId = localStorage.getItem("WarehouseId") ? parseInt(localStorage.getItem("WarehouseId")) : 0;
 
         var pageNumber = pn;
         var pageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
         var PageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
-        var ProductArray = pl;
-        var TotaltotalRecord = trc;
+
+        //var ProductArray = pl;       
+        var totalProductSync = parseInt(totalSync);
         const requestOptions = {
             method: 'GET',
             headers: {
@@ -130,15 +87,12 @@ const ProductLoader = () => {
         if (isDemoUser == true) {
             requestOptions.headers['demoauth'] = localStorage.getItem('DemoGuid') && localStorage.getItem('DemoGuid')
         }
-        if (TotaltotalRecord == 0 && isDemoUser == false) {
+        if (totalRecord == 0 && isDemoUser == false) {
             // navigate( RedirectUrl) ;  
-            UpdateIndexDB(udid, ProductArray, RedirectUrl);
+            console.log("test4")
+            // UpdateIndexDB(udid, ProductArray, RedirectUrl);
         }
-        // call firstTime------------------
-        //  call common service
-        //  serverRequest.clientServiceRequest('GET', `/ShopData/GetProductPageUpdatedWithCount?udid=${udid}&pageNumber=${pageNumber}&pageSize=${PageSize}`, '')
-        //dispatch(productLoader({ pageNumber, pageSize, WarehouseId }))
-        //console.log("resData", resData)
+
         fetch(`${Config.key.OP_API_URL}/v1/Product/Records?pageNumber=${pageNumber}&pageSize=${PageSize}&WarehouseId=${WarehouseId}`, requestOptions)
             .then(response => {
                 if (response.ok) { return response.json(); }
@@ -146,27 +100,34 @@ const ProductLoader = () => {
             })
             .then(function handleData(data) {
                 var reloadCount = localStorage.getItem("ReloadCount");
-                ProductArray = [...new Set([...ProductArray, ...data.content.Records])];
-
+                //ProductArray = [...new Set([...ProductArray, ...data.content.Records])];
+                saveDataIntoIndexDB(data.content.Records)
                 //check dataExist into indexdb-------------------------
                 var isExist = false;
 
-                console.log("--------------Total Products count--------" + TotaltotalRecord);
+                console.log("--------------Total Products count--------" + totalRecord);
 
-                console.log("Test", TotaltotalRecord, ProductArray.length)
-                if (isDemoUser == false && (TotaltotalRecord > ProductArray.length) && ((TotaltotalRecord != ProductArray.length) || pageNumber <= (TotaltotalRecord / PageSize * 1.0))) {
+                totalProductSync += parseInt(data.content.Records.length);
+
+                displayProductLoadStatus(totalRecord, totalProductSync)
+
+                if (isDemoUser == false && (totalRecord > totalProductSync) && ((totalRecord != totalProductSync) || pageNumber <= (totalRecord / PageSize * 1.0))) {
                     console.log("--------------Product list request time--------" + new Date());
                     // self.UpdateIndexDB(udid,ProductArray);
                     pageNumber++;
-                    //console.log("ProductArray1",ProductArray.length)                   
-                    getProductList(pageNumber, PageSize, ProductArray, TotaltotalRecord);
+                    //console.log("ProductArray1",ProductArray.length)     
+                    // console.log("test5")
+                    getProductList(pageNumber, PageSize, parseInt(totalProductSync));
+                    //console.log("test6")
                 }
                 else {
                     console.log("--------------all records are done-----------");
                     //console.log("ProductArray2",ProductArray.length)                        
 
-                    UpdateIndexDB(udid, ProductArray, RedirectUrl);
-                    navigate('/home');
+                    // UpdateIndexDB(udid, ProductArray, RedirectUrl);
+                    setTimeout(() => {
+                        navigate('/home');
+                    }, 100);
 
                 }
             })
@@ -180,18 +141,15 @@ const ProductLoader = () => {
                         navigate('/'); //Reload to get product
                         // navigate( '/home')
                     }, 1000)
-                    navigate('/home')
+                    // navigate('/home')
                 }
             })
     }
 
 
-    //Getting the receipt and tax setting--------------------    
-    // const [resProductLoad] = useSelector((state) => [state.productloader])
-    // console.log("resProductLoad", resProductLoad)
+    //Getting the receipt and tax setting--------------------        
 
     const [respReceiptSetting, respTaxSetting, resProlductCount] = useSelector((state) => [state.receiptsetting, state.taxsetting, state.productcount])
-    // console.log("respReceiptSetting", respTaxSetting)
 
     if (respReceiptSetting && respReceiptSetting.status == STATUSES.IDLE && respReceiptSetting.is_success) {
         localStorage.setItem('orderreciept', JSON.stringify(respReceiptSetting.data.content))
@@ -203,6 +161,7 @@ const ProductLoader = () => {
         localStorage.setItem('productcount', JSON.stringify(resProlductCount.data.content.count))
 
     }
+
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
@@ -213,76 +172,25 @@ const ProductLoader = () => {
         }
     }, []);
 
-
+    let useApiCancelled = false;
+    useEffect(() => {
+        if (useApiCancelled == false) {
+            getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, 0);
+        }
+        return () => {
+            useApiCancelled = true;
+        }
+    }, [])
 
     const fetchData = async () => { //calling multiple api
-        var isDemoUser = localStorage.getItem('demoUser') == 'true' && localStorage.getItem('DemoGuid');
-        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
+
         var udid = get_UDid(localStorage.getItem("UDID"));
-        var pcount = localStorage.getItem('productcount');
-        if (isDemoUser == false) {
-            if (pcount == null || typeof (pcount) == 'undefined' || pcount == 0) {
-                //navigate(RedirectUrl);
-            }
-            UpdateIndexDB(udid, [], RedirectUrl);
-        }
-
-
         dispatch(productCount(udid));
         dispatch(receiptSetting());
         dispatch(taxSetting());
 
-        //------------------------------------------------
-        localStorage.setItem("ProductLoad", "true");
-        console.log("--------------Product list request First time--------" + new Date());
-
-        getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);
-        //------------------------------------------------- 
     }
 
-
-    // if (respReceiptSetting && respReceiptSetting.is_success
-    //     && respTaxSetting && respTaxSetting.is_success
-    //     && resProlductCount && resProlductCount.is_success) {
-    //To Clear indexDB----------------------------
-
-
-    //}
-
-
-    // const createIndexDB=(udid, ProductArray, RedirectUrl)=>{
-    //     (async () => {
-    //         if (!('indexedDB' in window)) {
-    //             console.warn('IndexedDB not supported')
-    //             return
-    //           }
-
-    //           const dbName = 'POSdb'
-    //           const storeName = 'product_'+udid
-    //           const version = 1 //versions start at 1
-
-    //           //delete Database
-    //           await deleteDB(dbName)
-
-
-    //           const db = await openDB(dbName, version, {
-    //             upgrade(db, oldVersion, newVersion, transaction) {
-    //               const store = db.createObjectStore(storeName,{ autoIncrement: true })   //  "id"         
-    //             }
-    //           })
-    //           const tx = db.transaction(storeName, 'readwrite')
-    //           const store = await tx.objectStore(storeName)
-
-    //           const val = 'hey!'
-    //           const key = 'Hello again'
-    //           ProductArray.forEach(element => {
-    //              const value =  store.put(element)
-    //           });
-
-    //           await tx.done
-
-    //         })()
-    // }
 
 
     //  this.getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);

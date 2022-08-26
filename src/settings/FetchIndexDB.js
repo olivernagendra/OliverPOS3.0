@@ -24,10 +24,10 @@ export const FetchIndexDB = {
 
 export default FetchIndexDB;
 
-var udid = get_UDid('UDID');
-const dbPromise = openDB('POSDB', 1, upgradeDB => {
-    upgradeDB.createObjectStore(udid);
-});
+// var udid = get_UDid('UDID');
+// const dbPromise = openDB('POSDB', 1, upgradeDB => {
+//     upgradeDB.createObjectStore(udid);
+// });
 
 // const idbKeyval = {
 //     async get(key) {
