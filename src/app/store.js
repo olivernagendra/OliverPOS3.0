@@ -8,11 +8,13 @@ import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSl
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 import { tileSlice } from '../components/homePage/tiles/tileSlice';
-import { CashmanagementSlice } from '../components/cashmanagement/CashmanagementSlice';
+import { CashmanagementSlice, CashmanagementSecondSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
+import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
+
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -30,7 +32,10 @@ export const store = configureStore({
     productloader: productLoaderSlice.reducer,
     productcount: productCountSlice.reducer,
     attribute: attributeSlice.reducer,
-    category: categorySlice.reducer
+    category: categorySlice.reducer,
+    cashmanagementgetdetail: CashmanagementSecondSlice.reducer,
+    productloader: productLoaderSlice.reducer,
+    openregisterupdate: openRegisterSlice.reducer
 
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,

@@ -18,9 +18,9 @@ import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
 import Home from './components/homePage/Home';
-import OpenRegister from './components/OpenRegister';
 function App() {
   return (<Router>
+
     <Routes>
 
       <Route path="/" element={<Login />} />
@@ -34,15 +34,9 @@ function App() {
       <Route path="/home" element={<Home />} />
       <Route path="/openregister" element={<OpenRegister />} />
       <Route path="*" element={<NoPage />} />
-
     </Routes>
   </Router>
-    // <div className="App">
-    // <header className="App-header"> 
 
-
-    //   </header> 
-    // </div>
   );
 }
 
