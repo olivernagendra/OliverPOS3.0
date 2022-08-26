@@ -4,13 +4,15 @@ import LogOut_Icon_White from '../images/svg/LogOut-Icon-White.svg'
 import Closed_Sign_White from '../images/svg/Closed-Sign-White.svg'
 import PinPad from "./PinPad"
 import { get_locName, get_regName, get_userName } from "./common/localSettings"
-import { openRegisterFn } from "./common/EventFunctions"
+
 import { useNavigate } from 'react-router-dom';
+import { initOpenRegisterFn } from "./common/commonFunctions/openRegisterFn"
+
 
 const OpenRegister = () => {
     const navigate = useNavigate();
     useEffect(() => {
-        openRegisterFn();
+       initOpenRegisterFn();
     }, []);
     return <React.Fragment><div className="open-register-wrapper">
         <button id="cancel">

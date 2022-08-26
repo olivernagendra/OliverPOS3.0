@@ -11,6 +11,9 @@ import { tileSlice } from '../components/homePage/tiles/tileSlice';
 import { CashmanagementSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
+import { categorySlice } from '../components/common/commonAPIs/categorySlice';
+import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
+
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -25,7 +28,10 @@ export const store = configureStore({
     tile: tileSlice.reducer,
     cashmanagement: CashmanagementSlice.reducer,
     productloader: productLoaderSlice.reducer,
-    productcount: productCountSlice.reducer
+    productcount: productCountSlice.reducer,
+    attribute: attributeSlice.reducer,
+    category: categorySlice.reducer
+
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,

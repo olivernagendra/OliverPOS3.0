@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import AddTile from "./AddTile";
 import AdvancedSearch from "./AdvancedSearch";
 import CartDiscount from "./CartDiscount";
@@ -11,19 +12,38 @@ import MsgPopup_UpgradeToUnlock from "./MsgPopup_UpgradeToUnlock";
 import MsgPopup_EndSession from "./MsgPopup_EndSession";
 import LinkLauncher from "./LinkLauncher";
 import AppLauncher from "./AppLauncher";
-import { initFn } from "../common/EventFunctions";
+
 import LeftNavBar from "../common/LeftNavBar";
 import HeadereBar from "./HeadereBar";
 import IframeWindow from "./IframeWindow";
 import UserInfo from "./UserInfo";
 import CartList from "./CartList";
 import TileList from "./tiles/TileList";
+import { initHomeFn } from "../common/commonFunctions/homeFn";
+import { attribute } from "../common/commonAPIs/attributeSlice";
+import { category } from "../common/commonAPIs/categorySlice";
+import { tile } from './tiles/tileSlice';
 const Home = () => {
+    const dispatch = useDispatch();
+    useEffect(() => {
+        fetchData();
+    }, []);
+ 
+    const fetchData = async () => { //calling multiple api
+        dispatch(attribute());
+        dispatch(category());
+        var regId = localStorage.getItem('register');
+        if (typeof regId != "undefined" && regId != null) {
+            dispatch(tile({ "id": regId }));
+        }
+     }
+
+
     // useEffect(() => {
     //     initFn();
     // });
     setTimeout(() => {
-        initFn();
+        initHomeFn ();
     }, 1000);
     // useLayoutEffect(() => {
     //     //Open Mobile Cart Button
