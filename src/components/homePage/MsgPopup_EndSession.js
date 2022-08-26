@@ -1,6 +1,8 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import { useNavigate } from 'react-router-dom';
 const MsgPopup_EndSession = () => {
+    const navigate = useNavigate();
     return (
         <div className="subwindow end-session">
         <div className="subwindow-header">
@@ -22,7 +24,7 @@ const MsgPopup_EndSession = () => {
                 brought back to the User ID log-in <br />
                 screen.
             </p>
-            <button id="logoutButton">End Session</button>
+            <button id="logoutButton" onClick={()=>navigate('/pin')}>End Session</button>
             <div className="auto-margin-bottom"></div>
         </div>
     </div>)

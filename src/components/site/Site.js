@@ -25,7 +25,7 @@ const Site = () => {
     console.log("siteData", siteData)
     return <div className="choose-wrapper">
         <div className="choose-header">
-            <button id="backButton">
+            <button id="backButton" onClick={()=>navigate('/')}>
                 <img src={AngledBracket_Left_Blue} alt="" />
                 Logout
             </button>

@@ -18,7 +18,6 @@ import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
 import Home from './components/homePage/Home';
-import Openregister from './components/openregister/Openregister';
 function App() {
 
 
@@ -35,6 +34,7 @@ function App() {
       <Route path="/prodcutloader" element={<ProductLoader/>} /> 
       <Route path="/cashdrawer" element={<Cashmanagement/>} /> 
       <Route path="/home" element={<Home/>} /> 
+      <Route path="/openregister" element={<OpenRegister/>} /> 
       <Route path="*" element={<NoPage/>} />
       <Route path="/openregister" element={<Openregister/>} /> 
      
