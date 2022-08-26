@@ -8,7 +8,10 @@ import Transactions_Icon_White from '../../images/svg/Transactions-Icon-White.sv
 import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
 import { useRoutes } from "react-router-dom";
 import FetchIndexDB from "../../settings/FetchIndexDB";
+import { useIndexedDB } from 'react-indexed-db';
 const AdvancedSearch = () => {
+    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
+
     const [allProductList, setAllProductList] = useState([])
     const [totalRecords, setTotalRecords] = useState(0)
     const [parentProductList, setParentProductList] = useState([])
@@ -17,30 +20,38 @@ const AdvancedSearch = () => {
 
     const getProductFromIDB = () => {
         var allData = [];
-        var idbKeyval = FetchIndexDB.fetchIndexDb();
-        idbKeyval.get('ProductList').then(val => {
-            if (!val || val.length == 0 || val == null || val == "") {
-                setAllProductList([]);
-            }
-            else {
-                setAllProductList(val); //getTaxAllProduct(val);
-                val.map(item => {
-                    if (item.ParentId == 0 && (item.ManagingStock == false || (item.ManagingStock == true && item.StockQuantity > -1))) {
-                        allData.push(item);
-                    }
-                })
 
-                if (allData.length == 0) {
-                }
-                setParentProductList(allData)
-                setTotalRecords(allData ? allData.length : 0);
-                //For temporary
-                setProduct_List(allData ? allData : []);
-
-                // this.loadingData();
-                // this.setState({ isLoading: false });
-            }
+        getAll().then((rows) => {
+            setAllProductList(rows)
+            setParentProductList(rows)
+            setTotalRecords(rows ? rows.length : 0);
+            //For temporary
+            setProduct_List(rows ? rows : []);
         });
+        // var idbKeyval = FetchIndexDB.fetchIndexDb();
+        // idbKeyval.get('ProductList').then(val => {
+        //     if (!val || val.length == 0 || val == null || val == "") {
+        //         setAllProductList([]);
+        //     }
+        //     else {
+        //         setAllProductList(val); //getTaxAllProduct(val);
+        //         val.map(item => {
+        //             if (item.ParentId == 0 && (item.ManagingStock == false || (item.ManagingStock == true && item.StockQuantity > -1))) {
+        //                 allData.push(item);
+        //             }
+        //         })
+
+        //         if (allData.length == 0) {
+        //         }
+        //         setParentProductList(allData)
+        //         setTotalRecords(allData ? allData.length : 0);
+        //         //For temporary
+        //         setProduct_List(allData ? allData : []);
+
+        //         // this.loadingData();
+        //         // this.setState({ isLoading: false });
+        //     }
+        // });
 
     }
     let useCancelled = false;
