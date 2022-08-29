@@ -17,11 +17,12 @@ import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
-import Home from './components/homePage/Home';
 import OpenRegister from './components/openregister/OpenRegister';
-import { indexDatabase } from './components/indexDb';
 import { initDB } from "react-indexed-db";
 import { DBConfig } from "./DBConfig";
+import Dashboard from './components/dashboard/Dashboard';
+import OpenRegister from './components/OpenRegister';
+
 
 initDB(DBConfig);
 function App() {
@@ -45,7 +46,7 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/productloader" element={<ProductLoader />} />
       <Route path="/cashdrawer" element={<Cashmanagement />} />
-      <Route path="/home" element={<Home />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/openregister" element={<OpenRegister />} />
       <Route path="*" element={<NoPage />} />
     </Routes>

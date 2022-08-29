@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import CircledPlus_Icon_Border from '../../../images/svg/CircledPlus-Icon-Border.svg';
 import STATUSES from "../../../constants/apiStatus";
+import { AddItemType } from "../../common/EventFunctions";
 
 // var AllProduct = [];
 // var ParentProductList = [];
@@ -25,12 +26,7 @@ const TileList = () => {
     // var favArrayList = [];
     // const dispatch = useDispatch();
 
-    const AddTileType = (arr, n) => {
-        const newArry = arr.map((item) => {
-            return { ...item, type: n };
-        });
-        return newArry
-    }
+   
     // const getSubAttribute = (item, id) => {
 
 
@@ -48,14 +44,14 @@ const TileList = () => {
             })
         }
         if (subAtt && subAtt.SubAttributes && subAtt.SubAttributes.length > 0) {
-            var _SubAttributes = AddTileType(subAtt.SubAttributes, 'sub-attribute');
+            var _SubAttributes = AddItemType(subAtt.SubAttributes, 'sub-attribute');
             _SubAttributes = _SubAttributes && _SubAttributes.map(element => { if (element["attribute_slug"] = element.Description) return element });
             // favArrayList=_SubAttributes;
             if (_SubAttributes && _SubAttributes.length > 0)
                 setfavArrayList(_SubAttributes);
             else
                 setfavArrayList([]);
-            console.log("---att -> _SubAttributes----" + JSON.stringify(_SubAttributes))
+            // console.log("---att -> _SubAttributes----" + JSON.stringify(_SubAttributes))
         }
         else
             setfavArrayList([]);
@@ -64,9 +60,15 @@ const TileList = () => {
 
     const filterProductForSubAttribute = (item) => {
         if (item.SubAttributes && item.SubAttributes.length > 0) {
-            var _SubAttributes = AddTileType(item.SubAttributes, 'sub-attribute');
-            console.log("---sub att -> _SubAttributes----" + JSON.stringify(_SubAttributes))
+            var _SubAttributes = AddItemType(item.SubAttributes, 'sub-attribute');
+            if (_SubAttributes && _SubAttributes.length > 0)
+                setfavArrayList(_SubAttributes);
+            else
+                setfavArrayList([]);
+            // console.log("---sub att -> _SubAttributes----" + JSON.stringify(_SubAttributes))
         }
+        else
+            setfavArrayList([]);
         productDataSearch(item, 3, item.parent_attribute ? item.parent_attribute.replace("pa_", "") : '');
     }
 
@@ -81,14 +83,14 @@ const TileList = () => {
         }
 
         if (subCat && subCat.Subcategories && subCat.Subcategories.length > 0) {
-            var _Subcategories = AddTileType(subCat.Subcategories, 'sub-category');
+            var _Subcategories = AddItemType(subCat.Subcategories, 'sub-category');
             // favArrayList=_Subcategories;
             _Subcategories = _Subcategories.map(element => { if (element["name"] = element.Value) return element });
             if (_Subcategories && _Subcategories.length > 0)
                 setfavArrayList(_Subcategories);
             else
                 setfavArrayList([]);
-            console.log("---cat -> _Subcategories----" + JSON.stringify(_Subcategories))
+            // console.log("---cat -> _Subcategories----" + JSON.stringify(_Subcategories))
         }
         else
             setfavArrayList([]);
@@ -97,8 +99,8 @@ const TileList = () => {
 
     const filterProductForSubCateGory = (item) => {
         if (item.Subcategories && item.Subcategories.length > 0) {
-            var _Subcategories = AddTileType(item.Subcategories, 'sub-category');
-            console.log("---subcat -> _Subcategories----" + JSON.stringify(_Subcategories))
+            var _Subcategories = AddItemType(item.Subcategories, 'sub-category');
+            // console.log("---subcat -> _Subcategories----" + JSON.stringify(_Subcategories))
 
             if (_Subcategories && _Subcategories.length > 0)
                 setfavArrayList(_Subcategories);
@@ -108,7 +110,7 @@ const TileList = () => {
         }
         else
             setfavArrayList([]);
-        productDataSearch(item.category_slug?item.category_slug:item.Code, 2)
+        productDataSearch(item.category_slug ? item.category_slug : item.Code, 2)
     }
     var _SubCategory = [];
     const retrunItrateLoop = (found, filterCategoryCode) => {
@@ -134,7 +136,8 @@ const TileList = () => {
     }
 
     const productDataSearch = (item1, index, parent) => {
-        console.log("---clicked tiles type--" + item1);
+        console.log("---clicked tiles type--" +JSON.stringify(item1) );
+        console.log("---clicked tiles index--" +index);
         setfiltered([]);
         var _filtered = [];
         // const { AllProduct, ParentProductList } = this.state;
@@ -220,7 +223,7 @@ const TileList = () => {
 
             var _categoryList = [];
             if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
-                var _categoryList = respCategory.data.content;
+                 _categoryList = respCategory.data.content;
                 setcategoryList(_categoryList)
 
             }
@@ -228,7 +231,7 @@ const TileList = () => {
             if (_categoryList) {
                 var category_list = _categoryList;
                 var found;
-                var setSubCategory = localStorage.getItem("setSubCategory") ? JSON.parse(localStorage.getItem("setSubCategory")) : [];
+                var setSubCategory =_SubCategory;// localStorage.getItem("setSubCategory") ? JSON.parse(localStorage.getItem("setSubCategory")) : [];
                 if (category_list && category_list !== undefined && category_list.length > 0) {
                     found = category_list.find(item => value && item.Code && item.Code.replace(/-/g, "").toLowerCase() === value.replace(/-/g, "").toLowerCase());
                     if (!found && setSubCategory) {
@@ -333,7 +336,7 @@ const TileList = () => {
 
     }
     const filterProductByTile = (type, item, parent) => {
-        // if(type!=="product")
+        if(type!=="product")
         fillCategorySelection(item)
         //this.setState({ pageNumber: 0 })
         switch (type) {
@@ -378,11 +381,11 @@ const TileList = () => {
         var FavCategory = favTiles.FavCategory;
         var FavSubCategory = favTiles.FavSubCategory;
 
-        FavProduct = AddTileType(favTiles.FavProduct, 'product');
-        FavAttribute = AddTileType(favTiles.FavAttribute, 'attribute');
-        FavSubAttribute = AddTileType(favTiles.FavSubAttribute, 'sub-attribute');
-        FavCategory = AddTileType(favTiles.FavCategory, 'category');
-        FavSubCategory = AddTileType(favTiles.FavSubCategory, 'sub-category');
+        FavProduct = AddItemType(favTiles.FavProduct, 'product');
+        FavAttribute = AddItemType(favTiles.FavAttribute, 'attribute');
+        FavSubAttribute = AddItemType(favTiles.FavSubAttribute, 'sub-attribute');
+        FavCategory = AddItemType(favTiles.FavCategory, 'category');
+        FavSubCategory = AddItemType(favTiles.FavSubCategory, 'sub-category');
 
         _favArrayList = [...FavProduct, ...FavAttribute, ...FavSubAttribute, ...FavCategory, ...FavSubCategory];
         _favArrayList = [..._favArrayList].sort((a, b) => a.Order - b.Order);
@@ -468,13 +471,14 @@ const TileList = () => {
             // catList.splice(-1)
             if (catList.length > 0) {
                 tempItem = catList.slice(0, index + 1);
+                filterProductByTile(item.type, item);
                 //filterProductByTile(tempItem,catList.length==1?"category":"sub-category" );
-                if (item.hasOwnProperty("id")) {
-                    filterProductByTile(item, catList.length == 1 ? "category" : "sub-category");
-                }
-                else if (item.hasOwnProperty("Id")) {
-                    filterProductByTile(item, catList.length == 1 ? "attribute" : "sub-attribute");
-                }
+                // if (item.hasOwnProperty("id")) {
+                //     filterProductByTile(item, catList.length == 1 ? "category" : "sub-category");
+                // }
+                // else if (item.hasOwnProperty("Id")) {
+                //     filterProductByTile(item, catList.length == 1 ? "attribute" : "sub-attribute");
+                // }
             }
             else {
                 //this.props.tileFilterData(null, "product", null)
@@ -488,20 +492,20 @@ const TileList = () => {
         showCategorySelection();
     }
     const showCategorySelection = () => {
-        var displayCat = "";
+        //var displayCat = "";
         var _cat = [];
         var newStatuses = [];
         if (cat_breadcrumb && cat_breadcrumb.length > 0) {
-            var _isCat = 0;
+            // var _isCat = 0;
             _cat = cat_breadcrumb.map(cat => {
-                _isCat++;
-                displayCat += cat.Value + " > "
-                return <button onClick={() => BreadCumCategorySelection(cat)}>{cat.Value && cat.Value.replace("&amp;", "&") + " > "}</button>
+                // _isCat++;
+                //displayCat += cat.Value?cat.Value:cat.attribute_code + " > "
+                return <button onClick={() => BreadCumCategorySelection(cat)}>{(cat.Value ? cat.Value.replace("&amp;", "&"): cat.attribute_slug?cat.attribute_slug.replace("&amp;", "&"):cat.name?cat.name.replace("&amp;", "&"):'') + " > "}</button>
             })
-            newStatuses = [<button onClick={() => goMainMenu()}>{"Main Menu > "}</button>, ..._cat]
-            console.log(newStatuses)
+            newStatuses = [<button onClick={() => goMainMenu()}>{"All Categories > "}</button>, ..._cat]
+            // console.log(newStatuses)
         }
-        displayCat = displayCat != "" ? displayCat.replace("&amp;", "&") : displayCat;
+        //displayCat = displayCat != "" ? displayCat.replace("&amp;", "&") : displayCat;
         return newStatuses;
     }
     const goMainMenu = () => {
@@ -510,17 +514,18 @@ const TileList = () => {
 
         showCategorySelection();
         fillFavourite();
+        setfiltered([]);
         // this.props.tileFilterData(null, "product", null);
 
     }
 
     return (
         <div className="products">
-            {/* <div className="mod-product">
+            <div className="mod-product">
                 <div className="category-row">
-                    {showCategorySelection()} 
+                    {showCategorySelection()}
                 </div>
-            </div> */}
+            </div>
 
             {
                 favArrayList && favArrayList.map((item, index) => {
@@ -547,7 +552,7 @@ const TileList = () => {
                         case "sub-category":
                             return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)}>
                                 <p>
-                                    {item.name?item.name:item.Value}
+                                    {item.name ? item.name : item.Value}
                                 </p>
                             </button>
                         default:
@@ -557,7 +562,7 @@ const TileList = () => {
             }
             {
                 filtered && filtered.map((item, index) => {
-                    return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} >
+                    return <button className="product" key={index} /*onClick={() => filterProductByTile(item.type, item, null)}*/ >
                         <div className="body">
                             <img src={item.ProductImage} alt="" />
                         </div>

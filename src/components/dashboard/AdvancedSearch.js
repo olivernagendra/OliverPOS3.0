@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useSelector } from 'react-redux';
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
 import down_angled_bracket from '../../images/svg/down-angled-bracket.svg';
 import BlueDot from '../../images/svg/BlueDot.svg';
@@ -17,10 +18,11 @@ const AdvancedSearch = () => {
     const [parentProductList, setParentProductList] = useState([])
     const [product_List, setProduct_List] = useState([])
 
+    const [filtered, setfiltered] = useState([]);
+    const [allCustomerList, setAllCustomerList] = useState([])
 
     const getProductFromIDB = () => {
         var allData = [];
-
         getAll().then((rows) => {
             setAllProductList(rows)
             setParentProductList(rows)
@@ -28,30 +30,7 @@ const AdvancedSearch = () => {
             //For temporary
             setProduct_List(rows ? rows : []);
         });
-        // var idbKeyval = FetchIndexDB.fetchIndexDb();
-        // idbKeyval.get('ProductList').then(val => {
-        //     if (!val || val.length == 0 || val == null || val == "") {
-        //         setAllProductList([]);
-        //     }
-        //     else {
-        //         setAllProductList(val); //getTaxAllProduct(val);
-        //         val.map(item => {
-        //             if (item.ParentId == 0 && (item.ManagingStock == false || (item.ManagingStock == true && item.StockQuantity > -1))) {
-        //                 allData.push(item);
-        //             }
-        //         })
 
-        //         if (allData.length == 0) {
-        //         }
-        //         setParentProductList(allData)
-        //         setTotalRecords(allData ? allData.length : 0);
-        //         //For temporary
-        //         setProduct_List(allData ? allData : []);
-
-        //         // this.loadingData();
-        //         // this.setState({ isLoading: false });
-        //     }
-        // });
 
     }
     let useCancelled = false;
@@ -66,7 +45,122 @@ const AdvancedSearch = () => {
 
     }, []);
 
+    var _SubCategory = [];
+    const retrunItrateLoop = (found, filterCategoryCode) => {
+        var setSubCategory = _SubCategory;// localStorage.getItem("setSubCategory") ? JSON.parse(localStorage.getItem("setSubCategory")) : [];
+        filterCategoryCode.push(found.Code)
+        if (found && found.Subcategories && found.Subcategories.length > 0) {
+            found.Subcategories.map(element => {
+                setSubCategory.push(element)
+                filterCategoryCode.push(element.Code)
+                if (element && element.Subcategories && element.Subcategories.length > 0) {
+                    retrunItrateLoop(element, filterCategoryCode)
+                }
+            })
+            // const arrayUniqueByKey = [...new Map(setSubCategory.map(item =>
+            //     [item['Code'], item])).values()];
+            const arrayUniqueByKeyArray = [...new Map(filterCategoryCode.map(item =>
+                [item, item])).values()];
+            _SubCategory = arrayUniqueByKeyArray;
+            //localStorage.setItem("setSubCategory", JSON.stringify(arrayUniqueByKey))
+            return arrayUniqueByKeyArray
+        }
+        return filterCategoryCode
+    }
 
+    const productDataSearch = (event) => {
+        console.log("event" + event.target.value)
+        var item1 = event.target.value;
+        setfiltered([]);
+        if (item1 == '') {
+            setProduct_List(allProductList);
+            return;
+        }
+        var _filtered = [];
+        var value = item1;
+
+        // Search in Products
+        var serchFromAll = product_List.filter((item) => (
+            (item.Title && item.Title.toLowerCase().includes(value.toLowerCase()))
+            || (item.Barcode && item.Barcode.toString().toLowerCase().includes(value.toLowerCase()))
+            || (item.Sku && item.Sku.toString().toLowerCase().includes(value.toLowerCase()))
+        ))
+        //-------//Filter child and parent-------------
+        var parentArr = [];
+        serchFromAll && serchFromAll.map(item => {
+            if (item.ParentId !== 0) {
+                var parrentofChild = product_List.find(function (element) {
+                    return (element.WPID === item.ParentId)
+                });
+                if (parrentofChild)
+                    parentArr.push(parrentofChild);
+            }
+        })
+        serchFromAll = [...new Set([...serchFromAll, ...parentArr])];
+        if (!serchFromAll || serchFromAll.length > 0) {
+            var parentProduct = serchFromAll.filter(item => {
+                return (item.ParentId === 0)
+            })
+            parentProduct = parentProduct ? parentProduct : []
+            _filtered = [...new Set([..._filtered, ...parentProduct])];
+        }
+
+        // Search in Customer
+        var filteredCustomer = allCustomerList.filter((item) => (
+            (item.FirstName && item.FirstName.toLowerCase().includes(value.toLowerCase()))
+            || (item.LastName && item.LastName.toString().toLowerCase().includes(value.toLowerCase()))
+            || (item.Contact && item.Contact.toString().toLowerCase().includes(value.toLowerCase()))
+            || (item.Email && item.Email.toString().toLowerCase().includes(value.toLowerCase()))
+        ))
+        console.log("---filteredCustomer---" + JSON.stringify(filteredCustomer));
+
+        // Search by Attributes
+        parentProductList && parentProductList.map((item) => {
+            item.ProductAttributes && item.ProductAttributes.map(attri => {
+                if (String(attri.Slug).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1 ||
+                    String(attri.Name).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+                    _filtered.push(item)
+                }
+            })
+        })
+        // Search by Categories
+        parentProductList && parentProductList.map((item) => {
+            item.Categories && item.Categories !== undefined && item.Categories.split(",").map(category => {
+                if (String(category).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+                    if (_filtered.indexOf(item) === -1) {
+                        _filtered.push(item)
+                    }
+                }
+            })
+        })
+        // Search by Sub Attributes
+        parentProductList && parentProductList.map((item) => {
+            item.ProductAttributes && item.ProductAttributes.map(proAtt => {
+                var dataSplitArycomma = proAtt.Option.split(',');
+                dataSplitArycomma && dataSplitArycomma !== undefined && dataSplitArycomma.map(opt => {
+                    if (String(opt).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+                        if (_filtered.indexOf(item) === -1) {
+                            _filtered.push(item)
+                        }
+                    }
+                })
+            })
+        })
+
+        //}
+        // _filtered = [...new Map(_filtered.map(item =>
+        //     [item, item])).values()];
+        // console.log("----filtered---" + JSON.stringify(_filtered.length));
+        //if(_filtered && _filtered.length>0)
+
+        _filtered = _filtered.filter(item => {
+            return (item.ParentId === 0)
+        })
+        console.log("----filtered--->>" + JSON.stringify(_filtered.length));
+        setProduct_List(_filtered);
+        setfiltered(_filtered);
+
+    }
     // console.log(allProductList)
     // console.log(totalRecords)
     // console.log(parentProductList)
@@ -78,7 +172,7 @@ const AdvancedSearch = () => {
             <button className="close-subwindow">
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <input type="text" id="advancedSearchBar" placeholder="Start typing to search..." />
+            <input type="text" id="advancedSearchBar" placeholder="Start typing to search..." onChange={e => productDataSearch(e)} />
         </div>
         <div className="subwindow-body">
             <div className="left-col">
@@ -129,7 +223,7 @@ const AdvancedSearch = () => {
             </div>
             <div className="right-col">
                 <div className="header">
-                    <p><b>Results</b> (23 search results)</p>
+                    <p><b>Results</b> ({filtered.length} search results)</p>
                 </div>
                 <div className="body">
                     <div className="no-results">
@@ -146,7 +240,7 @@ const AdvancedSearch = () => {
                             Create New Customer
                         </button>
                     </div>
-                    <div className="search-result customer">
+                    {/* <div className="search-result customer">
                         <div className="col">
                             <p className="style1">Customer</p>
                             <p className="style2">Freddy Mercury</p>
@@ -167,7 +261,7 @@ const AdvancedSearch = () => {
                                 Add to Sale
                             </button>
                         </div>
-                    </div>
+                    </div> */}
 
                     {
                         product_List && product_List.map((item, index) => {
@@ -197,7 +291,7 @@ const AdvancedSearch = () => {
                             </div>
                         })
                     }
-                    <div className="search-result group">
+                    {/* <div className="search-result group">
                         <div className="col">
                             <p className="style1">Group</p>
                             <p className="style2">Moss Party (Table 5)</p>
@@ -241,7 +335,7 @@ const AdvancedSearch = () => {
                                 Add to Sale
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

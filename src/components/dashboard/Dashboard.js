@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import AddTile from "./AddTile";
+import AddTile from "./tiles/AddTile";
 import AdvancedSearch from "./AdvancedSearch";
 import CartDiscount from "./CartDiscount";
 import CreateCustomer from "./CreateCustomer";
@@ -61,7 +61,7 @@ const Home = () => {
     //     }
 
     // }, []);
-
+ 
     return <React.Fragment>
         <div className="homepage-wrapper">
             {/* left nav bar */}
@@ -70,7 +70,7 @@ const Home = () => {
             {/* cart list */}
             <LeftNavBar></LeftNavBar>
             <HeadereBar></HeadereBar>
-            <TileList></TileList>
+            <TileList ></TileList>
              <CartList></CartList>
             <div className="mobile-homepage-footer">
                 <button id="openMobileCart">View Cart (2) - $24.99</button>

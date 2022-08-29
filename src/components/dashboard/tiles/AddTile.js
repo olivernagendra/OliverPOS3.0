@@ -1,6 +1,10 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-const AddTile = () => {
+import { useDispatch, useSelector } from 'react-redux';
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+const AddTile = (props) => {
+
+    // const [respAttribute, respCategory] = useSelector((state) => [state.attribute.data.content, state.category.data.content])
+    // console.log("---respAttribute----"+respAttribute)
     return (
         <div className="subwindow add-tile">
         <div className="subwindow-header">
@@ -15,6 +19,12 @@ const AddTile = () => {
             <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" />
             <p>Select the tile color</p>
             <div className="radio-group">
+                {/* {
+                    props.categoryList && props.categoryList.map(c=>
+                        {
+                            <p>{c.name}</p>
+                        })
+                } */}
                 <label>
                     <input type="radio" id="violet" name="tile-color" value="violet" />
                     <div className="custom-radio-button background-violet"></div>
