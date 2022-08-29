@@ -17,7 +17,6 @@ import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
-import OpenRegister from './components/openregister/OpenRegister';
 import { initDB } from "react-indexed-db";
 import { DBConfig } from "./DBConfig";
 import Dashboard from './components/dashboard/Dashboard';
