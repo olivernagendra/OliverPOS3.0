@@ -8,7 +8,7 @@ import { AddItemType } from "../../common/EventFunctions";
 // var ParentProductList = [];
 // var filtered = [];
 
-const TileList = () => {
+const TileList = (props) => {
     const [AllProduct, setAllProduct] = useState([]);
     const [filtered, setfiltered] = useState([]);
     const [ParentProductList, setParentProductList] = useState([]);
@@ -362,7 +362,8 @@ const TileList = () => {
             //     this.productDataSearch(item, 0)
             //     break;
             case "product":
-                productDataSearch(item.Title, 0, null)
+                //productDataSearch(item.Title, 0, null)
+                props.openPopUp(item);
                 //this.loadingData()
                 break;
             default:
@@ -562,7 +563,7 @@ const TileList = () => {
             }
             {
                 filtered && filtered.map((item, index) => {
-                    return <button className="product" key={index} /*onClick={() => filterProductByTile(item.type, item, null)}*/ >
+                    return <button className="product" key={index} onClick={() => props.openPopUp(item)} >
                         <div className="body">
                             <img src={item.ProductImage} alt="" />
                         </div>

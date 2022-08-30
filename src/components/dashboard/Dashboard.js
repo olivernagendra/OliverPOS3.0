@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useState,useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import AddTile from "./tiles/AddTile";
 import AdvancedSearch from "./AdvancedSearch";
@@ -22,8 +22,14 @@ import TileList from "./tiles/TileList";
 import { initHomeFn } from "../common/commonFunctions/homeFn";
 import { attribute } from "../common/commonAPIs/attributeSlice";
 import { category } from "../common/commonAPIs/categorySlice";
+import { group } from "../common/commonAPIs/groupSlice";
 import { tile } from './tiles/tileSlice';
+import Product from "./Product";
+import { useIndexedDB } from 'react-indexed-db';
 const Home = () => {
+    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
+   const [isShowPopups,setisShowPopups]= useState(false);
+   const [selProduct,setSelProduct]= useState(null);
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
@@ -36,6 +42,13 @@ const Home = () => {
         if (typeof regId != "undefined" && regId != null) {
             dispatch(tile({ "id": regId }));
         }
+        var locationId = localStorage.getItem('Location')
+        var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        if(user && user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined" )
+        {
+            dispatch(group({"locationId":locationId,"group_sales":user.group_sales_by}));
+        }
+
      }
 
 
@@ -62,15 +75,31 @@ const Home = () => {
 
     // }, []);
  
-    return <React.Fragment>
-        <div className="homepage-wrapper">
+    // return   
+    //  <Product></Product>
+    // {isShowPopups==true? <Product></Product>:
+const openPopUp= async (item)=>
+{
+    var _item=await getByID(item.Product_Id?item.Product_Id:item.WPID);
+    setSelProduct(_item)
+    setisShowPopups(true)
+}
+const closePopUp=()=>
+{
+    setisShowPopups(false)
+}
+
+    return  (
+<React.Fragment>
+<Product openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
+    <div className="homepage-wrapper" style={{display:isShowPopups==false?"grid":"none"}}>
             {/* left nav bar */}
             {/* top header */}
             {/* prodct list/item list */}
             {/* cart list */}
             <LeftNavBar></LeftNavBar>
             <HeadereBar></HeadereBar>
-            <TileList ></TileList>
+            <TileList openPopUp={openPopUp}></TileList>
              <CartList></CartList>
             <div className="mobile-homepage-footer">
                 <button id="openMobileCart">View Cart (2) - $24.99</button>
@@ -95,7 +124,7 @@ const Home = () => {
             <OrderNote></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch></AdvancedSearch>
+            <AdvancedSearch openPopUp={openPopUp} closePopUp={closePopUp}></AdvancedSearch>
             <SwitchUser></SwitchUser>
             <MsgPopup_EndSession></MsgPopup_EndSession>
             {/* iframe subview */}
@@ -133,7 +162,8 @@ const Home = () => {
                     </label>
                 </div>
             </div>
-        </div>
-    </React.Fragment>
+        </div></React.Fragment>)    
+        // }
+    
 }
 export default Home 

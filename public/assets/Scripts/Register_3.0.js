@@ -140,8 +140,12 @@ document.querySelectorAll(".navbar button.launcher.app").forEach((button) => {
 if (document.getElementById("mobileAppsButton")) {
 	document.getElementById("mobileAppsButton").addEventListener("click", () => {
 		document.getElementById("appLauncherWrapper").classList.toggle("hidden");
-		document.getElementById("pageOptions").classList.add("hidden");
-		document.getElementById("mobileOptionsButton").classList.remove("filter");
+		if (document.getElementById("pageOptions")) {
+			document.getElementById("pageOptions").classList.add("hidden");
+		}
+		if (document.getElementById("mobileOptionsButton")) {
+			document.getElementById("mobileOptionsButton").classList.remove("filter");
+		}
 	});
 }
 
@@ -410,11 +414,11 @@ function iframeSetup(clickedButton, iframeSRC = null, author = null) {
 	}
 }
 
+
+
 //If page contains products then runs ImageFit on images
-imageFit(document.querySelectorAll(".products button.product img"))
 
 //If page contains recommended upsells run ImageFit function on the image
-imageFit(document.querySelectorAll(".recommended-upsells img"));
 
 //Function to close navbar and all related popups
 function navbarCloseAll() {
@@ -433,8 +437,27 @@ function imageFit(images) {
 	images.forEach((image) => {
 		if (image.parentNode.offsetWidth - image.naturalWidth > image.parentNode.offsetHeight - image.naturalHeight) {
 			image.classList.add("width-fit");
+			image.classList.remove("height-fit");
 		} else {
 			image.classList.add("height-fit");
+			image.classList.remove("width-fit");
 		}
 	});
 }
+
+imageFit(document.querySelectorAll(".products button.product img"));
+imageFit(document.querySelectorAll(".recommended-upsells img"));
+
+
+//Re-Fits images if screen is resized
+let resizeTimer;
+window.addEventListener("resize", () => {
+	clearTimeout(resizeTimer);
+	resizeTimer = setTimeout(() => {
+		imageFit(document.querySelectorAll(".products button.product img"));
+		imageFit(document.querySelectorAll(".recommended-upsells img"));
+		if (document.getElementById("productImage")) {
+			imageFit([document.getElementById("productImage")]);
+		}
+	}, 100);
+});
