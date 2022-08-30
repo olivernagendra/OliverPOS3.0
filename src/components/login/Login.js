@@ -112,14 +112,6 @@ function Login() {
     // console.log("vlidationError", vlidationError)
 
 
-
-
-
-
-
-
-
-
     const handleUserLogin = () => {
         dispatch(userLogin({ "email": userEmail, "password": password }))
 
@@ -245,30 +237,30 @@ function Login() {
 
     //Apple login methods Start
     const appleLogin = () => {
-        let appleConnectLoaded = (AppleID) => {
-            AppleID.auth.init({
-                clientId: "sell.oliverpos.com",
-                scope: 'name email',
-                state: 'origin:web',
-                redirectURI: Config.key.APPLE_LOGIN_RETURN_URL,
-                usePopup: true
-            });
-            setTimeout(() => {//To Remove the default apple logo
-                // $("svg text").text('Sign in with Apple')
-                // $("svg text").text($("svg text").text().substring(1));
-                //  $("svg text").removeAttr("textLength");
-                // $("svg text").css("fontFamily", "Poppins, Helvetica, sans-serif");
-                //   $("svg text").css("font-size", "0.8rem");           
-            }, 100);
-        };
+        //let appleConnectLoaded = (AppleID) => {
+        //     AppleID.auth.init({
+        //         clientId: "sell.oliverpos.com",
+        //         scope: 'name email',
+        //         state: 'origin:web',
+        //         redirectURI: Config.key.APPLE_LOGIN_RETURN_URL,
+        //         usePopup: true
+        //     });
+        //     setTimeout(() => {//To Remove the default apple logo
+        //         // $("svg text").text('Sign in with Apple')
+        //         // $("svg text").text($("svg text").text().substring(1));
+        //         //  $("svg text").removeAttr("textLength");
+        //         // $("svg text").css("fontFamily", "Poppins, Helvetica, sans-serif");
+        //         //   $("svg text").css("font-size", "0.8rem");           
+        //     }, 100);
+        // };
 
-        (function (d, s, cb) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            js = d.createElement(s);
-            js.src = "//appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
-            fjs.parentNode.insertBefore(js, fjs);
-            js.addEventListener("load", () => cb(AppleID));
-        }(document, 'script', appleConnectLoaded));
+        // (function (d, s, cb) {
+        //     var js, fjs = d.getElementsByTagName(s)[0];
+        //     js = d.createElement(s);
+        //     js.src = "//appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+        //     fjs.parentNode.insertBefore(js, fjs);
+        //     js.addEventListener("load", () => cb(AppleID));
+        // }(document, 'script', appleConnectLoaded));
     }
 
 

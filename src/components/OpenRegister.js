@@ -103,7 +103,7 @@ const OpenRegister = () => {
 
 
     useEffect(() => {
-        openRegisterFn();
+        //openRegisterFn();
         initOpenRegisterFn();
     }, []);
 
