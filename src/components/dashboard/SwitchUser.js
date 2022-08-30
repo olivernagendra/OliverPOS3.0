@@ -2,6 +2,8 @@ import React, { useEffect, useLayoutEffect } from "react";
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg';
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
 import SwitchUser_Icon from '../../images/svg/SwitchUser-Icon.svg';
+import Backspace_BaseBlue from '../../images/svg/Backspace-BaseBlue.svg';
+import PinPad from "../PinPad";
 const SwitchUser = () => {
     return <div className="subwindow switch-user">
         <div className="subwindow-header">
@@ -27,6 +29,7 @@ const SwitchUser = () => {
             </p>
             <div className="divider"></div>
             <p className="style2">Enter Your User ID</p>
+            {/* <PinPad></PinPad> */}
             <div className="pinpad">
                 <div className="pin-entries">
                     <div className="pin-entry"></div>
@@ -54,7 +57,7 @@ const SwitchUser = () => {
                 <div className="pin-button-row">
                     <button>0</button>
                     <button className="backspace">
-                        <img src="../Assets/Images/SVG/Backspace-BaseBlue.svg" alt="" />
+                        <img src={Backspace_BaseBlue} alt="" />
                     </button>
                 </div>
             </div>

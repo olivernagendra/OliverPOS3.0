@@ -17,42 +17,40 @@ import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
-import Home from './components/homePage/Home';
+import { initDB } from "react-indexed-db";
+import { DBConfig } from "./DBConfig";
+import Dashboard from './components/dashboard/Dashboard';
 import OpenRegister from './components/OpenRegister';
-import Closeregister from './components/cashmanagement/Closeregister';
 
+
+initDB(DBConfig);
 function App() {
 
+  // const customerData = [
+  //   { WPID: "111-11-1111", name: "Pranav", age: 10, email: "pranav@company.com" },
+  //   { WPID: "222-22-2222", name: "nagendra", age: 24, email: "nagendra@home.org" }
+  // ];
+  // { WPID: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
+  //   { WPID: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
+  //indexDatabase("2323223", customerData);
+  return (<Router>
 
-
-  return ( <Router>
     <Routes>
-     
+
       <Route path="/" element={<Login />} />
-      <Route path="/login" element={<Login/>} /> 
-      <Route path="/site" element={<Site/>} /> 
-      <Route path="/location" element={<Location/>} /> 
-      <Route path="/pin" element={<Pin/>} />
-      <Route path="/register" element={<Register/>} /> 
-      <Route path="/prodcutloader" element={<ProductLoader/>} /> 
-      <Route path="/cashdrawer" element={<Cashmanagement/>} /> 
-      <Route path="/home" element={<Home/>} /> 
-      <Route path="/openregister" element={<OpenRegister/>} /> 
-      <Route path="*" element={<NoPage/>} />
-
-
-
-      <Route path="/closeregister" element={<Closeregister/>} /> 
-     
-
+      <Route path="/login" element={<Login />} />
+      <Route path="/site" element={<Site />} />
+      <Route path="/location" element={<Location />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/pin" element={<Pin />} />
+      <Route path="/productloader" element={<ProductLoader />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/cashdrawer" element={<Cashmanagement />} />
+      <Route path="/openregister" element={<OpenRegister />} />
+      <Route path="*" element={<NoPage />} />
     </Routes>
-</Router>
-    // <div className="App">
-    // <header className="App-header"> 
-     
-       
-    //   </header> 
-    // </div>
+  </Router>
+
   );
 }
 

@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import FacebookLogin from 'react-facebook-login';
-import GoogleLogin from 'react-google-login';
+// import FacebookLogin from 'react-facebook-login';
+// import GoogleLogin from 'react-google-login';
 import imglogo from '../../images/svg/Oliver-Horizontal.svg'
-import imgGoogle from '../../images/svg/google-logo.svg'
-import imgFaceBook from '../../images/svg/facebook-logo.svg'
-import imgApple from '../../images/svg/apple-logo.svg'
+// import imgGoogle from '../../images/svg/google-logo.svg'
+// import imgFaceBook from '../../images/svg/facebook-logo.svg'
+// import imgApple from '../../images/svg/apple-logo.svg'
 import Checkmark from '../../images/svg/Checkmark.svg'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { userLogin, userExternalLogin, GetUserProfileLogin } from '../login/loginSlice';
@@ -34,7 +34,7 @@ function Login() {
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
 
-    if (status == STATUSES.error) {
+    if (status == STATUSES.ERROR) {
         console.log(error)
     }
     if (status == STATUSES.IDLE && is_success) {
@@ -52,19 +52,19 @@ function Login() {
     const [userRequest, setUserRequest] = useState({
         setFieldErr: '',
         setUsernamedErr: '',
-        setWentWrongErr:'',
-        setPasswordErr:'',
-      });
-    
+        setWentWrongErr: '',
+        setPasswordErr: '',
+    });
+
 
     const handleSubmit = (e) => {
         if (userEmail && password) {
-                setUserRequest({
-                    setFieldErr: '',
-                    setUsernamedErr: '',
-                    setWentWrongErr:'',
-                    setPasswordErr:'',
-                  });
+            setUserRequest({
+                setFieldErr: '',
+                setUsernamedErr: '',
+                setWentWrongErr: '',
+                setPasswordErr: '',
+            });
             // if (this.state.check == false) {  //$('#remember').attr('checked')              
 
             //     cookies.set('user', '');
@@ -80,36 +80,36 @@ function Login() {
                 setUserRequest({
                     setFieldErr: 'Email and Password is required',
                     setUsernamedErr: '',
-                    setWentWrongErr:'',
-                    setPasswordErr:'',
-                  });
+                    setWentWrongErr: '',
+                    setPasswordErr: '',
+                });
                 // $('#username').focus();
             } else if (!userEmail) {
-                    setUserRequest({
-                        setFieldErr: '',
-                        setUsernamedErr: 'Email is required',
-                        setWentWrongErr:'',
-                        setPasswordErr:'',
-                      });
+                setUserRequest({
+                    setFieldErr: '',
+                    setUsernamedErr: 'Email is required',
+                    setWentWrongErr: '',
+                    setPasswordErr: '',
+                });
                 //  $('#username').focus();
             } else {
-                    setUserRequest({
-                        setFieldErr: '',
-                        setUsernamedErr: '',
-                        setWentWrongErr:'',
-                        setPasswordErr:'Password is required',
-                      });
-                    
+                setUserRequest({
+                    setFieldErr: '',
+                    setUsernamedErr: '',
+                    setWentWrongErr: '',
+                    setPasswordErr: 'Password is required',
+                });
+
                 // $('#password').focus();
             }
         }
         e.preventDefault();
     }
 
-    const { setFieldErr, setUsernamedErr,setWentWrongErr,setPasswordErr } = userRequest;
+    const { setFieldErr, setUsernamedErr, setWentWrongErr, setPasswordErr } = userRequest;
 
     var vlidationError = setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : setWentWrongErr != '' ? setWentWrongErr : "";
-   // console.log("vlidationError", vlidationError)
+    // console.log("vlidationError", vlidationError)
 
 
 
@@ -246,29 +246,29 @@ function Login() {
     //Apple login methods Start
     const appleLogin = () => {
         let appleConnectLoaded = (AppleID) => {
-            AppleID.auth.init({
-                clientId: "sell.oliverpos.com",
-                scope: 'name email',
-                state: 'origin:web',
-                redirectURI: Config.key.APPLE_LOGIN_RETURN_URL,
-                usePopup: true
-            });
-            setTimeout(() => {//To Remove the default apple logo
-                // $("svg text").text('Sign in with Apple')
-                // $("svg text").text($("svg text").text().substring(1));
-                //  $("svg text").removeAttr("textLength");
-                // $("svg text").css("fontFamily", "Poppins, Helvetica, sans-serif");
-                //   $("svg text").css("font-size", "0.8rem");           
-            }, 100);
+            // AppleID.auth.init({
+            //     clientId: "sell.oliverpos.com",
+            //     scope: 'name email',
+            //     state: 'origin:web',
+            //     redirectURI: Config.key.APPLE_LOGIN_RETURN_URL,
+            //     usePopup: true
+            // });
+            // setTimeout(() => {//To Remove the default apple logo
+            //     // $("svg text").text('Sign in with Apple')
+            //     // $("svg text").text($("svg text").text().substring(1));
+            //     //  $("svg text").removeAttr("textLength");
+            //     // $("svg text").css("fontFamily", "Poppins, Helvetica, sans-serif");
+            //     //   $("svg text").css("font-size", "0.8rem");           
+            // }, 100);
         };
 
-        (function (d, s, cb) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            js = d.createElement(s);
-            js.src = "//appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
-            fjs.parentNode.insertBefore(js, fjs);
-            js.addEventListener("load", () => cb(AppleID));
-        }(document, 'script', appleConnectLoaded));
+        // (function (d, s, cb) {
+        //     var js, fjs = d.getElementsByTagName(s)[0];
+        //     js = d.createElement(s);
+        //     js.src = "//appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js";
+        //     fjs.parentNode.insertBefore(js, fjs);
+        //     js.addEventListener("load", () => cb(AppleID));
+        // }(document, 'script', appleConnectLoaded));
     }
 
 
@@ -431,9 +431,9 @@ function Login() {
         window.location = bridgDomain + '/Account/Register';
     }
 
-
-
-
+    if (status == STATUSES.LOADING) {
+        return <div> Loading... </div>
+    }
 
     return (<div className="login-wrapper">
         <div className="auto-margin-top"></div>
@@ -468,14 +468,14 @@ function Login() {
             <p>OR</p>
             <div className="divider"></div>
         </div>
-        <button id="googleButton" ref={googleLoginBtn} type="submit"   >
+        {/* <button id="googleButton" ref={googleLoginBtn} type="submit"   >
             <div className="img-container">
                 <img src={imgGoogle} alt="" />
 
             </div>
             Sign in with Google
 
-        </button>
+        </button> */}
 
 
         {/* <GoogleLogin
@@ -487,7 +487,7 @@ function Login() {
             /> */}
 
 
-        <button id="facebookButton">
+        {/* <button id="facebookButton">
             <div className="img-container">
                 <img src={imgFaceBook} alt="" />
             </div>
@@ -502,17 +502,20 @@ function Login() {
 
             />
 
-        </button>
+
+                />
+            
+        </button> */}
 
 
-        <button type="submit" id="appleid-signin" title="Log in using your Apple account"
+        {/* <button type="submit" id="appleid-signin" title="Log in using your Apple account"
             data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
             className="apple_login_btn">
             <div className="img-container" >
                 <img src={imgApple} alt="" />
             </div>
             Sign in with Apple
-        </button>
+        </button> */}
         <div className="row">
             <p>Don't have an account?</p>
             <a href="#" onClick={() => handleSignInClick()} >Sign up Now!</a>

@@ -5,11 +5,13 @@ import LogOut_Icon_White from '../images/svg/LogOut-Icon-White.svg'
 import Closed_Sign_White from '../images/svg/Closed-Sign-White.svg'
 import PinPad from "./PinPad"
 import { get_locName, get_regName, get_userName } from "./common/localSettings"
-import { openRegisterFn } from "./common/EventFunctions"
+
 import { useNavigate } from 'react-router-dom';
+
 import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
 import moment from 'moment';
 import STATUSES from "../constants/apiStatus";
+import { initOpenRegisterFn } from "./common/commonFunctions/openRegisterFn"
 
 const OpenRegister = () => {
     const [amount, setAmount] = useState("")
@@ -44,13 +46,13 @@ const OpenRegister = () => {
     }
 
 
-    
-    const openRegisterhundle = async  () => {
+
+    const openRegisterhundle = async () => {
         console.log("openRegisterhundle")
         if (amount && amount != '') {
-            console.log("amount",amount)
-           //setIsAmountEntered(false)
-          //  this.setState({ enteredAmount: 0.00, enterNote: '' });
+            console.log("amount", amount)
+            //setIsAmountEntered(false)
+            //  this.setState({ enteredAmount: 0.00, enterNote: '' });
             var d = new Date();
             var dateStringWithTime = moment(d).format('YYYY-MM-DD HH:mm:ss Z');
             var getLocalTimeZoneOffsetValue = d.getTimezoneOffset();
@@ -75,11 +77,11 @@ const OpenRegister = () => {
                 "LocalTimeZoneOffsetValue": getLocalTimeZoneOffsetValue
             }
             dispatch(openRegister(open_register_param));
-        
-         //  $(".form-control").val('');
+
+            //  $(".form-control").val('');
         }
         else {
-          //  setIsAmountEntered(true)
+            //  setIsAmountEntered(true)
         }
     }
 
@@ -97,12 +99,14 @@ const OpenRegister = () => {
         }
     }
 
-  
+
 
 
     useEffect(() => {
         openRegisterFn();
-    },[]);
+        initOpenRegisterFn();
+    }, []);
+
     return <React.Fragment><div className="open-register-wrapper">
         <button id="cancel">
             <img src={AngledBracket_Left_White} alt="" />
@@ -141,7 +145,7 @@ const OpenRegister = () => {
             </div>
             <div className="step3 hidden">
                 {<PinPad amount={amount}
-                    notes={notes} 
+                    notes={notes}
                 ></PinPad>}
             </div>
             <div className="auto-margin-bottom"></div>

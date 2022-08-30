@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { chunkArray, get_locName, get_regName } from './common/localSettings'
 // import imgOpenReg from '../images/svg/OpenSign.svg'
@@ -8,27 +8,29 @@ import { createPin, validatePin } from "./pinPage/pinSlice"
 import { useNavigate } from "react-router-dom";
 import { get_UDid } from "./common/localSettings";
 import STATUSES from "../constants/apiStatus";
-import {openRegister} from '../components/cashmanagement/CashmanagementSlice'
+import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
 import moment from 'moment';
 
-const PinPad = (props) => {
-   // console.log("props",props)
+
+const PinPad = React.memo(props => {
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [totalSize, setTotalSize] = useState(0)
     const [txtValue, setTxtValue] = useState("")
     const [isloading, setIsloading] = useState(false)
     const { status, data, error, is_success } = useSelector((state) => state.pin)
-   // console.log("status", status, "data", data, "error", error, "is_success", is_success)
+    // console.log("status", status, "data", data, "error", error, "is_success", is_success)
     var hasPin = localStorage.getItem('hasPin')
-    
-    
+
+
+
     useEffect(() => {
-     // console.log("useEffect")
-    
-     
+        // console.log("useEffect")
+
+
     }, [])
-    
+
 
 
 
@@ -37,9 +39,10 @@ const PinPad = (props) => {
     }
 
     if (is_success === true) {
-     //   console.log("iss success",is_success)
-      //  openRegisterhundle()
+        //   console.log("iss success",is_success)
+        //  openRegisterhundle()
     }
+
 
 
     if (status === STATUSES.IDLE && is_success) {
@@ -61,23 +64,17 @@ const PinPad = (props) => {
         //Reloading the component if new language set for the login user.                  
         if (_lang && _lang !== lang) {
             // window.location = '/';
-        //   navigate('/prodcutloader')
+
         }
-        if(props.doAction  ){
+        if (props.doAction) {
             props.doAction()
-        }else{
-          navigate('/home')
+        } else {
+            navigate('/productloader')
         }
-        
-      
+
+
 
     }
-
-
-   
-
-
-
 
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "0", "c"];
     const trshPin = ['txt1', 'txt2', 'txt3', 'txt4']
@@ -162,7 +159,7 @@ const PinPad = (props) => {
     }
     const fillPass = (enteredPin) => {
 
-        if (enteredPin.length >= 4) {
+        if (enteredPin && enteredPin.length >= 4) {
             //const { dispatch } = this.props;
             if (isloading === false) {
                 setIsloading(true)
@@ -220,7 +217,15 @@ const PinPad = (props) => {
             //event.preventDefault();
         }
     }
+    if (status === STATUSES.ERROR) {
+        // console.log(error)
+        // setTotalSize(0)
+        // setTxtValue("")
+        // addToScreen('c')
+        isloading == true && setIsloading(false)
+    }
     return <React.Fragment>
+        {(status === STATUSES.ERROR && <div>{error}</div>)}
         <p>Enter Your User ID</p>
         <div className="pinpad">
             {hasPin !== "true" && <ShowCreatePin />}
@@ -233,8 +238,8 @@ const PinPad = (props) => {
             <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" onKeyDown={(e) => handleBack(e)} />
 
         </div>
-       
+
     </React.Fragment>
-}
+})
 
 export default PinPad

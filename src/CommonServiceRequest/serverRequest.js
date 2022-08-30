@@ -12,7 +12,7 @@ const API_URL = Config.key.OP_API_URL
 function clientServiceRequest(requestType, requestUrl, postParameter,version=1) {
 try {
     
-    console.log("postParameter",postParameter)
+    //console.log("postParameter",postParameter)
     if (requestType == 'POST') {
         var requestOptions = {
             method: requestType,
