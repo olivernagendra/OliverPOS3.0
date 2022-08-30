@@ -7,17 +7,17 @@ import registerSlice from '../components/register/registerSlice';
 import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSlice';
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
-import { CashmanagementSlice, CashmanagementSecondSlice } from '../components/cashmanagement/CashmanagementSlice';
-import { tileSlice } from '../components/dashboard/tiles/tileSlice';
+
+import { tileSlice } from '../components/homePage/tiles/tileSlice';
+import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
 
-import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
-
-
+//import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
+
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -37,13 +37,11 @@ export const store = configureStore({
     attribute: attributeSlice.reducer,
     category: categorySlice.reducer,
     cashmanagementgetdetail: CashmanagementSecondSlice.reducer,
-    productloader: productLoaderSlice.reducer,
-    openRegister: CashmanagementThirdSlice.reducer, cashmanagementCloseRegister: CashmanagementFourthSlice.reducer,
+    openRegister: CashmanagementThirdSlice.reducer,
+    cashmanagementCloseRegister: CashmanagementFourthSlice.reducer,
     cashmanagementSaveClosingNote: CashmanagementFifthSlice.reducer,
-    openregisterupdate: openRegisterSlice.reducer,
-    customer: customerSlice.reducer
-
-
+    //openregisterupdate: openRegisterSlice.reducer,
+    customer: customerSlice.reducer,
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,

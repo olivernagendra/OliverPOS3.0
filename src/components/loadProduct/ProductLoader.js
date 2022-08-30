@@ -28,7 +28,7 @@ const ProductLoader = () => {
         ProductArray && ProductArray.length > 0 && ProductArray.map((item) => {
             add(item).then(
                 (key) => {
-                    console.log("ID Generated: ", key);
+                    // console.log("ID Generated: ", key);
                     //   let newState = Object.assign({}, state);
                     //   newState.id = key;
                     //   setState(newState);
