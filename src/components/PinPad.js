@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState,useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { chunkArray, get_locName, get_regName } from './common/localSettings'
 // import imgOpenReg from '../images/svg/OpenSign.svg'
@@ -8,20 +8,42 @@ import { createPin, validatePin } from "./pinPage/pinSlice"
 import { useNavigate } from "react-router-dom";
 import { get_UDid } from "./common/localSettings";
 import STATUSES from "../constants/apiStatus";
+import {openRegister} from '../components/cashmanagement/CashmanagementSlice'
 import moment from 'moment';
 
-const PinPad = () => {
+const PinPad = (props) => {
+   // console.log("props",props)
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [totalSize, setTotalSize] = useState(0)
     const [txtValue, setTxtValue] = useState("")
     const [isloading, setIsloading] = useState(false)
     const { status, data, error, is_success } = useSelector((state) => state.pin)
+   // console.log("status", status, "data", data, "error", error, "is_success", is_success)
     var hasPin = localStorage.getItem('hasPin')
+    
+    
+    useEffect(() => {
+     // console.log("useEffect")
+    
+     
+    }, [])
+    
+
+
+
     if (status === STATUSES.error) {
         console.log(error)
     }
+
+    if (is_success === true) {
+     //   console.log("iss success",is_success)
+      //  openRegisterhundle()
+    }
+
+
     if (status === STATUSES.IDLE && is_success) {
+
         localStorage.setItem('user', JSON.stringify(data.content));
         if (typeof (Storage) !== "undefined") {
             localStorage.setItem("check_subscription_status_datetime", new Date());
@@ -30,7 +52,6 @@ const PinPad = () => {
         if (localStorage.getItem("PRODUCT_REFRESH_DATE") == null) {
             localStorage.setItem("PRODUCT_REFRESH_DATE", moment.utc(new Date()).format('YYYY-MM-DD HH:mm:ss'))
         }
-
         var _lang = localStorage.getItem("LANG");
 
         var user = JSON.parse(localStorage.getItem("user"))
@@ -40,27 +61,22 @@ const PinPad = () => {
         //Reloading the component if new language set for the login user.                  
         if (_lang && _lang !== lang) {
             // window.location = '/';
-        }
-
         //   navigate('/prodcutloader')
-        navigate('/home')
+        }
+        if(props.doAction  ){
+            props.doAction()
+        }else{
+          navigate('/home')
+        }
+        
+      
 
     }
-    // else if(totalSize==4 && status === STATUSES.IDLE && is_success==false)
-    // {
-    //     document.querySelector(".pinpad > .pin-entries")&& document.querySelector(".pinpad > .pin-entries").classList.add("incorrect");
-	// 			setTimeout(() => {
-	// 				// currentPassword = "";
-	// 				document.querySelector(".pinpad > .pin-entries") && document.querySelector(".pinpad > .pin-entries").classList.remove("incorrect");
-	// 				// for (let i = 0; i < pinEntries.length; i++) {
-	// 				// 	if (i < currentPassword.length) {
-	// 				// 		pinEntries[i].classList.add("entered");
-	// 				// 	} else {
-	// 				// 		pinEntries[i].classList.remove("entered");
-	// 				// 	}
-	// 				// }
-	// 			}, 300);
-    // }
+
+
+   
+
+
 
 
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "0", "c"];

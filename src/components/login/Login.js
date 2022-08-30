@@ -13,11 +13,23 @@ import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
 function Login() {
     var auth2 = ''
-    const bridgDomain ="https://hub.oliverpos.com";
+    const bridgDomain = "https://hub.oliverpos.com";
     const googleLoginBtn = useRef(null);
     const navigate = useNavigate();
     const [userEmail, setName] = useState("")
+
     const [password, setPassword] = useState("")
+
+    // const [fieldErr, setFieldErr] = useState("")
+
+    // const [usernamedErr, setUsernamedErr] = useState("")
+    // const [wentWrongErr, setWentWrongErr] = useState("")
+    // const [passwordErr, setPasswordErr] = useState("")
+
+
+
+
+
     const dispatch = useDispatch();
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
@@ -30,34 +42,111 @@ function Login() {
     }
 
 
+    const handleKey = (e) => {
+        var key = e.which || e.keyCode;
+        if (key === 13) {
+            this.handleSubmit(e);
+        }
+    }
+
+    const [userRequest, setUserRequest] = useState({
+        setFieldErr: '',
+        setUsernamedErr: '',
+        setWentWrongErr:'',
+        setPasswordErr:'',
+      });
+    
+
+    const handleSubmit = (e) => {
+        if (userEmail && password) {
+                setUserRequest({
+                    setFieldErr: '',
+                    setUsernamedErr: '',
+                    setWentWrongErr:'',
+                    setPasswordErr:'',
+                  });
+            // if (this.state.check == false) {  //$('#remember').attr('checked')              
+
+            //     cookies.set('user', '');
+            //     cookies.set('pwd', '');
+            // }
+            dispatch(userLogin({ "email": userEmail, "password": password }))
+
+            // this.state.username = "";
+            // this.state.password = "";
+
+        } else {
+            if (!userEmail && !password) {
+                setUserRequest({
+                    setFieldErr: 'Email and Password is required',
+                    setUsernamedErr: '',
+                    setWentWrongErr:'',
+                    setPasswordErr:'',
+                  });
+                // $('#username').focus();
+            } else if (!userEmail) {
+                    setUserRequest({
+                        setFieldErr: '',
+                        setUsernamedErr: 'Email is required',
+                        setWentWrongErr:'',
+                        setPasswordErr:'',
+                      });
+                //  $('#username').focus();
+            } else {
+                    setUserRequest({
+                        setFieldErr: '',
+                        setUsernamedErr: '',
+                        setWentWrongErr:'',
+                        setPasswordErr:'Password is required',
+                      });
+                    
+                // $('#password').focus();
+            }
+        }
+        e.preventDefault();
+    }
+
+    const { setFieldErr, setUsernamedErr,setWentWrongErr,setPasswordErr } = userRequest;
+
+    var vlidationError = setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : setWentWrongErr != '' ? setWentWrongErr : "";
+   // console.log("vlidationError", vlidationError)
+
+
+
+
+
+
+
+
+
 
     const handleUserLogin = () => {
         dispatch(userLogin({ "email": userEmail, "password": password }))
 
     }
 
-      if(status ==STATUSES.error){
-            console.log(error)
+    if (status == STATUSES.error) {
+        console.log(error)
+    }
+    if (status == STATUSES.IDLE && is_success) {
+        var loginRes = data && data.content;
+        if (loginRes && loginRes.subscriptions !== undefined && loginRes.subscriptions.length > 0) {
+            var userSubscription = loginRes.subscriptions[0];
+            userSubscription && sessionStorage.setItem("AUTH_KEY", userSubscription.subscription_detail.client_guid + ":" + userSubscription.subscription_detail.server_token);
+            var lang = userSubscription && userSubscription.subscription_permission.language ? userSubscription.subscription_permission.language : 'en';
+            localStorage.setItem("LANG", lang);
+            localStorage.setItem('sitelist', JSON.stringify(loginRes))
+            localStorage.setItem('userId', loginRes.UserId)
+            localStorage.setItem("clientDetail", JSON.stringify(userSubscription));
+            localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
         }
-        if(status ==STATUSES.IDLE && is_success){
-            var loginRes=data && data.content;
-            if (loginRes && loginRes.subscriptions !== undefined && loginRes.subscriptions.length>0){
-                var userSubscription=loginRes.subscriptions[0];
-                userSubscription && sessionStorage.setItem("AUTH_KEY",userSubscription.subscription_detail.client_guid + ":" +  userSubscription.subscription_detail.server_token);
-                var lang =  userSubscription && userSubscription.subscription_permission.language ? userSubscription.subscription_permission.language :'en';
-                localStorage.setItem("LANG", lang);
-                localStorage.setItem('sitelist', JSON.stringify(loginRes))
-                localStorage.setItem('userId', loginRes.UserId)
-                localStorage.setItem("clientDetail",JSON.stringify(userSubscription));
-                localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
-        }
-            navigate('/site')
-        }
-    
+        navigate('/site')
+    }
 
 
-    const handleNameChange=(e)=> {
-       // console.log("event",e.target.value);
+
+    const handleNameChange = (e) => {
+        // console.log("event",e.target.value);
         setName(e.target.value);
     }
 
@@ -214,7 +303,7 @@ function Login() {
 
     const prepareGoogleLoginButton = () => {
         localStorage.removeItem('FGLoginData');
-       // console.log('------ref-----------', googleLoginBtn.current);
+        // console.log('------ref-----------', googleLoginBtn.current);
         auth2.attachClickHandler(googleLoginBtn.current, {},
             (googleUser) => {
                 localStorage.setItem('FGLoginData', JSON.stringify(googleUser));
@@ -337,13 +426,10 @@ function Login() {
         return JSON.parse(jsonPayload);
     };
 
-    
+
     const handleSignInClick = () => {
         window.location = bridgDomain + '/Account/Register';
     }
-
-
-
 
 
 
@@ -354,12 +440,17 @@ function Login() {
         {/* counter: {counter} */}
         <img src={imglogo} />
         <p >Sign in to your Oliver POS Account</p>
-        {error !== "" && <div className="danger">{error} </div>}
+        {/* {error !== "" && <div className="danger">{error} </div>} */}
+        {vlidationError != "" &&
+            <div className="danger">
+
+                {setWentWrongErr !== '' ? setWentWrongErr : setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : ""}
+            </div>}
         <form className="login-form">
             <label htmlFor="email">Email</label>
-            <input type="text" id="email" placeholder="Enter Email" onChange={(e) => handleNameChange(e)} />
+            <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" placeholder="Enter Password" onChange={(e) => handlePasswordChange(e)} />
+            <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
             <div className="row">
                 <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
                 <label className="custom-checkbox-wrapper">
@@ -370,7 +461,7 @@ function Login() {
                     Remember Me?
                 </label>
             </div>
-            <button type="button" onClick={() => handleUserLogin()}>Sign In</button>
+            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>Sign In</button>
         </form>
         <div className="or-row">
             <div className="divider"></div>
@@ -400,17 +491,17 @@ function Login() {
             <div className="img-container">
                 <img src={imgFaceBook} alt="" />
             </div>
-                <FacebookLogin cssClass="btn user_login_fb_on"
-                    appId={Config.key.FACEBOOK_CLIENT_ID}
-                    autoLoad={false}
-                    fields="first_name, last_name,name,email"
-                    scope="public_profile, email"
-                    onClick={componentClicked}
-                    callback={responseFacebook}
-                    textButton="Sign in with Facebook"
+            <FacebookLogin cssClass="btn user_login_fb_on"
+                appId={Config.key.FACEBOOK_CLIENT_ID}
+                autoLoad={false}
+                fields="first_name, last_name,name,email"
+                scope="public_profile, email"
+                onClick={componentClicked}
+                callback={responseFacebook}
+                textButton="Sign in with Facebook"
 
-                />
-            
+            />
+
         </button>
 
 
@@ -424,7 +515,7 @@ function Login() {
         </button>
         <div className="row">
             <p>Don't have an account?</p>
-            <a href="#"   onClick={() => handleSignInClick()} >Sign up Now!</a>
+            <a href="#" onClick={() => handleSignInClick()} >Sign up Now!</a>
         </div>
         <div className="auto-margin-bottom"></div>
 

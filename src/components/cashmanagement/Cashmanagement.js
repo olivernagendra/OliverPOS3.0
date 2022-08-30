@@ -5,32 +5,77 @@ import moment from 'moment';
 import Config from '../../Config'
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import LeftNavBar from '../common/LeftNavBar'
-import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png'
-
-
+import STATUSES from "../../constants/apiStatus";
+import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 function Cashmanagement() {
-
   const dispatch = useDispatch();
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
+  var FirstApiCall = false;
+  var firstRecordId
+
+
+
+  const getCashDrawerPaymentDetail = (Id, index) => {
+    dispatch(getDetails(Id));
+  }
 
 
 
   const { status, data, error, is_success } = useSelector((state) => state.cashmanagement)
-  //console.log("status", status, "data", data, "error", error, "is_success", is_success)
+  console.log("status", status, "data", data, "error", error, "is_success", is_success)
+  if (status === STATUSES.IDLE && is_success) {
+    if (data && data.content && data.content !== undefined) {
+      var _RecordArray = data && data.content && data.content.Records ? data.content.Records : [];
+      var array = [];
+      if (_RecordArray.length > 0) {
+        array = _RecordArray.slice().sort((a, b) => b.LogDate - a.LogDate)
+        // _RecordArray.sort(function (a, b) {
+        //   var keyA = new Date(a.LogDate),
+        //     keyB = new Date(b.LogDate);
+        //   // Compare the 2 dates
+        //   if (keyA < keyB) return -1;
+        //   if (keyA > keyB) return 1;
+        //   return 0;
+        // });
+        array.reverse();
+        var openingCashDrawerRecord = array ? array.find(Items => Items.ClosedTimeUtc == null) : null;
+        if (openingCashDrawerRecord && openingCashDrawerRecord.Id) {
+          localStorage.setItem("Cash_Management_ID", openingCashDrawerRecord.Id)
+          localStorage.setItem("IsCashDrawerOpen", "true");
+        }
+        firstRecordId = array && array.length > 0 ? array[0].Id : '';
+        console.log("array", array)
+        console.log("firstRecordId", firstRecordId)
+
+        if (FirstApiCall == false) {
+          console.log("api run")
+          FirstApiCall = true
+        }
+      }
+
+    }
+    //console.log("data ",data)
+    // dispatch(getDetails(firstRecordId));
+
+  }
+  if (is_success === true) {
+    console.log("data ",data)
+   // dispatch(getDetails(firstRecordId));
+  }
 
 
-  // if (status == STATUSES.error) {
-  //     console.log(error)
-  // }
-  // if (status == STATUSES.IDLE && is_success) {
-  //     // console.log("data----->" + data)
-  // }
+
+
+
+
+
+
+
 
 
   useEffect(() => {
     dispatch(cashRecords({ "registerId": registerId, "pageSize": "1000", "pageNumber": "1" }));
-    console.log("cashrecord----")
   }, [])
 
 
@@ -76,18 +121,18 @@ function Cashmanagement() {
     }
   }
 
-  const getCashDrawerPaymentDetail = (Id, index) => {
-    dispatch(getDetails(Id));
-  }
+
 
   const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
+  // console.log("statusgetdetail",statusgetdetail)
+  // console.log("errorgetdetail",errorgetdetail)
+  // console.log("is_successgetdetail",is_successgetdetail)
 
   var CashDrawerPaymentDetail = getdetail && getdetail.content
-  var _paymentList = CashDrawerPaymentDetail && CashDrawerPaymentDetail.CashRegisterlog ? CashDrawerPaymentDetail.CashRegisterlog : [];
-  var paymentList = [];
-  if (_paymentList && _paymentList.length > 0) {
-    paymentList = [..._paymentList].reverse();
-  }
+  // if (CashDrawerPaymentDetail && CashDrawerPaymentDetail.Id) {
+  //   localStorage.setItem("Cash_Management_ID", CashDrawerPaymentDetail.Id)
+  // }
+
 
   var _balance = 0;
   if (CashDrawerPaymentDetail) {
@@ -96,15 +141,6 @@ function Cashmanagement() {
     else
       _balance = CashDrawerPaymentDetail.Expected;
   }
-
-  var userName = CashDrawerPaymentDetail && CashDrawerPaymentDetail  ? CashDrawerPaymentDetail.SalePersonName : '';
-  var openingNote = CashDrawerPaymentDetail &&  CashDrawerPaymentDetail ? CashDrawerPaymentDetail.OpeningNotes : '';
-  var openDateTime = CashDrawerPaymentDetail &&  CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
-  var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
-  var openingBal = CashDrawerPaymentDetail  && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.OpeningBalance : 0.00;
-
-
-
   return (
     <>
       <div className="cash-management-wrapper">
@@ -121,49 +157,50 @@ function Cashmanagement() {
           </> :
             <>
               <button className="no-transform">
-                <p className="style1">Currently Active</p>
+                <p className="style1"> {CashDrawerPaymentDetail && !CashDrawerPaymentDetail.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
                 <div className="row">
-                  <p className="style2">Register 1</p>
-                  <p className="style3 green">OPEN</p>
+                  <p className="style2">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
+                  {/* <p className="style3 green">OPEN</p> */}
                 </div>
-                <p className="style4">User: Freddy Mercury</p>
+                <p className="style4">User: {CashDrawerPaymentDetail && CashDrawerPaymentDetail.SalePersonName}</p>
               </button>
               <div className="prev-registers">
-                {orders && ordersDate && ordersDate.map((getDate, index) => {
-                  return (<> <div className="category">   {current_date == getDate ? 'Today' : getDate} </div>
-                    {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
-                      return (
+
+                {
+                  orders && ordersDate && ordersDate.map((getDate, index) => {
+                    return (<> <div className="category">   {current_date == getDate ? 'Today' : getDate} </div>
+                      {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
+                        return (
 
 
-                        <button className="no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
-                          <div className="row">
-                            <p className="style1"> {order.RegisterName}</p>
-                            <p className="style2">  {!order.ClosedTime ? "OPEN" : "Closed " + order.ClosedTime}</p>
-                          </div>
-                          <div className="row">
-                            <p className="style2">User: {order.SalePersonName}</p>
-                            <p className="style2">{order.OpenTime}</p>
-                          </div>
-                        </button>
-                      )
-                    })
-                    }
+                          <button className="no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
+                            <div className="row">
+                              <p className="style1"> {order.RegisterName}</p>
+                              <p className="style2">  {!order.ClosedTime ? "OPEN" : "Closed " + order.ClosedTime}</p>
+                            </div>
+                            <div className="row">
+                              <p className="style2">User: {order.SalePersonName}</p>
+                              <p className="style2">{order.OpenTime}</p>
+                            </div>
+                          </button>
+                        )
+                      })
+                      }
 
-                  </>)
-                })}
+                    </>)
+                  })}
               </div>
             </>
           }
         </div>
-
         <div className="cm-detailed-view">
           <div className="detailed-header">
             <p>Transaction History</p>
             <div className="outer-group">
               <div className="inner-group">
                 <div className="row">
-                <p className="style1">{CashDrawerPaymentDetail&&CashDrawerPaymentDetail.RegisterName}</p>
-                  <p className="style2 green">{CashDrawerPaymentDetail&&CashDrawerPaymentDetail.Status}</p>
+                  <p className="style1">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
+                  <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
                 </div>
                 <p className="style3">March 31, 2022 6:15pm</p>
               </div>
@@ -174,255 +211,16 @@ function Cashmanagement() {
               <button>Print History</button>
             </div>
           </div>
-
-
-
-
-
-
           <div className="detailed-body">
-            <div className="register-event">
-              <div className="outer-group">
-                <div className="group1">
-                  <p className="style1">Closing Float</p>
-                  <p className="style2">10:30 AM</p>
-                </div>
-                <div className="group2">
-                  <p className="style2">
-                    <b>User:</b> Peter Johnson
-                  </p>
-                  <p className="style2">
-                    <b>Notes: </b>Miscalculated by 5 cents
-                  </p>
-                </div>
-              </div>
-              <div className="group3">
-                <p className="style2">
-                  <b>Expected Balance:</b> 300.00
-                </p>
-                <p className="style2">
-                  <b>Actual Balance:</b> 300.00
-                </p>
-              </div>
-            </div>
-            <div className="register-event">
-              <div className="outer-group" />
-            </div>
+            <CashDrawerPaymentDetailList />
+
           </div>
-
-
-
-
-          
-{/* 
-          <div className="detailed-body">
-            <div className="register-event">
-              <div className="outer-group">
-                <div className="group1">
-                  <p className="style1">cash</p>
-                  <p className="style2">10:30 AM</p>
-                </div>
-                <div className="group2">
-                  <p className="style2">
-                    <b>User:</b> Peter Johnson
-                  </p>
-                  <p className="style2">
-                    <b>Notes: </b>Miscalculated by 5 cents
-                  </p>
-                </div>
-              </div>
-              <div className="group3">
-                <p className="style2">
-                  <b>Expected Balance:</b> 300.00
-                </p>
-                <p className="style2">
-                  <b>Actual Balance:</b> 300.00
-                </p>
-              </div>
-            </div>
-            <div className="register-event">
-              <div className="outer-group" />
-            </div>
-          </div> */}
-
-
-
-
-
-
-
-
-
-
-
-
-
-{
-            paymentList.filter(i => i.Description.toLowerCase() == "cash").map((item, index) => {
-
-              return (
-                <>
-                 <div className="all_detailed_body">
-                  
-
-                  <div className="detailed-body">
-                    <div className="register-event">
-                      <div className="outer-group">
-                        <div className="group1">
-                          <p className="style1"> {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash"}</p>
-                          <p className="style2">{moment.utc(item.TransactionDateOffset).local().format(Config.key.TIMEDATE_FORMAT)}</p>
-                        </div>
-                        <div className="group2">
-                          <p className="style2">
-                            <b>User:</b> {item.SalePersonName}
-                          </p>
-                          <p className="style2">
-                            <b>Notes: </b>{item.Notes}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="group3">
-                        <p className="style2">
-                          <b>Expected Balance:</b> {item.Expected}
-                        </p>
-                        <p className="style2">
-                          <b>Actual Balance:</b> 300.00
-                        </p>
-                      </div>
-                    </div>
-                    <div className="register-event">
-                      <div className="outer-group"></div>
-                    </div>
-                  </div>
-                  </div>
-
-                </>)
-            })
-          }
-
-
-          
-
-          <div className="detailed-body">
-            <div className="register-event">
-              <div className="outer-group">
-                <div className="group1">
-                  <p className="style1">initial Float</p>
-                  <p className="style2">{_openDateTime}</p>
-                </div>
-                <div className="group2">
-                  <p className="style2">
-                    <b>User:</b> {userName}
-                  </p>
-                  <p className="style2">
-                    <b>Notes: </b>{openingNote}
-                  </p>
-                </div>
-              </div>
-              <div className="group3">
-                <p className="style2">
-                  {/* <b>Expected Balance:</b> 300.00 */}
-                </p>
-                <p className="style2">
-                  <b>Open Balance:</b> {openingBal}
-                </p>
-              </div>
-            </div>
-            <div className="register-event">
-              <div className="outer-group" />
-            </div>
-          </div>
-
-
-
-
-
-
-
           <div className="detailed-footer">
             <button>Remove Cash</button>
             <button>Add Cash</button>
           </div>
         </div>
-
-
-        
-
-
-
-
-
-        {/* <div className="cm-detailed-view">
-          <div className="detailed-header">
-            <p>Transaction History</p>
-            <div className="outer-group">
-              <div className="inner-group">
-                <div className="row">
-                  <p className="style1">{CashDrawerPaymentDetail&&CashDrawerPaymentDetail.RegisterName}</p>
-                  <p className="style2 green">{CashDrawerPaymentDetail&&CashDrawerPaymentDetail.Status}</p>
-                </div>
-                <p className="style3">March 31, 2022 6:15pm</p>
-              </div>
-              <div className="inner-group">
-                <p className="style1">Cash Drawer Ending Balance</p>
-                <p className="style4">{_balance}</p>
-              </div>
-              <button>Print History</button>
-            </div>
-          </div>
-
-
-          {
-            paymentList.filter(i => i.Description.toLowerCase() == "cash").map((item, index) => {
-
-              return (
-                <>
-                 <div className="all_detailed_body">
-                  
-
-                  <div className="detailed-body">
-                    <div className="register-event">
-                      <div className="outer-group">
-                        <div className="group1">
-                          <p className="style1"> {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash"}</p>
-                          <p className="style2">{moment.utc(item.TransactionDateOffset).local().format(Config.key.TIMEDATE_FORMAT)}</p>
-                        </div>
-                        <div className="group2">
-                          <p className="style2">
-                            <b>User:</b> {item.SalePersonName}
-                          </p>
-                          <p className="style2">
-                            <b>Notes: </b>{item.Notes}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="group3">
-                        <p className="style2">
-                          <b>Expected Balance:</b> {item.Expected}
-                        </p>
-                        <p className="style2">
-                          <b>Actual Balance:</b> 300.00
-                        </p>
-                      </div>
-                    </div>
-                    <div className="register-event">
-                      <div className="outer-group"></div>
-                    </div>
-                  </div>
-                  </div>
-
-                </>)
-            })
-          }
-          <div className="detailed-footer">
-            <button>Remove Cash</button>
-            <button>Add Cash</button>
-          </div>
-        </div> */}
       </div>
-
-
-
     </>
   )
 }

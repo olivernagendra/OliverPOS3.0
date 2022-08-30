@@ -18,6 +18,9 @@ import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
 import Home from './components/homePage/Home';
+import OpenRegister from './components/OpenRegister';
+import Closeregister from './components/cashmanagement/Closeregister';
+
 function App() {
 
 
@@ -36,7 +39,10 @@ function App() {
       <Route path="/home" element={<Home/>} /> 
       <Route path="/openregister" element={<OpenRegister/>} /> 
       <Route path="*" element={<NoPage/>} />
-      <Route path="/openregister" element={<Openregister/>} /> 
+
+
+
+      <Route path="/closeregister" element={<Closeregister/>} /> 
      
 
     </Routes>

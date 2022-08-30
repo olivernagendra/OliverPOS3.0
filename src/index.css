@@ -21,3 +21,27 @@ code {
     flex-direction: column;
     align-items: center;
 }
+
+
+.user_login_fb_on{
+	background-color: #4267b2;
+    border-color: #4267b2;
+    position: relative;
+    color: #fff;
+    justify-content: center;
+	display: contents;
+	font-size: 16px;
+}
+.apple_login_btn{
+	height: 40px;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 40px;
+    border-radius: 2px;
+    font-size: 1em;
+	display: contents;
+
+}
+
