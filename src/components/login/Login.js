@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-// import FacebookLogin from 'react-facebook-login';
-// import GoogleLogin from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
+import GoogleLogin from 'react-google-login';
 import imglogo from '../../images/svg/Oliver-Horizontal.svg'
-// import imgGoogle from '../../images/svg/google-logo.svg'
-// import imgFaceBook from '../../images/svg/facebook-logo.svg'
-// import imgApple from '../../images/svg/apple-logo.svg'
+import imgGoogle from '../../images/svg/google-logo.svg'
+import imgFaceBook from '../../images/svg/facebook-logo.svg'
+import imgApple from '../../images/svg/apple-logo.svg'
 import Checkmark from '../../images/svg/Checkmark.svg'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { userLogin, userExternalLogin, GetUserProfileLogin } from '../login/loginSlice';
@@ -17,7 +17,19 @@ function Login() {
     const googleLoginBtn = useRef(null);
     const navigate = useNavigate();
     const [userEmail, setName] = useState("")
+
     const [password, setPassword] = useState("")
+
+    // const [fieldErr, setFieldErr] = useState("")
+
+    // const [usernamedErr, setUsernamedErr] = useState("")
+    // const [wentWrongErr, setWentWrongErr] = useState("")
+    // const [passwordErr, setPasswordErr] = useState("")
+
+
+
+
+
     const dispatch = useDispatch();
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
@@ -29,6 +41,75 @@ function Login() {
         navigate('/site')
     }
 
+
+    const handleKey = (e) => {
+        var key = e.which || e.keyCode;
+        if (key === 13) {
+            this.handleSubmit(e);
+        }
+    }
+
+    const [userRequest, setUserRequest] = useState({
+        setFieldErr: '',
+        setUsernamedErr: '',
+        setWentWrongErr: '',
+        setPasswordErr: '',
+    });
+
+
+    const handleSubmit = (e) => {
+        if (userEmail && password) {
+            setUserRequest({
+                setFieldErr: '',
+                setUsernamedErr: '',
+                setWentWrongErr: '',
+                setPasswordErr: '',
+            });
+            // if (this.state.check == false) {  //$('#remember').attr('checked')              
+
+            //     cookies.set('user', '');
+            //     cookies.set('pwd', '');
+            // }
+            dispatch(userLogin({ "email": userEmail, "password": password }))
+
+            // this.state.username = "";
+            // this.state.password = "";
+
+        } else {
+            if (!userEmail && !password) {
+                setUserRequest({
+                    setFieldErr: 'Email and Password is required',
+                    setUsernamedErr: '',
+                    setWentWrongErr: '',
+                    setPasswordErr: '',
+                });
+                // $('#username').focus();
+            } else if (!userEmail) {
+                setUserRequest({
+                    setFieldErr: '',
+                    setUsernamedErr: 'Email is required',
+                    setWentWrongErr: '',
+                    setPasswordErr: '',
+                });
+                //  $('#username').focus();
+            } else {
+                setUserRequest({
+                    setFieldErr: '',
+                    setUsernamedErr: '',
+                    setWentWrongErr: '',
+                    setPasswordErr: 'Password is required',
+                });
+
+                // $('#password').focus();
+            }
+        }
+        e.preventDefault();
+    }
+
+    const { setFieldErr, setUsernamedErr, setWentWrongErr, setPasswordErr } = userRequest;
+
+    var vlidationError = setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : setWentWrongErr != '' ? setWentWrongErr : "";
+    // console.log("vlidationError", vlidationError)
 
 
     const handleUserLogin = () => {
@@ -156,22 +237,22 @@ function Login() {
 
     //Apple login methods Start
     const appleLogin = () => {
-        let appleConnectLoaded = (AppleID) => {
-            // AppleID.auth.init({
-            //     clientId: "sell.oliverpos.com",
-            //     scope: 'name email',
-            //     state: 'origin:web',
-            //     redirectURI: Config.key.APPLE_LOGIN_RETURN_URL,
-            //     usePopup: true
-            // });
-            // setTimeout(() => {//To Remove the default apple logo
-            //     // $("svg text").text('Sign in with Apple')
-            //     // $("svg text").text($("svg text").text().substring(1));
-            //     //  $("svg text").removeAttr("textLength");
-            //     // $("svg text").css("fontFamily", "Poppins, Helvetica, sans-serif");
-            //     //   $("svg text").css("font-size", "0.8rem");           
-            // }, 100);
-        };
+        //let appleConnectLoaded = (AppleID) => {
+        //     AppleID.auth.init({
+        //         clientId: "sell.oliverpos.com",
+        //         scope: 'name email',
+        //         state: 'origin:web',
+        //         redirectURI: Config.key.APPLE_LOGIN_RETURN_URL,
+        //         usePopup: true
+        //     });
+        //     setTimeout(() => {//To Remove the default apple logo
+        //         // $("svg text").text('Sign in with Apple')
+        //         // $("svg text").text($("svg text").text().substring(1));
+        //         //  $("svg text").removeAttr("textLength");
+        //         // $("svg text").css("fontFamily", "Poppins, Helvetica, sans-serif");
+        //         //   $("svg text").css("font-size", "0.8rem");           
+        //     }, 100);
+        // };
 
         // (function (d, s, cb) {
         //     var js, fjs = d.getElementsByTagName(s)[0];
@@ -342,11 +423,6 @@ function Login() {
         window.location = bridgDomain + '/Account/Register';
     }
 
-
-
-
-
-
     if (status == STATUSES.LOADING) {
         return <div> Loading... </div>
     }
@@ -356,12 +432,17 @@ function Login() {
         {/* counter: {counter} */}
         <img src={imglogo} />
         <p >Sign in to your Oliver POS Account</p>
-        {error !== "" && <div className="danger">{error} </div>}
+        {/* {error !== "" && <div className="danger">{error} </div>} */}
+        {vlidationError != "" &&
+            <div className="danger">
+
+                {setWentWrongErr !== '' ? setWentWrongErr : setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : ""}
+            </div>}
         <form className="login-form">
             <label htmlFor="email">Email</label>
-            <input type="text" id="email" placeholder="Enter Email" onChange={(e) => handleNameChange(e)} />
+            <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" placeholder="Enter Password" onChange={(e) => handlePasswordChange(e)} />
+            <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
             <div className="row">
                 <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
                 <label className="custom-checkbox-wrapper">
@@ -372,58 +453,60 @@ function Login() {
                     Remember Me?
                 </label>
             </div>
-            <button type="button" onClick={() => handleUserLogin()}>Sign In</button>
+            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>Sign In</button>
         </form>
         <div className="or-row">
             <div className="divider"></div>
             <p>OR</p>
             <div className="divider"></div>
         </div>
-        {/* <button id="googleButton" ref={googleLoginBtn} type="submit"   >
+        <button id="googleButton" ref={googleLoginBtn} type="submit"   >
             <div className="img-container">
                 <img src={imgGoogle} alt="" />
 
             </div>
             Sign in with Google
 
-        </button> */}
+        </button>
 
 
         {/* <GoogleLogin
-                clientId={Config.key.FACEBOOK_CLIENT_ID}
-                buttonText=" Sign in with Google"
-                onSuccess={responseGoogle}
-                onFailure={responseGoogle}
-                cookiePolicy={'single_host_origin'}
-            /> */}
+            clientId={Config.key.FACEBOOK_CLIENT_ID}
+            buttonText=" Sign in with Google"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={'single_host_origin'}
+        /> */}
 
 
-        {/* <button id="facebookButton">
+        <button id="facebookButton">
             <div className="img-container">
                 <img src={imgFaceBook} alt="" />
             </div>
-                <FacebookLogin cssClass="btn user_login_fb_on"
-                    appId={Config.key.FACEBOOK_CLIENT_ID}
-                    autoLoad={false}
-                    fields="first_name, last_name,name,email"
-                    scope="public_profile, email"
-                    onClick={componentClicked}
-                    callback={responseFacebook}
-                    textButton="Sign in with Facebook"
+            <FacebookLogin cssClass="btn user_login_fb_on"
+                appId={Config.key.FACEBOOK_CLIENT_ID}
+                autoLoad={false}
+                fields="first_name, last_name,name,email"
+                scope="public_profile, email"
+                onClick={componentClicked}
+                callback={responseFacebook}
+                textButton="Sign in with Facebook"
 
-                />
-            
-        </button> */}
+            />
 
 
-        {/* <button type="submit" id="appleid-signin" title="Log in using your Apple account"
+        </button>
+
+
+        <button type="submit" id="appleid-signin" title="Log in using your Apple account"
             data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
             className="apple_login_btn">
             <div className="img-container" >
                 <img src={imgApple} alt="" />
             </div>
             Sign in with Apple
-        </button> */}
+        </button>
+
         <div className="row">
             <p>Don't have an account?</p>
             <a href="#" onClick={() => handleSignInClick()} >Sign up Now!</a>

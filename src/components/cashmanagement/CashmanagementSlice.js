@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { cashRecordsAPI ,getDetailsAPI } from './CashManagementAPI'
+import { cashRecordsAPI ,getDetailsAPI ,openRegisterAPI ,closeRegisterAPI,SaveClosingNoteAPI } from './CashManagementAPI'
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -9,6 +9,20 @@ const initialState = {
   "error":'',
   "is_success":false
 };
+
+export const openRegister = createAsyncThunk(
+  'openRegister/openRegisterAPI',
+  async (parameter,{rejectWithValue}) => {  
+   
+   try {
+     const response = await openRegisterAPI(parameter);
+          return response;
+   } catch (err) {
+    return rejectWithValue(err.response.data)
+  }
+         
+  }
+);
 
 export const getDetails = createAsyncThunk(
     'cashmanagementgetdetail/getDetailsAPI',
@@ -51,6 +65,47 @@ export const getDetails = createAsyncThunk(
            
     }
   );
+
+  export const closeRegister = createAsyncThunk(
+    'cashmanagementCloseRegister/closeRegisterAPI',
+    async (parameter,{rejectWithValue}) => {   
+      // const response =  closeRegisterAPI(parameter);
+      // // The value we return becomes the `fulfilled` action payload
+      // console.log("test",response.json())
+      // return response.json();
+  
+     try {
+       const response = await closeRegisterAPI(parameter);
+            // The value we return becomes the `fulfilled` action payload
+            return response;
+     } catch (err) {
+      // Use `err.response.data` as `action.payload` for a `rejected` action,
+      // by explicitly returning it using the `rejectWithValue()` utility
+      return rejectWithValue(err.response.data)
+    }
+           
+    }
+  );
+
+  export const SaveClosingNote = createAsyncThunk(
+    'cashmanagementCloseRegister/SaveClosingNoteAPI',
+    async (parameter,{rejectWithValue}) => {
+     try {
+       const response = await SaveClosingNoteAPI(parameter);
+            // The value we return becomes the `fulfilled` action payload
+            return response;
+     } catch (err) {
+      // Use `err.response.data` as `action.payload` for a `rejected` action,
+      // by explicitly returning it using the `rejectWithValue()` utility
+      return rejectWithValue(err.response.data)
+    }
+           
+    }
+  );
+
+
+
+
 
 
 
@@ -113,30 +168,126 @@ export const CashmanagementSecondSlice = createSlice({
   extraReducers: (builder) => {    
     builder   
       .addCase(getDetails.pending, (state) => {
-        state.status = STATUSES.LOADING;
-        state.data="";
-        state.error="";
-        state.is_success=false;
+        state.statusgetdetail = STATUSES.LOADING;
+        state.getdetail="";
+        state.errorgetdetail="";
+        state.is_successgetdetail=false;
       })
       .addCase(getDetails.fulfilled, (state, action) => {       
-          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.statusgetdetail = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.errorgetdetail;
           state.getdetail=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_success=action.payload && action.payload.is_success==true? true: false;      
+          state.errorgetdetail=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_successgetdetail=action.payload && action.payload.is_success==true? true: false;      
       })
       .addCase(getDetails.rejected, (state,action) => {
-        state.status = STATUSES.IDLE;
-        state.data="";
-        state.error = action.error;
-        state.is_success=false;
+        state.statusgetdetail = STATUSES.IDLE;
+        state.getdetail="";
+        state.errorgetdetail = action.error;
+        state.is_successgetdetail=false;
       })
   },
 });
 
+
  export const {  } = CashmanagementSecondSlice.actions;
   
+
+ export const CashmanagementThirdSlice = createSlice({
+  name: 'openRegister',
+  initialState,
+  reducers: { 
+   
+  },
+  extraReducers: (builder) => {    
+    builder   
+      .addCase(openRegister.pending, (state) => {
+        state.statusopenRegister = STATUSES.LOADING;
+        state.dataopenRegister="";
+        state.erroropenRegister="";
+        state.is_successopenRegister=false;
+      })
+      .addCase(openRegister.fulfilled, (state, action) => {       
+          state.statusopenRegister = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.dataopenRegister=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.erroropenRegister=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_successopenRegister=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(openRegister.rejected, (state,action) => {
+        state.statusopenRegister = STATUSES.IDLE;
+        state.dataopenRegister="";
+        state.erroropenRegister = action.error;
+        state.is_successopenRegister=false;
+      })
+  },
+});
+
+
+ export const {  } = CashmanagementThirdSlice.actions;
+
+
+ export const CashmanagementFourthSlice = createSlice({
+  name: 'cashmanagementCloseRegister',
+  initialState,
+  reducers: { 
+   
+  },
+  extraReducers: (builder) => {    
+    builder   
+      .addCase(closeRegister.pending, (state) => {
+        state.statuscloseRegister = STATUSES.LOADING;
+        state.closeRegisterdetail="";
+        state.errorcloseRegister="";
+        state.is_successcloseRegister=false;
+      })
+      .addCase(closeRegister.fulfilled, (state, action) => {       
+          state.statuscloseRegister = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.closeRegisterdetail=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.errorcloseRegister=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_successcloseRegister=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(closeRegister.rejected, (state,action) => {
+        state.statuscloseRegister = STATUSES.IDLE;
+        state.closeRegisterdetail="";
+        state.errorcloseRegister = action.error;
+        state.is_successcloseRegister=false;
+      })
+  },
+});
+
+
+ export const {  } = CashmanagementFourthSlice.actions;
   
-  
+ export const CashmanagementFifthSlice = createSlice({
+  name: 'cashmanagementSaveClosingNote',
+  initialState,
+  reducers: { 
+   
+  },
+  extraReducers: (builder) => {    
+    builder   
+      .addCase(SaveClosingNote.pending, (state) => {
+        state.statusSaveClosingNote = STATUSES.LOADING;
+        state.SaveClosingNotedetail="";
+        state.errorSaveClosingNote="";
+        state.is_successSaveClosingNote=false;
+      })
+      .addCase(SaveClosingNote.fulfilled, (state, action) => {       
+          state.statusSaveClosingNote = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.SaveClosingNotedetail=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.errorSaveClosingNote=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_successSaveClosingNote=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(SaveClosingNote.rejected, (state,action) => {
+        state.statusSaveClosingNote = STATUSES.IDLE;
+        state.SaveClosingNotedetail="";
+        state.errorSaveClosingNote = action.error;
+        state.is_successSaveClosingNote=false;
+      })
+  },
+});
+
+
+ export const {  } = CashmanagementFifthSlice.actions;
   
   
   // // The function below is called a selector and allows us to select a value from
@@ -153,4 +304,4 @@ export const CashmanagementSecondSlice = createSlice({
   //   }
   // };
   
-  export default {CashmanagementSlice,CashmanagementSecondSlice};
+  export default {CashmanagementSlice,CashmanagementSecondSlice,CashmanagementThirdSlice ,CashmanagementFourthSlice ,CashmanagementFifthSlice};
