@@ -21,7 +21,7 @@ import { initDB } from "react-indexed-db";
 import { DBConfig } from "./DBConfig";
 import Dashboard from './components/dashboard/Dashboard';
 import OpenRegister from './components/OpenRegister';
-
+import Closeregister from './components/cashmanagement/Closeregister';
 
 initDB(DBConfig);
 function App() {
@@ -47,6 +47,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/cashdrawer" element={<Cashmanagement />} />
       <Route path="/openregister" element={<OpenRegister />} />
+      <Route path="/closeregister" element={<Closeregister />} />
       <Route path="*" element={<NoPage />} />
     </Routes>
   </Router>
