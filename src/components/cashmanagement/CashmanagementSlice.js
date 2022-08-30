@@ -189,7 +189,7 @@ export const CashmanagementSecondSlice = createSlice({
 });
 
 
- export const {  } = CashmanagementSecondSlice.actions;
+//  export const {  } = CashmanagementSecondSlice.actions;
   
 
  export const CashmanagementThirdSlice = createSlice({
