@@ -60,7 +60,7 @@ const ProductLoader = () => {
         //redirectToURL()
         // navigate('/loginpin');
         //}
-        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
+        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/checkout';
 
         var udid = get_UDid(localStorage.getItem("UDID"));
 
@@ -126,7 +126,7 @@ const ProductLoader = () => {
 
                     // UpdateIndexDB(udid, ProductArray, RedirectUrl);
                     setTimeout(() => {
-                        navigate('/home');
+                        navigate('/dashboard');
                     }, 100);
 
                 }

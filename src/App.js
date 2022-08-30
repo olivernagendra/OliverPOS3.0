@@ -41,11 +41,11 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/site" element={<Site />} />
       <Route path="/location" element={<Location />} />
-      <Route path="/pin" element={<Pin />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/pin" element={<Pin />} />
       <Route path="/productloader" element={<ProductLoader />} />
-      <Route path="/cashdrawer" element={<Cashmanagement />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/cashdrawer" element={<Cashmanagement />} />
       <Route path="/openregister" element={<OpenRegister />} />
       <Route path="*" element={<NoPage />} />
     </Routes>

@@ -10,6 +10,7 @@ import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
 import { useRoutes } from "react-router-dom";
 import FetchIndexDB from "../../settings/FetchIndexDB";
 import { useIndexedDB } from 'react-indexed-db';
+import { getTaxAllProduct } from '../common/TaxSetting'
 const AdvancedSearch = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
@@ -24,11 +25,13 @@ const AdvancedSearch = () => {
     const getProductFromIDB = () => {
         var allData = [];
         getAll().then((rows) => {
-            setAllProductList(rows)
-            setParentProductList(rows)
-            setTotalRecords(rows ? rows.length : 0);
+            var allProdcuts = getTaxAllProduct(rows)
+            console.log("allProdcuts", allProdcuts)
+            setAllProductList(allProdcuts)
+            setParentProductList(allProdcuts)
+            setTotalRecords(allProdcuts ? allProdcuts.length : 0);
             //For temporary
-            setProduct_List(rows ? rows : []);
+            setProduct_List(allProdcuts ? allProdcuts : []);
         });
 
 
