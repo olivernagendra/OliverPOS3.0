@@ -23,7 +23,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import OpenRegister from './components/OpenRegister';
 import Closeregister from './components/cashmanagement/Closeregister';
 
-initDB(DBConfig);
+//initDB(DBConfig);
 function App() {
 
   // const customerData = [
