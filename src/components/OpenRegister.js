@@ -14,44 +14,41 @@ import STATUSES from "../constants/apiStatus";
 import { initOpenRegisterFn } from "./common/commonFunctions/openRegisterFn"
 
 const OpenRegister = () => {
-    const [amount, setAmount] = useState("")
-    const [notes, setNotes] = useState("")
-    const [userRequest, setUserRequest] = useState({
-        setFieldErr: '',
-    });
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [enteredAmount, setEnteredAmount] = useState(0.00)
+    const [notes, setNotes] = useState("")
+    const [toggle, settoggle] = useState(false)
+    const [isAmountEntered, setIsAmountEntered] = useState(false);
 
-    const handleAmount = (e) => {
-        setAmount(e.target.value);
+    const hundleToggle = () => {
+        settoggle(true)
     }
 
-    const handleNotes = (e) => {
-        setNotes(e.target.value);
-    }
 
-    const hundleSubmit = () => {
-        if (amount && amount != '') {
-            setUserRequest({
-                setFieldErr: ''
-            });
-        } else {
-            setUserRequest({
-                setFieldErr: 'Please enter amout'
-            });
+    const validateEnteredAmount = (e) => {
+        const { value } = e.target;
+        const re = new RegExp('^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$');
+        if (value === '' || re.test(value)) {
+            setEnteredAmount(value)
         }
+    }
 
-        openRegisterhundle()
+
+    const enterNote = (e) => {
+        const { value } = e.target;
+        setNotes(value)
     }
 
 
 
-    const openRegisterhundle = async () => {
-        console.log("openRegisterhundle")
-        if (amount && amount != '') {
-            console.log("amount", amount)
-            //setIsAmountEntered(false)
+
+
+
+
+    const openRegisterhundle = () => {
+        if (enteredAmount && enteredAmount != '') {
+            setIsAmountEntered(false)
             //  this.setState({ enteredAmount: 0.00, enterNote: '' });
             var d = new Date();
             var dateStringWithTime = moment(d).format('YYYY-MM-DD HH:mm:ss Z');
@@ -72,7 +69,7 @@ const OpenRegister = () => {
                 "SalePersonId": user && user.user_id ? user.user_id : '',
                 "SalePersonName": user && user.display_name ? user.display_name : '',
                 "SalePersonEmail": user && user.user_email ? user.user_email : '',
-                "ActualOpeningBalance": amount,
+                "ActualOpeningBalance": enteredAmount,
                 "OpeningNote": notes,
                 "LocalTimeZoneOffsetValue": getLocalTimeZoneOffsetValue
             }
@@ -81,30 +78,31 @@ const OpenRegister = () => {
             //  $(".form-control").val('');
         }
         else {
-            //  setIsAmountEntered(true)
+            setIsAmountEntered(true)
         }
     }
 
-
-
-
-
+   //  Save cashManagementID when response
     const { statusopenRegister, dataopenRegister, erroropenRegister, is_successopenRegister } = useSelector((state) => state.openRegister)
-    console.log("statusopenRegister", statusopenRegister, "dataopenRegister", dataopenRegister, "erroropenRegister", erroropenRegister, "is_successopenRegister", is_successopenRegister)
-
+    // console.log("statusopenRegister", statusopenRegister, "dataopenRegister", dataopenRegister, "erroropenRegister", erroropenRegister, "is_successopenRegister", is_successopenRegister)
     if (statusopenRegister === STATUSES.IDLE && is_successopenRegister) {
         if (dataopenRegister && dataopenRegister.content && dataopenRegister.content !== undefined) {
+            console.log(" dashboard first array id .Id", dataopenRegister.content.Id)
             localStorage.setItem("Cash_Management_ID", dataopenRegister.content.Id);
             localStorage.setItem("IsCashDrawerOpen", "true");
+            navigate('/productloader')
         }
     }
+
+
+
 
 
 
 
     useEffect(() => {
         //openRegisterFn();
-        initOpenRegisterFn();
+        // initOpenRegisterFn();
     }, []);
 
     return <React.Fragment><div className="open-register-wrapper">
@@ -130,43 +128,52 @@ const OpenRegister = () => {
 
         <main>
             <div className="auto-margin-top"></div>
+            
             <div className="step1">
-                <p>Ready to Open?</p>
-                <button id="openRegisterButton">Open Register</button>
-            </div>
-            <div className="step2 hidden">
+            {toggle !==true ? <>  <p>Ready to Open?</p>
+                <button id="" onClick={hundleToggle}>Open Register</button> </>:null }
+               
+
+            </div>{toggle == true ? <div className="step2 ">
                 <p>Start Your Cash Float</p>
                 <label htmlFor="floatAmount">Opening float amount ($):</label>
-                <input type="number" placeholder='Enter Amount' id="floatAmount" onChange={(e) => handleAmount(e)} />
+                
+                <input type="number" placeholder='Enter Amount' id="floatAmount" onChange={(e) => validateEnteredAmount(e)} />
+                {
+                    (isAmountEntered === true) ?
+                        <small style={{ "color": "red" }} >Amount field can not be blank"</small>
+                        : null
+                }
                 <button id="openCashDrawer" >Open Cash Drawer</button>
                 <label htmlFor="openNote">Optional - add a note:</label>
-                <textarea name="openNote" id="openNote" placeholder="Add your note here" onChange={(e) => handleNotes(e)}></textarea>
-                <button id="openFloatButton" onClick={hundleSubmit} >Open Float</button>
-            </div>
-            <div className="step3 hidden">
-                {<PinPad amount={amount}
+                <textarea name="openNote" id="openNote" placeholder="Add your note here" onChange={(e) => enterNote(e)}></textarea>
+                <button id="openFloatButton" onClick={openRegisterhundle} >Open Float</button>
+            </div> : null}
+
+            {/* <div className="step3 hidden">
+                {<PinPad enteredAmount={enteredAmount}
                     notes={notes}
                 ></PinPad>}
-            </div>
+            </div> */}
             <div className="auto-margin-bottom"></div>
         </main>
 
 
     </div>
-        <div className="logout-confirmation-wrapper hidden">
-            <div className="auto-margin-top"></div>
-            <p className="style1">Account Logout Confirmation</p>
-            <p className="style2">
-                Are you sure you want to logout <br />
-                of the Oliver POS app? <br />
-                <br />
-                You will need the account username and <br />
-                password to log back in.
-            </p>
-            <button id="logoutConfirm">Logout</button>
-            <button id="logoutCancel">Cancel</button>
-            <div className="auto-margin-bottom"></div>
-        </div>
+        // <div className="logout-confirmation-wrapper hidden">
+        //     <div className="auto-margin-top"></div>
+        //     <p className="style1">Account Logout Confirmation</p>
+        //     <p className="style2">
+        //         Are you sure you want to logout <br />
+        //         of the Oliver POS app? <br />
+        //         <br />
+        //         You will need the account username and <br />
+        //         password to log back in.
+        //     </p>
+        //     <button id="logoutConfirm">Logout</button>
+        //     <button id="logoutCancel">Cancel</button>
+        //     <div className="auto-margin-bottom"></div>
+        // </div>
     </React.Fragment>
 
 

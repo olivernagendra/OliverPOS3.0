@@ -11,58 +11,40 @@ function Cashmanagement() {
   const dispatch = useDispatch();
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
-  var FirstApiCall = false;
-  var firstRecordId
+  var callSecondApi = false;
+  var firstRecordId = "";
 
 
-
-  const getCashDrawerPaymentDetail = (Id, index) => {
-    dispatch(getDetails(Id));
+  const getCashDrawerPaymentDetail = (OrderId, index) => {
+    callSecondApi = false;
+    firstRecordId = ""
+    dispatch(getDetails(OrderId));
   }
 
 
 
+
   const { status, data, error, is_success } = useSelector((state) => state.cashmanagement)
-  console.log("status", status, "data", data, "error", error, "is_success", is_success)
+  // console.log("status", status, "data", data, "error", error, "is_success", is_success)
   if (status === STATUSES.IDLE && is_success) {
     if (data && data.content && data.content !== undefined) {
       var _RecordArray = data && data.content && data.content.Records ? data.content.Records : [];
       var array = [];
       if (_RecordArray.length > 0) {
         array = _RecordArray.slice().sort((a, b) => b.LogDate - a.LogDate)
-        // _RecordArray.sort(function (a, b) {
-        //   var keyA = new Date(a.LogDate),
-        //     keyB = new Date(b.LogDate);
-        //   // Compare the 2 dates
-        //   if (keyA < keyB) return -1;
-        //   if (keyA > keyB) return 1;
-        //   return 0;
-        // });
         array.reverse();
         var openingCashDrawerRecord = array ? array.find(Items => Items.ClosedTimeUtc == null) : null;
         if (openingCashDrawerRecord && openingCashDrawerRecord.Id) {
+          // console.log("cashmangement  openingCashDrawerRecord.Id", openingCashDrawerRecord.Id)
           localStorage.setItem("Cash_Management_ID", openingCashDrawerRecord.Id)
           localStorage.setItem("IsCashDrawerOpen", "true");
         }
         firstRecordId = array && array.length > 0 ? array[0].Id : '';
-        console.log("array", array)
-        console.log("firstRecordId", firstRecordId)
-
-        if (FirstApiCall == false) {
-          console.log("api run")
-          FirstApiCall = true
-        }
       }
-
+      callSecondApi = true
     }
-    //console.log("data ",data)
-    // dispatch(getDetails(firstRecordId));
+  }
 
-  }
-  if (is_success === true) {
-    console.log("data ",data)
-   // dispatch(getDetails(firstRecordId));
-  }
 
 
 
@@ -124,14 +106,16 @@ function Cashmanagement() {
 
 
   const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
-  // console.log("statusgetdetail",statusgetdetail)
-  // console.log("errorgetdetail",errorgetdetail)
-  // console.log("is_successgetdetail",is_successgetdetail)
+  if (statusgetdetail === STATUSES.IDLE && is_successgetdetail) {
+    callSecondApi = false
+    var CashDrawerPaymentDetail = getdetail && getdetail.content
+  }
 
-  var CashDrawerPaymentDetail = getdetail && getdetail.content
-  // if (CashDrawerPaymentDetail && CashDrawerPaymentDetail.Id) {
-  //   localStorage.setItem("Cash_Management_ID", CashDrawerPaymentDetail.Id)
+  // if (callSecondApi === true) {
+  //   getCashDrawerPaymentDetail(firstRecordId);
   // }
+
+
 
 
   var _balance = 0;
@@ -141,6 +125,11 @@ function Cashmanagement() {
     else
       _balance = CashDrawerPaymentDetail.Expected;
   }
+  var closeDateTime = CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcClosedDateTime : "";
+  var _closeDateTime = moment.utc(closeDateTime).local().format(Config.key.TIMEDATE_FORMAT);
+  var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
+  var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
+  var Status = CashDrawerPaymentDetail&& CashDrawerPaymentDetail.Status
   return (
     <>
       <div className="cash-management-wrapper">
@@ -202,7 +191,8 @@ function Cashmanagement() {
                   <p className="style1">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
                   <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
                 </div>
-                <p className="style3">March 31, 2022 6:15pm</p>
+                <p className="style3">{Status === "Open"
+                  ? _openDateTime : _openDateTime + " to " + _closeDateTime} </p>
               </div>
               <div className="inner-group">
                 <p className="style1">Cash Drawer Ending Balance</p>

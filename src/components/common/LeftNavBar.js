@@ -12,8 +12,10 @@ import ToggleNavbar_Icon from '../../images/svg/ToggleNavbar-Icon.svg';
 import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png';
 import MC_Logo1 from '../../images/Temp/MC_Logo 1.png';
 import Quickbooks1 from '../../images/Temp/Quickbooks 1.png';
+import { useNavigate } from 'react-router-dom';
 
 const LeftNavBar = () => {
+    const navigate = useNavigate();
     return (
         <div className="navbar">
         <div className="header-row">
@@ -41,7 +43,7 @@ const LeftNavBar = () => {
             <p>Transactions</p>
             <div className="f-key">F3</div>
         </button>
-        <button id="cashManagementButton" className="page-link">
+        <button id="cashManagementButton"  onClick={() => navigate("/cashdrawer")}  className="page-link">
             <div className="img-container">
                 <img src={CashManagement_Icon} alt="" />
             </div>
