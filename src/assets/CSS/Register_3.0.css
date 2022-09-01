@@ -4217,13 +4217,13 @@ input[type="number"] {
 	}
 
 	.homepage-wrapper > .header > .row > button#mobileNavToggle > img {
-		content: url('assets/images/svg/Hamburger-Menu-Icon.svg');   
+		content: url("/Assets/Images/SVG/Hamburger-Menu-Icon.svg");
 		width: 20px;
 		height: 13.33px;
 	}
 
 	.homepage-wrapper > .header > .row > button#mobileNavToggle.opened > img {
-		content: url("assets/images/svg/Hamburger-Menu-Active-Icon.svg");
+		content: url("/Assets/Images/SVG/Hamburger-Menu-Active-Icon.svg");
 		width: 39px;
 		height: 39px;
 	}
@@ -4833,7 +4833,7 @@ input[type="number"] {
 	}
 
 	.checkout-wrapper > .header > button#exitCheckoutButton > img {
-		content: url('assets/images/svg/LeftAngledBracket-Blue.svg');
+		content: url('/Assets/Images/SVG/LeftAngledBracket-Blue.svg');
 		width: 100%;
 		height: 100%;
 	}
@@ -8205,7 +8205,7 @@ input[type="number"] {
 	}
 
 	.checkout-wrapper > .header > button#exitCheckoutButton > img {
-		content: url('assets/images/svg/LeftAngledBracket-Blue.svg');
+		content: url('/Assets/Images/SVG/LeftAngledBracket-Blue.svg');
 		width: 100%;
 		height: 100%;
 	}
@@ -13873,7 +13873,7 @@ input[type="number"] {
 	.checkout-wrapper > .header > button#exitCheckoutButton > img {
 		width: 100%;
 		height: 100%;
-		content: url("assets/images/svg/Arrow_Left.svg");
+		content: url("/Assets/Images/SVG/Arrow_Left.svg");
 	}
 
 	.checkout-wrapper > .header > p {
