@@ -11,11 +11,11 @@ import STATUSES from '../../constants/apiStatus';
 import { productCount } from './productCountSlice';
 import { productLoader } from './loadProductSlice';
 import { useNavigate } from 'react-router-dom';
-import { useIndexedDB } from 'react-indexed-db';
+// import { useIndexedDB } from 'react-indexed-db';
 
 //import LoaderOnboarding from '../onboarding/components/LoaderOnboarding'
 const ProductLoader = () => {
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
+    // const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
     const navigate = useNavigate();
     const dispatch = useDispatch()
@@ -26,18 +26,18 @@ const ProductLoader = () => {
     //........Test--------------------------
     const saveDataIntoIndexDB = (ProductArray) => {
         ProductArray && ProductArray.length > 0 && ProductArray.map((item) => {
-            add(item).then(
-                (key) => {
-                    // console.log("ID Generated: ", key);
-                    //   let newState = Object.assign({}, state);
-                    //   newState.id = key;
-                    //   setState(newState);
-                    //   history.goBack();
-                },
-                (error) => {
-                    console.log(error);
-                }
-            )
+            // add(item).then(
+            //     (key) => {
+            //         // console.log("ID Generated: ", key);
+            //         //   let newState = Object.assign({}, state);
+            //         //   newState.id = key;
+            //         //   setState(newState);
+            //         //   history.goBack();
+            //     },
+            //     (error) => {
+            //         console.log(error);
+            //     }
+            // )
         })
 
         // var _state = { "WPID": 101, "name": "nagendra", "age": 32 }

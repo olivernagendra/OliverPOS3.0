@@ -8,11 +8,11 @@ import Add_Icon_White from '../../images/svg/Add-Icon-White.svg';
 import Transactions_Icon_White from '../../images/svg/Transactions-Icon-White.svg';
 import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
 import { useRoutes } from "react-router-dom";
-import FetchIndexDB from "../../settings/FetchIndexDB";
-import { useIndexedDB } from 'react-indexed-db';
+// import FetchIndexDB from "../../settings/FetchIndexDB";
+// import { useIndexedDB } from 'react-indexed-db';
 import { getTaxAllProduct } from '../common/TaxSetting'
 const AdvancedSearch = () => {
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
+    // const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
     const [allProductList, setAllProductList] = useState([])
     const [totalRecords, setTotalRecords] = useState(0)
@@ -24,15 +24,15 @@ const AdvancedSearch = () => {
 
     const getProductFromIDB = () => {
         var allData = [];
-        getAll().then((rows) => {
-            var allProdcuts = getTaxAllProduct(rows)
-            console.log("allProdcuts", allProdcuts)
-            setAllProductList(allProdcuts)
-            setParentProductList(allProdcuts)
-            setTotalRecords(allProdcuts ? allProdcuts.length : 0);
-            //For temporary
-            setProduct_List(allProdcuts ? allProdcuts : []);
-        });
+        // getAll().then((rows) => {
+        //     var allProdcuts = getTaxAllProduct(rows)
+        //     console.log("allProdcuts", allProdcuts)
+        //     setAllProductList(allProdcuts)
+        //     setParentProductList(allProdcuts)
+        //     setTotalRecords(allProdcuts ? allProdcuts.length : 0);
+        //     //For temporary
+        //     setProduct_List(allProdcuts ? allProdcuts : []);
+        // });
 
 
     }
