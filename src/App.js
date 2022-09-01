@@ -8,8 +8,8 @@ import {
 // import logo from './logo.svg';
 // import { Counter } from './features/counter/Counter';
 import './App.css';
-import { PrivateRoute } from './components/common/PrivateRoute';
-import Login from './components/login/Login'
+// import { PrivateRoute } from './components/common/PrivateRoute';
+// import Login from './components/login/Login'
 // import Site from './components/site/Site'
 // import Location from './components/location/Location'
 // import Register from './components/register/Register'
@@ -33,24 +33,28 @@ function App() {
   // { WPID: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
   //   { WPID: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
   //indexDatabase("2323223", customerData);
-  return (<Router>
+  return (
+    <div>
+      Welcome to Oliver POS !!!
+    </div>
+    //   <Router>
 
-    <Routes>
+    //   <Routes>
 
-      <Route path="/" element={<Login />} />
-      {/* <Route path="/login" element={<Login />} />
-      <Route path="/site" element={<Site />} />
-      <Route path="/location" element={<Location />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/pin" element={<Pin />} />
-      <Route path="/productloader" element={<ProductLoader />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/cashdrawer" element={<Cashmanagement />} />
-      <Route path="/openregister" element={<OpenRegister />} />
-      <Route path="/closeregister" element={<Closeregister />} />
-      <Route path="*" element={<NoPage />} /> */}
-    </Routes>
-  </Router>
+    //     <Route path="/" element={<Login />} />
+    //    <Route path="/login" element={<Login />} />
+    //     <Route path="/site" element={<Site />} />
+    //     <Route path="/location" element={<Location />} />
+    //     <Route path="/register" element={<Register />} />
+    //     <Route path="/pin" element={<Pin />} />
+    //     <Route path="/productloader" element={<ProductLoader />} />
+    //     <Route path="/dashboard" element={<Dashboard />} />
+    //     <Route path="/cashdrawer" element={<Cashmanagement />} />
+    //     <Route path="/openregister" element={<OpenRegister />} />
+    //     <Route path="/closeregister" element={<Closeregister />} />
+    //     <Route path="*" element={<NoPage />} />
+    //   </Routes>
+    // </Router> 
 
   );
 }
