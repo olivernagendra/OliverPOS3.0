@@ -10,18 +10,18 @@ import {
 import './App.css';
 //import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
-// import Site from './components/site/Site'
-// import Location from './components/location/Location'
-// import Register from './components/register/Register'
-// import NoPage from './components/NoPage'
-// import Pin from './components/pinPage/Pin';
-// import ProductLoader from './components/loadProduct/ProductLoader';
-// import Cashmanagement from './components/cashmanagement/Cashmanagement';
-// // import { initDB } from "react-indexed-db";
-// import { DBConfig } from "./DBConfig";
-// import Dashboard from './components/dashboard/Dashboard';
-// import OpenRegister from './components/OpenRegister';
-// import Closeregister from './components/cashmanagement/Closeregister';
+import Site from './components/site/Site'
+import Location from './components/location/Location'
+import Register from './components/register/Register'
+import NoPage from './components/NoPage'
+import Pin from './components/pinPage/Pin';
+import ProductLoader from './components/loadProduct/ProductLoader';
+import Cashmanagement from './components/cashmanagement/Cashmanagement';
+// import { initDB } from "react-indexed-db";
+import { DBConfig } from "./DBConfig";
+import Dashboard from './components/dashboard/Dashboard';
+import OpenRegister from './components/OpenRegister';
+import Closeregister from './components/cashmanagement/Closeregister';
 
 //initDB(DBConfig);
 function App() {
@@ -38,7 +38,7 @@ function App() {
     <Routes>
 
       <Route path="/" element={<Login />} />
-      {/* <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/site" element={<Site />} />
       <Route path="/location" element={<Location />} />
       <Route path="/register" element={<Register />} />
@@ -48,7 +48,7 @@ function App() {
       <Route path="/cashdrawer" element={<Cashmanagement />} />
       <Route path="/openregister" element={<OpenRegister />} />
       <Route path="/closeregister" element={<Closeregister />} />
-      <Route path="*" element={<NoPage />} /> */}
+      <Route path="*" element={<NoPage />} />
     </Routes>
   </Router>
 
