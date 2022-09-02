@@ -17,13 +17,13 @@ import NoPage from './components/NoPage'
 import Pin from './components/pinPage/Pin';
 import ProductLoader from './components/loadProduct/ProductLoader';
 import Cashmanagement from './components/cashmanagement/Cashmanagement';
-// import { initDB } from "react-indexed-db";
+import { initDB } from "react-indexed-db";
 import { DBConfig } from "./DBConfig";
 import Dashboard from './components/dashboard/Dashboard';
 import OpenRegister from './components/OpenRegister';
 import Closeregister from './components/cashmanagement/Closeregister';
 
-//initDB(DBConfig);
+initDB(DBConfig);
 function App() {
 
   // const customerData = [
