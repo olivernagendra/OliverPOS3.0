@@ -17,7 +17,7 @@ const MsgPopup_EndSession = (props) => {
         <div className={props.isShow===true?"subwindow end-session current":"subwindow end-session"}>
         <div className="subwindow-header">
             <p>End Session</p>
-            <button className="close-subwindow">
+            <button className="close-subwindow" onClick={()=>props.toggleShowEndSession()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
         </div>
