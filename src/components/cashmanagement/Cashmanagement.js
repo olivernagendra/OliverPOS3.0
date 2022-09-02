@@ -102,9 +102,10 @@ function Cashmanagement() {
   }
 
   if (callDetailApiOnLoad === true && firstRecordId !== "") {
-    firstRecordId = ""
+
     setCallDetailApiOnLoad(false)
     getCashDrawerPaymentDetail(firstRecordId);
+    firstRecordId = ""
 
   }
 
