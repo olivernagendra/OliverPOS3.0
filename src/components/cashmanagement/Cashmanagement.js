@@ -136,7 +136,7 @@ function Cashmanagement() {
         </div>
         <div className="cm-register-view">
           {((!allCashRecords) || allCashRecords.length == 0) ? <>
-            <h1>LOADING</h1>
+            <div>loading...</div>
           </> :
             <>
               <button className="no-transform">
