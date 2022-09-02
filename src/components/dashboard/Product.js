@@ -813,7 +813,7 @@ const Product = (props) => {
                     <div className="detailed-product">
                         <div className="row">
                             <div className="product-image-container">
-                                <img src={props.selProduct && props.selProduct.ProductImage} alt="" id="productImage" />
+                                <img src={props.selProduct && props.selProduct.ProductImage} alt="" id="productImage" className="height-fit"/>
                             </div>
                             <div className="col">
                                 <p className="mobile-only">Stock Details</p>
@@ -834,8 +834,8 @@ const Product = (props) => {
                         </div>
                         <div className="col">
                             <p className="title">Description</p>
-                            <p className="para">
-                                {props.selProduct && props.selProduct.Description}
+                            <p className="para" dangerouslySetInnerHTML={{__html: props.selProduct && props.selProduct.Description}}>
+                                
                             </p>
                             <p className="title">Additional Fields</p>
                             <p className="para">
