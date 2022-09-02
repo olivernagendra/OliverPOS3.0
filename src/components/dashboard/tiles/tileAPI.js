@@ -8,3 +8,21 @@ export function tileAPI( parameter) {
       return error
   });
 }
+
+export function addTileAPI( parameter) {
+  return serverRequest.clientServiceRequest('POST', `/Favorites/Save`,parameter)
+  .then(favList => {
+      return favList;
+  }).catch(error => {
+      return error
+  });
+}
+export function deleteTileAPI( parameter) {
+  return serverRequest.clientServiceRequest('GET', `/Favorites/Delete?Id=${parameter.favid}`)
+  .then(favList => {
+      return favList;
+  }).catch(error => {
+      return error
+  });
+}
+

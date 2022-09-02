@@ -13,13 +13,12 @@ const TileList = (props) => {
     const [filtered, setfiltered] = useState([]);
     const [ParentProductList, setParentProductList] = useState([]);
     const [favArrayList, setfavArrayList] = useState([]);
-    const [categoryList, setcategoryList] = useState([]);
-    const [attributeList, setattributeList] = useState([]);
+    // const [categoryList, setcategoryList] = useState([]);
+    // const [attributeList, setattributeList] = useState([]);
     const [cat_breadcrumb, setCat_breadcrumb] = useState([]);
     const [sel_item, setSel_item] = useState([]);
-
-
     const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
+    const { status, data, error, is_success } = useSelector((state) => state.tile)
     // var categoryList=[];
     // var attributeList=[];
 
@@ -38,7 +37,7 @@ const TileList = (props) => {
         var subAtt = [];
         if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) {
             var _attributeList = respAttribute.data.content;
-            setattributeList(_attributeList);
+            // setattributeList(_attributeList);
             subAtt = _attributeList.find(function (element) {
                 return element.Id === item.attribute_id
             })
@@ -76,7 +75,7 @@ const TileList = (props) => {
         var subCat = [];
         if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
             var _categoryList = respCategory.data.content;
-            setcategoryList(_categoryList)
+            // setcategoryList(_categoryList)
             subCat = _categoryList.find(function (element) {
                 return element.id === item.category_id
             })
@@ -224,7 +223,7 @@ const TileList = (props) => {
             var _categoryList = [];
             if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
                  _categoryList = respCategory.data.content;
-                setcategoryList(_categoryList)
+                // setcategoryList(_categoryList)
 
             }
 
@@ -393,7 +392,7 @@ const TileList = (props) => {
 
         setfavArrayList(_favArrayList);
     }
-    const { status, data, error, is_success } = useSelector((state) => state.tile)
+  
     useEffect(() => {
         //var regId = localStorage.getItem('register');
         var pList = localStorage.getItem('Product_List') ? JSON.parse(localStorage.getItem('Product_List')) : [];
@@ -593,7 +592,7 @@ const TileList = (props) => {
             <button className="category background-violet">
                 <p>Clothing</p>
             </button> */}
-            <button className="add-tile">
+            <button className="add-tile" onClick={()=>props.toggleAddTitle()}>
                 <img src={CircledPlus_Icon_Border} alt="" />
                 Add Tile
             </button>

@@ -4,9 +4,9 @@ import NoLink_Image from '../../images/svg/NoLink-Image.svg';
 import OliverKnowledge_Icon from '../../images/Temp/OliverKnowledge-Icon.png';
 import FB_Icon from '../../images/Temp/FB-Icon.png';
 import Etsy_Icon from '../../images/Temp/Etsy-Icon.png';
-const LinkLauncher = () => {
+const LinkLauncher = (props) => {
     return (
-        <div id="linkLauncherWrapper" className="link-launcher-wrapper hidden">
+        <div id="linkLauncherWrapper" className={props.isShow===true?"link-launcher-wrapper":"link-launcher-wrapper hidden"} onClick={()=>props.toggleLinkLauncher()}>
                 <div className="link-launcher">
                     <div className="header">
                         <button id="linkLauncherExit">
@@ -16,7 +16,7 @@ const LinkLauncher = () => {
                     </div>
                     <div className="body">
                         <img src={NoLink_Image} alt="" />
-                        <button>
+                        {/* <button>
                             <div className="img-container">
                                 <img src={OliverKnowledge_Icon} alt="" />
                             </div>
@@ -42,7 +42,7 @@ const LinkLauncher = () => {
                                 <p className="style1">Etsy Site</p>
                                 <p className="style2">www.etsy.com</p>
                             </div>
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </div>)

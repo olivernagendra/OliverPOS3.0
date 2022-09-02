@@ -8,7 +8,7 @@ import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSl
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 
-import { tileSlice } from '../components/dashboard/tiles/tileSlice';
+import { tileSlice,addTileSlice,deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
 import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
@@ -30,6 +30,8 @@ export const store = configureStore({
     receiptsetting: receiptSettingSlice.reducer,
     taxsetting: taxSettingSlice.reducer,
     tile: tileSlice.reducer,
+    addTile: addTileSlice.reducer,
+    deletTile: deleteTileSlice.reducer,
     cashmanagement: CashmanagementSlice.reducer,
     productloader: productLoaderSlice.reducer,
     productcount: productCountSlice.reducer,

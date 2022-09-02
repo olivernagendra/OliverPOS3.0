@@ -4,11 +4,12 @@ import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
 import SwitchUser_Icon from '../../images/svg/SwitchUser-Icon.svg';
 import Backspace_BaseBlue from '../../images/svg/Backspace-BaseBlue.svg';
 import PinPad from "../PinPad";
-const SwitchUser = () => {
-    return <div className="subwindow switch-user">
+const SwitchUser = (props) => {
+    return <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={()=>props.toggleSwitchUser()}>
+        <div className={props.isShow===true?"subwindow switch-user current":"subwindow switch-user"}>
         <div className="subwindow-header">
             <p>Switch User</p>
-            <button className="close-subwindow">
+            <button className="close-subwindow" onClick={()=>props.toggleSwitchUser()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
         </div>
@@ -63,7 +64,7 @@ const SwitchUser = () => {
             </div>
             <div className="auto-margin-bottom"></div>
         </div>
-    </div>
+    </div></div>
 }
 
 export default SwitchUser 

@@ -8,9 +8,9 @@ import QRCode_Icon from '../..//images/Temp/QRCode_Icon.png';
 import DYMO_Icon from '../..//images/Temp/DYMO-Icon.png';
 import Fortis_Icon from '../..//images/Temp/Fortis-Icon.png';
 import QuoteApp_Icon from '../..//images/Temp/QuoteApp_Icon.png';
-const AppLauncher = () => {
+const AppLauncher = (props) => {
     return (
-        <div id="appLauncherWrapper" className="app-launcher-wrapper hidden">
+        <div id="appLauncherWrapper" className={props.isShow===true? "app-launcher-wrapper":"app-launcher-wrapper hidden"} onClick={()=>props.toggleAppLauncher()}>
         <div className="app-launcher">
             <div className="header">
                 <button id="appLauncherExit">
@@ -20,43 +20,43 @@ const AppLauncher = () => {
             </div>
             <div className="body">
                 <img src={NoApps_Message} alt="" />
-                <button>
+                <button onClick={()=>props.toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={ClockIn_Icon} alt="" />
                     </div>
                     <p>Clock-in App</p>
                 </button>
-                <button>
+                <button onClick={()=>props.toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={Stripe_Icon} alt="" />
                     </div>
                     <p>Stripe Payments</p>
                 </button>
-                <button>
+                <button onClick={()=>props.toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={QRCode_Icon} alt="" />
                     </div>
                     <p>QR Code App</p>
                 </button>
-                <button>
+                <button onClick={()=>props.toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={DYMO_Icon} alt="" />
                     </div>
                     <p>DYMO Label Printing</p>
                 </button>
-                <button>
+                <button onClick={()=>props.toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={Fortis_Icon} alt="" />
                     </div>
                     <p>Fortis Payments</p>
                 </button>
-                <button>
+                <button onClick={()=>props.toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={QuoteApp_Icon} alt="" />
                     </div>
                     <p>Quote Printer</p>
                 </button>
-                <button>
+                <button onClick={()=>props.toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={GiftCard_Icon} alt="" />
                     </div>

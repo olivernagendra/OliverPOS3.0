@@ -1,11 +1,21 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-const CartDiscount = () => {
+const CartDiscount = (props) => {
+    const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            props.toggleCartDiscount();
+        }
+        else {
+            e.stopPropagation();
+        }
+        console.log(e.target.className)
+    }
     return (
-        <div className="subwindow cart-discount">
+        <div className={props.isShow===true?"subwindow-wrapper":"subwindow-wrapper hidden"} onClick={(e)=>outerClick(e)}>
+        <div className={props.isShow===true? "subwindow cart-discount current":"subwindow cart-discount"}>
             <div className="subwindow-header">
                 <p>Add Cart Discount</p>
-                <button className="close-subwindow">
+                <button className="close-subwindow" onClick={()=>props.toggleCartDiscount()}>
                     <img src={X_Icon_DarkBlue} alt="" />
                 </button>
             </div>
@@ -18,7 +28,7 @@ const CartDiscount = () => {
                     <button id="percentDiscount">% Discount</button>
                 </div>
             </div>
-        </div>)
+        </div></div>)
 }
 
 export default CartDiscount 

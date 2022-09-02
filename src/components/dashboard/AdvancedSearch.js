@@ -195,12 +195,22 @@ const AdvancedSearch = (props) => {
 const viewProduct=(item)=>
 {
     props.openPopUp(item);
-    toggleSubwindow();
+    props.toggleAdvancedSearch();
+    // toggleSubwindow();
 }
-    return <div className="subwindow advanced-search">
+const outerClick = (e) => {
+    if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+        props.toggleAdvancedSearch();
+    }
+    else {
+        e.stopPropagation();
+    }
+    console.log(e.target.className)
+}
+    return <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={(e)=>outerClick(e)}><div className={props.isShow===true?"subwindow advanced-search current":"subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
-            <button className="close-subwindow">
+            <button className="close-subwindow" onClick={()=>props.toggleAdvancedSearch()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
             <input type="text" id="advancedSearchBar" placeholder="Start typing to search..." onChange={e => productDataSearch(e)} />
@@ -421,7 +431,7 @@ const viewProduct=(item)=>
                 </div>
             </div>
         </div>
-    </div>
+    </div></div>
 }
 
 export default AdvancedSearch 

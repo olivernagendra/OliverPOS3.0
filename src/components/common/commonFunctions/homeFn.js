@@ -1,17 +1,17 @@
 export const  initHomeFn=()=>{
-    if (document.querySelector(".subwindow-wrapper")) {
-        document.querySelector(".subwindow-wrapper").addEventListener("click", (e) => {
-            if (e.target.classList.contains("subwindow-wrapper")) {
-                toggleSubwindow();
-            }
-        });
-    }
+    // if (document.querySelector(".subwindow-wrapper")) {
+    //     document.querySelector(".subwindow-wrapper").addEventListener("click", (e) => {
+    //         if (e.target.classList.contains("subwindow-wrapper")) {
+    //             toggleSubwindow();
+    //         }
+    //     });
+    // }
     
-    document.querySelectorAll(".subwindow-wrapper > .subwindow button.close-subwindow").forEach((button) => {
-        button.addEventListener("click", () => {
-            toggleSubwindow();
-        });
-    });
+    // document.querySelectorAll(".subwindow-wrapper > .subwindow button.close-subwindow").forEach((button) => {
+    //     button.addEventListener("click", () => {
+    //         toggleSubwindow();
+    //     });
+    // });
     
     var fakePassword = "111111";
     var currentPassword = "";
@@ -95,26 +95,26 @@ export const  initHomeFn=()=>{
     }
     
     //Tablet App Launcher Button
-    if (document.getElementById("appLauncherButton")) {
-        document.getElementById("appLauncherButton").addEventListener("click", (e) => {
-            if (document.getElementById("userInfoWrapper")) {
-                document.getElementById("userInfoWrapper").classList.add("hidden");
-            }
-            document.getElementById("linkLauncherWrapper").classList.add("hidden");
-            document.getElementById("linkLauncherButton").classList.remove("filter");
-            document.getElementById("appLauncherWrapper").classList.toggle("hidden");
-            e.currentTarget.classList.toggle("filter");
-        });
-    }
+    // if (document.getElementById("appLauncherButton")) {
+    //     document.getElementById("appLauncherButton").addEventListener("click", (e) => {
+    //         if (document.getElementById("userInfoWrapper")) {
+    //             document.getElementById("userInfoWrapper").classList.add("hidden");
+    //         }
+    //         document.getElementById("linkLauncherWrapper").classList.add("hidden");
+    //         document.getElementById("linkLauncherButton").classList.remove("filter");
+    //         document.getElementById("appLauncherWrapper").classList.toggle("hidden");
+    //         e.currentTarget.classList.toggle("filter");
+    //     });
+    // }
     
     //App Launcher Cover
-    if (document.getElementById("appLauncherWrapper")) {
-        document.getElementById("appLauncherWrapper").addEventListener("click", (e) => {
-            if (e.target.classList.contains("app-launcher-wrapper")) {
-                navbarCloseAll();
-            }
-        });
-    }
+    // if (document.getElementById("appLauncherWrapper")) {
+    //     document.getElementById("appLauncherWrapper").addEventListener("click", (e) => {
+    //         if (e.target.classList.contains("app-launcher-wrapper")) {
+    //             navbarCloseAll();
+    //         }
+    //     });
+    // }
     
     //App Launcher App Buttons
     document.querySelectorAll(".app-launcher > .body > button").forEach((button) => {
@@ -167,13 +167,13 @@ export const  initHomeFn=()=>{
     }
     
     //Link Launcher Cover
-    if (document.getElementById("linkLauncherWrapper")) {
-        document.getElementById("linkLauncherWrapper").addEventListener("click", (e) => {
-            if (e.target.classList.contains("link-launcher-wrapper")) {
-                navbarCloseAll();
-            }
-        });
-    }
+    // if (document.getElementById("linkLauncherWrapper")) {
+    //     document.getElementById("linkLauncherWrapper").addEventListener("click", (e) => {
+    //         if (e.target.classList.contains("link-launcher-wrapper")) {
+    //             navbarCloseAll();
+    //         }
+    //     });
+    // }
     
     //Link Launcher Link Buttons
     document.querySelectorAll(".link-launcher > button").forEach((button) => {
@@ -210,21 +210,21 @@ export const  initHomeFn=()=>{
         });
     }
     
-    //Tablet User Info Toggle
-    if (document.getElementById("userInfoButton")) {
-        document.getElementById("userInfoButton").addEventListener("click", () => {
-            document.getElementById("userInfoWrapper").classList.toggle("hidden");
-        });
-    }
+    // //Tablet User Info Toggle
+    // if (document.getElementById("userInfoButton")) {
+    //     document.getElementById("userInfoButton").addEventListener("click", () => {
+    //         document.getElementById("userInfoWrapper").classList.toggle("hidden");
+    //     });
+    // }
     
-    //User Info Cover
-    if (document.getElementById("userInfoWrapper")) {
-        document.getElementById("userInfoWrapper").addEventListener("click", (e) => {
-            if (e.target.classList.contains("user-info-wrapper")) {
-                e.currentTarget.classList.add("hidden");
-            }
-        });
-    }
+    // //User Info Cover
+    // if (document.getElementById("userInfoWrapper")) {
+    //     document.getElementById("userInfoWrapper").addEventListener("click", (e) => {
+    //         if (e.target.classList.contains("user-info-wrapper")) {
+    //             e.currentTarget.classList.add("hidden");
+    //         }
+    //     });
+    // }
     
     //Same As Billing Checkbox
     if (document.getElementById("sameAsBillingCheckbox")) {
@@ -248,29 +248,29 @@ export const  initHomeFn=()=>{
     }
     
     //Open Cart Discount
-    if (document.getElementById("addDiscountButton")) {
-        document.getElementById("addDiscountButton").addEventListener("click", () => {
-            document.getElementById("pageOptions").classList.add("hidden");
-            document.getElementById("mobileOptionsButton").classList.remove("filter");
-            toggleSubwindow("cart-discount");
-        });
-    }
+    // if (document.getElementById("addDiscountButton")) {
+    //     document.getElementById("addDiscountButton").addEventListener("click", () => {
+    //         document.getElementById("pageOptions").classList.add("hidden");
+    //         document.getElementById("mobileOptionsButton").classList.remove("filter");
+    //         toggleSubwindow("cart-discount");
+    //     });
+    // }
     
     //Add Tile Buttons
-    document.querySelectorAll(".products > button.add-tile").forEach((button) => {
-        button.addEventListener("click", () => {
-            toggleSubwindow("add-tile");
-        });
-    });
+    // document.querySelectorAll(".products > button.add-tile").forEach((button) => {
+    //     button.addEventListener("click", () => {
+    //         toggleSubwindow("add-tile");
+    //     });
+    // });
     
     //Add Note Button
-    if (document.getElementById("addNoteButton")) {
-        document.getElementById("addNoteButton").addEventListener("click", () => {
-            document.getElementById("pageOptions").classList.add("hidden");
-            document.getElementById("mobileOptionsButton").classList.remove("filter");
-            toggleSubwindow("add-order-note");
-        });
-    }
+    // if (document.getElementById("addNoteButton")) {
+    //     document.getElementById("addNoteButton").addEventListener("click", () => {
+    //         document.getElementById("pageOptions").classList.add("hidden");
+    //         document.getElementById("mobileOptionsButton").classList.remove("filter");
+    //         toggleSubwindow("add-order-note");
+    //     });
+    // }
     
     //Product not found exit
     if (document.getElementById("prodNotFoundExit")) {
@@ -335,13 +335,13 @@ export const  initHomeFn=()=>{
     }
     
     //Notifications Wrapper
-    if (document.getElementById("notificationsWrapper")) {
-        document.getElementById("notificationsWrapper").addEventListener("click", (e) => {
-            if (e.target.classList.contains("notifications-wrapper")) {
-                e.currentTarget.classList.add("hidden");
-            }
-        });
-    }
+    // if (document.getElementById("notificationsWrapper")) {
+    //     document.getElementById("notificationsWrapper").addEventListener("click", (e) => {
+    //         if (e.target.classList.contains("notifications-wrapper")) {
+    //             e.currentTarget.classList.add("hidden");
+    //         }
+    //     });
+    // }
     
     //Mobile Notifications Exit
     if (document.getElementById("mobileNotiExit")) {
@@ -374,20 +374,20 @@ export const  initHomeFn=()=>{
     }
     
     function toggleSubwindow(subwindowName = null) {
-        let subwindowWrapper = document.querySelector(".subwindow-wrapper");
-        let currentSubwindow = document.querySelector(".subwindow-wrapper > .subwindow.current");
-        if (subwindowName) {
-            if (currentSubwindow) {
-                currentSubwindow.classList.remove("current");
-            }
-            subwindowWrapper.classList.remove("hidden");
-            document.querySelector(`.subwindow-wrapper > .subwindow.${subwindowName}`).classList.add("current");
-        } else {
-            subwindowWrapper.classList.add("hidden");
-            if (currentSubwindow) {
-                currentSubwindow.classList.remove("current");
-            }
-        }
+        // let subwindowWrapper = document.querySelector(".subwindow-wrapper");
+        // let currentSubwindow = document.querySelector(".subwindow-wrapper > .subwindow.current");
+        // if (subwindowName) {
+        //     if (currentSubwindow) {
+        //         currentSubwindow.classList.remove("current");
+        //     }
+        //     subwindowWrapper.classList.remove("hidden");
+        //     document.querySelector(`.subwindow-wrapper > .subwindow.${subwindowName}`).classList.add("current");
+        // } else {
+        //     subwindowWrapper.classList.add("hidden");
+        //     if (currentSubwindow) {
+        //         currentSubwindow.classList.remove("current");
+        //     }
+        // }
     }
     
     //Sets up Iframe subwindow, if from link launcher then iframeSRC and author can be left null, if app being loaded then

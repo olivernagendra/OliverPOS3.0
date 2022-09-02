@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useLayoutEffect } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import AddTile from "./tiles/AddTile";
 import AdvancedSearch from "./AdvancedSearch";
@@ -10,12 +10,12 @@ import SwitchUser from "./SwitchUser";
 import MsgPopup_ProductNotFound from "./MsgPopup_ProductNotFound";
 import MsgPopup_UpgradeToUnlock from "./MsgPopup_UpgradeToUnlock";
 import MsgPopup_EndSession from "./MsgPopup_EndSession";
-import LinkLauncher from "./LinkLauncher";
-import AppLauncher from "./AppLauncher";
-
+import LinkLauncher from "../common/LinkLauncher";
+import AppLauncher from "../common/AppLauncher";
+import IframeWindow from "./IframeWindow";
 import LeftNavBar from "../common/LeftNavBar";
 import HeadereBar from "./HeadereBar";
-import IframeWindow from "./IframeWindow";
+// import IframeWindow from "./IframeWindow";
 import UserInfo from "./UserInfo";
 import CartList from "./CartList";
 import TileList from "./tiles/TileList";
@@ -28,13 +28,29 @@ import Product from "./Product";
 import { useIndexedDB } from 'react-indexed-db';
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
-   const [isShowPopups,setisShowPopups]= useState(false);
-   const [selProduct,setSelProduct]= useState(null);
+    const [isShowPopups, setisShowPopups] = useState(false);
+    const [selProduct, setSelProduct] = useState(null);
+    const [isShowUserProfile, setisShowUserProfile] = useState(false);
+    const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
+    const [isShowEndSession, setisShowEndSession] = useState(false);
+
+    const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
+    const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
+    const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+
+    const [isShowOrderNote, setisShowOrderNote] = useState(false);
+    const [isShowCartDiscount, setisShowCartDiscount] = useState(false);
+    const [isShowNotifications, setisShowNotifications] = useState(false);
+
+    const [isShowAdvancedSearch, setisShowAdvancedSearch] = useState(false);
+    const [isShowAddTitle,setisShowAddTitle]=useState(false);
+    const [isShowOptionPage,setisShowOptionPage]=useState(false);
+
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
     }, []);
- 
+
     const fetchData = async () => { //calling multiple api
         dispatch(attribute());
         dispatch(category());
@@ -44,19 +60,17 @@ const Home = () => {
         }
         var locationId = localStorage.getItem('Location')
         var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-        if(user && user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined" )
-        {
-            dispatch(group({"locationId":locationId,"group_sales":user.group_sales_by}));
+        if (user && user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined") {
+            dispatch(group({ "locationId": locationId, "group_sales": user.group_sales_by }));
         }
-
-     }
+    }
 
 
     // useEffect(() => {
     //     initFn();
     // });
     setTimeout(() => {
-        initHomeFn ();
+        initHomeFn();
     }, 1000);
     // useLayoutEffect(() => {
     //     //Open Mobile Cart Button
@@ -74,59 +88,100 @@ const Home = () => {
     //     }
 
     // }, []);
- 
+
     // return   
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
-const openPopUp= async (item)=>
-{
-    var _item=await getByID(item.Product_Id?item.Product_Id:item.WPID);
-    setSelProduct(_item)
-    setisShowPopups(true)
-}
-const closePopUp=()=>
-{
-    setisShowPopups(false)
-}
+    const openPopUp = async (item) => {
+        var _item = await getByID(item.Product_Id ? item.Product_Id : item.WPID);
+        setSelProduct(_item)
+        setisShowPopups(true)
+    }
+    const closePopUp = () => {
+        setisShowPopups(false)
+    }
+    const toggleUserProfile = () => {
+        setisShowUserProfile(!isShowUserProfile)
+    }
+    const toggleShowEndSession = () => {
+        setisShowEndSession(!isShowEndSession)
+    }
+    const toggleSwitchUser = () => {
+        setisShowSwitchUser(!isShowSwitchUser)
+    }
+    const toggleOrderNote = () => {
+        setisShowOrderNote(!isShowOrderNote)
+    }
+    const toggleCartDiscount = () => {
+        setisShowCartDiscount(!isShowCartDiscount)
+    }
+    const toggleNotifications = () => {
+        setisShowNotifications(!isShowNotifications)
+    }
+  
+    const toggleAdvancedSearch= () => {
+        setisShowAdvancedSearch(!isShowAdvancedSearch)
+    }
+    const toggleAddTitle= () => {
+        setisShowAddTitle(!isShowAddTitle)
+    }
 
-    return  (
-<React.Fragment>
-<Product openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
-    <div className="homepage-wrapper" style={{display:isShowPopups==false?"grid":"none"}}>
-            {/* left nav bar */}
-            {/* top header */}
-            {/* prodct list/item list */}
-            {/* cart list */}
-            <LeftNavBar></LeftNavBar>
-            <HeadereBar></HeadereBar>
-            <TileList openPopUp={openPopUp}></TileList>
-             <CartList></CartList>
-            <div className="mobile-homepage-footer">
-                <button id="openMobileCart">View Cart (2) - $24.99</button>
+    const toggleAppLauncher = () => {
+        setisShowAppLauncher(!isShowAppLauncher)
+        setisShowLinkLauncher(false)
+    }
+    const toggleLinkLauncher = () => {
+        setisShowLinkLauncher(!isShowLinkLauncher)
+        setisShowAppLauncher(false)
+    }
+   
+    const toggleiFrameWindow = () => {
+        setisShowiFrameWindow(!isShowiFrameWindow)
+    }
+    const toggleOptionPage = () => {
+        setisShowOptionPage(!isShowOptionPage)
+    }
+    return (
+        <React.Fragment>
+            <Product openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
+            <div className="homepage-wrapper" style={{ display: isShowPopups == false ? "grid" : "none" }}>
+                {/* left nav bar */}
+                {/* top header */}
+                {/* prodct list/item list */}
+                {/* cart list */}
+                <LeftNavBar toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch} toggleUserProfile={toggleUserProfile} toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher}  toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
+                <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
+                <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
+                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle}></TileList>
+                <CartList></CartList>
+                <div className="mobile-homepage-footer">
+                    <button id="openMobileCart">View Cart (2) - $24.99</button>
+                </div>
+
+                {/* top naviagtion bar */}
+                {/* app launcher */}
+                {/* link launcher */}
+                {/* notifications */}
+                {/* user info */}
+                <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
+                {/* <AppLauncher></AppLauncher> */}
+                {/* <LinkLauncher></LinkLauncher> */}
+                <Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications>
+                <div id="navCover" className="nav-cover"></div>
             </div>
-
-            {/* top naviagtion bar */}
-            {/* app launcher */}
-            {/* link launcher */}
-            {/* notifications */}
-            {/* user info */}
-            <UserInfo></UserInfo>
-            <AppLauncher></AppLauncher>
-            <LinkLauncher></LinkLauncher>
-            <Notifications></Notifications>
-            <div id="navCover" className="nav-cover"></div>
-        </div>
-        <div className="subwindow-wrapper hidden">
-            <IframeWindow></IframeWindow>
+            {/* <div className="subwindow-wrapper"> */}
+           
             <CreateCustomer></CreateCustomer>
-            <CartDiscount></CartDiscount>
-            <AddTile></AddTile>
-            <OrderNote></OrderNote>
+            <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
+            <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
+            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote}></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch openPopUp={openPopUp} closePopUp={closePopUp}></AdvancedSearch>
-            <SwitchUser></SwitchUser>
-            <MsgPopup_EndSession></MsgPopup_EndSession>
+            <AdvancedSearch openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
+            <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
             {/* iframe subview */}
             {/* create customer */}
             {/* cart discount */}
@@ -162,8 +217,9 @@ const closePopUp=()=>
                     </label>
                 </div>
             </div>
-        </div></React.Fragment>)    
-        // }
-    
+            {/* </div> */}
+        </React.Fragment>)
+    // }
+
 }
 export default Home 
