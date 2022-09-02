@@ -26,7 +26,7 @@ const TileList = (props) => {
     // var favArrayList = [];
     // const dispatch = useDispatch();
 
-   
+
     // const getSubAttribute = (item, id) => {
 
 
@@ -136,8 +136,8 @@ const TileList = (props) => {
     }
 
     const productDataSearch = (item1, index, parent) => {
-        console.log("---clicked tiles type--" +JSON.stringify(item1) );
-        console.log("---clicked tiles index--" +index);
+        console.log("---clicked tiles type--" + JSON.stringify(item1));
+        console.log("---clicked tiles index--" + index);
         setfiltered([]);
         var _filtered = [];
         // const { AllProduct, ParentProductList } = this.state;
@@ -223,7 +223,7 @@ const TileList = (props) => {
 
             var _categoryList = [];
             if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
-                 _categoryList = respCategory.data.content;
+                _categoryList = respCategory.data.content;
                 setcategoryList(_categoryList)
 
             }
@@ -231,7 +231,7 @@ const TileList = (props) => {
             if (_categoryList) {
                 var category_list = _categoryList;
                 var found;
-                var setSubCategory =_SubCategory;// localStorage.getItem("setSubCategory") ? JSON.parse(localStorage.getItem("setSubCategory")) : [];
+                var setSubCategory = _SubCategory;// localStorage.getItem("setSubCategory") ? JSON.parse(localStorage.getItem("setSubCategory")) : [];
                 if (category_list && category_list !== undefined && category_list.length > 0) {
                     found = category_list.find(item => value && item.Code && item.Code.replace(/-/g, "").toLowerCase() === value.replace(/-/g, "").toLowerCase());
                     if (!found && setSubCategory) {
@@ -336,8 +336,8 @@ const TileList = (props) => {
 
     }
     const filterProductByTile = (type, item, parent) => {
-        if(type!=="product")
-        fillCategorySelection(item)
+        if (type !== "product")
+            fillCategorySelection(item)
         //this.setState({ pageNumber: 0 })
         switch (type) {
             case "attribute":
@@ -501,7 +501,7 @@ const TileList = (props) => {
             _cat = cat_breadcrumb.map(cat => {
                 // _isCat++;
                 //displayCat += cat.Value?cat.Value:cat.attribute_code + " > "
-                return <button onClick={() => BreadCumCategorySelection(cat)}>{(cat.Value ? cat.Value.replace("&amp;", "&"): cat.attribute_slug?cat.attribute_slug.replace("&amp;", "&"):cat.name?cat.name.replace("&amp;", "&"):'') + " > "}</button>
+                return <button onClick={() => BreadCumCategorySelection(cat)}>{(cat.Value ? cat.Value.replace("&amp;", "&") : cat.attribute_slug ? cat.attribute_slug.replace("&amp;", "&") : cat.name ? cat.name.replace("&amp;", "&") : '') + " > "}</button>
             })
             newStatuses = [<button onClick={() => goMainMenu()}>{"All Categories > "}</button>, ..._cat]
             // console.log(newStatuses)
@@ -522,11 +522,11 @@ const TileList = (props) => {
 
     return (
         <div className="products">
-            <div className="mod-product">
+            {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
                 <div className="category-row">
                     {showCategorySelection()}
                 </div>
-            </div>
+            </div>}
 
             {
                 favArrayList && favArrayList.map((item, index) => {
