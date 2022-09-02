@@ -14,10 +14,9 @@ import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-
-//import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
+// import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
-
+import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -37,6 +36,10 @@ export const store = configureStore({
     attribute: attributeSlice.reducer,
     category: categorySlice.reducer,
     cashmanagementgetdetail: CashmanagementSecondSlice.reducer,
+    productloader: productLoaderSlice.reducer,
+    // openregisterupdate: openRegisterSlice.reducer,
+    customer: customerSlice.reducer,
+    group: groupSlice.reducer,
     openRegister: CashmanagementThirdSlice.reducer,
     cashmanagementCloseRegister: CashmanagementFourthSlice.reducer,
     cashmanagementSaveClosingNote: CashmanagementFifthSlice.reducer,
