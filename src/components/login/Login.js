@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-// import FacebookLogin from 'react-facebook-login';
-// import GoogleLogin from 'react-google-login';
+//import FacebookLogin from 'react-facebook-login';
+import GoogleLogin from 'react-google-login';
 import imglogo from '../../images/svg/Oliver-Horizontal.svg'
 import imgGoogle from '../../images/svg/google-logo.svg'
 import imgFaceBook from '../../images/svg/facebook-logo.svg'
@@ -460,14 +460,14 @@ function Login() {
             <p>OR</p>
             <div className="divider"></div>
         </div>
-        {/* <button id="googleButton" ref={googleLoginBtn} type="submit"   >
+        <button id="googleButton" ref={googleLoginBtn} type="submit"   >
             <div className="img-container">
                 <img src={imgGoogle} alt="" />
 
             </div>
             Sign in with Google
 
-        </button> */}
+        </button>
 
 
         {/* <GoogleLogin
