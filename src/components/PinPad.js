@@ -22,7 +22,8 @@ const PinPad = React.memo(props => {
     const { status, data, error, is_success } = useSelector((state) => state.pin)
     // console.log("status", status, "data", data, "error", error, "is_success", is_success)
     var hasPin = localStorage.getItem('hasPin')
-
+    var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
+    var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
 
 
     useEffect(() => {
@@ -66,14 +67,15 @@ const PinPad = React.memo(props => {
             // window.location = '/';
 
         }
-        if (props.doAction) {
-            props.doAction()
+        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+            navigate('/openregister')
         } else {
-            navigate('/productloader')
+            if (props.doAction) {
+                props.doAction()
+            } else {
+                navigate('/productloader')
+            }
         }
-
-
-
     }
 
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "0", "c"];

@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import {  SaveClosingNote } from './CashmanagementSlice'
+import { useNavigate } from "react-router-dom";
 
 const Closeregistertwo = (props) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [enterNotes, setenterNotes] = useState('')
 
   const  enterNote=(e)=> {
@@ -31,6 +33,7 @@ const Closeregistertwo = (props) => {
             //this.props.dispatch(userActions.logout())
            // redirectToURL()
             // history.push('/loginpin');
+            navigate('/pin')
         }, 500);
 
     }
