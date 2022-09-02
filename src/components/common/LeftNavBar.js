@@ -18,76 +18,76 @@ const LeftNavBar = () => {
     const navigate = useNavigate();
     return (
         <div className="navbar">
-        <div className="header-row">
-            <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
-            <img src={Oliver_Type} alt="" className="oliver-text" />
-        </div>
-        <button id="registerButton" className="page-link selected" disabled>
-            <div className="img-container">
-                <img src={Register_Icon} alt="" />
+            <div className="header-row" onClick={() => navigate("/dashboard")}>
+                <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
+                <img src={Oliver_Type} alt="" className="oliver-text" />
             </div>
-            <p>Register</p>
-            <div className="f-key">F1</div>
-        </button>
-        <button id="customersButton" className="page-link">
-            <div className="img-container">
-                <img src={Customers_Icon} alt="" />
-            </div>
-            <p>Customers</p>
-            <div className="f-key">F2</div>
-        </button>
-        <button id="transactionsButton" className="page-link">
-            <div className="img-container">
-                <img src={Transactions_Icon} alt="" />
-            </div>
-            <p>Transactions</p>
-            <div className="f-key">F3</div>
-        </button>
-        <button id="cashManagementButton"  onClick={() => navigate("/cashdrawer")}  className="page-link">
-            <div className="img-container">
-                <img src={CashManagement_Icon} alt="" />
-            </div>
-            <p>Cash Management</p>
-            <div className="f-key">F4</div>
-        </button>
-        <button id="linkLauncherButton" className="launcher">
-            <div className="img-container">
-                <img src={LinkLauncher_Icon} alt="" />
-            </div>
-            <p>Link Launcher</p>
-        </button>
-        <div className="divider"></div>
-        <button id="appLauncherButton" className="launcher">
-            <div className="img-container">
-                <img src={Oliver_Icon_BaseBlue} alt="" />
-            </div>
-            <p>App Launcher</p>
-        </button>
-        <button id="navApp1" className="launcher app">
-            <div className="img-container">
-                <img src={ClockIn_Icon} alt="" />
-            </div>
-            <p>{"Clock-in App"}</p>
-        </button>
-        <button id="navApp2" className="launcher app">
-            <div className="img-container">
-                <img src={MC_Logo1} alt="" />
-            </div>
-            <p>MailChimp</p>
-        </button>
-        <button id="navApp3" className="launcher app">
-            <div className="img-container">
-                <img src={Quickbooks1} alt="" />
-            </div>
-            <p>Quickbooks Sync</p>
-        </button>
-        <button id="navToggle" className="toggle-nav">
-            <div className="img-container">
-                <img src={ToggleNavbar_Icon} alt="" />
-            </div>
-            <p>Minimize Sidebar</p>
-        </button>
-    </div>)
+            <button id="registerButton" className="page-link selected" disabled>
+                <div className="img-container">
+                    <img src={Register_Icon} alt="" />
+                </div>
+                <p>Register</p>
+                <div className="f-key">F1</div>
+            </button>
+            <button id="customersButton" className="page-link">
+                <div className="img-container">
+                    <img src={Customers_Icon} alt="" />
+                </div>
+                <p>Customers</p>
+                <div className="f-key">F2</div>
+            </button>
+            <button id="transactionsButton" className="page-link">
+                <div className="img-container">
+                    <img src={Transactions_Icon} alt="" />
+                </div>
+                <p>Transactions</p>
+                <div className="f-key">F3</div>
+            </button>
+            <button id="cashManagementButton" onClick={() => navigate("/cashdrawer")} className="page-link">
+                <div className="img-container">
+                    <img src={CashManagement_Icon} alt="" />
+                </div>
+                <p>Cash Management</p>
+                <div className="f-key">F4</div>
+            </button>
+            <button id="linkLauncherButton" className="launcher">
+                <div className="img-container">
+                    <img src={LinkLauncher_Icon} alt="" />
+                </div>
+                <p>Link Launcher</p>
+            </button>
+            <div className="divider"></div>
+            <button id="appLauncherButton" className="launcher">
+                <div className="img-container">
+                    <img src={Oliver_Icon_BaseBlue} alt="" />
+                </div>
+                <p>App Launcher</p>
+            </button>
+            <button id="navApp1" className="launcher app">
+                <div className="img-container">
+                    <img src={ClockIn_Icon} alt="" />
+                </div>
+                <p>{"Clock-in App"}</p>
+            </button>
+            <button id="navApp2" className="launcher app">
+                <div className="img-container">
+                    <img src={MC_Logo1} alt="" />
+                </div>
+                <p>MailChimp</p>
+            </button>
+            <button id="navApp3" className="launcher app">
+                <div className="img-container">
+                    <img src={Quickbooks1} alt="" />
+                </div>
+                <p>Quickbooks Sync</p>
+            </button>
+            <button id="navToggle" className="toggle-nav">
+                <div className="img-container">
+                    <img src={ToggleNavbar_Icon} alt="" />
+                </div>
+                <p>Minimize Sidebar</p>
+            </button>
+        </div>)
 }
 
 export default LeftNavBar 
