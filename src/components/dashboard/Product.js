@@ -858,7 +858,7 @@ const Product = (props) => {
                             {recommProducts && recommProducts.map(a => {
                                 return <button onClick={()=>props.openPopUp(a)}>
                                     <div className="img-container">
-                                        <img src={a && a.ProductImage} alt="" />
+                                        <img src={a && a.ProductImage} alt="" className="height-fit"/>
                                     </div>
                                     <div className="prod-name">
                                         <p>{a && a.Title}</p>
