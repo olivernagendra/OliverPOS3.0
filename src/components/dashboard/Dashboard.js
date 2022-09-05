@@ -24,8 +24,9 @@ import { attribute } from "../common/commonAPIs/attributeSlice";
 import { category } from "../common/commonAPIs/categorySlice";
 import { group } from "../common/commonAPIs/groupSlice";
 import { tile } from './tiles/tileSlice';
-import Product from "./Product";
+import Product from "./product/Product";
 import { useIndexedDB } from 'react-indexed-db';
+import STATUSES from "../../constants/apiStatus";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -43,21 +44,26 @@ const Home = () => {
     const [isShowNotifications, setisShowNotifications] = useState(false);
 
     const [isShowAdvancedSearch, setisShowAdvancedSearch] = useState(false);
-    const [isShowAddTitle,setisShowAddTitle]=useState(false);
-    const [isShowOptionPage,setisShowOptionPage]=useState(false);
+    const [isShowAddTitle, setisShowAddTitle] = useState(false);
+    const [isShowOptionPage, setisShowOptionPage] = useState(false);
+
+
 
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
     }, []);
 
-    const fetchData = async () => { //calling multiple api
-        dispatch(attribute());
-        dispatch(category());
+    const getFavourites = () => {
         var regId = localStorage.getItem('register');
         if (typeof regId != "undefined" && regId != null) {
             dispatch(tile({ "id": regId }));
         }
+    }
+    const fetchData = async () => { //calling multiple api
+        dispatch(attribute());
+        dispatch(category());
+        getFavourites();
         var locationId = localStorage.getItem('Location')
         var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
         if (user && user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined") {
@@ -118,11 +124,11 @@ const Home = () => {
     const toggleNotifications = () => {
         setisShowNotifications(!isShowNotifications)
     }
-  
-    const toggleAdvancedSearch= () => {
+
+    const toggleAdvancedSearch = () => {
         setisShowAdvancedSearch(!isShowAdvancedSearch)
     }
-    const toggleAddTitle= () => {
+    const toggleAddTitle = () => {
         setisShowAddTitle(!isShowAddTitle)
     }
 
@@ -134,13 +140,22 @@ const Home = () => {
         setisShowLinkLauncher(!isShowLinkLauncher)
         setisShowAppLauncher(false)
     }
-   
+
     const toggleiFrameWindow = () => {
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
     const toggleOptionPage = () => {
         setisShowOptionPage(!isShowOptionPage)
     }
+    // It is refreshing the tile list from server when a new tile is added
+    const [resAddTile] = useSelector((state) => [state.addTile])
+    useEffect(() => {
+        if (resAddTile && resAddTile.status == STATUSES.IDLE && resAddTile.is_success) {
+            getFavourites && getFavourites();
+            toggleAddTitle();
+        }
+    }, [resAddTile]);
+    
     return (
         <React.Fragment>
             <Product openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
@@ -150,7 +165,7 @@ const Home = () => {
                 {/* prodct list/item list */}
                 {/* cart list */}
                 <LeftNavBar toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
-                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch} toggleUserProfile={toggleUserProfile} toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher}  toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch} toggleUserProfile={toggleUserProfile} toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
@@ -172,7 +187,7 @@ const Home = () => {
                 <div id="navCover" className="nav-cover"></div>
             </div>
             {/* <div className="subwindow-wrapper"> */}
-           
+
             <CreateCustomer></CreateCustomer>
             <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>

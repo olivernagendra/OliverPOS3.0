@@ -1,24 +1,27 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import LeftNavBar from "../common/LeftNavBar";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
-import Coin_Blue from '../../images/svg/Coin-Blue.svg';
-import Minus_Blue from '../../images/svg/Minus-Blue.svg';
-import Plus_Blue from '../../images/svg/Plus-Blue.svg';
-import CircledPlus_White from '../../images/svg/CircledPlus-White.svg';
-import Pencil from '../../images/svg/Pencil.svg';
-// import Shoes from '../../images/Temp/Shoes.png';
-// import CoffeeCup from '../../images/Temp/CoffeeCup.png';
-// import SnapbackHat from '../../images/Temp/SnapbackHat.png';
-// import Face_Mask from '../../images/Temp/Face Mask.png';
-import Checkmark from '../../images/svg/Checkmark.svg';
-import LockedIcon from '../../images/svg/LockedIcon.svg';
-import Hanged_Tshirt from '../../images/Temp/Hanged-Tshirt.png';
+import LeftNavBar from "../../common/LeftNavBar";
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import Oliver_Icon_BaseBlue from '../../../images/svg/Oliver-Icon-BaseBlue.svg';
+import Coin_Blue from '../../../images/svg/Coin-Blue.svg';
+import Minus_Blue from '../../../images/svg/Minus-Blue.svg';
+import Plus_Blue from '../../../images/svg/Plus-Blue.svg';
+import CircledPlus_White from '../../../images/svg/CircledPlus-White.svg';
+import Pencil from '../../../images/svg/Pencil.svg';
+// import Shoes from '../../../images/Temp/Shoes.png';
+// import CoffeeCup from '../../../images/Temp/CoffeeCup.png';
+// import SnapbackHat from '../../../images/Temp/SnapbackHat.png';
+// import Face_Mask from '../../../images/Temp/Face Mask.png';
+import Checkmark from '../../../images/svg/Checkmark.svg';
+import LockedIcon from '../../../images/svg/LockedIcon.svg';
+import Hanged_Tshirt from '../../../images/Temp/Hanged-Tshirt.png';
 import { useIndexedDB } from 'react-indexed-db';
-import FormateDateAndTime from '../../settings/FormateDateAndTime';
-import Config from '../../Config'
-import { initProuctFn } from '../common/commonFunctions/productFn';
-
+import FormateDateAndTime from '../../../settings/FormateDateAndTime';
+import Config from '../../../Config'
+import { initProuctFn } from '../../common/commonFunctions/productFn';
+import ProductNote from "./ProductNote";
+import ProductDiscount from "./ProductDiscount";
+import AdjustInventory from "./AdjustInventory";
+import MsgPopup_NoVariationSelected from "./MsgPopup_NoVariationSelected";
 
 const Product = (props) => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -29,10 +32,27 @@ const Product = (props) => {
     const [saveSelectedModifiers, setSaveSelectedModifiers] = useState([])
     const [recommProducts, setRecommProducts] = useState([])
 
+    const [isProductNote, setisProductNote] = useState(false);
+    const [isProductDiscount, setisProductDiscount] = useState(false);
+    const [isAdjustInventory, setisAdjustInventory] = useState(false);
+    const [isNoVariationSelected, setisNoVariationSelected] = useState(false);
+
 
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
     // });
+    const toggleProductNote = () => {
+        setisProductNote(!isProductNote)
+    }
+    const toggleProductDiscount = () => {
+        setisProductDiscount(!isProductDiscount)
+    }
+    const toggleAdjustInventory = () => {
+        setisAdjustInventory(!isAdjustInventory)
+    }
+    const toggleNoVariationSelected = () => {
+        setisNoVariationSelected(!isNoVariationSelected)
+    }
 
     // Modifers --start
 
@@ -400,28 +420,26 @@ const Product = (props) => {
         var ids = "";
         if (props && props.selProduct) {
             ids = props.selProduct.ReletedIds;
-            if (ids != "" && typeof ids!="undefined") {
+            if (ids != "" && typeof ids != "undefined") {
                 var tempArr = ids.split(',');
                 if (tempArr && tempArr.length > 4) {
                     tempArr = tempArr.slice(0, 4);
                     ids = tempArr;
                 }
-                else if(tempArr)
-                {
+                else if (tempArr) {
                     ids = tempArr;
                 }
             }
         }
 
-        if (ids != "" && typeof ids!="undefined") {
+        if (ids != "" && typeof ids != "undefined") {
             var recomProducts = [];
             ids.map(async (id) => {
                 var aa = await getProductByID(id).then((row) => {
                     return row;
                 });
                 recomProducts.push(aa);
-                if(ids.length==recomProducts.length)
-                {
+                if (ids.length == recomProducts.length) {
                     setRecommProducts(recomProducts);
                 }
             });
@@ -432,8 +450,8 @@ const Product = (props) => {
             getModifiers();
             getRecomProducts();
         }
-    }, [props.isShowPopups,props.selProduct]);
-    
+    }, [props.isShowPopups, props.selProduct]);
+
     //   end
     var _DistictAttribute = [];
     var _OptionAll = [];
@@ -454,9 +472,9 @@ const Product = (props) => {
     setTimeout(() => {
         initProuctFn();
     }, 1000);
-   var  variationStockQunatity=props.selProduct?
-                     (props.selProduct.ManagingStock == true && props.selProduct.StockStatus == "outofstock") ? "outofstock" :
-                        (props.selProduct.StockStatus == null || props.selProduct.StockStatus == 'instock') && props.selProduct.ManagingStock == false ? "Unlimited" : (typeof props.selProduct.StockQuantity != 'undefined') && props.selProduct.StockQuantity != '' ? props.selProduct.StockQuantity  : '0':'0';
+    var variationStockQunatity = props.selProduct ?
+        (props.selProduct.ManagingStock == true && props.selProduct.StockStatus == "outofstock") ? "outofstock" :
+            (props.selProduct.StockStatus == null || props.selProduct.StockStatus == 'instock') && props.selProduct.ManagingStock == false ? "Unlimited" : (typeof props.selProduct.StockQuantity != 'undefined') && props.selProduct.StockQuantity != '' ? props.selProduct.StockQuantity : '0' : '0';
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
             <React.Fragment>
@@ -667,7 +685,7 @@ const Product = (props) => {
                                                 <div className="radio-group">{
                                                     mod.modifierFields && mod.modifierFields.map(mf => {
                                                         return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") &&(efm.Name).replace(/ /g, "_");
+                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                             return (
                                                                 <label>
                                                                     <input type="checkbox" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
@@ -719,7 +737,7 @@ const Product = (props) => {
                                                 <div className="radio-group">{
                                                     mod.modifierFields && mod.modifierFields.map(mf => {
                                                         return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") &&(efm.Name).replace(/ /g, "_");
+                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                             return (
                                                                 <label htmlFor={id}>
                                                                     <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
@@ -813,7 +831,7 @@ const Product = (props) => {
                     <div className="detailed-product">
                         <div className="row">
                             <div className="product-image-container">
-                                <img src={props.selProduct && props.selProduct.ProductImage} alt="" id="productImage" className="height-fit"/>
+                                <img src={props.selProduct && props.selProduct.ProductImage} alt="" id="productImage" className="height-fit" />
                             </div>
                             <div className="col">
                                 <p className="mobile-only">Stock Details</p>
@@ -823,7 +841,7 @@ const Product = (props) => {
                                         <p className="quantity">{variationStockQunatity}</p>
                                     </div>
                                     <p className="desktop-only">In Stock</p>
-                                    <button>Adjust Stock</button>
+                                    <button onClick={()=>toggleAdjustInventory()}>Adjust Stock</button>
                                 </div>
 
                                 <button id="addProductDiscountMobile">
@@ -834,8 +852,8 @@ const Product = (props) => {
                         </div>
                         <div className="col">
                             <p className="title">Description</p>
-                            <p className="para" dangerouslySetInnerHTML={{__html: props.selProduct && props.selProduct.Description}}>
-                                
+                            <p className="para" dangerouslySetInnerHTML={{ __html: props.selProduct && props.selProduct.Description }}>
+
                             </p>
                             <p className="title">Additional Fields</p>
                             <p className="para">
@@ -856,9 +874,9 @@ const Product = (props) => {
                         <p>Recommended Upsells</p>
                         <div className="button-row">
                             {recommProducts && recommProducts.map(a => {
-                                return <button onClick={()=>props.openPopUp(a)}>
+                                return <button onClick={() => props.openPopUp(a)}>
                                     <div className="img-container">
-                                        <img src={a && a.ProductImage} alt="" className="height-fit"/>
+                                        <img src={a && a.ProductImage} alt="" className="height-fit" />
                                     </div>
                                     <div className="prod-name">
                                         <p>{a && a.Title}</p>
@@ -901,11 +919,11 @@ const Product = (props) => {
                     </div>
                     <div className="product-footer">
                         <div className="row">
-                            <button id="addProductNote">
+                            <button id="addProductNote" onClick={()=>toggleProductNote()}>
                                 <img src={Pencil} alt="" />
                                 Add Note
                             </button>
-                            <button id="addProductDiscount">Add Discount</button>
+                            <button id="addProductDiscount" onClick={()=>toggleProductDiscount()}>Add Discount</button>
                         </div>
                         <div className="row">
                             <div className="increment-input">
@@ -926,8 +944,8 @@ const Product = (props) => {
 
                     <div id="navCover" className="nav-cover"></div>
                 </div>
-                <div className="subwindow-wrapper hidden">
-                    <div id="iframeSubwindow" className="subwindow iframe-popup">
+                {/* <div className="subwindow-wrapper hidden"> */}
+                    {/* <div id="iframeSubwindow" className="subwindow iframe-popup">
                         <div className="subwindow-header">
                             <div className="img-container">
                                 <img src="" alt="" />
@@ -944,122 +962,25 @@ const Product = (props) => {
                             <iframe src="" frameBorder="0"></iframe>
                         </div>
                     </div>
-                    <div className="subwindow create-customer">
-                        <div className="subwindow-header">
-                            <p>Create Customer</p>
-                            <button className="close-subwindow">
-                                <img src={X_Icon_DarkBlue} alt="" />
-                            </button>
-                        </div>
-                        <div className="subwindow-body">
-                            <section id="contactInfoSection">
-                                <p>Contact Information</p>
-                                <div className="input-row">
-                                    <div className="input-col">
-                                        <label htmlFor="email">Email*</label>
-                                        <input type="email" id="email" placeholder="Enter Email" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="tel">Phone Number</label>
-                                        <input type="tel" id="tel" placeholder="Enter Phone Number" />
-                                    </div>
-                                </div>
-                                <div className="input-row">
-                                    <div className="input-col">
-                                        <label htmlFor="fName">First Name</label>
-                                        <input type="text" id="fName" placeholder="Enter First Name" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="lName">Last Name</label>
-                                        <input type="text" id="lName" placeholder="Enter Last Name" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="website">Website</label>
-                                        <input type="url" id="website" placeholder="Enter URL" />
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="billingAddress">
-                                <p>Billing Address</p>
-                                <div className="input-row">
-                                    <div className="input-col">
-                                        <label htmlFor="billingAddress1">Address 1</label>
-                                        <input type="text" id="billingAddress1" placeholder="Enter Address 1" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="billingAddress2">Address 2</label>
-                                        <input type="text" id="billingAddress2" placeholder="Enter Address 2" />
-                                    </div>
-                                </div>
-                                <div className="input-row">
-                                    <div className="input-col">
-                                        <label htmlFor="billingZipPostal">Zip/Postal Code</label>
-                                        <input type="text" id="billingZipPostal" placeholder="Enter Zip/Postal Code" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="billingCity">City</label>
-                                        <input type="text" id="billingCity" placeholder="Enter City" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="billingCountry">Country</label>
-                                        <input type="text" id="billingCountry" placeholder="Select Country" />
-                                    </div>
-                                </div>
-                            </section>
-                            <section id="shippingAddress">
-                                <div className="title-row">
-                                    <p>Shipping Address</p>
-                                    <label className="custom-checkbox-wrapper">
-                                        <input type="checkbox" id="sameAsBillingCheckbox" />
-                                        <div className="custom-checkbox">
-                                            <img src={Checkmark} alt="" />
-                                        </div>
-                                        Same as billing
-                                    </label>
-                                </div>
-                                <div className="input-row">
-                                    <div className="input-col">
-                                        <label htmlFor="shippingAddress1">Address 1</label>
-                                        <input type="text" id="shippingAddress1" placeholder="Enter Address 1" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="shippingAddress2">Address 2</label>
-                                        <input type="text" id="shippingAddress2" placeholder="Enter Address 2" />
-                                    </div>
-                                </div>
-                                <div className="input-row">
-                                    <div className="input-col">
-                                        <label htmlFor="shippingZipPostal">Zip/Postal Code</label>
-                                        <input type="text" id="shippingZipPostal" placeholder="Enter Zip/Postal Code" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="shippingCity">City</label>
-                                        <input type="text" id="shippingCity" placeholder="Enter City" />
-                                    </div>
-                                    <div className="input-col">
-                                        <label htmlFor="shippingCountry">Country</label>
-                                        <input type="text" id="shippingCountry" placeholder="Select Country" />
-                                    </div>
-                                </div>
-                            </section>
-                            <button>Create Customer</button>
-                        </div>
-                    </div>
-                    <div className="subwindow upgrade-to-unlock">
-                        <div className="subwindow-body">
-                            <div className="auto-margin-top"></div>
-                            <img src={LockedIcon} alt="" />
-                            <p className="style1">Upgrade to unlock this feature!</p>
-                            <p className="style2">
+                    <div class="subwindow upgrade-to-unlock">
+                        <div class="subwindow-body">
+                            <div class="auto-margin-top"></div>
+                            <img src="../Assets/Images/SVG/LockedIcon.svg" alt="" />
+                            <p class="style1">Upgrade to unlock this feature!</p>
+                            <p class="style2">
                                 This feature is not included in your plan. <br />
                                 Please upgrade your plan in Oliver HUB <br />
                                 to access this feature.
                             </p>
                             <button id="upgradeToUnlockExit">Go Back</button>
-                            <div className="auto-margin-bottom"></div>
+                            <div class="auto-margin-bottom"></div>
                         </div>
-                    </div>
-                </div>
+                    </div> */}
+                    <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
+                    <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
+                    <MsgPopup_NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></MsgPopup_NoVariationSelected>
+                    <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote}></ProductNote>
+                {/* </div> */}
             </React.Fragment>)
 }
 export default Product 

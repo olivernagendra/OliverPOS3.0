@@ -41,11 +41,11 @@ const HeadereBar = (props) => {
                     </div>
                     <p>Notifications</p>
                 </button>
-                <button id="addDiscountButton" onClick={()=>props.toggleCartDiscount()}>
+                <button id="customFeeDiscountButton" onClick={()=>props.toggleCartDiscount()}>
                     <div className="img-container">
                         <img src={Add_Discount_Icon} alt="" />
                     </div>
-                    <p>Discount</p>
+                    <p>Custom Fee / Cart Discount</p>
                 </button>
                 <button id="addNoteButton" onClick={()=>props.toggleOrderNote()}>
                     <div className="img-container">

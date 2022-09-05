@@ -35,13 +35,6 @@ const AddTile = (props) => {
             setcategoryList(_categoryList)
         }
     }
-    // if(respAddTile && respAddTile.is_success==true)
-    // {
-    //     var regId = localStorage.getItem('register');
-    //     if (typeof regId != "undefined" && regId != null) {
-    //         dispatch(tile({ "id": regId }));
-    //     }
-    // }
 
     const recursivelyFindKeyValue = (key, keyValue, list, depth = 0) => {
         //console.log("Searching list: ", list);
@@ -121,6 +114,7 @@ const AddTile = (props) => {
         var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0 }
         dispatch(addTile(param));
     }
+    
     const addToFavourite = (item, pos) => {
         // console.log(JSON.stringify(item));
         // return;
