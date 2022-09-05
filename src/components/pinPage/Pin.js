@@ -201,7 +201,7 @@ const Pin = () => {
                 <div className="divider"></div>
                 <p className="style2">{get_regName()}</p>
                 <p className="style3">{get_locName()}</p>
-                <button id="closeRegister1">Close Register</button>
+                <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >Close Register</button>
             </div>
         </header>
         <main>{<PinPad></PinPad>} <button id="closeRegister2">Close Register</button></main>
