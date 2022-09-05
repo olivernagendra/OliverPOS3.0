@@ -10,22 +10,22 @@ const ProductDiscount = (props) => {
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow product-discount current" : "subwindow product-discount"}>
-                <div class="subwindow-header">
+                <div className="subwindow-header">
                 <p>Add Product Discount</p>
-                    <button class="close-subwindow" onClick={()=>props.toggleProductDiscount()}>
+                    <button className="close-subwindow" onClick={()=>props.toggleProductDiscount()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div class="subwindow-body">
-                            <div class="auto-margin-top"></div>
+                <div className="subwindow-body">
+                            <div className="auto-margin-top"></div>
                             <label for="productDiscount">Discount amount:</label>
                             <input type="number" id="productDiscount" placeholder="0" />
                             <p>Select type of discount to be applied to product:</p>
-                            <div class="button-row">
+                            <div className="button-row">
                                 <button>$ Discount</button>
                                 <button>% Discount</button>
                             </div>
-                            <div class="auto-margin-bottom"></div>
+                            <div className="auto-margin-bottom"></div>
                         </div>
             </div></div>)
 }

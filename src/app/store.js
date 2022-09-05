@@ -17,6 +17,7 @@ import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
 // import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
+import { productSlice } from '../components/dashboard/product/productSlice';
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -47,6 +48,7 @@ export const store = configureStore({
     cashmanagementSaveClosingNote: CashmanagementFifthSlice.reducer,
     //openregisterupdate: openRegisterSlice.reducer,
     customer: customerSlice.reducer,
+    product:productSlice.reducer
     // counterReducer,
     // [postApi.reducerPath]: postApi.reducer,
     //[loginApi.reducerPath]: loginApi.reducer,

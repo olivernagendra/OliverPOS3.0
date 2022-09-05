@@ -1,5 +1,6 @@
 import React from "react";
-import NoVariationsSelected from '../../images/svg/NoVariationsSelected.svg';
+// import OutOfStock from '../../../images/svg/OutOfStock.svg';
+//'../../../images/svg/OutOfStock.svg';
 const MsgPopup_OutOfStock = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
@@ -8,17 +9,17 @@ const MsgPopup_OutOfStock = (props) => {
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div className={props.isShow === true ? "subwindow no-variation-selected current" : "subwindow no-variation-selected"}>
-                <div class="subwindow-body">
-                    <div class="auto-margin-top"></div>
-                    <p class="style1">Product Out of Stock</p>
-                    <img src="../Assets/Images/SVG/OutOfStock.svg" alt="" />
-                    <p class="style2">
+            <div className={props.isShow === true ? "subwindow out-of-stock current" : "subwindow out-of-stock"}>
+                <div className="subwindow-body">
+                    <div className="auto-margin-top"></div>
+                    <p className="style1">Product Out of Stock</p>
+                    {/* <img src={OutOfStock} alt="" /> */}
+                    <p className="style2">
                         This product is out of stock, <br />
                         try <button id="outOfStockToAdjustInventory">adjusting the inventory.</button>
                     </p>
                     <button id="closeOutOfStock" onClick={() => props.toggleOutOfStock()}>Go Back</button>
-                    <div class="auto-margin-bottom"></div>
+                    <div className="auto-margin-bottom"></div>
                 </div>
             </div></div>)
 }

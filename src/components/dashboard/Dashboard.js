@@ -17,7 +17,7 @@ import LeftNavBar from "../common/LeftNavBar";
 import HeadereBar from "./HeadereBar";
 // import IframeWindow from "./IframeWindow";
 import UserInfo from "./UserInfo";
-import CartList from "./CartList";
+import CartList from "./product/CartList";
 import TileList from "./tiles/TileList";
 import { initHomeFn } from "../common/commonFunctions/homeFn";
 import { attribute } from "../common/commonAPIs/attributeSlice";
@@ -25,6 +25,7 @@ import { category } from "../common/commonAPIs/categorySlice";
 import { group } from "../common/commonAPIs/groupSlice";
 import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
+import {product} from "./product/productSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 const Home = () => {
@@ -46,6 +47,7 @@ const Home = () => {
     const [isShowAdvancedSearch, setisShowAdvancedSearch] = useState(false);
     const [isShowAddTitle, setisShowAddTitle] = useState(false);
     const [isShowOptionPage, setisShowOptionPage] = useState(false);
+    const [listItem,setListItem]=useState([]);
 
 
 
@@ -60,9 +62,11 @@ const Home = () => {
             dispatch(tile({ "id": regId }));
         }
     }
+  
     const fetchData = async () => { //calling multiple api
         dispatch(attribute());
         dispatch(category());
+        dispatch(product({}));
         getFavourites();
         var locationId = localStorage.getItem('Location')
         var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -155,7 +159,17 @@ const Home = () => {
             toggleAddTitle();
         }
     }, [resAddTile]);
+
+    const [resProduct] = useSelector((state) => [state.product])
+    useEffect(() => {
+        if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
+            setListItem(resProduct.data);
+            setisShowPopups(false);
+          console.log("---resProduct--"+JSON.stringify(resProduct.data));
+        }
+    }, [resProduct]);
     
+
     return (
         <React.Fragment>
             <Product openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
@@ -170,7 +184,7 @@ const Home = () => {
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle}></TileList>
-                <CartList></CartList>
+                <CartList listItem={listItem}></CartList>
                 <div className="mobile-homepage-footer">
                     <button id="openMobileCart">View Cart (2) - $24.99</button>
                 </div>

@@ -9,16 +9,16 @@ const MsgPopup_NoVariationSelected = (props) => {
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow no-variation-selected current" : "subwindow no-variation-selected"}>
-                <div class="subwindow-body">
-                    <div class="auto-margin-top"></div>
-                    <p class="style1">No Variation Selected</p>
+                <div className="subwindow-body">
+                    <div className="auto-margin-top"></div>
+                    <p className="style1">No Variation Selected</p>
                     {/* <img src={NoVariationsSelected} alt="" /> */}
-                    <p class="style2">
+                    <p className="style2">
                         Please select all variations and attributes <br />
                         before adding this product to the cart.
                     </p>
                     <button id="closeNoVariations" onClick={() => props.toggleNoVariationSelected()}>Go Back</button>
-                    <div class="auto-margin-bottom"></div>
+                    <div className="auto-margin-bottom"></div>
                 </div>
             </div></div>)
 }

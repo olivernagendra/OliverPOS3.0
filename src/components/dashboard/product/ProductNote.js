@@ -9,18 +9,18 @@ const ProductNote = (props) => {
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow add-order-note current" : "subwindow add-order-note"}>
-                <div class="subwindow-header">
+                <div className="subwindow-header">
                     <p>Add Product Note</p>
-                    <button class="close-subwindow" onClick={() => props.toggleProductNote()}>
+                    <button className="close-subwindow" onClick={() => props.toggleProductNote()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div class="subwindow-body">
-                    <div class="auto-margin-top"></div>
+                <div className="subwindow-body">
+                    <div className="auto-margin-top"></div>
                     <label for="productNote">Enter a note for this product:</label>
                     <textarea id="productNote" placeholder="Add note to product."></textarea>
                     <button>Add Note</button>
-                    <div class="auto-margin-bottom"></div>
+                    <div className="auto-margin-bottom"></div>
                 </div>
             </div>
         </div>)

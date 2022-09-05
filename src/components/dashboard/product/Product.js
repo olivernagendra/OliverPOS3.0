@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../../common/LeftNavBar";
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import Oliver_Icon_BaseBlue from '../../../images/svg/Oliver-Icon-BaseBlue.svg';
@@ -6,6 +7,8 @@ import Coin_Blue from '../../../images/svg/Coin-Blue.svg';
 import Minus_Blue from '../../../images/svg/Minus-Blue.svg';
 import Plus_Blue from '../../../images/svg/Plus-Blue.svg';
 import CircledPlus_White from '../../../images/svg/CircledPlus-White.svg';
+// import NoVariationDisplay from '../../../images/svg/NoVariationDisplay.svg';
+
 import Pencil from '../../../images/svg/Pencil.svg';
 // import Shoes from '../../../images/Temp/Shoes.png';
 // import CoffeeCup from '../../../images/Temp/CoffeeCup.png';
@@ -22,8 +25,13 @@ import ProductNote from "./ProductNote";
 import ProductDiscount from "./ProductDiscount";
 import AdjustInventory from "./AdjustInventory";
 import MsgPopup_NoVariationSelected from "./MsgPopup_NoVariationSelected";
+import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
+import { addSimpleProducttoCart } from './productLogic';
+
+import { product } from "./productSlice";
 
 const Product = (props) => {
+    const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
     const { getByID: getProductByID } = useIndexedDB("products");
     const [modifierList, setModifierList] = useState([])
@@ -36,7 +44,8 @@ const Product = (props) => {
     const [isProductDiscount, setisProductDiscount] = useState(false);
     const [isAdjustInventory, setisAdjustInventory] = useState(false);
     const [isNoVariationSelected, setisNoVariationSelected] = useState(false);
-
+    const [isOutOfStock, setisOutOfStock] = useState(false);
+    const [productQty, setProductQty] = useState(1);
 
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
@@ -52,6 +61,62 @@ const Product = (props) => {
     }
     const toggleNoVariationSelected = () => {
         setisNoVariationSelected(!isNoVariationSelected)
+    }
+    const toggleOutOfStock = () => {
+        setisOutOfStock(!isOutOfStock)
+    }
+
+    const quantityUpdate = (type) => {
+        const { selProduct } = props;
+        if (selProduct) {
+            if (type === "plus") {
+                var qty = parseInt(productQty);
+                //if (this.state.variationfound ? selProduct.WPID == this.state.variationfound.WPID : selProduct.WPID == this.props.getVariationProductData.WPID) {
+                var maxQty = (selProduct.ManagingStock == false && selProduct.StockStatus == "outofstock") ? "outofstock" :
+                    (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
+                // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
+                if (maxQty == 'Unlimited' || qty < maxQty) {
+                    qty++;
+                }
+                setProductQty(qty)
+            }
+            else if (type === "minus") {
+                var qty = parseInt(productQty);
+                if (qty > 1) {
+                    qty--;
+                    setProductQty(qty);
+                };
+
+            }
+
+            //} else {
+            //     var maxQty = $("#txtInScock").text();
+            //     if (maxQty == 'Unlimited' || qty < maxQty) {
+            //         qty++;
+            //     }
+            //     if (qty > this.state.variationStockQunatity)
+            //         qty = this.state.variationStockQunatity;
+
+            //         this.setDefaultQuantity(qty);
+            // }
+        }
+        // else {
+        //     var maxQty = $("#txtInScock").text();
+        //     if (maxQty == 'Unlimited' || this.state.variationDefaultQunatity >= 0) {
+        //         var product = this.state.getVariationProductData
+        //         var qty = parseInt(this.state.variationDefaultQunatity);
+        //         // if ((product.StockStatus == null || product.StockStatus == 'instock')
+        //         //     && (product.ManagingStock == false || (product.ManagingStock == true && qty < this.state.variationStockQunatity))) {
+        //         //     qty++;
+        //         // }
+        //         if (maxQty == 'Unlimited' || qty < maxQty) {
+        //             qty++;
+        //         }
+        //         if (qty > this.state.variationStockQunatity)
+        //             qty = this.state.variationStockQunatity;
+        //         this.setDefaultQuantity(qty);
+
+        //     }
     }
 
     // Modifers --start
@@ -445,6 +510,28 @@ const Product = (props) => {
             });
         }
     }
+
+    const addToCart = () => {
+        if (props && props.selProduct) {
+            var _product = props.selProduct;
+            _product.quantity = productQty;
+            var result = addSimpleProducttoCart(_product);
+            if (result === 'outofstock') {
+                toggleOutOfStock();
+            }
+            else {
+                dispatch(product({}));
+            }
+
+        }
+
+    }
+    useEffect(() => {
+        props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+    }, [props.selProduct && props.selProduct.quantity]);
+
+
+
     useEffect(() => {
         if (props.isShowPopups == true) {
             getModifiers();
@@ -569,6 +656,9 @@ const Product = (props) => {
                         </div>
                     </div>
                     <div className="mod-product">
+                        {/* <div class="img-container">
+                            <img src={NoVariationDisplay} alt="" />
+                        </div> */}
                         <div className="row">
                             <p>Select Variations</p>
                             <button id="clearModsButton">Clear Selection</button>
@@ -841,7 +931,7 @@ const Product = (props) => {
                                         <p className="quantity">{variationStockQunatity}</p>
                                     </div>
                                     <p className="desktop-only">In Stock</p>
-                                    <button onClick={()=>toggleAdjustInventory()}>Adjust Stock</button>
+                                    <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
                                 </div>
 
                                 <button id="addProductDiscountMobile">
@@ -919,23 +1009,23 @@ const Product = (props) => {
                     </div>
                     <div className="product-footer">
                         <div className="row">
-                            <button id="addProductNote" onClick={()=>toggleProductNote()}>
+                            <button id="addProductNote" onClick={() => toggleProductNote()}>
                                 <img src={Pencil} alt="" />
                                 Add Note
                             </button>
-                            <button id="addProductDiscount" onClick={()=>toggleProductDiscount()}>Add Discount</button>
+                            <button id="addProductDiscount" onClick={() => toggleProductDiscount()}>Add Discount</button>
                         </div>
                         <div className="row">
                             <div className="increment-input">
-                                <button>
+                                <button onClick={() => quantityUpdate('minus')}>
                                     <img src={Minus_Blue} alt="" />
                                 </button>
-                                <input type="number" readOnly placeholder="0" />
-                                <button>
+                                <input type="number" readOnly placeholder="0" value={productQty} />
+                                <button onClick={() => quantityUpdate('plus')}>
                                     <img src={Plus_Blue} alt="" />
                                 </button>
                             </div>
-                            <button id="addProductToCart" >
+                            <button id="addProductToCart" onClick={() => addToCart()}>
                                 <img src={CircledPlus_White} alt="" />
                                 Add to Cart
                             </button>
@@ -945,7 +1035,7 @@ const Product = (props) => {
                     <div id="navCover" className="nav-cover"></div>
                 </div>
                 {/* <div className="subwindow-wrapper hidden"> */}
-                    {/* <div id="iframeSubwindow" className="subwindow iframe-popup">
+                {/* <div id="iframeSubwindow" className="subwindow iframe-popup">
                         <div className="subwindow-header">
                             <div className="img-container">
                                 <img src="" alt="" />
@@ -976,10 +1066,11 @@ const Product = (props) => {
                             <div class="auto-margin-bottom"></div>
                         </div>
                     </div> */}
-                    <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
-                    <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
-                    <MsgPopup_NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></MsgPopup_NoVariationSelected>
-                    <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote}></ProductNote>
+                <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
+                <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
+                <MsgPopup_NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></MsgPopup_NoVariationSelected>
+                <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote}></ProductNote>
+                <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
                 {/* </div> */}
             </React.Fragment>)
 }

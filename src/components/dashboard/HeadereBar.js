@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import avatar from '../../images/svg/avatar.svg';
 import Oliver_Type from '../../images/svg/Oliver-Type.svg';
 import Search_Icon_Blue from '../../images/svg/Search-Icon-Blue.svg';
@@ -9,7 +10,15 @@ import AddNote_Icon from '../../images/svg/AddNote-Icon.svg';
 import ClearCart_Icon from '../../images/svg/ClearCart-Icon.svg';
 import Notifications_Icon from '../../images/svg/Notifications-Icon.svg';
 import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
+import { removeCheckOutList } from '../dashboard/product/productLogic';
+import { product } from "../dashboard/product/productSlice";
 const HeadereBar = (props) => {
+    const dispatch = useDispatch();
+    const clearCart=()=>
+    {
+        removeCheckOutList();
+        dispatch(product({}));
+    }
     return (<React.Fragment>
         <div className="header">
             <div className="row">
@@ -53,7 +62,7 @@ const HeadereBar = (props) => {
                     </div>
                     <p>Add Note</p>
                 </button>
-                <button id="clearCartButton">
+                <button id="clearCartButton" onClick={()=>clearCart()}>
                     <div className="img-container">
                         <img src={ClearCart_Icon} alt="" />
                     </div>
