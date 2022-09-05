@@ -8,7 +8,7 @@ import {
 // import logo from './logo.svg';
 // import { Counter } from './features/counter/Counter';
 import './App.css';
-import { PrivateRoute } from './components/common/PrivateRoute';
+//import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
 import Site from './components/site/Site'
 import Location from './components/location/Location'

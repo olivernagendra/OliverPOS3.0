@@ -7,8 +7,7 @@ import ViewIcon from '../../images/svg/ViewIcon.svg';
 import Add_Icon_White from '../../images/svg/Add-Icon-White.svg';
 import Transactions_Icon_White from '../../images/svg/Transactions-Icon-White.svg';
 import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
-import { useRoutes } from "react-router-dom";
-import FetchIndexDB from "../../settings/FetchIndexDB";
+
 import { useIndexedDB } from 'react-indexed-db';
 import { getTaxAllProduct } from '../common/TaxSetting'
 const AdvancedSearch = () => {

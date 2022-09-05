@@ -11,18 +11,14 @@ function Cashmanagement() {
   const dispatch = useDispatch();
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
-  var callSecondApi = false;
+  //var callSecondApi = true;
   var firstRecordId = "";
+  const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
 
 
   const getCashDrawerPaymentDetail = (OrderId, index) => {
-    callSecondApi = false;
-    firstRecordId = ""
     dispatch(getDetails(OrderId));
   }
-
-
-
 
   const { status, data, error, is_success } = useSelector((state) => state.cashmanagement)
   // console.log("status", status, "data", data, "error", error, "is_success", is_success)
@@ -41,25 +37,19 @@ function Cashmanagement() {
         }
         firstRecordId = array && array.length > 0 ? array[0].Id : '';
       }
-      callSecondApi = true
+
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
+  let useCancelled = false;
   useEffect(() => {
-    dispatch(cashRecords({ "registerId": registerId, "pageSize": "1000", "pageNumber": "1" }));
-  }, [])
-
+    if (useCancelled == false) {
+      dispatch(cashRecords({ "registerId": registerId, "pageSize": "1000", "pageNumber": "1" }));
+    }
+    return () => {
+      useCancelled = true;
+    }
+  }, []);
 
 
   //======Cash ReCords API Data Store 
@@ -107,13 +97,17 @@ function Cashmanagement() {
 
   const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
   if (statusgetdetail === STATUSES.IDLE && is_successgetdetail) {
-    callSecondApi = false
+
     var CashDrawerPaymentDetail = getdetail && getdetail.content
   }
 
-  // if (callSecondApi === true) {
-  //   getCashDrawerPaymentDetail(firstRecordId);
-  // }
+  if (callDetailApiOnLoad === true && firstRecordId !== "") {
+
+    setCallDetailApiOnLoad(false)
+    getCashDrawerPaymentDetail(firstRecordId);
+    firstRecordId = ""
+
+  }
 
 
 
@@ -129,7 +123,7 @@ function Cashmanagement() {
   var _closeDateTime = moment.utc(closeDateTime).local().format(Config.key.TIMEDATE_FORMAT);
   var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
   var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
-  var Status = CashDrawerPaymentDetail&& CashDrawerPaymentDetail.Status
+  var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
   return (
     <>
       <div className="cash-management-wrapper">
@@ -142,7 +136,7 @@ function Cashmanagement() {
         </div>
         <div className="cm-register-view">
           {((!allCashRecords) || allCashRecords.length == 0) ? <>
-            <h1>LOADING</h1>
+            <div>loading...</div>
           </> :
             <>
               <button className="no-transform">
