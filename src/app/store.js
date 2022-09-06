@@ -8,13 +8,13 @@ import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSl
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 
-import { tileSlice,addTileSlice,deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
+import { tileSlice, addTileSlice, deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
 import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-// import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
+import { CustomergetPageSlice } from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
@@ -48,10 +48,9 @@ export const store = configureStore({
     cashmanagementSaveClosingNote: CashmanagementFifthSlice.reducer,
     //openregisterupdate: openRegisterSlice.reducer,
     customer: customerSlice.reducer,
-    product:productSlice.reducer
-    // counterReducer,
-    // [postApi.reducerPath]: postApi.reducer,
-    //[loginApi.reducerPath]: loginApi.reducer,
+    customergetPage: CustomergetPageSlice.reducer,
+    product: productSlice.reducer
+
   }
   ,
   middleware: getDefaultMiddleware =>

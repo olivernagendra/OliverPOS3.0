@@ -1,177 +1,157 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-import Checkmark from '../../images/svg/Checkmark.svg';
-import { customergetDetail, customergetPage } from '../customer/CustomerSlice'
-import { get_UDid } from "../common/localSettings";
-import STATUSES from "../../constants/apiStatus";
-import Config from '../../Config'
-const CreateCustomer = (props) => {
+const Customercreate = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    var UID = get_UDid('UDID');
-
-    // LoadMore()
-    // function LoadMore(params) {
-    //     dispatch(customergetPage({"uid":UID,"pageSize":Config.key.CUSTOMER_PAGE_SIZE,"pageNumber":"0"}));
-    // }
-
-    const initialValues = { fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", shippingCountry: "", email: "", };
-
+    // state
+    const initialValues = { fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", shippingCountry: "",email:"" };
     const [formValues, setFormValues] = useState(initialValues);
-
-    const [userRequest, setUserRequest] = useState({
-        emailValid: '',
-        nameValid: '',
-        lastValid: '',
-        phoneValid: '',
-        pinValid: '',
-        isContactValid: true
-    });
-    const { emailValid, nameValid, lastValid, phoneValid, pinValid, isContactValid } = userRequest;
-
-
-    //  Customer GetPage Api response 
-    const { customergetPagesdata, customergetPageserror, customergetPagesis_success, customergetPagesstatus } = useSelector((state) => state.customergetPage)
-    console.log("customergetPagesdata", customergetPagesdata, "customergetPageserror", customergetPageserror, "customergetPagesstatus,customergetPagesstatus", "customergetPagesis_success", customergetPagesis_success)
-
-    if (customergetPagesstatus === STATUSES.IDLE && customergetPagesis_success) {
-        if (customergetPagesdata && customergetPagesdata.content && customergetPagesdata.content !== customergetPagesis_success) {
-        //   var custList=[];
-        //     customergetPagesdata.content && customergetPagesdata.content.Records.forEach(element => {
-        //         var ItemExit = false;
-        //         custList.map(item => {
-        //             if (item.WPId == element.WPId) {
-        //                 ItemExit = true;
-        //             }
-        //         })
-        //         if (ItemExit == false)
-
-        //             custList.push(element);
-        //     });
-        //     console.log("custList",custList)
-            // this.state.customerList = custList;
-            // this.setState({ customerList: custList, isCustomerListLoaded: false });
-
-
-
-
-
-        }
-    }
-
-
-
-
-
-    let useCancelled = false;
-    useEffect(() => {
-        var CUSTOMER_ID = "123";
-        if (useCancelled == false) {
-            // dispatch(customergetDetail(CUSTOMER_ID));
-            dispatch(customergetPage({ "uid": UID, "pageSize": Config.key.CUSTOMER_PAGE_SIZE, "pageNumber": "0" }));
-        }
-        return () => {
-            useCancelled = true;
-        }
-    }, []);
-
-
-
-
-
-
+    const [formErrors, setFormErrors] = useState({});
+    const [isSubmit, setIsSubmit] = useState(false);
+  
+    const errors = {};
+    // hundle change 
     const handleChange = (e) => {
-
-        var emailValid = emailValid
-        var nameValid = nameValid;
-        var lastValid = lastValid;
-        var pinValid = pinValid
-        var isContactValid = isContactValid
-        var pin;
         const { name, value } = e.target;
-        switch (name) {
-            case 'email':
-                emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) ? true : false;
-                emailValid === true && (value.length <= 60) ? setUserRequest({ emailValid: '' }) : setUserRequest({ emailValid: 'email is Invalid' });
-                break;
-            case 'billingZipPostal':
-                pinValid = value[0];
-                pin = value.match(/^([1-9]|10)$/)
-                break;
-            case 'tel':
-                //value = value.match(/^[0-9]*$/) ? value : formValues.tel
-                setUserRequest({ isContactValid: value && value != "" ? value.match(/^[0-9]*$/) ? true : false : true })
-                break;
-            case 'fName':
-                if (value !== '') {
-                    nameValid = value.match('^[a-zA-Z ]+$') ? true : false;
-                    nameValid === true && (value.length <= 60) ? setUserRequest({ nameValid: '' }) : setUserRequest({ nameValid: 'Only alphabets allowed' });
-                }
-                break;
-            case 'lName':
-                if (value !== '') {
-                    lastValid = value.match('^[a-zA-Z ]+$') ? true : false;
-                    lastValid === true && (value.length <= 60) ? setUserRequest({ lastValid: '' }) : setUserRequest({ lastValid: 'Only alphabets allowed' });
-                }
-                break;
-            default:
-                break;
-        }
-
-
         setFormValues({ ...formValues, [name]: value });
+        //  setFormErrors(validate(formValues));
+        // const errors = {};
+        // const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+        // const numberregex = /^([1-9]|10)$/
+        // const alphregex = /^[A-Za-z]+$/
+        // switch (name) {
+        //     case 'email':
+        //         // alert("email")
+        //         // emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) ? true : false;
+        //         // emailValid === true && (value.length <= 60) ? this.setState({ emailValid: '' }) : this.setState({ emailValid: LocalizedLanguage.emailErr });
+        //         break;
+        //     case 'billingZipPostal':
+        //         // alert("billingZipPostal")
+        //         // custmerPin = value[0];
+        //         // pin = value.match(/^([1-9]|10)$/)
+        //         break;
+        //     case 'tel':
+        //         // alert("tel")
+        //         // value = value.match(/^[0-9]*$/) ? value : this.state.PhoneNumber
+        //         // this.setState({ isContactValid: value && value != "" ? value.match(/^[0-9]*$/) ? true : false : true })
+
+
+        //         break;
+        //     case 'fName':
+               
+        //         if (!value) {
+        //             errors.fName = "Name is required!";
+        //         }else if (!alphregex.test(value)) {
+        //             errors.fName = "Only alphabets allowed!";
+        //         } 
+
+        //         // if(value!==''){
+        //         //     nameValid = value.match('^[a-zA-Z ]+$') ? true : false;
+        //         //     nameValid === true && (value.length <= 60) ? this.setState({ nameValid: '' }) : this.setState({ nameValid: LocalizedLanguage.nameErr });
+        //         //     }
+               
+        //         break;
+        //     case 'lName':
+               
+        //         if (!value) {
+        //             errors.lName = "Last is required!";
+        //         }else if (!alphregex.test(value)) {
+        //             errors.lName = "Only alphabets allowed!";
+        //         } else {
+                    
+        //         }
+                
+        //         break;
+        //     default:
+        //         break;
+                
+        // }
+        // console.log("errors",errors)
+        // return errors;
+     
+
     };
 
-    const handleSubmit = (e) => {
-        const { fName, lName, tel, website, billingAddress1, billingAddress2, billingZipPostal, billingCity, billingCountry,
-            shippingAddress1, shippingAddress2, shippingCity, shippingCountry, email } = setFormValues
 
-        if ((!email && email == "") || (emailValid !== '' && emailValid !== false)) {
-            setUserRequest({
-                emailValid: email == "" ? "This field is required" : " email is Invalid"
-            })
-        } else if (fName && (fName !== "" && (nameValid && nameValid !== '' && nameValid !== false))) {
-            setUserRequest({
-                nameValid: fName == "" ? "This field is required" : "Only alphabets allowed"
-            })
-        } else if (lName && (lName !== "" && (lastValid && lastValid !== '' && lastValid !== false))) {
-            setUserRequest({
-                lastValid: lName == "" ? "This field is required" : "Only alphabets allowed"
-            })
+
+
+      const validate = (values,) => {
+      const errors = {};
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+      const numberregex = /^([1-9]|10)$/
+      const alphregex = /^[A-Za-z]+$/
+      //----Name
+        if (!values.fName) {
+          errors.fName = "Name is required!";
+        }
+      //----lastName
+        if (!values.lName) {
+            errors.lName = "last Name is required!";
+          }
+
+      //----Email
+        if (!values.email) {
+          errors.email = "Email is required!";
+        } else if (!regex.test(values.email)) {
+          errors.email = "This is not a valid email format!";
+        }
+        return errors;
+      };
+
+
+
+      const handleSubmit = (e) => {
+        var UDID = localStorage.getItem('UDID'); 
+        e.preventDefault();
+        setFormErrors(validate(formValues));
+        console.log("formValues------",formValues)
+        console.log("formErrors----",formErrors)
+
+        if (formValues.email && formValues.email !== "") {
+            const save = {
+                WPId: "",
+                FirstName: formValues.fName,
+                LastName: formValues.lName,
+                Contact: formValues.tel,
+                startAmount: 0,
+                Email: formValues.email,
+                udid: UDID,
+                // notes: Notes,
+                StreetAddress: formValues.billingAddress1,
+                Pincode: formValues.billingZipPostal,
+                City: formValues.billingCity,
+                Country: formValues.billingCountry,
+                // State: state_name,
+                StreetAddress2: formValues.billingAddress2,
+            }
+            console.log("save",save)
+            // this.setState({ create: 'create', activeFilter: false, search: '', Details: '' })
+            // setTimeout(() => {
+            //     dispatch(customerActions.save(save, 'create', this.state.backUrl));
+            // }, 500);
+            // updaterefreshwebManu();
+            // this.setState({ activeCreateEditDiv: false })
+            // if (window.location.pathname !== '/checkout') {
+            //     $(".close").click();
+            // }
         }
 
+        
 
 
 
-    }
-
-
-
-
-
-
-
-    // Close Button popup
-    const outerClick = (e) => {
-        if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleCreateCustomer();
-        }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
-    }
-
+       
+      };
 
     return (
-        <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div className={props.isShow === true ? "subwindow create-customer current" : "subwindow create-customer"}>
+        <>
+
+            <div className="subwindow create-customer">
                 <div className="subwindow-header">
                     <p>Create Customer</p>
-                    <button className="close-subwindow" onClick={() => props.toggleCreateCustomer()}>
-                        <img src={X_Icon_DarkBlue} alt="" />
+                    <button className="close-subwindow">
+                        <img src="../Assets/Images/SVG/X-Icon-DarkBlue.svg" alt="" />
                     </button>
                 </div>
                 <div className="subwindow-body">
@@ -182,7 +162,7 @@ const CreateCustomer = (props) => {
                                 <label htmlFor="email">Email*</label>
                                 <input type="email" id="email" placeholder="Enter Email" name='email' value={formValues.email} onChange={(e) => handleChange(e)} />
                             </div>
-                            <p>{emailValid}</p>
+                            <p>{formErrors.email}</p>
                             <div className="input-col">
                                 <label htmlFor="tel">Phone Number</label>
                                 <input id="tel" type="text" pattern='[0-9]{0,5}' autoComplete='off' maxLength={13} placeholder="Enter Phone Number" name='tel' value={formValues.tel} onChange={(e) => handleChange(e)} />
@@ -193,12 +173,13 @@ const CreateCustomer = (props) => {
                                 <label htmlFor="fName">First Name</label>
                                 <input type="text" id="fName" value={formValues.fName} placeholder="Enter First Name" name='fName' onChange={(e) => handleChange(e)} />
                             </div>
-                            <small>{nameValid}</small>
+                            <p>{formErrors.fName}</p>
                             <div className="input-col">
                                 <label htmlFor="lName">Last Name</label>
-                                <input type="text" id="lName" placeholder="Enter Last Name" name='lName' onChange={(e) => handleChange(e)} value={formValues.lName} />
+                                <input type="text" id="lName" placeholder="Enter Last Name" name='lName' onChange={(e) => handleChange(e)} value={errors.lName} />
+
                             </div>
-                            <small>{lastValid}</small>
+                            <p>{formErrors.lName}</p>
                             <div className="input-col">
                                 <label htmlFor="website">Website</label>
                                 <input type="url" id="website" placeholder="Enter URL" name='website' value={formValues.website} onChange={(e) => handleChange(e)} />
@@ -238,7 +219,7 @@ const CreateCustomer = (props) => {
                             <label className="custom-checkbox-wrapper">
                                 <input type="checkbox" id="sameAsBillingCheckbox" name="sameAsBillingCheckbox" onChange={(e) => handleChange(e)} />
                                 <div className="custom-checkbox">
-                                    <img src={Checkmark} alt="" />
+                                    <img src="../Assets/Images/SVG/Checkmark.svg" alt="" />
                                 </div>
                                 Same as billing
                             </label>
@@ -256,7 +237,7 @@ const CreateCustomer = (props) => {
                         <div className="input-row">
                             <div className="input-col">
                                 <label htmlFor="shippingZipPostal">Zip/Postal Code</label>
-                                <input type="text" id="shippingZipPostal" name='shippingZipPostal' value={formValues.shippingZipPostal} placeholder="Enter Zip/Postal Code" onChange={(e) => handleChange(e)} />     <input type="text" id="shippingZipPostal" placeholder="Enter Zip/Postal Code" />
+                                <input type="text" id="shippingZipPostal" name='shippingZipPostal' value={formValues.shippingZipPostal} placeholder="Enter Zip/Postal Code" onChange={(e) => handleChange(e)} />
                             </div>
                             <div className="input-col">
                                 <label htmlFor="shippingCity">City</label>
@@ -271,7 +252,8 @@ const CreateCustomer = (props) => {
                     <button onClick={handleSubmit}>Create Customer</button>
                 </div>
             </div>
-        </div>)
+        </>
+    )
 }
 
-export default CreateCustomer 
+export default Customercreate

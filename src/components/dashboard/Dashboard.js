@@ -25,7 +25,7 @@ import { category } from "../common/commonAPIs/categorySlice";
 import { group } from "../common/commonAPIs/groupSlice";
 import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
-import {product} from "./product/productSlice";
+import { product } from "./product/productSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
@@ -51,7 +51,7 @@ const Home = () => {
     const [isShowOptionPage, setisShowOptionPage] = useState(false);
     const [listItem,setListItem]=useState([]);
     const [isOutOfStock, setisOutOfStock] = useState(false);
-
+    const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
 
     const dispatch = useDispatch();
     useEffect(() => {
@@ -64,7 +64,7 @@ const Home = () => {
             dispatch(tile({ "id": regId }));
         }
     }
-  
+
     const fetchData = async () => { //calling multiple api
         dispatch(attribute());
         dispatch(category());
@@ -165,6 +165,10 @@ const Home = () => {
      const toggleOutOfStock = () => {
         setisOutOfStock(!isOutOfStock)
     }
+    const toggleCreateCustomer = () => {
+        setisShowCreateCustomer(!isShowCreateCustomer)
+    }
+
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
@@ -179,10 +183,10 @@ const Home = () => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
             setisShowPopups(false);
-          console.log("---resProduct--"+JSON.stringify(resProduct.data));
+            console.log("---resProduct--" + JSON.stringify(resProduct.data));
         }
     }, [resProduct]);
-    
+
 
     return (
         <React.Fragment>
@@ -216,13 +220,14 @@ const Home = () => {
             </div>
             {/* <div className="subwindow-wrapper"> */}
 
-            <CreateCustomer></CreateCustomer>
+           
             <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote}></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <CreateCustomer  isShow={isShowCreateCustomer} ></CreateCustomer>
             <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>

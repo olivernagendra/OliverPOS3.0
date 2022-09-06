@@ -22,6 +22,8 @@ import { DBConfig } from "./DBConfig";
 import Dashboard from './components/dashboard/Dashboard';
 import OpenRegister from './components/OpenRegister';
 import Closeregister from './components/cashmanagement/Closeregister';
+import Customercreate from './components/customer/Customercreate';
+
 
 initDB(DBConfig);
 function App() {
@@ -49,6 +51,7 @@ function App() {
       <Route path="/openregister" element={<OpenRegister />} />
       <Route path="/closeregister" element={<Closeregister />} />
       <Route path="*" element={<NoPage />} />
+      <Route path="/customer" element={<Customercreate />} />
     </Routes>
   </Router>
 
