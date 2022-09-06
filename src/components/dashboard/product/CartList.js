@@ -13,7 +13,8 @@ const CartList = (props) => {
     const [taxes, setTaxes] = useState(0.00);
     const [discount, setDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
-
+    const [taxRate, setTaxRate] = useState(0.00);
+    
     useEffect(() => {
         calculateCart();
     }, [props.listItem]);
@@ -42,6 +43,9 @@ const CartList = (props) => {
         var _productDiscountAmount = 0.00;
         var _seprateDiscountAmount = 0.00;
         var taxratelist=[];
+        if ((typeof localStorage.getItem('TAXT_RATE_LIST') !== 'undefined') && localStorage.getItem('TAXT_RATE_LIST') !== null) {
+            taxratelist = localStorage.getItem('TAXT_RATE_LIST') && JSON.parse(localStorage.getItem('TAXT_RATE_LIST'));
+        }
         if (taxratelist && taxratelist !== null && taxratelist !== "undefined") {
             taxratelist && taxratelist.length > 0 && taxratelist.map(tax => {
                 _taxId.push(tax.TaxId);
@@ -56,8 +60,9 @@ const CartList = (props) => {
             //     taxRate: _taxRate,
             //     TaxIs: TaxIs
             // })
+            setTaxRate(_taxRate);
         }
-        _taxRate = 0.0//this.state.taxRate;
+        _taxRate = taxRate;
         props.listItem &&  props.listItem.map((item, index) => {            
             if (item.Price) {
                 _subtotalPrice += item.Price

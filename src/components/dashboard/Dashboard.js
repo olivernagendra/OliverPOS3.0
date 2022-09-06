@@ -28,6 +28,7 @@ import Product from "./product/Product";
 import {product} from "./product/productSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
+import { getTaxAllProduct } from "../common/TaxSetting";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -104,12 +105,16 @@ const Home = () => {
     // {isShowPopups==true? <Product></Product>:
     const editPopUp = async (item) => {
         var _item = await getByID(item.product_id ? item.product_id : item.WPID);
-        setSelProduct(_item)
+
+        // setSelProduct(_item)
+        var _product = getTaxAllProduct([_item])
+        setSelProduct(_product[0]);
         setisShowPopups(true)
     }
     const openPopUp = async (item) => {
         var _item = await getByID(item.Product_Id ? item.Product_Id : item.WPID);
-        setSelProduct(_item)
+        var _product = getTaxAllProduct([_item])
+        setSelProduct(_product[0]);
         setisShowPopups(true)
     }
     const closePopUp = () => {
