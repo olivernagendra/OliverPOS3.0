@@ -3,23 +3,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import CircledPlus_Icon_Border from '../../../images/svg/CircledPlus-Icon-Border.svg';
 import STATUSES from "../../../constants/apiStatus";
 import { AddItemType } from "../../common/EventFunctions";
-
+import { useIndexedDB } from 'react-indexed-db';
+import { getTaxAllProduct } from '../../common/TaxSetting'
 // var AllProduct = [];
 // var ParentProductList = [];
 // var filtered = [];
 
-const TileList = () => {
+const TileList = (props) => {
+    const { getAll } = useIndexedDB("products");
     const [AllProduct, setAllProduct] = useState([]);
     const [filtered, setfiltered] = useState([]);
     const [ParentProductList, setParentProductList] = useState([]);
     const [favArrayList, setfavArrayList] = useState([]);
-    const [categoryList, setcategoryList] = useState([]);
-    const [attributeList, setattributeList] = useState([]);
+    // const [categoryList, setcategoryList] = useState([]);
+    // const [attributeList, setattributeList] = useState([]);
     const [cat_breadcrumb, setCat_breadcrumb] = useState([]);
     const [sel_item, setSel_item] = useState([]);
-
-
     const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
+    const { status, data, error, is_success } = useSelector((state) => state.tile)
     // var categoryList=[];
     // var attributeList=[];
 
@@ -38,7 +39,7 @@ const TileList = () => {
         var subAtt = [];
         if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) {
             var _attributeList = respAttribute.data.content;
-            setattributeList(_attributeList);
+            // setattributeList(_attributeList);
             subAtt = _attributeList.find(function (element) {
                 return element.Id === item.attribute_id
             })
@@ -76,7 +77,7 @@ const TileList = () => {
         var subCat = [];
         if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
             var _categoryList = respCategory.data.content;
-            setcategoryList(_categoryList)
+            // setcategoryList(_categoryList)
             subCat = _categoryList.find(function (element) {
                 return element.id === item.category_id
             })
@@ -223,9 +224,8 @@ const TileList = () => {
 
             var _categoryList = [];
             if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
-                _categoryList = respCategory.data.content;
-                setcategoryList(_categoryList)
-
+                 _categoryList = respCategory.data.content;
+                // setcategoryList(_categoryList)
             }
 
             if (_categoryList) {
@@ -362,7 +362,8 @@ const TileList = () => {
             //     this.productDataSearch(item, 0)
             //     break;
             case "product":
-                productDataSearch(item.Title, 0, null)
+                //productDataSearch(item.Title, 0, null)
+                props.openPopUp(item);
                 //this.loadingData()
                 break;
             default:
@@ -392,14 +393,21 @@ const TileList = () => {
 
         setfavArrayList(_favArrayList);
     }
-    const { status, data, error, is_success } = useSelector((state) => state.tile)
+  
     useEffect(() => {
+        getAll().then((rows) => {
+            var allProdcuts = getTaxAllProduct(rows)
+            console.log("allProdcuts", allProdcuts)
+            setAllProduct(allProdcuts);
+            setParentProductList(allProdcuts);
+        });
+
         //var regId = localStorage.getItem('register');
-        var pList = localStorage.getItem('Product_List') ? JSON.parse(localStorage.getItem('Product_List')) : [];
+        //var pList = localStorage.getItem('Product_List') ? JSON.parse(localStorage.getItem('Product_List')) : [];
         // AllProduct = pList;
         // ParentProductList = pList;
-        setAllProduct(pList);
-        setParentProductList(pList);
+        // setAllProduct(pList);
+        // setParentProductList(pList);
         // if (typeof regId != "undefined" && regId != null) {
         //     dispatch(tile({ "id": regId }));
         // }
@@ -520,65 +528,62 @@ const TileList = () => {
     }
 
     return (
-        <>
-            <div className="mod-product">
+        <div className="products">
+            {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
                 <div className="category-row">
                     {showCategorySelection()}
                 </div>
-            </div>
+            </div>}
 
-            <div className="products">
-
-
-                {
-                    favArrayList && favArrayList.map((item, index) => {
-                        switch (item.type) {
-                            case "product":
-                                return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} >
-                                    <div className="body">
-                                        <img src={item.Image} alt="" />
-                                    </div>
-                                    <div className="footer">
-                                        <p>
-                                            {item.Title}
-                                        </p>
-                                    </div>
-                                </button>
-                            case "attribute":
-                            case "sub-attribute":
-                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} >
+            {
+                favArrayList && favArrayList.map((item, index) => {
+                    switch (item.type) {
+                        case "product":
+                            return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} >
+                                <div className="body">
+                                    <img src={item.Image} alt="" />
+                                </div>
+                                <div className="footer">
                                     <p>
-                                        {item.attribute_slug}
+                                        {item.Title}
                                     </p>
-                                </button>
-                            case "category":
-                            case "sub-category":
-                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)}>
-                                    <p>
-                                        {item.name ? item.name : item.Value}
-                                    </p>
-                                </button>
-                            default:
-                                return ''
-                        }
-                    })
-                }
-                {
-                    filtered && filtered.map((item, index) => {
-                        return <button className="product" key={index} /*onClick={() => filterProductByTile(item.type, item, null)}*/ >
-                            <div className="body">
-                                <img src={item.ProductImage} alt="" />
-                            </div>
-                            <div className="footer">
+                                </div>
+                            </button>
+                        case "attribute":
+                        case "sub-attribute":
+                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} >
                                 <p>
-                                    {item.Title}
+                                    {item.attribute_slug}
                                 </p>
-                            </div>
-                        </button>
-                    })
-                }
+                            </button>
+                        case "category":
+                        case "sub-category":
+                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)}>
+                                <p>
+                                    {item.name ? item.name : item.Value}
+                                </p>
+                            </button>
+                        default:
+                            return ''
+                    }
+                })
+            }
+            {
+                filtered && filtered.map((item, index) => {
+                    return <button className="product" key={index} onClick={() => props.openPopUp(item)} >
+                        <div className="body">
+                            <img src={item.ProductImage} alt="" />
+                        </div>
+                        <div className="footer">
+                            <p>
+                                {item.Title}
+                            </p>
+                        </div>
+                    </button>
+                })
+            }
 
-                {/* <button className="product">
+            {/* <button className="product">
                 <div className="body background-teal">
                     <img src="../Assets/Images/Temp/Hanged-Tshirt.png" alt="" />
                 </div>
@@ -595,13 +600,11 @@ const TileList = () => {
             <button className="category background-violet">
                 <p>Clothing</p>
             </button> */}
-                <button className="add-tile">
-                    <img src={CircledPlus_Icon_Border} alt="" />
-                    Add Tile
-                </button>
-            </div>
-        </>
-    )
+            <button className="add-tile" onClick={()=>props.toggleAddTitle()}>
+                <img src={CircledPlus_Icon_Border} alt="" />
+                Add Tile
+            </button>
+        </div>)
 }
 
 export default TileList 

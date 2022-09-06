@@ -7,9 +7,18 @@ import LogOut_Icon from '../../images/svg/LogOut-Icon.svg';
 
 import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png';
 import { get_regName, get_userName } from "../common/localSettings";
-const UserInfo = () => {
+const UserInfo = (props) => {
+    const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "user-info-wrapper") {
+            props.toggleUserProfile();
+        }
+        else {
+            e.stopPropagation();
+        }
+        console.log(e.target.className)
+    }
     return (
-        <div id="userInfoWrapper" className="user-info-wrapper hidden">
+        <div id="userInfoWrapper" className={props.isShow===true? "user-info-wrapper":"user-info-wrapper hidden"} onClick={(e)=>outerClick(e)}>
         <div className="user-info">
             <div className="header">
                 <div className="avatar">
@@ -27,13 +36,13 @@ const UserInfo = () => {
                     </div>
                     Knowledge Base
                 </button>
-                <button id="switchUserButton">
+                <button id="switchUserButton" onClick={()=>props.toggleSwitchUser()}>
                     <div className="img-container">
                         <img src={SwitchUser_Icon} alt="" />
                     </div>
                     Switch Users
                 </button>
-                <button id="endSessionButton">
+                <button id="endSessionButton" onClick={()=>props.toggleShowEndSession()}>
                     <div className="img-container">
                         <img src={LogOut_Icon} alt="" />
                     </div>

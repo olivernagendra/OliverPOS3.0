@@ -8,16 +8,16 @@ import { firebaseRegisterSlice } from '../components/register/firebaseRegisterSl
 import { receiptSettingSlice } from '../components/serverSetting/receiptSettingSlice';
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 
-import { tileSlice } from '../components/dashboard/tiles/tileSlice';
+import { tileSlice, addTileSlice, deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
 import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-import {CustomergetPageSlice} from '../components/customer/CustomerSlice'
-//import { openRegisterSlice } from '../components/openregister/openRegisterSlice'
+import { CustomergetPageSlice } from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
-
+import { groupSlice } from '../components/common/commonAPIs/groupSlice';
+import { productSlice } from '../components/dashboard/product/productSlice';
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -31,22 +31,26 @@ export const store = configureStore({
     receiptsetting: receiptSettingSlice.reducer,
     taxsetting: taxSettingSlice.reducer,
     tile: tileSlice.reducer,
+    addTile: addTileSlice.reducer,
+    deletTile: deleteTileSlice.reducer,
     cashmanagement: CashmanagementSlice.reducer,
     productloader: productLoaderSlice.reducer,
     productcount: productCountSlice.reducer,
     attribute: attributeSlice.reducer,
     category: categorySlice.reducer,
     cashmanagementgetdetail: CashmanagementSecondSlice.reducer,
+    productloader: productLoaderSlice.reducer,
+    // openregisterupdate: openRegisterSlice.reducer,
+    customer: customerSlice.reducer,
+    group: groupSlice.reducer,
     openRegister: CashmanagementThirdSlice.reducer,
     cashmanagementCloseRegister: CashmanagementFourthSlice.reducer,
     cashmanagementSaveClosingNote: CashmanagementFifthSlice.reducer,
     //openregisterupdate: openRegisterSlice.reducer,
     customer: customerSlice.reducer,
-    customergetPage:CustomergetPageSlice.reducer
+    customergetPage: CustomergetPageSlice.reducer,
+    product: productSlice.reducer
 
-    // counterReducer,
-    // [postApi.reducerPath]: postApi.reducer,
-    //[loginApi.reducerPath]: loginApi.reducer,
   }
   ,
   middleware: getDefaultMiddleware =>

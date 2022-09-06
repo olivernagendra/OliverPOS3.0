@@ -7,9 +7,18 @@ import VolumeIcon from '../../images/svg/VolumeIcon.svg';
 import Changelog_Icon from '../../images/svg/Changelog-Icon.svg';
 import Info_Icon from '../../images/svg/Info-Icon.svg';
 import Error_Icon from '../../images/svg/Error-Icon.svg';
-const Notifications = () => {
+const Notifications = (props) => {
+    const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "notifications-wrapper") {
+            props.toggleNotifications();
+        }
+        else {
+            e.stopPropagation();
+        }
+        console.log(e.target.className)
+    }
     return (
-        <div id="notificationsWrapper" className="notifications-wrapper hidden">
+        <div id="notificationsWrapper" className={props.isShow===true? "notifications-wrapper":"notifications-wrapper hidden"} onClick={(e)=>outerClick(e)}>
         <div id="notificationsContent" className="notifications">
             <div id="soundNotificationsWrapper" className="sound-notifications-wrapper hidden">
                 <div className="sound-notifications">

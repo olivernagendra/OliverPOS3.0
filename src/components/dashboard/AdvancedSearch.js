@@ -9,16 +9,21 @@ import Transactions_Icon_White from '../../images/svg/Transactions-Icon-White.sv
 import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
 
 import { useIndexedDB } from 'react-indexed-db';
+import { AddItemType } from "../common/EventFunctions";
+import { toggleSubwindow } from "../common/EventFunctions";
 import { getTaxAllProduct } from '../common/TaxSetting'
-const AdvancedSearch = (props) => {
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
+const AdvancedSearch = (props) => {
+    const [respGroup] = useSelector((state) => [state.group])
+    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [allProductList, setAllProductList] = useState([])
     const [totalRecords, setTotalRecords] = useState(0)
     const [parentProductList, setParentProductList] = useState([])
     const [product_List, setProduct_List] = useState([])
 
     const [filtered, setfiltered] = useState([]);
+    const [filteredCustomer, setfilteredCustomer] = useState([]);
+    const [filteredGroup, setfilteredGroup] = useState([]);
     const [allCustomerList, setAllCustomerList] = useState([])
 
     const getProductFromIDB = () => {
@@ -35,15 +40,22 @@ const AdvancedSearch = (props) => {
 
 
     }
+    const GetCustomerFromIDB = () => {
+        useIndexedDB("customers").getAll().then((rows) => {
+            setAllCustomerList(rows);
+        });
+    }
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
             getProductFromIDB()
+            GetCustomerFromIDB()
             console.log(product_List)
         }
         return () => {
             useCancelled = true;
         }
+
 
     }, []);
 
@@ -108,13 +120,22 @@ const AdvancedSearch = (props) => {
         }
 
         // Search in Customer
-        var filteredCustomer = allCustomerList.filter((item) => (
+        var _filteredCustomer = allCustomerList.filter((item) => (
             (item.FirstName && item.FirstName.toLowerCase().includes(value.toLowerCase()))
             || (item.LastName && item.LastName.toString().toLowerCase().includes(value.toLowerCase()))
             || (item.Contact && item.Contact.toString().toLowerCase().includes(value.toLowerCase()))
             || (item.Email && item.Email.toString().toLowerCase().includes(value.toLowerCase()))
         ))
-        console.log("---filteredCustomer---" + JSON.stringify(filteredCustomer));
+        console.log("---filteredCustomer---" + JSON.stringify(_filteredCustomer));
+        setfilteredCustomer(_filteredCustomer);
+
+        // if(respGroup && respGroup.data && respGroup.data.content)
+        // {
+        //     var _filteredGroup = respGroup.data.content.filter((item) => (
+        //         (item.Label && item.Label.toLowerCase().includes(value.toLowerCase()))))
+        //         //console.log("---_filteredGroup---" + JSON.stringify(_filteredGroup));
+        //         setfilteredGroup(_filteredGroup)
+        // }
 
         // Search by Attributes
         parentProductList && parentProductList.map((item) => {
@@ -159,6 +180,7 @@ const AdvancedSearch = (props) => {
             return (item.ParentId === 0)
         })
         console.log("----filtered--->>" + JSON.stringify(_filtered.length));
+        _filtered = AddItemType(_filtered, "product");
         setProduct_List(_filtered);
         setfiltered(_filtered);
 
@@ -167,16 +189,24 @@ const AdvancedSearch = (props) => {
     // console.log(totalRecords)
     // console.log(parentProductList)
 
-    const toggleCreateCustomer = () => {
-       
+    const viewProduct = (item) => {
+        props.openPopUp(item);
+        props.toggleAdvancedSearch();
+        // toggleSubwindow();
     }
-
-
-
-    return <div className="subwindow advanced-search">
+    const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            props.toggleAdvancedSearch();
+        }
+        else {
+            e.stopPropagation();
+        }
+        console.log(e.target.className)
+    }
+    return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
-            <button className="close-subwindow">
+            <button className="close-subwindow" onClick={() => props.toggleAdvancedSearch()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
             <input type="text" id="advancedSearchBar" placeholder="Start typing to search..." onChange={e => productDataSearch(e)} />
@@ -242,7 +272,7 @@ const AdvancedSearch = (props) => {
                         </p>
                         <div className="divider"></div>
                         <p className="style2">Customer not found? Try creating a new customer:</p>
-                        <button onClick={()=>props.toggleCreateCustomer()}  >
+                        <button onClick={() => props.toggleCreateCustomer()}  >
                             <img src={CircledPlus_Icon_Blue} alt="" />
                             Create New Customer
                         </button>
@@ -286,7 +316,7 @@ const AdvancedSearch = (props) => {
                                     <p className="style3">SKU#{item.Sku}</p>
                                 </div>
                                 <div className="row">
-                                    <button className="search-view">
+                                    <button className="search-view" onClick={() => viewProduct(item)}>
                                         <img src={ViewIcon} alt="" />
                                         View
                                     </button>
@@ -298,6 +328,57 @@ const AdvancedSearch = (props) => {
                             </div>
                         })
                     }
+                    {
+                        filteredCustomer && filteredCustomer.map((item, index) => {
+                            return <div className="search-result customer">
+                                <div className="col">
+                                    <p className="style1">Customer</p>
+                                    <p className="style2">{item.FirstName + " " + item.LastName}</p>
+                                    <p className="style3">{item.Email}</p>
+                                    <p className="style3">{item.Contact}</p>
+                                </div>
+                                <div className="row">
+                                    <button className="search-view">
+                                        <img src={ViewIcon} alt="" />
+                                        View
+                                    </button>
+                                    <button className="search-transactions">
+                                        <img src={Transactions_Icon_White} alt="" />
+                                        Transactions
+                                    </button>
+                                    <button className="search-add-to-sale">
+                                        <img src={Add_Icon_White} alt="" />
+                                        Add to Sale
+                                    </button>
+                                </div>
+                            </div>
+                        })}
+                    {
+                        filteredGroup && filteredGroup.map((item, index) => {
+                            return <div className="search-result group">
+                                <div className="col">
+                                    <p className="style1">{item.GroupName}</p>
+                                    <p className="style2">{item.Label}</p>
+                                    <p className="style3">Party of 6</p>
+                                    <p className="style3">Server: Freddy Mercury</p>
+                                    <p className="style3">Order total: $223.45</p>
+                                </div>
+                                <div className="row">
+                                    <button className="search-view">
+                                        <img src={ViewIcon} alt="" />
+                                        View
+                                    </button>
+                                    <button className="search-transactions">
+                                        <img src={Transactions_Icon_White} alt="" />
+                                        Transactions
+                                    </button>
+                                    <button className="search-add-to-sale">
+                                        <img src={Add_Icon_White} alt="" />
+                                        Add to Sale
+                                    </button>
+                                </div>
+                            </div>
+                        })}
                     {/* <div className="search-result group">
                         <div className="col">
                             <p className="style1">Group</p>
@@ -346,7 +427,7 @@ const AdvancedSearch = (props) => {
                 </div>
             </div>
         </div>
-    </div>
+    </div></div>
 }
 
 export default AdvancedSearch 

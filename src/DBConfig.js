@@ -13,7 +13,16 @@ export const DBConfig = {
     },
     {
       store: "customers",
-      storeConfig: { keyPath: "id" },
+      storeConfig: { keyPath: "WPId" },
+      storeSchema: [
+        //   { name: "WPID", keypath: "WPID", options: { unique: false } },
+        //   { name: "fullname", keypath: "fullname", options: { unique: false } },
+        //   { name: "age", keypath: "age", options: { unique: false } }
+      ]
+    },
+    {
+      store: "modifiers",
+      storeConfig: { keyPath: "Id" },
       storeSchema: [
         //   { name: "WPID", keypath: "WPID", options: { unique: false } },
         //   { name: "fullname", keypath: "fullname", options: { unique: false } },

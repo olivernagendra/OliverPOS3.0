@@ -1,28 +1,24 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-const OrderNote = (props) => {
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+const ProductNote = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleOrderNote();
+            props.toggleProductNote();
         }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow add-order-note current" : "subwindow add-order-note"}>
                 <div className="subwindow-header">
-                    <p>Add Order Note</p>
-                    <button className="close-subwindow" onClick={() => props.toggleOrderNote()}>
+                    <p>Add Product Note</p>
+                    <button className="close-subwindow" onClick={() => props.toggleProductNote()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
-                    <label htmlFor="orderNote">Enter a note for this order:</label>
-                    <textarea name="order-note" id="orderNote" placeholder="Add note to order"></textarea>
+                    <label for="productNote">Enter a note for this product:</label>
+                    <textarea id="productNote" placeholder="Add note to product."></textarea>
                     <button>Add Note</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
@@ -30,4 +26,4 @@ const OrderNote = (props) => {
         </div>)
 }
 
-export default OrderNote 
+export default ProductNote 

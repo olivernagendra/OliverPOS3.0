@@ -1,13 +1,23 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
 import { useNavigate } from 'react-router-dom';
-const MsgPopup_EndSession = () => {
+const MsgPopup_EndSession = (props) => {
     const navigate = useNavigate();
+    const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            props.toggleShowEndSession();
+        }
+        else {
+            e.stopPropagation();
+        }
+        console.log(e.target.className)
+    }
     return (
-        <div className="subwindow end-session">
+        <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={(e)=>outerClick(e)}>
+        <div className={props.isShow===true?"subwindow end-session current":"subwindow end-session"}>
         <div className="subwindow-header">
             <p>End Session</p>
-            <button className="close-subwindow">
+            <button className="close-subwindow" onClick={()=>props.toggleShowEndSession()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
         </div>
@@ -27,7 +37,7 @@ const MsgPopup_EndSession = () => {
             <button id="logoutButton" onClick={()=>navigate('/pin')}>End Session</button>
             <div className="auto-margin-bottom"></div>
         </div>
-    </div>)
+    </div></div>)
 }
 
 export default MsgPopup_EndSession 
