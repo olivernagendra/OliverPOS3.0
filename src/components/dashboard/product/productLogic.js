@@ -42,7 +42,7 @@ export const addSimpleProducttoCart=(product, ticketFields = null)=> {
     }
     // var setQunatity = 1;
 
-    var setQunatity = product.quantity;
+    var setQunatity = typeof product.quantity!="undefined"?product.quantity:1;
     var tick_data = product && product.IsTicket == true && product.TicketInfo != '' ? JSON.parse(product.TicketInfo) : '';
     var availability_to_date = tick_data && tick_data !== 'null' ? moment(tick_data._ticket_availability_to_date).format('YYYY-MM-DD') : ''
     var today_date = moment().format('YYYY-MM-DD')

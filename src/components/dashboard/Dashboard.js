@@ -29,6 +29,7 @@ import {product} from "./product/productSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
+import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -49,7 +50,7 @@ const Home = () => {
     const [isShowAddTitle, setisShowAddTitle] = useState(false);
     const [isShowOptionPage, setisShowOptionPage] = useState(false);
     const [listItem,setListItem]=useState([]);
-
+    const [isOutOfStock, setisOutOfStock] = useState(false);
 
 
     const dispatch = useDispatch();
@@ -161,6 +162,9 @@ const Home = () => {
     const toggleOptionPage = () => {
         setisShowOptionPage(!isShowOptionPage)
     }
+     const toggleOutOfStock = () => {
+        setisOutOfStock(!isOutOfStock)
+    }
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
@@ -221,6 +225,7 @@ const Home = () => {
             <AdvancedSearch openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
             <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
+            <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
             {/* iframe subview */}
             {/* create customer */}
             {/* cart discount */}

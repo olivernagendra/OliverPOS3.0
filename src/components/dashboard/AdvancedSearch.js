@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
 import down_angled_bracket from '../../images/svg/down-angled-bracket.svg';
 import BlueDot from '../../images/svg/BlueDot.svg';
@@ -12,10 +12,13 @@ import { useIndexedDB } from 'react-indexed-db';
 import { AddItemType } from "../common/EventFunctions";
 import { toggleSubwindow } from "../common/EventFunctions";
 import { getTaxAllProduct } from '../common/TaxSetting'
+import { addSimpleProducttoCart } from "./product/productLogic";
+import { product } from "./product/productSlice";
 // const AdvancedSearch = (props) => {
 //     const [respGroup] = useSelector((state) => [state.group])
 
 const AdvancedSearch = (props) => {
+    const dispatch = useDispatch();
     const [respGroup] = useSelector((state) => [state.group])
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [allProductList, setAllProductList] = useState([])
@@ -190,7 +193,15 @@ const AdvancedSearch = (props) => {
     // console.log(allProductList)
     // console.log(totalRecords)
     // console.log(parentProductList)
-
+    const addToCart = (item) => {
+            var result = addSimpleProducttoCart(item);
+            if (result === 'outofstock') {
+                props.toggleOutOfStock();
+            }
+            else {
+                dispatch(product({}));
+            }
+    }
 const viewProduct=(item)=>
 {
     props.openPopUp(item);
@@ -323,7 +334,7 @@ const outerClick = (e) => {
                                         <img src={ViewIcon} alt="" />
                                         View
                                     </button>
-                                    <button className="search-add-to-sale">
+                                    <button className="search-add-to-sale" onClick={()=>addToCart(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>
