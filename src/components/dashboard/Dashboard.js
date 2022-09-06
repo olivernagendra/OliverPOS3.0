@@ -48,7 +48,7 @@ const Home = () => {
     const [isShowAddTitle, setisShowAddTitle] = useState(false);
     const [isShowOptionPage, setisShowOptionPage] = useState(false);
     const [listItem, setListItem] = useState([]);
-
+    const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
 
 
     const dispatch = useDispatch();
@@ -156,6 +156,10 @@ const Home = () => {
     const toggleOptionPage = () => {
         setisShowOptionPage(!isShowOptionPage)
     }
+    const toggleCreateCustomer = () => {
+        setisShowCreateCustomer(!isShowCreateCustomer)
+    }
+
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
@@ -207,13 +211,14 @@ const Home = () => {
             </div>
             {/* <div className="subwindow-wrapper"> */}
 
-            <CreateCustomer></CreateCustomer>
+           
             <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote}></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <CreateCustomer  isShow={isShowCreateCustomer} ></CreateCustomer>
             <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
             {/* iframe subview */}

@@ -28,9 +28,9 @@ const PinPad = React.memo(props => {
 
     useEffect(() => {
         // console.log("useEffect")
+        pinSuccessful()
 
-
-    }, [])
+    }, [data])
 
 
 
@@ -44,39 +44,43 @@ const PinPad = React.memo(props => {
         //  openRegisterhundle()
     }
 
+    const pinSuccessful = () => {
+        if (status === STATUSES.IDLE && is_success) {
 
+            localStorage.setItem('user', JSON.stringify(data.content));
+            if (typeof (Storage) !== "undefined") {
+                localStorage.setItem("check_subscription_status_datetime", new Date());
+            }
 
-    if (status === STATUSES.IDLE && is_success) {
+            if (localStorage.getItem("PRODUCT_REFRESH_DATE") == null) {
+                localStorage.setItem("PRODUCT_REFRESH_DATE", moment.utc(new Date()).format('YYYY-MM-DD HH:mm:ss'))
+            }
+            var _lang = localStorage.getItem("LANG");
 
-        localStorage.setItem('user', JSON.stringify(data.content));
-        if (typeof (Storage) !== "undefined") {
-            localStorage.setItem("check_subscription_status_datetime", new Date());
-        }
+            var user = JSON.parse(localStorage.getItem("user"))
+            var lang = user && user.language ? user.language : 'en';
+            localStorage.setItem("LANG", lang);
 
-        if (localStorage.getItem("PRODUCT_REFRESH_DATE") == null) {
-            localStorage.setItem("PRODUCT_REFRESH_DATE", moment.utc(new Date()).format('YYYY-MM-DD HH:mm:ss'))
-        }
-        var _lang = localStorage.getItem("LANG");
+            //Reloading the component if new language set for the login user.                  
+            if (_lang && _lang !== lang) {
+                // window.location = '/';
 
-        var user = JSON.parse(localStorage.getItem("user"))
-        var lang = user && user.language ? user.language : 'en';
-        localStorage.setItem("LANG", lang);
-
-        //Reloading the component if new language set for the login user.                  
-        if (_lang && _lang !== lang) {
-            // window.location = '/';
-
-        }
-        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
-            navigate('/openregister')
-        } else {
-            if (props.doAction) {
-                props.doAction()
+            }
+            if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+                navigate('/openregister')
             } else {
-                navigate('/productloader')
+                if (props.doAction) {
+                    props.doAction()
+                } else {
+                    navigate('/productloader')
+                }
             }
         }
     }
+
+
+
+
 
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "0", "c"];
     const trshPin = ['txt1', 'txt2', 'txt3', 'txt4']
