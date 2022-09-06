@@ -10,7 +10,7 @@ import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
 
 import { useIndexedDB } from 'react-indexed-db';
 import { getTaxAllProduct } from '../common/TaxSetting'
-const AdvancedSearch = () => {
+const AdvancedSearch = (props) => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
     const [allProductList, setAllProductList] = useState([])
@@ -167,6 +167,11 @@ const AdvancedSearch = () => {
     // console.log(totalRecords)
     // console.log(parentProductList)
 
+    const toggleCreateCustomer = () => {
+       
+    }
+
+
 
     return <div className="subwindow advanced-search">
         <div className="subwindow-header">
@@ -237,7 +242,7 @@ const AdvancedSearch = () => {
                         </p>
                         <div className="divider"></div>
                         <p className="style2">Customer not found? Try creating a new customer:</p>
-                        <button>
+                        <button onClick={()=>props.toggleCreateCustomer()}  >
                             <img src={CircledPlus_Icon_Blue} alt="" />
                             Create New Customer
                         </button>

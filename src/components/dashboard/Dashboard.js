@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect,useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import AddTile from "./tiles/AddTile";
 import AdvancedSearch from "./AdvancedSearch";
@@ -24,6 +24,10 @@ import { attribute } from "../common/commonAPIs/attributeSlice";
 import { category } from "../common/commonAPIs/categorySlice";
 import { tile } from './tiles/tileSlice';
 const Home = () => {
+
+    const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
+
+
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
@@ -61,6 +65,12 @@ const Home = () => {
     //     }
 
     // }, []);
+
+
+    const toggleCreateCustomer = () => {
+        setisShowCreateCustomer(!isShowCreateCustomer)
+    }
+
  
     return <React.Fragment>
         <div className="homepage-wrapper">
@@ -89,13 +99,13 @@ const Home = () => {
         </div>
         <div className="subwindow-wrapper hidden">
             <IframeWindow></IframeWindow>
-            <CreateCustomer></CreateCustomer>
+            <CreateCustomer isShow={isShowCreateCustomer} ></CreateCustomer>
             <CartDiscount></CartDiscount>
             <AddTile></AddTile>
             <OrderNote></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch></AdvancedSearch>
+            <AdvancedSearch  isShow={isShowCreateCustomer}  toggleCreateCustomer={toggleCreateCustomer} ></AdvancedSearch>
             <SwitchUser></SwitchUser>
             <MsgPopup_EndSession></MsgPopup_EndSession>
             {/* iframe subview */}
