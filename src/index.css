@@ -157,3 +157,7 @@ code {
 {
 	display: block !important;
 }
+.display-flex
+{
+	display: flex !important;
+}

@@ -102,6 +102,11 @@ const Home = () => {
     // return   
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
+    const editPopUp = async (item) => {
+        var _item = await getByID(item.product_id ? item.product_id : item.WPID);
+        setSelProduct(_item)
+        setisShowPopups(true)
+    }
     const openPopUp = async (item) => {
         var _item = await getByID(item.Product_Id ? item.Product_Id : item.WPID);
         setSelProduct(_item)
@@ -184,7 +189,7 @@ const Home = () => {
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle}></TileList>
-                <CartList listItem={listItem}></CartList>
+                <CartList listItem={listItem} editPopUp={editPopUp}></CartList>
                 <div className="mobile-homepage-footer">
                     <button id="openMobileCart">View Cart (2) - $24.99</button>
                 </div>

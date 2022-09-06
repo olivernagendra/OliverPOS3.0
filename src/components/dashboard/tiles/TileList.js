@@ -3,12 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import CircledPlus_Icon_Border from '../../../images/svg/CircledPlus-Icon-Border.svg';
 import STATUSES from "../../../constants/apiStatus";
 import { AddItemType } from "../../common/EventFunctions";
-
+import { useIndexedDB } from 'react-indexed-db';
+import { getTaxAllProduct } from '../../common/TaxSetting'
 // var AllProduct = [];
 // var ParentProductList = [];
 // var filtered = [];
 
 const TileList = (props) => {
+    const { getAll } = useIndexedDB("products");
     const [AllProduct, setAllProduct] = useState([]);
     const [filtered, setfiltered] = useState([]);
     const [ParentProductList, setParentProductList] = useState([]);
@@ -393,12 +395,19 @@ const TileList = (props) => {
     }
   
     useEffect(() => {
+        getAll().then((rows) => {
+            var allProdcuts = getTaxAllProduct(rows)
+            console.log("allProdcuts", allProdcuts)
+            setAllProduct(allProdcuts);
+            setParentProductList(allProdcuts);
+        });
+
         //var regId = localStorage.getItem('register');
-        var pList = localStorage.getItem('Product_List') ? JSON.parse(localStorage.getItem('Product_List')) : [];
+        //var pList = localStorage.getItem('Product_List') ? JSON.parse(localStorage.getItem('Product_List')) : [];
         // AllProduct = pList;
         // ParentProductList = pList;
-        setAllProduct(pList);
-        setParentProductList(pList);
+        // setAllProduct(pList);
+        // setParentProductList(pList);
         // if (typeof regId != "undefined" && regId != null) {
         //     dispatch(tile({ "id": regId }));
         // }

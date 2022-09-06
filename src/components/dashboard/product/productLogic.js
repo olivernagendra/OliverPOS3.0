@@ -1,5 +1,6 @@
 import { get_UDid } from "../../common/localSettings";
 import moment from 'moment';
+import { getTaxCartProduct,getInclusiveTax,getExclusiveTax,typeOfTax } from "../../common/TaxSetting";
 function percentWiseDiscount(price, discount) {
     var discountAmount = (price * discount) / 100.00;
     return discountAmount;
@@ -282,7 +283,7 @@ export const removeCheckOutList=()=> {
 
 export const addtoCartProduct = (cartproductlist) => {
 
-    var TAX_CASE ='';// typeOfTax();
+    var TAX_CASE = typeOfTax();
     var udid = get_UDid('UDID')
     var updateProductList = null;
     //-----update quantity and price for multiple product ----------------------------------------
@@ -305,7 +306,7 @@ export const addtoCartProduct = (cartproductlist) => {
             _qty = _qty + nitem.quantity;
             // ** get new inclusive tax in case of discount number, when we add number discont on same item that added on cart already...*/
             //new_incl_tax = nitem.isTaxable==true? getInclusiveTax( nitem.discount_amount >0? nitem.after_discount: (nitem.old_price*_qty) , nitem.TaxClass):0;
-            new_incl_tax = 0;// getInclusiveTax((nitem.old_price*_qty)-( nitem.discount_type == "Number" ? nitem.product_discount_amount : nitem.product_discount_amount*_qty ) , nitem.TaxClass)
+            new_incl_tax = getInclusiveTax((nitem.old_price*_qty)-( nitem.discount_type == "Number" ? nitem.product_discount_amount : nitem.product_discount_amount*_qty ) , nitem.TaxClass)
 
             /// ** minus total price with new total inclusive tax, and discount amount to get final after discount.. */
             _afterDiscount = nitem.discount_type == "Number" && nitem.incl_tax && nitem.after_discount ?
@@ -411,8 +412,7 @@ export const addtoCartProduct = (cartproductlist) => {
             })
         }
     })
-    //cartproductlist = getTaxCartProduct(newCartList);
-    cartproductlist = newCartList;
+    cartproductlist = getTaxCartProduct(newCartList);
 
     var totalPrice = 0;
     var customefee = 0; //should not include into discount
@@ -449,21 +449,21 @@ export const addtoCartProduct = (cartproductlist) => {
                 if (item.discount_type == "Percentage") {
                     //incl_tax = getInclusiveTax(item.Price - (product_after_discount > 0 ? (product_after_discount) : item.discount_amount), item.TaxClass)
                     //Now calculating the tax on Price with inclusive tax... 
-                    incl_tax = 0;// getInclusiveTax((product_after_discount > 0 ? item.Price- product_after_discount :item.Price ), item.TaxClass)
+                    incl_tax =  getInclusiveTax((product_after_discount > 0 ? item.Price- product_after_discount :item.Price ), item.TaxClass)
                 } else {
-                    incl_tax = 0;// getInclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
+                    incl_tax =  getInclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
                 }
                 item["incl_tax"] = incl_tax
             } else {
                 var excl_tax = 0;
                 if (item.discount_type == "Percentage") {
-                    excl_tax = 0;// getExclusiveTax(item.after_discount, item.TaxClass)
+                    excl_tax =  getExclusiveTax(item.after_discount, item.TaxClass)
                     //excl_tax = getExclusiveTax(item.after_discount * item.quantity, item.TaxClass)// 
                     if (isProdAddonsType && isProdAddonsType == true) {
-                        excl_tax = 0;// getExclusiveTax(item.after_discount, item.TaxClass)// quantity comment for addons
+                        excl_tax =  getExclusiveTax(item.after_discount, item.TaxClass)// quantity comment for addons
                     }
                 } else {
-                    excl_tax = 0;// getExclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
+                    excl_tax =  getExclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
                 }
                 item["excl_tax"] = excl_tax
             }
@@ -512,7 +512,7 @@ export const addtoCartProduct = (cartproductlist) => {
                             discount_amount_is = percentWiseDiscount(price, discount);
                             if (item.TaxStatus !== 'none') {
                                 if (TAX_CASE == 'incl') {
-                                    incl_tax = 0;// getInclusiveTax(price, item.TaxClass)
+                                    incl_tax =  getInclusiveTax(price, item.TaxClass)
                                     //item["incl_tax"] = incl_tax
 
                                     //discount_amount_is = percentWiseDiscount(price - incl_tax, discount);
@@ -554,21 +554,21 @@ export const addtoCartProduct = (cartproductlist) => {
                 item["discount_amount"] = parseFloat(cart_discount_amount) + parseFloat(product_discount_amount);
                 if (item.discount_amount && item.discount_amount !== 0 && item.TaxStatus !== 'none') {
                     if (TAX_CASE == 'incl') {
-                        incl_tax = 0;// getInclusiveTax((item.discount_amount > 0 ? cart_after_discount : item.Price), item.TaxClass)
+                        incl_tax =  getInclusiveTax((item.discount_amount > 0 ? cart_after_discount : item.Price), item.TaxClass)
                         // incl_tax = getInclusiveTax(item.Price - (product_discount_amount > 0 ? product_discount_amount : item.discount_amount), item.TaxClass)
                         //incl_tax = getInclusiveTax(item.Price- item.discount_amount, item.TaxClass)
                         item["incl_tax"] = incl_tax
                     } else {
-                        excl_tax = 0;// getExclusiveTax(item.Price - item.discount_amount, item.TaxClass);
+                        excl_tax =  getExclusiveTax(item.Price - item.discount_amount, item.TaxClass);
                         item["excl_tax"] = excl_tax
                     }
                 } else {
                     if (item.TaxStatus !== 'none') {
                         if (TAX_CASE == 'incl') {
-                            incl_tax = 0;// getInclusiveTax(item.Price, item.TaxClass)
+                            incl_tax = getInclusiveTax(item.Price, item.TaxClass)
                             item["incl_tax"] = incl_tax
                         } else {
-                            excl_tax = 0;//getExclusiveTax(item.Price, item.TaxClass);
+                            excl_tax = getExclusiveTax(item.Price, item.TaxClass);
                             item["excl_tax"] = excl_tax
                         }
                     }

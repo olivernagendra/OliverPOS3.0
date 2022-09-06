@@ -7,8 +7,8 @@ import Coin_Blue from '../../../images/svg/Coin-Blue.svg';
 import Minus_Blue from '../../../images/svg/Minus-Blue.svg';
 import Plus_Blue from '../../../images/svg/Plus-Blue.svg';
 import CircledPlus_White from '../../../images/svg/CircledPlus-White.svg';
-// import NoVariationDisplay from '../../../images/svg/NoVariationDisplay.svg';
-
+import NoVariationDisplay from '../../../images/svg/NoVariationDisplay.svg';
+import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
 import Pencil from '../../../images/svg/Pencil.svg';
 // import Shoes from '../../../images/Temp/Shoes.png';
 // import CoffeeCup from '../../../images/Temp/CoffeeCup.png';
@@ -566,77 +566,6 @@ const Product = (props) => {
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
             <React.Fragment>
                 <div className="product-wrapper" >
-                    {/* <div className="navbar">
-    <div className="header-row">
-        <img src="../Assets/Images/SVG/Oliver-Icon-Color.svg" alt="" className="oliver-logo" />
-        <img src="../Assets/Images/SVG/Oliver-Type.svg" alt="" className="oliver-text" />
-    </div>
-    <button id="registerButton" className="page-link selected" disabled>
-        <div className="img-container">
-            <img src="../Assets/Images/SVG/Register-Icon.svg" alt="" />
-        </div>
-        <p>Register</p>
-        <div className="f-key">F1</div>
-    </button>
-    <button id="customersButton" className="page-link disabled" disabled>
-        <div className="img-container">
-            <img src="../Assets/Images/SVG/Customers-Icon.svg" alt="" />
-        </div>
-        <p>Customers</p>
-        <div className="f-key">F2</div>
-    </button>
-    <button id="transactionsButton" className="page-link disabled" disabled>
-        <div className="img-container">
-            <img src="../Assets/Images/SVG/Transactions-Icon.svg" alt="" />
-        </div>
-        <p>Transactions</p>
-        <div className="f-key">F3</div>
-    </button>
-    <button id="cashManagementButton" className="page-link disabled" disabled>
-        <div className="img-container">
-            <img src="../Assets/Images/SVG/CashManagement-Icon.svg" alt="" />
-        </div>
-        <p>Cash Management</p>
-        <div className="f-key">F4</div>
-    </button>
-    <button id="linkLauncherButton" className="launcher">
-        <div className="img-container">
-            <img src="../Assets/Images/SVG/LinkLauncher-Icon.svg" alt="" />
-        </div>
-        <p>Link Launcher</p>
-    </button>
-    <div className="divider"></div>
-    <button id="appLauncherButton" className="launcher">
-        <div className="img-container">
-            <img src={Oliver_Icon_BaseBlue} alt="" />
-        </div>
-        <p>App Launcher</p>
-    </button>
-    <button id="navApp1" className="launcher app">
-        <div className="img-container">
-            <img src="../Assets/Images/Temp/ClockIn_Icon.png" alt="" />
-        </div>
-        <p>Clock-in App</p>
-    </button>
-    <button id="navApp2" className="launcher app">
-        <div className="img-container">
-            <img src="../Assets/Images/Temp/MC_Logo 1.png" alt="" />
-        </div>
-        <p>MailChimp</p>
-    </button>
-    <button id="navApp3" className="launcher app">
-        <div className="img-container">
-            <img src="../Assets/Images/Temp/Quickbooks 1.png" alt="" />
-        </div>
-        <p>Quickbooks Sync</p>
-    </button>
-    <button id="navToggle" className="toggle-nav">
-        <div className="img-container">
-            <img src="../Assets/Images/SVG/ToggleNavbar-Icon.svg" alt="" />
-        </div>
-        <p>Minimize Sidebar</p>
-    </button>
-</div> */}
                     <LeftNavBar></LeftNavBar>
                     <div className="header">
                         <div className="mobile-buttons">
@@ -656,113 +585,35 @@ const Product = (props) => {
                         </div>
                     </div>
                     <div className="mod-product">
-                        {/* <div class="img-container">
-                            <img src={NoVariationDisplay} alt="" />
-                        </div> */}
-                        <div className="row">
-                            <p>Select Variations</p>
-                            <button id="clearModsButton">Clear Selection</button>
-                        </div>
+                        {_DistictAttribute && _DistictAttribute.length === 0 ?
+                            <div class="img-container display-flex">
+                                <img src={NoVariationDisplay} alt="" />
+                            </div> :
+                            <div className="row">
+                                <p>Select Variations</p>
+                                <button id="clearModsButton">Clear Selection</button>
+                            </div>}
                         {
 
                             _DistictAttribute && _DistictAttribute.length > 0 ?
                                 (_DistictAttribute.map((attribute, index) => {
                                     return (
                                         attribute && attribute.Variation == true &&
-                                        // <div className="col" key={index}>
                                         <React.Fragment><p>{attribute.Name}</p>
                                             <div className="radio-group">
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map(a => {
                                                         return <label><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
-                                                        {/* return <p key={"att_name"+index}>{a}</p> */ }
                                                     })
                                                 }
-                                                {/* <p key={"att_name"+index}>{attribute.Name}</p>
-                        <div className="row" key={"sub_att_name"+index}>
-                            </div> */}
-
                                             </div></React.Fragment>
                                     )
                                 })
                                 )
                                 : <div className='noAttribute'></div>}
-                        {/* <p>Size</p>
-                    <div className="radio-group">
-                        <label>
-                            <input type="radio" id="sizeSmall" name="size" />
-                            <div className="custom-radio">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veritatis laudantium recusandae, ea dolorem, excepturi distinctio quibusdam vitae commodi assumenda illum accusamus! Consequatur dignissimos vel nulla in! Blanditiis expedita quibusdam illo.</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="sizeMedium" name="size" />
-                            <div className="custom-radio">
-                                <p>Medium</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="sizeLarge" name="size" />
-                            <div className="custom-radio">
-                                <p>Large</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="sizeXL" name="size" />
-                            <div className="custom-radio">
-                                <p>XL</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="sizeXXL" name="size" />
-                            <div className="custom-radio">
-                                <p>XXL</p>
-                            </div>
-                        </label>
-                    </div>
-                    <p>Color</p>
-                    <div className="radio-group">
-                        <label>
-                            <input type="radio" id="colorBlue" name="color" />
-                            <div className="custom-radio">
-                                <p>Blue</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="colorRed" name="color" />
-                            <div className="custom-radio">
-                                <p>Red</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="colorYellow" name="color" />
-                            <div className="custom-radio">
-                                <p>Yellow</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="colorPurple" name="color" />
-                            <div className="custom-radio">
-                                <p>Purple</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="colorBlack" name="color" />
-                            <div className="custom-radio">
-                                <p>Black</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="colorPink" name="color" />
-                            <div className="custom-radio">
-                                <p>Pink</p>
-                            </div>
-                        </label>
-                    </div> */}
-                        <div className="row">
+                        {productModifiers && productModifiers.length > 0 ? <div className="row">
                             <p>Select Modifier</p>
-                        </div>
-                        {/* <div onChange={onChangeValue}> */}
+                        </div> : null}
                         {
                             productModifiers && productModifiers.map(mod => {
                                 var gpid = (mod.Title).replace(/ /g, "_");
@@ -865,63 +716,14 @@ const Product = (props) => {
                                 }
                             })
                         }
-                        {/* </div> */}
-                        {/* <p>Custom Logo</p>
-                    <div className="radio-group">
-                        <label>
-                            <input type="radio" id="customLogoYes" name="customLogo" />
-                            <div className="custom-radio">
-                                <p>Yes</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="customLogoNo" name="customLogo" />
-                            <div className="custom-radio">
-                                <p>No</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="customLogoExtra" name="customLogo" />
-                            <div className="custom-radio">
-                                <p>Extra (+$2.00)</p>
-                            </div>
-                        </label>
-                    </div>
-                    <p>Logo on Back</p>
-                    <div className="radio-group">
-                        <label>
-                            <input type="radio" id="backLogoYes" name="backLogo" />
-                            <div className="custom-radio">
-                                <p>Yes</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="backLogoNo" name="backLogo" />
-                            <div className="custom-radio">
-                                <p>No</p>
-                            </div>
-                        </label>
-                    </div>
-                    <p>Pickles</p>
-                    <div className="radio-group">
-                        <label>
-                            <input type="radio" id="picklesYes" name="pickles" />
-                            <div className="custom-radio">
-                                <p>Yes</p>
-                            </div>
-                        </label>
-                        <label>
-                            <input type="radio" id="picklesNo" name="pickles" />
-                            <div className="custom-radio">
-                                <p>No</p>
-                            </div>
-                        </label>
-                    </div> */}
                     </div>
                     <div className="detailed-product">
                         <div className="row">
                             <div className="product-image-container">
-                                <img src={props.selProduct && props.selProduct.ProductImage} alt="" id="productImage" className="height-fit" />
+                                {props.selProduct && props.selProduct.ProductImage != null ?
+                                    <img src={props.selProduct && props.selProduct.ProductImage} alt="" id="productImage" className="height-fit" /> :
+                                    <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
+                                }
                             </div>
                             <div className="col">
                                 <p className="mobile-only">Stock Details</p>
@@ -1034,44 +836,11 @@ const Product = (props) => {
 
                     <div id="navCover" className="nav-cover"></div>
                 </div>
-                {/* <div className="subwindow-wrapper hidden"> */}
-                {/* <div id="iframeSubwindow" className="subwindow iframe-popup">
-                        <div className="subwindow-header">
-                            <div className="img-container">
-                                <img src="" alt="" />
-                            </div>
-                            <div className="col">
-                                <p className="style1">Placeholder</p>
-                                <p className="style2">Placeholder</p>
-                            </div>
-                            <button className="close-subwindow">
-                                <img src={X_Icon_DarkBlue} alt="" />
-                            </button>
-                        </div>
-                        <div className="subwindow-body">
-                            <iframe src="" frameBorder="0"></iframe>
-                        </div>
-                    </div>
-                    <div class="subwindow upgrade-to-unlock">
-                        <div class="subwindow-body">
-                            <div class="auto-margin-top"></div>
-                            <img src="../Assets/Images/SVG/LockedIcon.svg" alt="" />
-                            <p class="style1">Upgrade to unlock this feature!</p>
-                            <p class="style2">
-                                This feature is not included in your plan. <br />
-                                Please upgrade your plan in Oliver HUB <br />
-                                to access this feature.
-                            </p>
-                            <button id="upgradeToUnlockExit">Go Back</button>
-                            <div class="auto-margin-bottom"></div>
-                        </div>
-                    </div> */}
                 <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
                 <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
                 <MsgPopup_NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></MsgPopup_NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote}></ProductNote>
                 <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
-                {/* </div> */}
             </React.Fragment>)
 }
 export default Product 

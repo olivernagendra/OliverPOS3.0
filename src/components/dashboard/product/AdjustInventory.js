@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
-// import Pencil_Blue from '../../../images/svg/Pencil-Blue.svg';
+import Pencil_Blue from '../../../images/svg/Pencil-Blue.svg';
 const AdjustInventory = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
@@ -22,7 +22,7 @@ const AdjustInventory = (props) => {
                     <label for="productStock">Currently in Stock:</label>
                     <input type="number" id="productStock" value="23" disabled />
                     <button id="editStockButton">
-                        {/* <img src={Pencil_Blue} alt="" /> */}
+                        <img src={Pencil_Blue} alt="" />
                         Click to edit
                     </button>
                     <button id="updateStockButton">Update Inventory</button>

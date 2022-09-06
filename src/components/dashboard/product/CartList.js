@@ -130,8 +130,8 @@ const CartList = (props) => {
                 </div> */}
                 {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
 
-                    return <div className="cart-item">
-                        <div className="main-row">
+                    return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/>
+                        <div className="main-row" >
                             <p className="quantity">{a.quantity && a.quantity}</p>
                             <p className="content-style">{a.Title && a.Title}</p>
                             <p className="price">{a.Price && a.Price}</p>
