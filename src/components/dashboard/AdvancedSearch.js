@@ -31,7 +31,7 @@ const AdvancedSearch = (props) => {
     const [filteredCustomer, setfilteredCustomer] = useState([]);
     const [filteredGroup, setfilteredGroup] = useState([]);
     const [allCustomerList, setAllCustomerList] = useState([])
-
+    const [filterType, setFilterType] = useState('all')
     const getProductFromIDB = () => {
         var allData = [];
         getAll().then((rows) => {
@@ -43,8 +43,9 @@ const AdvancedSearch = (props) => {
             //For temporary
             setProduct_List(allProdcuts ? allProdcuts : []);
         });
-
-
+    }
+    const SetFilter = (ftype) => {
+        setFilterType(ftype);
     }
     const GetCustomerFromIDB = () => {
         useIndexedDB("customers").getAll().then((rows) => {
@@ -98,43 +99,44 @@ const AdvancedSearch = (props) => {
         }
         var _filtered = [];
         var value = item1;
-
-        // Search in Products
-        var serchFromAll = product_List.filter((item) => (
-            (item.Title && item.Title.toLowerCase().includes(value.toLowerCase()))
-            || (item.Barcode && item.Barcode.toString().toLowerCase().includes(value.toLowerCase()))
-            || (item.Sku && item.Sku.toString().toLowerCase().includes(value.toLowerCase()))
-        ))
-        //-------//Filter child and parent-------------
-        var parentArr = [];
-        serchFromAll && serchFromAll.map(item => {
-            if (item.ParentId !== 0) {
-                var parrentofChild = product_List.find(function (element) {
-                    return (element.WPID === item.ParentId)
-                });
-                if (parrentofChild)
-                    parentArr.push(parrentofChild);
-            }
-        })
-        serchFromAll = [...new Set([...serchFromAll, ...parentArr])];
-        if (!serchFromAll || serchFromAll.length > 0) {
-            var parentProduct = serchFromAll.filter(item => {
-                return (item.ParentId === 0)
+        if (filterType === "product" || filterType === "all") {
+            // Search in Products
+            var serchFromAll = product_List.filter((item) => (
+                (item.Title && item.Title.toLowerCase().includes(value.toLowerCase()))
+                || (item.Barcode && item.Barcode.toString().toLowerCase().includes(value.toLowerCase()))
+                || (item.Sku && item.Sku.toString().toLowerCase().includes(value.toLowerCase()))
+            ))
+            //-------//Filter child and parent-------------
+            var parentArr = [];
+            serchFromAll && serchFromAll.map(item => {
+                if (item.ParentId !== 0) {
+                    var parrentofChild = product_List.find(function (element) {
+                        return (element.WPID === item.ParentId)
+                    });
+                    if (parrentofChild)
+                        parentArr.push(parrentofChild);
+                }
             })
-            parentProduct = parentProduct ? parentProduct : []
-            _filtered = [...new Set([..._filtered, ...parentProduct])];
+            serchFromAll = [...new Set([...serchFromAll, ...parentArr])];
+            if (!serchFromAll || serchFromAll.length > 0) {
+                var parentProduct = serchFromAll.filter(item => {
+                    return (item.ParentId === 0)
+                })
+                parentProduct = parentProduct ? parentProduct : []
+                _filtered = [...new Set([..._filtered, ...parentProduct])];
+            }
         }
-
-        // Search in Customer
-        var _filteredCustomer = allCustomerList.filter((item) => (
-            (item.FirstName && item.FirstName.toLowerCase().includes(value.toLowerCase()))
-            || (item.LastName && item.LastName.toString().toLowerCase().includes(value.toLowerCase()))
-            || (item.Contact && item.Contact.toString().toLowerCase().includes(value.toLowerCase()))
-            || (item.Email && item.Email.toString().toLowerCase().includes(value.toLowerCase()))
-        ))
-        console.log("---filteredCustomer---" + JSON.stringify(_filteredCustomer));
-        setfilteredCustomer(_filteredCustomer);
-
+        if (filterType === "customer" || filterType === "all") {
+            // Search in Customer
+            var _filteredCustomer = allCustomerList.filter((item) => (
+                (item.FirstName && item.FirstName.toLowerCase().includes(value.toLowerCase()))
+                || (item.LastName && item.LastName.toString().toLowerCase().includes(value.toLowerCase()))
+                || (item.Contact && item.Contact.toString().toLowerCase().includes(value.toLowerCase()))
+                || (item.Email && item.Email.toString().toLowerCase().includes(value.toLowerCase()))
+            ))
+            console.log("---filteredCustomer---" + JSON.stringify(_filteredCustomer));
+            setfilteredCustomer(_filteredCustomer);
+        }
         // if(respGroup && respGroup.data && respGroup.data.content)
         // {
         //     var _filteredGroup = respGroup.data.content.filter((item) => (
@@ -201,6 +203,7 @@ const AdvancedSearch = (props) => {
         }
         else {
             dispatch(product({}));
+            props.toggleAdvancedSearch();
         }
     }
     const viewProduct = (item) => {
@@ -234,30 +237,30 @@ const AdvancedSearch = (props) => {
                         <p><b>Search for:</b> All Results</p>
                         <img src={down_angled_bracket} alt="" />
                     </div>
-                    <label>
-                        <input type="radio" id="allResults" name="search_modifier" value="allResults" checked />
-                        <div className="custom-radio">
+                    <label onClick={() => SetFilter('all')}>
+                        <input type="radio" id="allResults" name="search_modifier" value="allResults" checked={filterType==='all'?true:false} />
+                        <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>All Results</p>
                     </label>
-                    <label>
-                        <input type="radio" id="products" name="search_modifier" value="products" />
-                        <div className="custom-radio">
+                    <label onClick={() => SetFilter('product')}>
+                        <input type="radio" id="products" name="search_modifier" value="products" checked={filterType==='product'?true:false}/>
+                        <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Products</p>
                     </label>
-                    <label>
-                        <input type="radio" id="customers" name="search_modifier" value="customers" />
-                        <div className="custom-radio">
+                    <label onClick={() => SetFilter('customer')}>
+                        <input type="radio" id="customers" name="search_modifier" value="customers" checked={filterType==='customer'?true:false}/>
+                        <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Customers</p>
                     </label>
-                    <label>
-                        <input type="radio" id="groups" name="search_modifier" value="groups" />
-                        <div className="custom-radio">
+                    <label onClick={() => SetFilter('group')}>
+                        <input type="radio" id="groups" name="search_modifier" value="groups" checked={filterType==='group'?true:false}/>
+                        <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Groups</p>

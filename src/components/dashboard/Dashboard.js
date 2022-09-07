@@ -227,7 +227,7 @@ const Home = () => {
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
-            <CreateCustomer  isShow={isShowCreateCustomer} ></CreateCustomer>
+            <CreateCustomer  isShow={isShowCreateCustomer}  toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
             <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>

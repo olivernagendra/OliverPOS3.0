@@ -156,7 +156,7 @@ const CreateCustomer = (props) => {
     // Close Button popup
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleCreateCustomer();
+            props.toggleCreateCustomer &&  props.toggleCreateCustomer();
         }
         else {
             e.stopPropagation();

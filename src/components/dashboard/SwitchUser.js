@@ -5,7 +5,16 @@ import SwitchUser_Icon from '../../images/svg/SwitchUser-Icon.svg';
 import Backspace_BaseBlue from '../../images/svg/Backspace-BaseBlue.svg';
 import PinPad from "../PinPad";
 const SwitchUser = (props) => {
-    return <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={()=>props.toggleSwitchUser()}>
+    const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            props.toggleOrderNote();
+        }
+        else {
+            e.stopPropagation();
+        }
+        console.log(e.target.className)
+    }
+    return <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
         <div className={props.isShow===true?"subwindow switch-user current":"subwindow switch-user"}>
         <div className="subwindow-header">
             <p>Switch User</p>
@@ -30,8 +39,8 @@ const SwitchUser = (props) => {
             </p>
             <div className="divider"></div>
             <p className="style2">Enter Your User ID</p>
-            {/* <PinPad></PinPad> */}
-            <div className="pinpad">
+           { props.isShow===true? <PinPad switchUser={true}></PinPad>:null}
+            {/* <div className="pinpad">
                 <div className="pin-entries">
                     <div className="pin-entry"></div>
                     <div className="pin-entry"></div>
@@ -61,7 +70,7 @@ const SwitchUser = (props) => {
                         <img src={Backspace_BaseBlue} alt="" />
                     </button>
                 </div>
-            </div>
+            </div> */}
             <div className="auto-margin-bottom"></div>
         </div>
     </div></div>

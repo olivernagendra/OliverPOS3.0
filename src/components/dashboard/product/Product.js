@@ -27,13 +27,14 @@ import AdjustInventory from "./AdjustInventory";
 import MsgPopup_NoVariationSelected from "./MsgPopup_NoVariationSelected";
 import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
 import { addSimpleProducttoCart } from './productLogic';
+import { getTaxAllProduct } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
 
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
-    const { getByID: getProductByID } = useIndexedDB("products");
+    const { getByID: getProductByID, getAll: getAllProducts } = useIndexedDB("products");
     const [modifierList, setModifierList] = useState([])
     const [selectedModifiers, setSelectedModifiers] = useState([])
     const [productModifiers, setProductModifiers] = useState([])
@@ -46,7 +47,9 @@ const Product = (props) => {
     const [isNoVariationSelected, setisNoVariationSelected] = useState(false);
     const [isOutOfStock, setisOutOfStock] = useState(false);
     const [productQty, setProductQty] = useState(1);
+    const [note, setNote] = useState("");
 
+    var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
     // });
@@ -510,11 +513,91 @@ const Product = (props) => {
             });
         }
     }
+    var selVariations = [];
+    var _disableAttribute = [];
+    const optionClick = async (option, attribute, AttrIndex) => {
+        _disableAttribute = []
+        var _item = selVariations.findIndex((element) => {
+            return element.Name === attribute.Name;
+        })
+        if (_item == -1) {
+            selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+        }
+        selVariations = selVariations.map(obj => {
+            if (obj.Name === attribute.Name) {
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
+            }
+            return obj;
+        });
+        console.log("-----if exists----" + JSON.stringify(selVariations))
+        if (props && props.selProduct) {
+            var _product = props.selProduct;
+            var _attribute = [];
+            var ProductAttribute = [];
 
+            if (_product && _product.ProductAttributes !== null) {
+                ProductAttribute = _product.ProductAttributes;
+                _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
+            }
+            getAllProducts().then((rows) => {
+                var data = rows.filter(a => a.ParentId === _product.WPID);
+                var allProdcuts = getTaxAllProduct(data)
+                if (allProdcuts && allProdcuts.length > 0) {
+                    var filteredAttribute = allProdcuts.filter(item => {
+                        var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                        return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                    })
+                    //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    // console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
+
+                    var filteredAttribute1 = allProdcuts.filter(item => {
+                        var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+
+                        if (aa == true) {
+                            allCombi = allCombi.map(a => {
+                                var _att = a.replace(/\//g, "-").toLowerCase();
+                                const index = _disableAttribute.findIndex(item => item === _att)
+                                if (index === -1) {
+                                    _disableAttribute.push(_att);
+                                }
+                                return _att;
+                            });
+                        }
+                        if (attribute && attribute.Option) {
+                            (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
+                                var _att=a.replace(/\//g, "-").toLowerCase();
+                                const index = _disableAttribute.findIndex(item => item === _att)
+                                if (index === -1) {
+                                    _disableAttribute.push(_att);
+                                }
+                            })
+                        }
+
+                        var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        // if (result === true) {
+                        //     console.log("--att p count--->> ", allCombi.join(','));
+                        // }
+                        return result;
+                    })
+                    console.log("--allVariatiooo--- ", JSON.stringify(_disableAttribute));
+                    console.log("--allVariations--- ", JSON.stringify(allVariations));
+
+                }
+
+            });
+        }
+    }
     const addToCart = () => {
         if (props && props.selProduct) {
             var _product = props.selProduct;
             _product.quantity = productQty;
+            if(note!="")
+            {
+                var result = addSimpleProducttoCart({"Title":note,"IsTicket":false});
+                console.log("----product note---"+note);
+            }
             var result = addSimpleProducttoCart(_product);
             if (result === 'outofstock') {
                 toggleOutOfStock();
@@ -525,6 +608,11 @@ const Product = (props) => {
 
         }
 
+    }
+    const addNote=(note)=>
+    {
+        setNote(note);
+        toggleProductNote();
     }
     useEffect(() => {
         props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
@@ -602,8 +690,9 @@ const Product = (props) => {
                                         <React.Fragment><p>{attribute.Name}</p>
                                             <div className="radio-group">
                                                 {
-                                                    (attribute.Option ? attribute.Option.split(',') : []).map(a => {
-                                                        return <label><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                    (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
+                                                        allVariations.push(a.replace(/\//g, "-").toLowerCase())
+                                                        return <label onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
                                             </div></React.Fragment>
@@ -839,7 +928,7 @@ const Product = (props) => {
                 <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
                 <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
                 <MsgPopup_NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></MsgPopup_NoVariationSelected>
-                <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote}></ProductNote>
+                <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
                 <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
             </React.Fragment>)
 }

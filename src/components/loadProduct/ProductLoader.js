@@ -36,7 +36,7 @@ const CustomerLoader =()=>{
     const getCustomerList = (pn,  pl, trc) => {
         var udid = get_UDid(localStorage.getItem("UDID"));
         var pageNumber = pn;
-        var PageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
+        var PageSize = Config.key.CUSTOMER_PAGE_SIZE;
         var CustomerArray = pl;
         var TotalRecord = trc;
         const requestOptions = {

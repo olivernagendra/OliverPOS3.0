@@ -23,7 +23,9 @@ export const get_locName = () => {
 }
 
 export const get_userName = () => {
-  return localStorage.getItem('user_full_name') ? localStorage.getItem('user_full_name') : ''
+  var user = localStorage.getItem('user') ?JSON.parse(localStorage.getItem('user')) : '';
+  return user != "" ? user.display_name : '';
+  //return localStorage.getItem('user_full_name') ? localStorage.getItem('user_full_name') : ''
 }
 export const get_userId = () => {
   return localStorage.getItem('userId') ? localStorage.getItem('userId') : ''

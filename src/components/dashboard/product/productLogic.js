@@ -86,8 +86,9 @@ export const addSimpleProducttoCart=(product, ticketFields = null)=> {
         var product_is_exist = (product.ManagingStock == false && product.StockStatus == "outofstock") ? "outofstock" :
             (product.StockStatus == null || product.StockStatus == 'instock') && product.ManagingStock == false ? "Unlimited" : (typeof product.StockQuantity != 'undefined') && product.StockQuantity != '' ? qty < product.StockQuantity : '0'
         if (product_is_exist == '0') {
-            
-            return 'outofstock';
+            if(typeof product.Price!="undefined")
+            {return 'outofstock';}
+            else{product_is_exist=true;}
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {
             cartlist.push(data);
@@ -150,7 +151,7 @@ export const addSimpleProducttoCart=(product, ticketFields = null)=> {
         //  add simple product with below condotions
         var product_is_exist = (product.ManagingStock == false && product.StockStatus == "outofstock") ? "outofstock" :
             (product.StockStatus == null || product.StockStatus == 'instock') && product.ManagingStock == false ? "Unlimited" : (typeof product.StockQuantity != 'undefined') && product.StockQuantity != '' ? qty < product.StockQuantity : '0'
-        if (product_is_exist == '0') {
+        if (product_is_exist == '0' ) {
             return 'outofstock';
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {

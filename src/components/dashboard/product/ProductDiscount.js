@@ -18,7 +18,7 @@ const ProductDiscount = (props) => {
                 </div>
                 <div className="subwindow-body">
                             <div className="auto-margin-top"></div>
-                            <label for="productDiscount">Discount amount:</label>
+                            <label htmlFor="productDiscount">Discount amount:</label>
                             <input type="number" id="productDiscount" placeholder="0" />
                             <p>Select type of discount to be applied to product:</p>
                             <div className="button-row">

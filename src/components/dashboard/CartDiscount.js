@@ -39,7 +39,7 @@ const CartDiscount = (props) => {
         </div> */}
         
 
-        <div class={props.isShow===true?"subwindow discount-fee custom-fee current":"subwindow discount-fee custom-fee"}>
+        <div className={props.isShow===true?"subwindow discount-fee custom-fee current":"subwindow discount-fee custom-fee"}>
 				<div className="subwindow-header">
 					<p>Custom Fees/Discounts</p>
 					<button className="close-subwindow" onClick={()=>props.toggleCartDiscount()}>
@@ -63,8 +63,8 @@ const CartDiscount = (props) => {
 							</div>
 						</label>
 					</div>
-					<div class= {isShowDiscount==false?"custom-fee unhide":"custom-fee hide"}>
-						<label for="customFeeLabel">Custom Fee Label</label>
+					<div className={isShowDiscount==false?"custom-fee unhide":"custom-fee hide"}>
+						<label htmlFor="customFeeLabel">Custom Fee Label</label>
 						<input type="text" id="customFeeLabel" placeholder="Name your custom fee" />
 						<input type="number" id="customFeeAmount" placeholder="0.00" />
 						<p>Applies a custom fee item to cart</p>
@@ -73,9 +73,9 @@ const CartDiscount = (props) => {
 							<button>Without Tax</button>
 						</div>
 					</div>
-					<div class={isShowDiscount==true?"cart-discount unhide":"cart-discount hide"}>
+					<div className={isShowDiscount==true?"cart-discount unhide":"cart-discount hide"}>
 						<div className="main">
-							<label for="discountAmount">Discount amount:</label>
+							<label htmlFor="discountAmount">Discount amount:</label>
 							<input type="number" id="discountAmount" placeholder="0.00" />
 							<p>Select type of discount to be applied to cart:</p>
 							<div className="button-row">
