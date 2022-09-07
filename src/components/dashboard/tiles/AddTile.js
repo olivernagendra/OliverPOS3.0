@@ -195,7 +195,6 @@ const AddTile = (props) => {
     useEffect(() => {
         if (useCancelled == false) {
             getProductFromIDB()
-            console.log(product_List)
         }
         return () => {
             useCancelled = true;

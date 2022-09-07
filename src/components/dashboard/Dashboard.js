@@ -168,7 +168,11 @@ const Home = () => {
     const toggleCreateCustomer = () => {
         setisShowCreateCustomer(!isShowCreateCustomer)
     }
-
+const addNote=(e)=>
+{
+    console.log("----order note-----"+e);
+    toggleOrderNote()
+}
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
@@ -223,7 +227,7 @@ const Home = () => {
            
             <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
-            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote}></OrderNote>
+            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} addNote={addNote}></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>

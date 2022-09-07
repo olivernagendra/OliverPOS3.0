@@ -66,7 +66,6 @@ const AdvancedSearch = (props) => {
         if (useCancelled == false) {
             getProductFromIDB()
             GetCustomerFromIDB()
-            console.log(product_List)
         }
         return () => {
             useCancelled = true;
@@ -339,7 +338,7 @@ const AdvancedSearch = (props) => {
 
                     {
                         product_List && product_List.map((item, index) => {
-                            return <div className="search-result product">
+                            return <div className="search-result product" key={item.WPID}>
                                 <div className="col">
                                     {/* <p className="style1">Product</p>
                             <p className="style2">Funky Fresh White Sneakers long name to get cut off</p>
@@ -367,7 +366,7 @@ const AdvancedSearch = (props) => {
                     }
                     {
                         filteredCustomer && filteredCustomer.map((item, index) => {
-                            return <div className="search-result customer">
+                            return <div className="search-result customer" key={item.Email}>
                                 <div className="col">
                                     <p className="style1">Customer</p>
                                     <p className="style2">{item.FirstName + " " + item.LastName}</p>

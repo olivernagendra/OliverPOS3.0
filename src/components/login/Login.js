@@ -26,8 +26,10 @@ function Login() {
     // const [wentWrongErr, setWentWrongErr] = useState("")
     // const [passwordErr, setPasswordErr] = useState("")
 
-
-
+    //It will clear all local storage items
+    const clearLocalStorages = () => {
+        localStorage.clear();
+    }
 
 
     const dispatch = useDispatch();
@@ -58,6 +60,7 @@ function Login() {
 
 
     const handleSubmit = (e) => {
+        clearLocalStorages();
         if (userEmail && password) {
             setUserRequest({
                 setFieldErr: '',

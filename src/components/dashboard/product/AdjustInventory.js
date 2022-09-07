@@ -19,7 +19,7 @@ const AdjustInventory = (props) => {
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
                     <p>Current Warehouse</p>
-                    <label for="productStock">Currently in Stock:</label>
+                    <label htmlFor="productStock">Currently in Stock:</label>
                     <input type="number" id="productStock" value="23" disabled />
                     <button id="editStockButton">
                         <img src={Pencil_Blue} alt="" />
