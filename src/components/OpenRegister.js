@@ -19,6 +19,7 @@ const OpenRegister = () => {
     const [enteredAmount, setEnteredAmount] = useState(0.00)
     const [notes, setNotes] = useState("")
     const [toggle, settoggle] = useState(false)
+    const [togglePin, settogglePin] = useState(false)
     const [isAmountEntered, setIsAmountEntered] = useState(false);
 
     const hundleToggle = () => {
@@ -75,22 +76,25 @@ const OpenRegister = () => {
             }
             dispatch(openRegister(open_register_param));
 
-            //  $(".form-control").val('');
+            settogglePin(true)
         }
         else {
             setIsAmountEntered(true)
         }
     }
 
-   //  Save cashManagementID when response
+    //  Save cashManagementID when response
     const { statusopenRegister, dataopenRegister, erroropenRegister, is_successopenRegister } = useSelector((state) => state.openRegister)
     // console.log("statusopenRegister", statusopenRegister, "dataopenRegister", dataopenRegister, "erroropenRegister", erroropenRegister, "is_successopenRegister", is_successopenRegister)
+
+
+
     if (statusopenRegister === STATUSES.IDLE && is_successopenRegister) {
         if (dataopenRegister && dataopenRegister.content && dataopenRegister.content !== undefined) {
             console.log(" dashboard first array id .Id", dataopenRegister.content.Id)
             localStorage.setItem("Cash_Management_ID", dataopenRegister.content.Id);
             localStorage.setItem("IsCashDrawerOpen", "true");
-            navigate('/productloader')
+            // navigate('/productloader')
         }
     }
 
@@ -128,16 +132,16 @@ const OpenRegister = () => {
 
         <main>
             <div className="auto-margin-top"></div>
-            
-            <div className="step1">
-            {toggle !==true ? <>  <p>Ready to Open?</p>
-                <button id="" onClick={hundleToggle}>Open Register</button> </>:null }
-               
 
-            </div>{toggle == true ? <div className="step2 ">
+            <div className="step1">
+                {toggle !== true && togglePin !== true ? <>  <p>Ready to Open?</p>
+                    <button id="" onClick={hundleToggle}>Open Register</button> </> : null}
+
+
+            </div>{toggle == true && togglePin !== true ? <div className="step2 ">
                 <p>Start Your Cash Float</p>
                 <label htmlFor="floatAmount">Opening float amount ($):</label>
-                
+
                 <input type="number" placeholder='Enter Amount' id="floatAmount" onChange={(e) => validateEnteredAmount(e)} />
                 {
                     (isAmountEntered === true) ?
@@ -149,18 +153,18 @@ const OpenRegister = () => {
                 <textarea name="openNote" id="openNote" placeholder="Add your note here" onChange={(e) => enterNote(e)}></textarea>
                 <button id="openFloatButton" onClick={openRegisterhundle} >Open Float</button>
             </div> : null}
-
-            {/* <div className="step3 hidden">
+            {togglePin == true ? <div className="step3 ">
                 {<PinPad enteredAmount={enteredAmount}
                     notes={notes}
                 ></PinPad>}
-            </div> */}
+            </div> : null}
+
             <div className="auto-margin-bottom"></div>
         </main>
 
 
     </div>
-        // <div className="logout-confirmation-wrapper hidden">
+        {/* // <div className="logout-confirmation-wrapper hidden">
         //     <div className="auto-margin-top"></div>
         //     <p className="style1">Account Logout Confirmation</p>
         //     <p className="style2">
@@ -173,7 +177,7 @@ const OpenRegister = () => {
         //     <button id="logoutConfirm">Logout</button>
         //     <button id="logoutCancel">Cancel</button>
         //     <div className="auto-margin-bottom"></div>
-        // </div>
+        // </div> */}
     </React.Fragment>
 
 

@@ -18,6 +18,7 @@ import { CustomergetPageSlice } from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
+import {CustomerSaveSlice} from '../components/customer/CustomerSlice'
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -49,7 +50,8 @@ export const store = configureStore({
     //openregisterupdate: openRegisterSlice.reducer,
     customer: customerSlice.reducer,
     customergetPage: CustomergetPageSlice.reducer,
-    product: productSlice.reducer
+    product: productSlice.reducer,
+    customersave:CustomerSaveSlice.reducer
 
   }
   ,
