@@ -29,11 +29,10 @@ const Closeregistertwo = (props) => {
             localStorage.setItem('logoutclick', "true");
            // setAndroidKeyboard('logout');
             //--------------------------------------------------------
-
             //this.props.dispatch(userActions.logout())
            // redirectToURL()
             // history.push('/loginpin');
-            navigate('/pin')
+            navigate('/register')
         }, 500);
 
     }
