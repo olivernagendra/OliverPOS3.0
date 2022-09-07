@@ -32,6 +32,7 @@ const AdvancedSearch = (props) => {
     const [filteredGroup, setfilteredGroup] = useState([]);
     const [allCustomerList, setAllCustomerList] = useState([])
     const [filterType, setFilterType] = useState('all')
+    const [serachString, setSerachString] = useState('')
     const getProductFromIDB = () => {
         var allData = [];
         getAll().then((rows) => {
@@ -44,8 +45,16 @@ const AdvancedSearch = (props) => {
             setProduct_List(allProdcuts ? allProdcuts : []);
         });
     }
+    const handleSearch=(event)=>
+    {
+        console.log("event" + event.target.value)
+        var item1 = event.target.value;
+        setSerachString(item1)
+        productDataSearch(item1)
+    }
     const SetFilter = (ftype) => {
         setFilterType(ftype);
+        productDataSearch(serachString)
     }
     const GetCustomerFromIDB = () => {
         useIndexedDB("customers").getAll().then((rows) => {
@@ -89,17 +98,23 @@ const AdvancedSearch = (props) => {
         return filterCategoryCode
     }
 
-    const productDataSearch = (event) => {
-        console.log("event" + event.target.value)
-        var item1 = event.target.value;
+    const productDataSearch = (item1) => {
+       
         setfiltered([]);
         if (item1 == '') {
-            setProduct_List(allProductList);
+            if (filterType === "product" || filterType === "all") {
+                setProduct_List(allProductList);
+            }
             return;
         }
         var _filtered = [];
         var value = item1;
         if (filterType === "product" || filterType === "all") {
+            if(filterType==="product")
+            {
+                setfilteredCustomer([]);
+            }
+            
             // Search in Products
             var serchFromAll = product_List.filter((item) => (
                 (item.Title && item.Title.toLowerCase().includes(value.toLowerCase()))
@@ -127,6 +142,10 @@ const AdvancedSearch = (props) => {
             }
         }
         if (filterType === "customer" || filterType === "all") {
+            if(filterType==="customer")
+            {
+                setProduct_List([]);
+            }
             // Search in Customer
             var _filteredCustomer = allCustomerList.filter((item) => (
                 (item.FirstName && item.FirstName.toLowerCase().includes(value.toLowerCase()))
@@ -227,7 +246,7 @@ const AdvancedSearch = (props) => {
             <button className="close-subwindow" onClick={() => props.toggleAdvancedSearch()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <input type="text" id="advancedSearchBar" placeholder="Start typing to search..." onChange={e => productDataSearch(e)} />
+            <input type="text" id="advancedSearchBar" placeholder="Start typing to search..." onChange={e => handleSearch(e)} />
         </div>
         <div className="subwindow-body">
             <div className="left-col">
@@ -238,28 +257,28 @@ const AdvancedSearch = (props) => {
                         <img src={down_angled_bracket} alt="" />
                     </div>
                     <label onClick={() => SetFilter('all')}>
-                        <input type="radio" id="allResults" name="search_modifier" value="allResults" checked={filterType==='all'?true:false} />
+                        <input type="radio" id="allResults" name="search_modifier" value="allResults" checked={filterType === 'all' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>All Results</p>
                     </label>
                     <label onClick={() => SetFilter('product')}>
-                        <input type="radio" id="products" name="search_modifier" value="products" checked={filterType==='product'?true:false}/>
+                        <input type="radio" id="products" name="search_modifier" value="products" checked={filterType === 'product' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Products</p>
                     </label>
                     <label onClick={() => SetFilter('customer')}>
-                        <input type="radio" id="customers" name="search_modifier" value="customers" checked={filterType==='customer'?true:false}/>
+                        <input type="radio" id="customers" name="search_modifier" value="customers" checked={filterType === 'customer' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Customers</p>
                     </label>
                     <label onClick={() => SetFilter('group')}>
-                        <input type="radio" id="groups" name="search_modifier" value="groups" checked={filterType==='group'?true:false}/>
+                        <input type="radio" id="groups" name="search_modifier" value="groups" checked={filterType === 'group' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
