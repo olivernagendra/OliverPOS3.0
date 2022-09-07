@@ -267,7 +267,7 @@ const CreateCustomer = (props) => {
             <div className={props.isShow === true ? "subwindow create-customer current" : "subwindow create-customer"}>
                 <div className="subwindow-header">
                     <p>Create Customer</p>
-                    <button className="close-subwindow" onClick={() => props.closePopUp()}>
+                    <button className="close-subwindow" onClick={() => props.toggleCreateCustomer()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>

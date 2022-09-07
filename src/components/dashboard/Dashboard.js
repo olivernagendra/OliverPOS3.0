@@ -160,6 +160,7 @@ const Home = () => {
         setisShowCreateCustomer(!isShowCreateCustomer)
     }
 
+
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
@@ -218,7 +219,7 @@ const Home = () => {
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
-            <CreateCustomer  isShow={isShowCreateCustomer} ></CreateCustomer>
+            <CreateCustomer toggleCreateCustomer={toggleCreateCustomer}  isShow={isShowCreateCustomer} ></CreateCustomer>
             <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
             {/* iframe subview */}
