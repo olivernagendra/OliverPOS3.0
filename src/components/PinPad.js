@@ -4,7 +4,7 @@ import { chunkArray, get_locName, get_regName } from './common/localSettings'
 // import imgOpenReg from '../images/svg/OpenSign.svg'
 import imgBackSpace from '../images/svg/Backspace-BaseBlue.svg'
 
-import { createPin, validatePin, switchUserPin } from "./pinPage/pinSlice"
+import { createPin, validatePin } from "./pinPage/pinSlice"
 import { useNavigate } from "react-router-dom";
 import { get_UDid } from "./common/localSettings";
 import STATUSES from "../constants/apiStatus";
@@ -30,27 +30,28 @@ const PinPad = React.memo(props => {
 
     useEffect(() => {
         // console.log("useEffect")
-        if (isloading == true)
+        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+            navigate('/openregister')
+        }
+        if (isloading == true) {
             pinSuccessful()
+        }
 
-        // if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
-        //     navigate('/openregister')
-        // }
 
-    }, [data])
+    }, [data, isloading])
 
 
 
-
-    if (status === STATUSES.error) {
-        console.log(error)
-    }
-
-    if (is_success === true) {
-        //   console.log("iss success",is_success)
-        //  openRegisterhundle()
-    }
     const pinSuccessful = () => {
+        if (status === STATUSES.error) {
+            console.log(error)
+        }
+
+        if (is_success === true) {
+            //   console.log("iss success",is_success)
+            //  openRegisterhundle()
+        }
+
         if (status === STATUSES.IDLE && is_success) {
 
             localStorage.setItem('user', JSON.stringify(data.content));
@@ -82,9 +83,9 @@ const PinPad = React.memo(props => {
                 }
             }
         }
+
+
     }
-
-
 
 
 
