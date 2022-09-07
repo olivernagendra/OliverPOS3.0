@@ -1,6 +1,6 @@
 import { get_UDid } from "../../common/localSettings";
 import moment from 'moment';
-import { getTaxCartProduct,getInclusiveTax,getExclusiveTax,typeOfTax } from "../../common/TaxSetting";
+import { getTaxCartProduct, getInclusiveTax, getExclusiveTax, typeOfTax } from "../../common/TaxSetting";
 function percentWiseDiscount(price, discount) {
     var discountAmount = (price * discount) / 100.00;
     return discountAmount;
@@ -23,26 +23,26 @@ function stockUpdateQuantity(cardData, data, product) {
     }
 }
 
-export const addSimpleProducttoCart=(product, ticketFields = null)=> {      
+export const addSimpleProducttoCart = (product, ticketFields = null) => {
     //const { dispatch, checkout_list, cartproductlist } = this.props;
-   var cartproductlist=[];
+    var cartproductlist = [];
     var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
     if (cartlist.length > 0) {
         cartlist.map(findId => {
             if (findId.product_id === product.WPID) {
-                product['after_discount'] = findId ? findId.after_discount : 0,
-                    product['discount_amount'] = findId ? findId.discount_amount : 0,
-                    product['product_after_discount'] = findId ? findId.product_after_discount : 0,
-                    product['product_discount_amount'] = findId ? findId.product_discount_amount : 0,
-                    product['discount_type'] = findId ? findId.discount_type : "",
-                    product['new_product_discount_amount'] = findId ? findId.new_product_discount_amount : 0
+                // product['after_discount'] = findId ? findId.after_discount : 0,
+                //     product['discount_amount'] = findId ? findId.discount_amount : 0,
+                //     product['product_after_discount'] = findId ? findId.product_after_discount : 0,
+                //     product['product_discount_amount'] = findId ? findId.product_discount_amount : 0,
+                //     product['discount_type'] = findId ? findId.discount_type : "",
+                //     product['new_product_discount_amount'] = findId ? findId.new_product_discount_amount : 0
             }
         });
 
     }
     // var setQunatity = 1;
 
-    var setQunatity = typeof product.quantity!="undefined"?product.quantity:1;
+    var setQunatity = typeof product.quantity != "undefined" ? product.quantity : 1;
     var tick_data = product && product.IsTicket == true && product.TicketInfo != '' ? JSON.parse(product.TicketInfo) : '';
     var availability_to_date = tick_data && tick_data !== 'null' ? moment(tick_data._ticket_availability_to_date).format('YYYY-MM-DD') : ''
     var today_date = moment().format('YYYY-MM-DD')
@@ -86,9 +86,8 @@ export const addSimpleProducttoCart=(product, ticketFields = null)=> {
         var product_is_exist = (product.ManagingStock == false && product.StockStatus == "outofstock") ? "outofstock" :
             (product.StockStatus == null || product.StockStatus == 'instock') && product.ManagingStock == false ? "Unlimited" : (typeof product.StockQuantity != 'undefined') && product.StockQuantity != '' ? qty < product.StockQuantity : '0'
         if (product_is_exist == '0') {
-            if(typeof product.Price!="undefined")
-            {return 'outofstock';}
-            else{product_is_exist=true;}
+            if (typeof product.Price != "undefined") { return 'outofstock'; }
+            else { product_is_exist = true; }
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {
             cartlist.push(data);
@@ -100,13 +99,13 @@ export const addSimpleProducttoCart=(product, ticketFields = null)=> {
             //androidDisplayScreen(data.Title, data.Price, totalPrice, "cart");
             //-----------------------------------------
             stockUpdateQuantity(cartlist, data, product)
-            if((!localStorage.getItem("APPLY_DEFAULT_TAX")) || localStorage.getItem("APPLY_DEFAULT_TAX")==null){
-                setTimeout(() => {   
-                    addtoCartProduct(cartlist);                     
+            if ((!localStorage.getItem("APPLY_DEFAULT_TAX")) || localStorage.getItem("APPLY_DEFAULT_TAX") == null) {
+                setTimeout(() => {
+                    addtoCartProduct(cartlist);
                 }, 400);
-            }else{
+            } else {
                 addtoCartProduct(cartlist);
-            }               
+            }
         } else {
             return 'outofstock';
         }
@@ -151,7 +150,7 @@ export const addSimpleProducttoCart=(product, ticketFields = null)=> {
         //  add simple product with below condotions
         var product_is_exist = (product.ManagingStock == false && product.StockStatus == "outofstock") ? "outofstock" :
             (product.StockStatus == null || product.StockStatus == 'instock') && product.ManagingStock == false ? "Unlimited" : (typeof product.StockQuantity != 'undefined') && product.StockQuantity != '' ? qty < product.StockQuantity : '0'
-        if (product_is_exist == '0' ) {
+        if (product_is_exist == '0') {
             return 'outofstock';
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {
@@ -169,8 +168,8 @@ export const addSimpleProducttoCart=(product, ticketFields = null)=> {
             return 'outofstock';
         }
     }
-}  
-export const deleteProduct=(item)=> {
+}
+export const deleteProduct = (item) => {
     var product = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];//
     var productx = localStorage.getItem("PRODUCTX_DATA") ? JSON.parse(localStorage.getItem("PRODUCTX_DATA")) : [];//
     var tikeraSelectedSeats = localStorage.getItem('TIKERA_SELECTED_SEATS') ? JSON.parse(localStorage.getItem('TIKERA_SELECTED_SEATS')) : [];
@@ -206,9 +205,9 @@ export const deleteProduct=(item)=> {
     var j = 0;
     var xindex;
     for (j = 0; j < productx.length; j++) {
-        if ((typeof item.product_id !== 'undefined') && item.product_id !== null) { 
+        if ((typeof item.product_id !== 'undefined') && item.product_id !== null) {
             // we hvae added item.strProductX == undefined condistion for park sale edit case becs we dont have strProductX in cardProductList localstorage 
-            if (productx[j].product_id == item.product_id && (productx[j].strProductX == item.strProductX|| (item.strProductX == undefined && productx[j].strProductX == ""))) {
+            if (productx[j].product_id == item.product_id && (productx[j].strProductX == item.strProductX || (item.strProductX == undefined && productx[j].strProductX == ""))) {
                 xindex = j;
             }
         }
@@ -217,11 +216,11 @@ export const deleteProduct=(item)=> {
 
     if (product.length == 0) {
         var checklist = localStorage.getItem('CHECKLIST') && JSON.parse(localStorage.getItem('CHECKLIST'))
-        if(checklist && (checklist.status == "pending" || checklist.status == "park_sale" || checklist.status == "lay_away" || checklist.status == "on-hold")){
+        if (checklist && (checklist.status == "pending" || checklist.status == "park_sale" || checklist.status == "lay_away" || checklist.status == "on-hold")) {
             var udid = get_UDid('UDID');
             //this.setState({ isLoading: true })
-             localStorage.removeItem('PENDING_PAYMENTS');
-           // this.props.dispatch(checkoutActions.orderToCancelledSale(checklist.order_id, udid));
+            localStorage.removeItem('PENDING_PAYMENTS');
+            // this.props.dispatch(checkoutActions.orderToCancelledSale(checklist.order_id, udid));
         }
         localStorage.removeItem('CHECKLIST');
         localStorage.removeItem("CART");
@@ -257,12 +256,12 @@ export const deleteProduct=(item)=> {
     //-----------------------------------------
 }
 
-export const removeCheckOutList=()=> {
+export const removeCheckOutList = () => {
     //const { dispatch } = this.props;
 
     var checklist = localStorage.getItem('CHECKLIST') && JSON.parse(localStorage.getItem('CHECKLIST'))
-    if(checklist && (checklist.status == "pending" || checklist.status == "park_sale" || checklist.status == "lay_away" || checklist.status == "on-hold")){
-        this.setState({isLoading : true})
+    if (checklist && (checklist.status == "pending" || checklist.status == "park_sale" || checklist.status == "lay_away" || checklist.status == "on-hold")) {
+        this.setState({ isLoading: true })
         var udid = get_UDid('UDID');
         //this.props.dispatch(checkoutActions.orderToCancelledSale(checklist.order_id, udid));
         localStorage.removeItem('PENDING_PAYMENTS');
@@ -307,7 +306,7 @@ export const addtoCartProduct = (cartproductlist) => {
             _qty = _qty + nitem.quantity;
             // ** get new inclusive tax in case of discount number, when we add number discont on same item that added on cart already...*/
             //new_incl_tax = nitem.isTaxable==true? getInclusiveTax( nitem.discount_amount >0? nitem.after_discount: (nitem.old_price*_qty) , nitem.TaxClass):0;
-            new_incl_tax = getInclusiveTax((nitem.old_price*_qty)-( nitem.discount_type == "Number" ? nitem.product_discount_amount : nitem.product_discount_amount*_qty ) , nitem.TaxClass)
+            new_incl_tax = getInclusiveTax((nitem.old_price * _qty) - (nitem.discount_type == "Number" ? nitem.product_discount_amount : nitem.product_discount_amount * _qty), nitem.TaxClass)
 
             /// ** minus total price with new total inclusive tax, and discount amount to get final after discount.. */
             _afterDiscount = nitem.discount_type == "Number" && nitem.incl_tax && nitem.after_discount ?
@@ -450,21 +449,21 @@ export const addtoCartProduct = (cartproductlist) => {
                 if (item.discount_type == "Percentage") {
                     //incl_tax = getInclusiveTax(item.Price - (product_after_discount > 0 ? (product_after_discount) : item.discount_amount), item.TaxClass)
                     //Now calculating the tax on Price with inclusive tax... 
-                    incl_tax =  getInclusiveTax((product_after_discount > 0 ? item.Price- product_after_discount :item.Price ), item.TaxClass)
+                    incl_tax = getInclusiveTax((product_after_discount > 0 ? item.Price - product_after_discount : item.Price), item.TaxClass)
                 } else {
-                    incl_tax =  getInclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
+                    incl_tax = getInclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
                 }
                 item["incl_tax"] = incl_tax
             } else {
                 var excl_tax = 0;
                 if (item.discount_type == "Percentage") {
-                    excl_tax =  getExclusiveTax(item.after_discount, item.TaxClass)
+                    excl_tax = getExclusiveTax(item.after_discount, item.TaxClass)
                     //excl_tax = getExclusiveTax(item.after_discount * item.quantity, item.TaxClass)// 
                     if (isProdAddonsType && isProdAddonsType == true) {
-                        excl_tax =  getExclusiveTax(item.after_discount, item.TaxClass)// quantity comment for addons
+                        excl_tax = getExclusiveTax(item.after_discount, item.TaxClass)// quantity comment for addons
                     }
                 } else {
-                    excl_tax =  getExclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
+                    excl_tax = getExclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
                 }
                 item["excl_tax"] = excl_tax
             }
@@ -513,7 +512,7 @@ export const addtoCartProduct = (cartproductlist) => {
                             discount_amount_is = percentWiseDiscount(price, discount);
                             if (item.TaxStatus !== 'none') {
                                 if (TAX_CASE == 'incl') {
-                                    incl_tax =  getInclusiveTax(price, item.TaxClass)
+                                    incl_tax = getInclusiveTax(price, item.TaxClass)
                                     //item["incl_tax"] = incl_tax
 
                                     //discount_amount_is = percentWiseDiscount(price - incl_tax, discount);
@@ -555,12 +554,12 @@ export const addtoCartProduct = (cartproductlist) => {
                 item["discount_amount"] = parseFloat(cart_discount_amount) + parseFloat(product_discount_amount);
                 if (item.discount_amount && item.discount_amount !== 0 && item.TaxStatus !== 'none') {
                     if (TAX_CASE == 'incl') {
-                        incl_tax =  getInclusiveTax((item.discount_amount > 0 ? cart_after_discount : item.Price), item.TaxClass)
+                        incl_tax = getInclusiveTax((item.discount_amount > 0 ? cart_after_discount : item.Price), item.TaxClass)
                         // incl_tax = getInclusiveTax(item.Price - (product_discount_amount > 0 ? product_discount_amount : item.discount_amount), item.TaxClass)
                         //incl_tax = getInclusiveTax(item.Price- item.discount_amount, item.TaxClass)
                         item["incl_tax"] = incl_tax
                     } else {
-                        excl_tax =  getExclusiveTax(item.Price - item.discount_amount, item.TaxClass);
+                        excl_tax = getExclusiveTax(item.Price - item.discount_amount, item.TaxClass);
                         item["excl_tax"] = excl_tax
                     }
                 } else {

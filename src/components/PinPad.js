@@ -26,7 +26,7 @@ const PinPad = React.memo(props => {
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-   
+
 
     useEffect(() => {
         // console.log("useEffect")
@@ -36,7 +36,7 @@ const PinPad = React.memo(props => {
         // if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
         //     navigate('/openregister')
         // }
-        
+
     }, [data])
 
 
@@ -50,7 +50,7 @@ const PinPad = React.memo(props => {
         //   console.log("iss success",is_success)
         //  openRegisterhundle()
     }
-
+    const pinSuccessful = () => {
         if (status === STATUSES.IDLE && is_success) {
 
             localStorage.setItem('user', JSON.stringify(data.content));
@@ -82,7 +82,7 @@ const PinPad = React.memo(props => {
                 }
             }
         }
-    
+    }
 
 
 

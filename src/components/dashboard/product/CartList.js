@@ -1,4 +1,4 @@
-import React, { useState,useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import EmptyCart from '../../../images/svg/EmptyCart.svg';
@@ -14,7 +14,7 @@ const CartList = (props) => {
     const [discount, setDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
     const [taxRate, setTaxRate] = useState(0.00);
-    
+
     useEffect(() => {
         calculateCart();
     }, [props.listItem]);
@@ -25,8 +25,7 @@ const CartList = (props) => {
             dispatch(product({}));
         }
     }
-    const calculateCart=()=>
-    {
+    const calculateCart = () => {
         var _subtotal = 0.0;
         var _total = 0.0;
         var _taxAmount = 0.0;
@@ -42,7 +41,7 @@ const CartList = (props) => {
         var _cartDiscountAmount = 0.00;
         var _productDiscountAmount = 0.00;
         var _seprateDiscountAmount = 0.00;
-        var taxratelist=[];
+        var taxratelist = [];
         if ((typeof localStorage.getItem('TAXT_RATE_LIST') !== 'undefined') && localStorage.getItem('TAXT_RATE_LIST') !== null) {
             taxratelist = localStorage.getItem('TAXT_RATE_LIST') && JSON.parse(localStorage.getItem('TAXT_RATE_LIST'));
         }
@@ -63,17 +62,17 @@ const CartList = (props) => {
             setTaxRate(_taxRate);
         }
         _taxRate = taxRate;
-        props.listItem &&  props.listItem.map((item, index) => {            
+        props.listItem && props.listItem.map((item, index) => {
             if (item.Price) {
                 _subtotalPrice += item.Price
-                _subtotalDiscount += parseFloat(item.discount_amount ==null || isNaN(item.discount_amount)==true?0:item.discount_amount)
+                _subtotalDiscount += parseFloat(item.discount_amount == null || isNaN(item.discount_amount) == true ? 0 : item.discount_amount)
                 if (item.product_id) {//donothing  
                     var isProdAddonsType = "";//CommonJs.checkForProductXAddons(item.product_id);// check for productX is Addons type products                  
                     _exclTax += item.excl_tax ? item.excl_tax : 0;
                     _inclTax += item.incl_tax ? item.incl_tax : 0;
                     _cartDiscountAmount += item.cart_discount_amount;
                     // _productDiscountAmount += item.discount_type == "Number" ? item.product_discount_amount:item.product_discount_amount; // quantity commment for addons
-                    _productDiscountAmount += item.discount_type == "Number" ? item.product_discount_amount:item.product_discount_amount*(isProdAddonsType && isProdAddonsType == true ? 1 : item.quantity);
+                    _productDiscountAmount += item.discount_type == "Number" ? item.product_discount_amount : item.product_discount_amount * (isProdAddonsType && isProdAddonsType == true ? 1 : item.quantity);
                 }
                 else {
                     _customFee += item.Price;
@@ -81,28 +80,28 @@ const CartList = (props) => {
                     _inclTax += item.incl_tax ? item.incl_tax : 0;
                 }
             }
-        })      
+        })
         _seprateDiscountAmount = _subtotalPrice - _subtotalDiscount;
         _subtotal = _subtotalPrice - _productDiscountAmount;
         _totalDiscountedAmount = _subtotalDiscount;
         if (_taxRate) {
-            _taxAmount = parseFloat(_exclTax) + parseFloat(_inclTax);            
+            _taxAmount = parseFloat(_exclTax) + parseFloat(_inclTax);
         }
         _total = parseFloat(_seprateDiscountAmount) + parseFloat(_exclTax);
         setSubTotal(_subtotal);
         setTotal(_total);
         setDiscount(_totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0);
         setTaxes(RoundAmount(_taxAmount));
-    //    this.setState({
-    //         subTotal: RoundAmount(_subtotal),
-    //         totalAmount: RoundAmount(_total),// parseFloat(_subtotal) - parseFloat(nextProps.discountAmount),           
-    //         discountAmount: nextProps.discountAmount,
-    //         discountType: nextProps.discountType,
-    //         taxAmount: RoundAmount(_taxAmount), //(( parseFloat(_subtotal) - parseFloat(nextProps.discountAmount))% parseFloat(this.state.taxRate))*100.0           
-    //         discountCalculated: _totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0,
-    //         showTaxStaus: typeOfTax() == 'incl' ? LocalizedLanguage.inclTax : LocalizedLanguage.exclTax,
-    //         cartDiscountAmount : _cartDiscountAmount
-    //     })  
+        //    this.setState({
+        //         subTotal: RoundAmount(_subtotal),
+        //         totalAmount: RoundAmount(_total),// parseFloat(_subtotal) - parseFloat(nextProps.discountAmount),           
+        //         discountAmount: nextProps.discountAmount,
+        //         discountType: nextProps.discountType,
+        //         taxAmount: RoundAmount(_taxAmount), //(( parseFloat(_subtotal) - parseFloat(nextProps.discountAmount))% parseFloat(this.state.taxRate))*100.0           
+        //         discountCalculated: _totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0,
+        //         showTaxStaus: typeOfTax() == 'incl' ? LocalizedLanguage.inclTax : LocalizedLanguage.exclTax,
+        //         cartDiscountAmount : _cartDiscountAmount
+        //     })  
     }
     return (
         <div className="cart">
@@ -248,14 +247,14 @@ const CartList = (props) => {
                         <p>Subtotal</p>
                         <p><b>${subTotal}</b></p>
                     </div>
-                    <div className="row">
+                    {/* <div className="row">
                         <p>Cart Discount - 25%</p>
                         <button id="editCartDiscount">edit</button>
                         <p><b>-${discount}</b></p>
-                    </div>
+                    </div> */}
                     <div className="row">
                         <button id="taxesButton">Taxes</button>
-                        <p>(15%)</p>
+                        {/* <p>(15%)</p> */}
                         <p><b>${taxes}</b></p>
                     </div>
                 </div>
