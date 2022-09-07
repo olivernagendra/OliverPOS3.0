@@ -56,19 +56,34 @@ const Register = () => {
         localStorage.setItem(`last_login_register_id_${getudid}`, item.id);
         localStorage.setItem(`last_login_register_name_${getudid}`, item.name);
         localStorage.setItem('selectedRegister', JSON.stringify(item))
-        var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
-        var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+
         setSelRegister(item);
-        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
-            navigate('/openregister')
+        if (isTakeOver == false) {
+            if (openRegister() == true) {
+                navigate('/openregister')
+            }
+            else {
+                navigate('/pin');
+            }
         }
-        else if (isTakeOver == false)
-            navigate('/pin');
         else
             toggleSubwindow("takeover-register");
     }
+    const openRegister = () => {
+        var result = false;
+        var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
+        var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+            result = true;
+        }
+        return result;
+    }
     const takeOver = () => {
-        navigate('/pin');
+        if (openRegister() == true) {
+            navigate('/openregister')
+        }
+        else
+            navigate('/pin');
     }
 
     if (respRegister.status == STATUSES.LOADING) {
