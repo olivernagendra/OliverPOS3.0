@@ -38,7 +38,7 @@ const PinPad = React.memo(props => {
         }
 
 
-    }, [data,isloading])
+    }, [data])
 
 
 
