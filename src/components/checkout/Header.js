@@ -58,17 +58,17 @@ const Header = (props) => {
                 <img src={Oliver_Icon_BaseBlue} alt="" />
             </button>
         </div>
-        <div id="pageOptions" class="page-options-wrapper hidden">
-            <div class="page-options">
+        <div id="pageOptions" className="page-options-wrapper hidden">
+            <div className="page-options">
                 <p>Options Menu</p>
                 <button id="parkSaleButton"  onClick={() => toggleParkSale()}>
-                    <div class="img-container">
+                    <div className="img-container">
                         <img src={Clock} alt="" />
                     </div>
                     <p>Park Sale</p>
                 </button>
                 <button id="addNoteButton" onClick={() => toggleOrderNote()}>
-                    <div class="img-container">
+                    <div className="img-container">
                         <img src={AddNote_Icon} alt="" />
                     </div>
                     <p>Add Order Note</p>

@@ -37,7 +37,7 @@ const AdvancedSearch = (props) => {
         var allData = [];
         getAll().then((rows) => {
             var allProdcuts = getTaxAllProduct(rows)
-            console.log("allProdcuts", allProdcuts)
+            //console.log("allProdcuts", allProdcuts)
             setAllProductList(allProdcuts)
             setParentProductList(allProdcuts)
             setTotalRecords(allProdcuts ? allProdcuts.length : 0);
@@ -138,6 +138,9 @@ const AdvancedSearch = (props) => {
                 })
                 parentProduct = parentProduct ? parentProduct : []
                 _filtered = [...new Set([..._filtered, ...parentProduct])];
+
+                if(_filtered && _filtered.length>10)
+                {_filtered = _filtered.slice(0, 10);}
             }
         }
         if (filterType === "customer" || filterType === "all") {
@@ -234,10 +237,6 @@ const AdvancedSearch = (props) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleAdvancedSearch();
         }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
     }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
@@ -256,28 +255,28 @@ const AdvancedSearch = (props) => {
                         <img src={down_angled_bracket} alt="" />
                     </div>
                     <label onClick={() => SetFilter('all')}>
-                        <input type="radio" id="allResults" name="search_modifier" value="allResults" checked={filterType === 'all' ? true : false} />
+                        <input type="radio" id="allResults" name="search_modifier" value="allResults" defaultChecked={filterType === 'all' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>All Results</p>
                     </label>
                     <label onClick={() => SetFilter('product')}>
-                        <input type="radio" id="products" name="search_modifier" value="products" checked={filterType === 'product' ? true : false} />
+                        <input type="radio" id="products" name="search_modifier" value="products" defaultChecked={filterType === 'product' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Products</p>
                     </label>
                     <label onClick={() => SetFilter('customer')}>
-                        <input type="radio" id="customers" name="search_modifier" value="customers" checked={filterType === 'customer' ? true : false} />
+                        <input type="radio" id="customers" name="search_modifier" value="customers" defaultChecked={filterType === 'customer' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Customers</p>
                     </label>
                     <label onClick={() => SetFilter('group')}>
-                        <input type="radio" id="groups" name="search_modifier" value="groups" checked={filterType === 'group' ? true : false} />
+                        <input type="radio" id="groups" name="search_modifier" value="groups" defaultChecked={filterType === 'group' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>

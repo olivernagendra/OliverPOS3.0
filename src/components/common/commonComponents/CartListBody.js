@@ -18,7 +18,7 @@ const CartListBody = (props) => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
             // setisShowPopups(false);
-            console.log("---resProduct--" + JSON.stringify(resProduct.data));
+            //console.log("---resProduct--" + JSON.stringify(resProduct.data));
         }
     }, [resProduct]);
     const calculateCart = () => {
@@ -104,18 +104,18 @@ const CartListBody = (props) => {
     const drawItems = (type, item) => {
         switch (type) {
             case 'product':
-                return (<div class="cart-item">
-                    <div class="main-row">
-                        <p class="quantity">2</p>
-                        <p class="content-style">Face Mask</p>
-                        <p class="price">$16.00</p>
+                return (<div className="cart-item">
+                    <div className="main-row">
+                        <p className="quantity">2</p>
+                        <p className="content-style">Face Mask</p>
+                        <p className="price">$16.00</p>
                     </div>
                 </div>)
             case 'note':
-                return (<div class="cart-item">
-                    <div class="main-row aligned">
-                        <div class="tag cart-note">Note</div>
-                        <p class="content-style line-capped">
+                return (<div className="cart-item">
+                    <div className="main-row aligned">
+                        <div className="tag cart-note">Note</div>
+                        <p className="content-style line-capped">
                             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Temporibus, praesentium perferendis. Soluta impedit ea
                             numquam voluptatum qui odit maxime distinctio. Voluptatibus maxime esse voluptates, inventore id commodi aliquid?
                             Nostrum, hic!
@@ -123,30 +123,30 @@ const CartListBody = (props) => {
                     </div>
                 </div>)
             case 'customer':
-                return (<div class="cart-item">
-                    <div class="main-row aligned">
-                        <div class="tag customer">Customer</div>
-                        <div class="content-style">Freddy Mercury</div>
+                return (<div className="cart-item">
+                    <div className="main-row aligned">
+                        <div className="tag customer">Customer</div>
+                        <div className="content-style">Freddy Mercury</div>
                     </div>
                 </div>)
             case 'group':
-                return (<div class="cart-item">
-                    <div class="main-row aligned">
-                        <div class="tag group">Group</div>
-                        <p class="content-style">Table 1</p>
+                return (<div className="cart-item">
+                    <div className="main-row aligned">
+                        <div className="tag group">Group</div>
+                        <p className="content-style">Table 1</p>
                     </div>
                 </div>)
             case 'product-detail':
-                return (<div class="cart-item">
-                    <div class="main-row">
-                        <p class="quantity">1</p>
-                        <p class="content-style">
+                return (<div className="cart-item">
+                    <div className="main-row">
+                        <p className="quantity">1</p>
+                        <p className="content-style">
                             Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem consequatur cum inventore similique totam sit fuga
                             repudiandae vel necessitatibus numquam, est perspiciatis hic beatae delectus aspernatur iste placeat nihil illo?
                         </p>
-                        <p class="price">$45.00</p>
+                        <p className="price">$45.00</p>
                     </div>
-                    <div class="secondary-col">
+                    <div className="secondary-col">
                         <p>
                             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magnam praesentium consequuntur eveniet dignissimos
                             laboriosam veritatis numquam! Officiis vel consequatur quisquam reprehenderit tenetur eveniet alias? Voluptatibus
@@ -160,7 +160,7 @@ const CartListBody = (props) => {
         }
     }
     return (
-        <div class="body">
+        <div className="body">
             <img src={EmptyCart} alt="" />
             {listItem && listItem.length > 0 && listItem.map(a => {
 
@@ -183,67 +183,67 @@ const CartListBody = (props) => {
             {drawItems('note')}
             {drawItems('product')}
             {drawItems('product-detail')} */}
-            {/* <div class="cart-item">
-                <div class="main-row">
-                    <p class="quantity">2</p>
-                    <p class="content-style">Face Mask</p>
-                    <p class="price">$16.00</p>
+            {/* <div className="cart-item">
+                <div className="main-row">
+                    <p className="quantity">2</p>
+                    <p className="content-style">Face Mask</p>
+                    <p className="price">$16.00</p>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row aligned">
-                    <div class="tag customer">Customer</div>
-                    <div class="content-style">Freddy Mercury</div>
+            <div className="cart-item">
+                <div className="main-row aligned">
+                    <div className="tag customer">Customer</div>
+                    <div className="content-style">Freddy Mercury</div>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row">
-                    <p class="quantity">10</p>
-                    <p class="content-style">Snapback Baseball Hat with Logo</p>
-                    <p class="price">$24.00</p>
+            <div className="cart-item">
+                <div className="main-row">
+                    <p className="quantity">10</p>
+                    <p className="content-style">Snapback Baseball Hat with Logo</p>
+                    <p className="price">$24.00</p>
                 </div>
-                <div class="secondary-col">
+                <div className="secondary-col">
                     <p>Medium</p>
                     <p>Navy</p>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row aligned">
-                    <div class="tag group">Group</div>
-                    <p class="content-style">Table 1</p>
+            <div className="cart-item">
+                <div className="main-row aligned">
+                    <div className="tag group">Group</div>
+                    <p className="content-style">Table 1</p>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row">
-                    <p class="quantity">10,000</p>
-                    <p class="content-style">Reusable Coffee Cups</p>
-                    <p class="price">$60,000</p>
+            <div className="cart-item">
+                <div className="main-row">
+                    <p className="quantity">10,000</p>
+                    <p className="content-style">Reusable Coffee Cups</p>
+                    <p className="price">$60,000</p>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row aligned">
-                    <div class="tag custom-fee">Custom Fee</div>
-                    <div class="content-style">Shipping Fee</div>
-                    <div class="price">$20.00</div>
+            <div className="cart-item">
+                <div className="main-row aligned">
+                    <div className="tag custom-fee">Custom Fee</div>
+                    <div className="content-style">Shipping Fee</div>
+                    <div className="price">$20.00</div>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row aligned">
-                    <div class="tag cart-note">Note</div>
-                    <p class="content-style line-capped">
+            <div className="cart-item">
+                <div className="main-row aligned">
+                    <div className="tag cart-note">Note</div>
+                    <p className="content-style line-capped">
                         Lorem, ipsum dolor sit amet consectetur adipisicing elit. Temporibus, praesentium perferendis. Soluta impedit ea
                         numquam voluptatum qui odit maxime distinctio. Voluptatibus maxime esse voluptates, inventore id commodi aliquid?
                         Nostrum, hic!
                     </p>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row">
-                    <p class="quantity">1</p>
-                    <p class="content-style">Dress Shirt</p>
-                    <p class="price">$45.00</p>
+            <div className="cart-item">
+                <div className="main-row">
+                    <p className="quantity">1</p>
+                    <p className="content-style">Dress Shirt</p>
+                    <p className="price">$45.00</p>
                 </div>
-                <div class="secondary-col">
+                <div className="secondary-col">
                     <p>White</p>
                     <p>Neck: 16"</p>
                     <p>Sleeve: 34"</p>
@@ -251,16 +251,16 @@ const CartListBody = (props) => {
                     <p><b>**Note:</b> If no white available, please get black.</p>
                 </div>
             </div>
-            <div class="cart-item">
-                <div class="main-row">
-                    <p class="quantity">1</p>
-                    <p class="content-style">
+            <div className="cart-item">
+                <div className="main-row">
+                    <p className="quantity">1</p>
+                    <p className="content-style">
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem consequatur cum inventore similique totam sit fuga
                         repudiandae vel necessitatibus numquam, est perspiciatis hic beatae delectus aspernatur iste placeat nihil illo?
                     </p>
-                    <p class="price">$45.00</p>
+                    <p className="price">$45.00</p>
                 </div>
-                <div class="secondary-col">
+                <div className="secondary-col">
                     <p>
                         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magnam praesentium consequuntur eveniet dignissimos
                         laboriosam veritatis numquam! Officiis vel consequatur quisquam reprehenderit tenetur eveniet alias? Voluptatibus

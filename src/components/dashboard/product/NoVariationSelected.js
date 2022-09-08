@@ -1,6 +1,6 @@
 import React from "react";
 // import NoVariationsSelected from '../../../images/svg/NoVariationsSelected.svg';
-const MsgPopup_NoVariationSelected = (props) => {
+const NoVariationSelected = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleNoVariationSelected();
@@ -23,4 +23,4 @@ const MsgPopup_NoVariationSelected = (props) => {
             </div></div>)
 }
 
-export default MsgPopup_NoVariationSelected 
+export default NoVariationSelected 

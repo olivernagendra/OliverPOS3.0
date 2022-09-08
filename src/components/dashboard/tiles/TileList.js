@@ -397,7 +397,7 @@ const TileList = (props) => {
     useEffect(() => {
         getAll().then((rows) => {
             var allProdcuts = getTaxAllProduct(rows)
-            console.log("allProdcuts", allProdcuts)
+            //console.log("allProdcuts", allProdcuts)
             setAllProduct(allProdcuts);
             setParentProductList(allProdcuts);
         });

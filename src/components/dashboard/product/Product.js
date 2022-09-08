@@ -24,12 +24,13 @@ import { initProuctFn } from '../../common/commonFunctions/productFn';
 import ProductNote from "./ProductNote";
 import ProductDiscount from "./ProductDiscount";
 import AdjustInventory from "./AdjustInventory";
-import MsgPopup_NoVariationSelected from "./MsgPopup_NoVariationSelected";
+import NoVariationSelected from "./NoVariationSelected";
 import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
 import { addSimpleProducttoCart } from './productLogic';
 import { getTaxAllProduct } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
+
 
 const Product = (props) => {
     const dispatch = useDispatch();
@@ -48,6 +49,8 @@ const Product = (props) => {
     const [isOutOfStock, setisOutOfStock] = useState(false);
     const [productQty, setProductQty] = useState(1);
     const [note, setNote] = useState("");
+    const [selVariations, setSelVariations] = useState([]);
+
     const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
@@ -513,23 +516,25 @@ const Product = (props) => {
             });
         }
     }
-    var selVariations = [];
+    //var selVariations = [];
     var _disableAttribute = [];
-    const optionClick1 = async (option, attribute, AttrIndex) => {
+    const optionClick = async (option, attribute, AttrIndex) => {
         _disableAttribute = []
-        var _item = selVariations.findIndex((element) => {
+        var _selVariations = selVariations;
+        var _item = _selVariations.findIndex((element) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
         }
-        selVariations = selVariations.map(obj => {
+        _selVariations = _selVariations.map(obj => {
             if (obj.Name === attribute.Name) {
                 return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
             }
             return obj;
         });
-        console.log("-----if exists----" + JSON.stringify(selVariations))
+        setSelVariations(_selVariations);
+        console.log("-----if exists----" + JSON.stringify(_selVariations))
         if (props && props.selProduct) {
             var _product = props.selProduct;
             var _attribute = [];
@@ -548,8 +553,14 @@ const Product = (props) => {
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
                         return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
-                    //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
-                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
+                    if (filteredAttribute && filteredAttribute.length == 1) {
+                        props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                    }
+                    else {
+                        props.updateVariationProduct && props.updateVariationProduct(null);
+                    }
+                    console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     var filteredAttribute1 = allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
@@ -567,7 +578,7 @@ const Product = (props) => {
                         }
                         if (attribute && attribute.Option) {
                             (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
-                                var _att=a.replace(/\//g, "-").toLowerCase();
+                                var _att = a.replace(/\//g, "-").toLowerCase();
                                 const index = _disableAttribute.findIndex(item => item === _att)
                                 if (index === -1) {
                                     _disableAttribute.push(_att);
@@ -581,8 +592,8 @@ const Product = (props) => {
                         // }
                         return result;
                     })
-                    filteredAttribute1 && filteredAttribute1.length>0 && filteredAttribute1.map(a=>{
-                        console.log("-------combi----"+a.combination);
+                    filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
+                        console.log("-------combi----" + a.combination);
                     })
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute1.length));
                     console.log("--allVariatiooo--- ", JSON.stringify(_disableAttribute));
@@ -595,50 +606,50 @@ const Product = (props) => {
     }
 
     ///-------xxxxx-------
-    var filterTerms=[];
-    var selectedAttribute=[];
-    var filteredAttributeArray=[];
-    var selectedOptionCode=[];
-    var selectedOptions=[];
-    var variationfound={};
-    var Variations=[];
-    const optionClick=(option, attribute, AttrIndex)=> {
-        
+    var filterTerms = [];
+    var selectedAttribute = [];
+    var filteredAttributeArray = [];
+    var selectedOptionCode = [];
+    var selectedOptions = [];
+    var variationfound = {};
+    var Variations = [];
+    const optionClick1 = (option, attribute, AttrIndex) => {
+
         getAllProducts().then((rows) => {
             var data = rows.filter(a => a.ParentId === props.selProduct.WPID);
-             Variations = getTaxAllProduct(data)
+            Variations = getTaxAllProduct(data)
 
-        
 
-        //var filterTerms = this.state.filterTerms;
-        var optExist = false;
-        filterTerms && filterTerms.map(opItem => {
-            if (opItem.attribute === attribute) {
-                opItem.attribute = attribute;
-                opItem.option = option;
-                optExist = true
-            }
-        })
-        if (optExist == false) {
-            filterTerms.push({
-                attribute: attribute,
-                option: option,
-                index: AttrIndex
+
+            //var filterTerms = this.state.filterTerms;
+            var optExist = false;
+            filterTerms && filterTerms.map(opItem => {
+                if (opItem.attribute === attribute) {
+                    opItem.attribute = attribute;
+                    opItem.option = option;
+                    optExist = true
+                }
             })
-            // this.state.filterTerms = filterTerms
+            if (optExist == false) {
+                filterTerms.push({
+                    attribute: attribute,
+                    option: option,
+                    index: AttrIndex
+                })
+                // this.state.filterTerms = filterTerms
+                // this.setState({ filterTerms: filterTerms })
+            }
             // this.setState({ filterTerms: filterTerms })
-        }
-        // this.setState({ filterTerms: filterTerms })
-        // if (this.clickTimeout !== null) {
-        //     clearTimeout(this.clickTimeout)
-        //     this.clickTimeout = null
-        // } else {
-        //     this.clickTimeout = setTimeout(() => {
-        //         clearTimeout(this.clickTimeout)
-        //         this.clickTimeout = null
-        //     }, 300);
+            // if (this.clickTimeout !== null) {
+            //     clearTimeout(this.clickTimeout)
+            //     this.clickTimeout = null
+            // } else {
+            //     this.clickTimeout = setTimeout(() => {
+            //         clearTimeout(this.clickTimeout)
+            //         this.clickTimeout = null
+            //     }, 300);
             //this.setState({
-                selectedAttribute= attribute;
+            selectedAttribute = attribute;
             //});
             if (props.selProduct.ProductAttributes && props.selProduct.ProductAttributes.length > 1) {
                 var filteredAttribute = Variations.filter(item => {
@@ -651,20 +662,19 @@ const Product = (props) => {
                     })
                     return isExist;
                 })
-                filteredAttributeArray= filteredAttribute ;
+                filteredAttributeArray = filteredAttribute;
             }
             setSelectedOption(option, attribute, AttrIndex);
             // var attributeLenght = this.getAttributeLenght();
             searchvariationProduct(option);
-        //}
-    });
+            //}
+        });
     }
 
-    const setSelectedOption=(option, attribute, AttrIndex)=> {
+    const setSelectedOption = (option, attribute, AttrIndex) => {
         //Find Attribute Code----------------------------------------------
-        var attribute_list=[];
-        if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) 
-            {attribute_list= respAttribute.data.content;}
+        var attribute_list = [];
+        if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) { attribute_list = respAttribute.data.content; }
 
         //var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
         var sub_attribute;
@@ -686,25 +696,25 @@ const Product = (props) => {
         //---------Array of selected options-----------------------------
         var arrAttr = selectedOptionCode ? selectedOptionCode : [];
         var isAttributeExist = false;
-        arrAttr && Array.isArray(arrAttr)==true && arrAttr.length > 0 && arrAttr.map(item => {
+        arrAttr && Array.isArray(arrAttr) == true && arrAttr.length > 0 && arrAttr.map(item => {
             if (item.attribute.toLowerCase() == attribute.Name.toLowerCase()) {
                 item.option = option;
                 isAttributeExist = true;
             }
         })
         if (isAttributeExist == false)
-        Array.isArray(arrAttr)==true && arrAttr.push({ attribute: attribute, option: selectedOptionCode, index: AttrIndex });
+            Array.isArray(arrAttr) == true && arrAttr.push({ attribute: attribute, option: selectedOptionCode, index: AttrIndex });
         //Remove Dumplecate attribute------------
-        arrAttr = Array.isArray(arrAttr)==true && arrAttr.filter((val, id, array) => {
+        arrAttr = Array.isArray(arrAttr) == true && arrAttr.filter((val, id, array) => {
             return array.indexOf(val) == id;
         });
-         selectedOptions= arrAttr ;
+        selectedOptions = arrAttr;
 
-         console.log("----selectedOptions---"+JSON.stringify(selectedOptions));
+        console.log("----selectedOptions---" + JSON.stringify(selectedOptions));
         //-------------------------------------------------------
     }
 
-    const combo=(c)=> {
+    const combo = (c) => {
         var r = [];
         var len = c.length;
         var tmp = [];
@@ -735,15 +745,15 @@ const Product = (props) => {
         iter(0);
         return r;
     }
-   
+
     // Decription: Update the product search on the basis of product combination. also handle the '**' search in combination  
-    const searchvariationProduct=(options)=> {
+    const searchvariationProduct = (options) => {
         var filteredArr = []
-       // this.state.showQantity = false
+        // this.state.showQantity = false
         filterTerms.map(itm => {
             var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
             var sub_attribute;
-            if (attribute_list && attribute_list != undefined && attribute_list.length > 0){
+            if (attribute_list && attribute_list != undefined && attribute_list.length > 0) {
                 var found = attribute_list && attribute_list.find(function (element) {
                     return element.Code.toLowerCase() == itm.attribute.Name.toLowerCase()
                 })
@@ -759,7 +769,7 @@ const Product = (props) => {
             filteredArr.push(sub_attribute ? sub_attribute.Code : itm.option);
         })
         var cominationArr = combo(filteredArr);
-        console.log("----cominationArr---"+JSON.stringify(cominationArr));
+        console.log("----cominationArr---" + JSON.stringify(cominationArr));
         var variations = Variations;
         var getVariationProductData = props.selProduct
         var _fileterTerm = filterTerms ? filterTerms : "";
@@ -785,21 +795,21 @@ const Product = (props) => {
                         return obj1.index - obj2.index;
                     })
                     sortArr && sortArr.map(filterattr => {
-                        var arrComb = element && element !== undefined && element.combination !== null && element.combination !==undefined && element.combination.split('~');
+                        var arrComb = element && element !== undefined && element.combination !== null && element.combination !== undefined && element.combination.split('~');
                         if (arrComb && arrComb.length > 0) {
                             var combinationAtindex = arrComb[filterattr.index];
                             if (combinationAtindex && filterattr.option && (combinationAtindex.toLowerCase() === filterattr.option.toLowerCase() || combinationAtindex == '**'))  //variation exist for option to be displayed
                             {
-                                checkExist.push('match');                               
+                                checkExist.push('match');
                             } else {
-                                checkExist.push('mismatch');                                  
+                                checkExist.push('mismatch');
                             }
                         }
                     })
                     if (!checkExist.includes("mismatch")) {
                         return element;
                     }
-                   
+
 
                     // if product not found then--------------------------------
                     ///------check 'Any One' option --------------------------------    
@@ -854,7 +864,7 @@ const Product = (props) => {
                 }
             })
             variationfound = found;
-            console.log("--variationfound--"+JSON.stringify(variationfound))
+            console.log("--variationfound--" + JSON.stringify(variationfound))
             // when active selected product show change variationDefaultQunatity.
             var selectedDefaultQty = 0;
             // if (this.props.showSelectedProduct && found) {
@@ -867,8 +877,8 @@ const Product = (props) => {
             //     var _addTaxFoundData = getVariatioModalProduct(found, selectedDefaultQty !== 0 ? selectedDefaultQty : 1);
             //     console.log("_addTaxFoundData", _addTaxFoundData);
             // }
-           // if(found){ found=this.updateActualStockQty(found);}
-        
+            // if(found){ found=this.updateActualStockQty(found);}
+
             // this.setState({
             //     variationTitle: found.Title && found.Title != "" ? found.Title : found.Sku,
             //     Sku: found.Sku && found.Sku != "" ? found.Sku : '',
@@ -885,7 +895,7 @@ const Product = (props) => {
             //     excl_tax: this.state.excl_tax,
             //     variationfound: found
             // });
-            variationfound= found;
+            variationfound = found;
             //this.state.variationStyles = { cursor: "pointer", pointerEvents: "auto" }
             // $("#add_variation_product_btn").css({ "cursor": "pointer", "pointer-events": "auto" });
             // var _attribute = getVariationProductData.ProductAttributes.filter(item => item.Variation == true)
@@ -908,30 +918,57 @@ const Product = (props) => {
         }
     }
 
+    const checkLength = () => {
+        var result = true;
+        var _product = props.selProduct;
+        var _attribute = [];
+        var ProductAttribute = [];
 
+        if (_product && _product.ProductAttributes !== null) {
+            ProductAttribute = _product.ProductAttributes;
+            _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
+            if (_attribute && _attribute.length > 0 && selVariations) {
+                if (_attribute.length === selVariations.length) { result = true; }
+                else { result = false; }
+            }
+            else { result = true; }
+        }
+
+
+        return result;
+    }
     ///-------xxxxx-------
     const addToCart = () => {
-        if (props && props.selProduct) {
-            var _product = props.selProduct;
-            _product.quantity = productQty;
-            if(note!="")
+        if (checkLength() === true) {
+            
+            var _product = props.variationProduct ? props.variationProduct : props.selProduct;
+            if (_product)
             {
-                var result = addSimpleProducttoCart({"Title":note,"IsTicket":false});
-                console.log("----product note---"+note);
-            }
-            var result = addSimpleProducttoCart(_product);
-            if (result === 'outofstock') {
-                toggleOutOfStock();
-            }
-            else {
-                dispatch(product({}));
-            }
+                // _product = props.selProduct;
+                _product.quantity = productQty;
+                if (note != "") {
+                    var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false });
+                    console.log("----product note---" + note);
+                }
+                var result = addSimpleProducttoCart(_product);
+                if (result === 'outofstock') {
+                    toggleOutOfStock();
+                }
+                else {
+                    setTimeout(() => {
+                        dispatch(product({}));
+                    }, 100);
+                   
+                }
 
+            }
+        }
+        else {
+            toggleNoVariationSelected();
         }
 
     }
-    const addNote=(note)=>
-    {
+    const addNote = (note) => {
         setNote(note);
         toggleProductNote();
     }
@@ -968,9 +1005,16 @@ const Product = (props) => {
     setTimeout(() => {
         initProuctFn();
     }, 1000);
-    var variationStockQunatity = props.selProduct ?
-        (props.selProduct.ManagingStock == true && props.selProduct.StockStatus == "outofstock") ? "outofstock" :
-            (props.selProduct.StockStatus == null || props.selProduct.StockStatus == 'instock') && props.selProduct.ManagingStock == false ? "Unlimited" : (typeof props.selProduct.StockQuantity != 'undefined') && props.selProduct.StockQuantity != '' ? props.selProduct.StockQuantity : '0' : '0';
+    var variationStockQunatity = 0;
+
+    var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    if (_product) {
+        variationStockQunatity =
+            (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
+                (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0';
+
+    }
+
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
             <React.Fragment>
@@ -995,7 +1039,7 @@ const Product = (props) => {
                     </div>
                     <div className="mod-product">
                         {_DistictAttribute && _DistictAttribute.length === 0 ?
-                            <div class="img-container display-flex">
+                            <div className="img-container display-flex">
                                 <img src={NoVariationDisplay} alt="" />
                             </div> :
                             <div className="row">
@@ -1008,12 +1052,12 @@ const Product = (props) => {
                                 (_DistictAttribute.map((attribute, index) => {
                                     return (
                                         attribute && attribute.Variation == true &&
-                                        <React.Fragment><p>{attribute.Name}</p>
+                                        <React.Fragment key={attribute.Slug}><p>{attribute.Name}</p>
                                             <div className="radio-group">
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
                                                         allVariations.push(a.replace(/\//g, "-").toLowerCase())
-                                                        return <label onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                        return <label key={"l_"+a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
                                             </div></React.Fragment>
@@ -1130,9 +1174,10 @@ const Product = (props) => {
                     <div className="detailed-product">
                         <div className="row">
                             <div className="product-image-container">
-                                {props.selProduct && props.selProduct.ProductImage != null ?
-                                    <img src={props.selProduct && props.selProduct.ProductImage} alt="" id="productImage" className="height-fit" /> :
-                                    <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
+                                {
+                                    _product && _product.ProductImage != null ?
+                                        <img src={_product.ProductImage} alt="" id="productImage" className="height-fit" /> :
+                                        <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
                                 }
                             </div>
                             <div className="col">
@@ -1154,7 +1199,7 @@ const Product = (props) => {
                         </div>
                         <div className="col">
                             <p className="title">Description</p>
-                            <p className="para" dangerouslySetInnerHTML={{ __html: props.selProduct && props.selProduct.Description }}>
+                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.Description }}>
 
                             </p>
                             <p className="title">Additional Fields</p>
@@ -1167,16 +1212,16 @@ const Product = (props) => {
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean erat sem, facilisis vel tincidunt nec, posuere ac ante.
                             </p>
                             <p className="title">SKU #</p>
-                            <p className="para">{props.selProduct && props.selProduct.Sku}</p>
+                            <p className="para">{_product && _product.Sku}</p>
                             <p className="title">Barcode ID #</p>
-                            <p className="para">{props.selProduct && props.selProduct.Barcode}</p>
+                            <p className="para">{_product && _product.Barcode}</p>
                         </div>
                     </div>
                     <div className="recommended-upsells">
                         <p>Recommended Upsells</p>
                         <div className="button-row">
                             {recommProducts && recommProducts.map(a => {
-                                return <button onClick={() => props.openPopUp(a)}>
+                                return <button onClick={() => props.openPopUp(a)} key={a.WPID}>
                                     <div className="img-container">
                                         <img src={a && a.ProductImage} alt="" className="height-fit" />
                                     </div>
@@ -1248,7 +1293,7 @@ const Product = (props) => {
                 </div>
                 <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
                 <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
-                <MsgPopup_NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></MsgPopup_NoVariationSelected>
+                <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
                 <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
             </React.Fragment>)

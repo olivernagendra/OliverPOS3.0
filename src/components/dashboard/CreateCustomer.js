@@ -177,7 +177,7 @@ const CreateCustomer = (props) => {
 
     // Customer create and Save API response
     const { status, data, error, is_success } = useSelector((state) => state.customersave)
-    console.log("status", status, "data", data, "error", error, "is_success", is_success)
+    //console.log("status", status, "data", data, "error", error, "is_success", is_success)
     if (status == STATUSES.IDLE && is_success) {
         console.log("success")
         var customerAdd = data && data.content

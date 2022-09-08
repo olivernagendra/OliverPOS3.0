@@ -52,7 +52,7 @@ const Home = () => {
     const [listItem,setListItem]=useState([]);
     const [isOutOfStock, setisOutOfStock] = useState(false);
     const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
-
+    const [variationProduct,setVariationProduct]=useState(null);
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
@@ -63,6 +63,11 @@ const Home = () => {
         if (typeof regId != "undefined" && regId != null) {
             dispatch(tile({ "id": regId }));
         }
+    }
+    const updateVariationProduct=(item)=>
+    {
+        //setSelProduct(item);
+        setVariationProduct(item);
     }
 
     const fetchData = async () => { //calling multiple api
@@ -187,14 +192,14 @@ const addNote=(e)=>
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
             setisShowPopups(false);
-            console.log("---resProduct--" + JSON.stringify(resProduct.data));
+           // console.log("---resProduct--" + JSON.stringify(resProduct.data));
         }
     }, [resProduct]);
 
 
     return (
         <React.Fragment>
-            <Product openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
+            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
             <div className="homepage-wrapper" style={{ display: isShowPopups == false ? "grid" : "none" }}>
                 {/* left nav bar */}
                 {/* top header */}

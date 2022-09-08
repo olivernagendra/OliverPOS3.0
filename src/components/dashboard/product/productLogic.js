@@ -100,9 +100,9 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             //-----------------------------------------
             stockUpdateQuantity(cartlist, data, product)
             if ((!localStorage.getItem("APPLY_DEFAULT_TAX")) || localStorage.getItem("APPLY_DEFAULT_TAX") == null) {
-                setTimeout(() => {
+                // setTimeout(() => {
                     addtoCartProduct(cartlist);
-                }, 400);
+                // }, 400);
             } else {
                 addtoCartProduct(cartlist);
             }

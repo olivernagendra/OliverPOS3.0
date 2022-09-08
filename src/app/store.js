@@ -19,6 +19,7 @@ import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
 import {CustomerSaveSlice} from '../components/customer/CustomerSlice'
+import {checkStockSlice} from '../components/checkout/checkoutSlice';
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -51,7 +52,8 @@ export const store = configureStore({
     customer: customerSlice.reducer,
     customergetPage: CustomergetPageSlice.reducer,
     product: productSlice.reducer,
-    customersave:CustomerSaveSlice.reducer
+    customersave:CustomerSaveSlice.reducer,
+    checkStock:checkStockSlice.reducer
 
   }
   ,
