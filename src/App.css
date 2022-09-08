@@ -1,4 +1,4 @@
-/* Version 0.1 */
+/* Version 0.2 */
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500;600;700&display=swap");
 
@@ -65,7 +65,7 @@ button:hover:not([disabled]):not(.selected):not(.active) {
 	cursor: pointer;
 }
 
-button:active:not([disabled]):not(.selected):not(.active):not(.no-transform) {
+button:active:not([disabled]):not(.selected):not(.active):not(.no-transform):not(.remove-state) {
 	transform: scale(0.9);
 }
 
@@ -2692,6 +2692,66 @@ input[type="number"] {
 		color: #fff;
 	}
 
+	/* Park Sale */
+
+	.subwindow-wrapper > .subwindow.park-sale {
+		width: 344px;
+		height: min(calc(96% - 375px), 372px);
+		top: 2%;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > label {
+		width: 306px;
+		font-family: Poppins;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 20px;
+		text-align: left;
+		color: var(--oliver-base-grey);
+		margin-bottom: 9px;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > textarea {
+		width: 306px;
+		height: 180px;
+		resize: none;
+		outline: 0;
+		box-sizing: border-box;
+		padding: 12px;
+		border: 1px solid var(--oliver-border);
+		border-radius: 6px;
+		font-family: Poppins;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 20px;
+		text-align: left;
+		margin-bottom: 19px;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > textarea:focus {
+		border-color: var(--oliver-blue);
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > button {
+		width: 306px;
+		height: 50px;
+		background-color: var(--oliver-blue);
+		border: 0;
+		border-radius: 6px;
+		font-family: Poppins;
+		font-size: 18px;
+		font-weight: 400;
+		line-height: 24px;
+		text-align: center;
+		color: #fff;
+	}
+
 	/* #endregion */
 
 	/* --------------------Logout Confirmation-------------------- */
@@ -4891,6 +4951,7 @@ input[type="number"] {
 	}
 
 	.homepage-wrapper > .products > button {
+		position: relative;
 		width: 47.8134109%;
 		aspect-ratio: 1/1.29697;
 		background-color: #1db9ca;
@@ -4988,6 +5049,33 @@ input[type="number"] {
 		width: 16.67px;
 		height: 16.67px;
 		margin-right: 7.67px;
+	}
+
+	.homepage-wrapper > .products > button > .remove-cover {
+		z-index: 2;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(58, 128, 180, 0.4);
+		border-radius: inherit;
+	}
+
+	.homepage-wrapper > .products > button > .remove-cover > .remove-button {
+		width: 14.5454%;
+		aspect-ratio: 1/1;
+		background-color: #fff;
+		border-radius: inherit;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		right: 4.8484%;
+		top: 3.7383%;
+	}
+
+	.homepage-wrapper > .products > button > .remove-cover > .remove-button > img {
+		width: 41.6667%;
+		aspect-ratio: 1/1;
 	}
 
 	/* #endregion */
@@ -7984,7 +8072,7 @@ input[type="number"] {
 		color: #fff;
 	}
 
-	/* Product Note*/
+	/* Product Note */
 
 	.subwindow-wrapper > .subwindow.product-note {
 		width: 91.7333vw;
@@ -8044,6 +8132,67 @@ input[type="number"] {
 		text-align: center;
 		color: #fff;
 	}
+
+	/* Park Sale */
+
+	.subwindow-wrapper > .subwindow.park-sale {
+		width: 91.73333vw;
+		height: min(calc(96% - 375px), 99.2vw);
+		top: 2%;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > label {
+		width: 81.6vw;
+		font-family: Poppins;
+		font-size: 3.7333vw;
+		font-weight: 500;
+		line-height: 5.3333vw;
+		text-align: left;
+		color: var(--oliver-base-grey);
+		margin-bottom: 2.4vw;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > textarea {
+		width: 81.6vw;
+		height: 48vw;
+		resize: none;
+		outline: 0;
+		box-sizing: border-box;
+		padding: 3.2vw;
+		border: 1px solid var(--oliver-border);
+		border-radius: 1.6vw;
+		font-family: Poppins;
+		font-size: 3.7333vw;
+		font-weight: 400;
+		line-height: 5.3333vw;
+		text-align: left;
+		margin-bottom: 5.0667vw;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > textarea:focus {
+		border-color: var(--oliver-blue);
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > button {
+		width: 81.6vw;
+		height: 13.3333vw;
+		background-color: var(--oliver-blue);
+		border: 0;
+		border-radius: 1.6vw;
+		font-family: Poppins;
+		font-size: 4.8vw;
+		font-weight: 400;
+		line-height: 6.4vw;
+		text-align: center;
+		color: #fff;
+	}
+	
 
 	/* #endregion */
 
@@ -12709,6 +12858,67 @@ input[type="number"] {
 		color: #fff;
 	}
 
+	/* Park Sale */
+
+	.subwindow-wrapper > .subwindow.park-sale {
+		width: 42.2111vw;
+		height: min(35.2596vw, 95%);
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > label {
+		width: 35.5946vw;
+		font-family: Poppins;
+		font-size: 1.1725vw;
+		font-weight: 500;
+		line-height: 1.7588vw;
+		text-align: left;
+		color: var(--oliver-base-grey);
+		margin: 1.675vw 0 0.5025vw 0;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > textarea {
+		width: 35.5946vw;
+		height: 15.1591vw;
+		box-sizing: border-box;
+		border: 0.08375vw solid var(--oliver-border);
+		border-radius: 0.5025vw;
+		outline: 0;
+		resize: none;
+		padding: 1.005vw;
+		font-family: Poppins;
+		font-size: 1.1725vw;
+		font-weight: 400;
+		line-height: 1.675vw;
+		text-align: left;
+		color: var(--oliver-base-blue);
+		margin-bottom: 3.1826vw;
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > textarea:focus {
+		border-color: var(--oliver-blue);
+	}
+
+	.subwindow-wrapper > .subwindow.park-sale > .subwindow-body > button {
+		width: 35.5946vw;
+		height: 4.1876vw;
+		background-color: var(--oliver-blue);
+		border: 0;
+		border-radius: 0.5025vw;
+		margin-bottom: 1.675vw;
+		font-family: Poppins;
+		font-size: 1.5075vw;
+		font-weight: 400;
+		line-height: 2.01vw;
+		text-align: center;
+		color: #fff;
+	}
+
 	/* #endregion */
 
 	/* --------------------Open Register-------------------- */
@@ -15104,6 +15314,7 @@ input[type="number"] {
 	}
 
 	.homepage-wrapper > .products > button {
+		position: relative;
 		width: 22.72727275%;
 		aspect-ratio: 1/1.29697;
 		background-color: #1db9ca;
@@ -15115,6 +15326,10 @@ input[type="number"] {
 		display: flex;
 		flex-direction: column;
 		box-shadow: 0px 6px 10px rgba(94, 94, 94, 0.1);
+	}
+
+	.homepage-wrapper > .products > button img {
+		pointer-events: none;
 	}
 
 	.homepage-wrapper > .products > button:nth-child(4n) {
@@ -15201,6 +15416,33 @@ input[type="number"] {
 		width: 16.67px;
 		height: 16.67px;
 		margin-right: 7.67px;
+	}
+
+	.homepage-wrapper > .products > button > .remove-cover {
+		z-index: 2;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(58, 128, 180, 0.4);
+		border-radius: inherit;
+	}
+
+	.homepage-wrapper > .products > button > .remove-cover > .remove-button {
+		width: 14.5454%;
+		aspect-ratio: 1/1;
+		background-color: #fff;
+		border-radius: inherit;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		right: 4.8484%;
+		top: 3.7383%;
+	}
+
+	.homepage-wrapper > .products > button > .remove-cover > .remove-button > img {
+		width: 41.6667%;
+		aspect-ratio: 1/1;
 	}
 
 	/* #endregion */

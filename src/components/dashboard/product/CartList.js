@@ -5,10 +5,11 @@ import EmptyCart from '../../../images/svg/EmptyCart.svg';
 import CircledX_Grey from '../../../images/svg/CircledX-Grey.svg';
 import { deleteProduct } from './productLogic';
 import { RoundAmount } from "../../common/TaxSetting";
-
 import { product } from "./productSlice";
+import { useNavigate } from "react-router-dom";
 const CartList = (props) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [subTotal, setSubTotal] = useState(0.00);
     const [taxes, setTaxes] = useState(0.00);
     const [discount, setDiscount] = useState(0.00);
@@ -24,6 +25,10 @@ const CartList = (props) => {
             deleteProduct(item);
             dispatch(product({}));
         }
+    }
+    const checkout=()=>
+    {
+        navigate('/checkout');
     }
     const calculateCart=()=>
     {
@@ -260,7 +265,7 @@ const CartList = (props) => {
                     </div>
                 </div>
                 <div className="checkout-container">
-                    <button>Checkout - ${total}</button>
+                    <button onClick={()=>checkout()}>Checkout - ${total}</button>
                 </div>
             </div>
         </div>)

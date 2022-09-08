@@ -5,18 +5,18 @@ import AdvancedSearch from "./AdvancedSearch";
 import CartDiscount from "./CartDiscount";
 import CreateCustomer from "./CreateCustomer";
 import Notifications from "./Notifications";
-import OrderNote from "./OrderNote";
-import SwitchUser from "./SwitchUser";
+import OrderNote from "../common/commonComponents/OrderNote";
+
 import MsgPopup_ProductNotFound from "./MsgPopup_ProductNotFound";
 import MsgPopup_UpgradeToUnlock from "./MsgPopup_UpgradeToUnlock";
-import MsgPopup_EndSession from "./MsgPopup_EndSession";
-import LinkLauncher from "../common/LinkLauncher";
-import AppLauncher from "../common/AppLauncher";
+
+import LinkLauncher from "../common/commonComponents/LinkLauncher";
+import AppLauncher from "../common/commonComponents/AppLauncher";
 import IframeWindow from "./IframeWindow";
-import LeftNavBar from "../common/LeftNavBar";
+import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import HeadereBar from "./HeadereBar";
 // import IframeWindow from "./IframeWindow";
-import UserInfo from "./UserInfo";
+
 import CartList from "./product/CartList";
 import TileList from "./tiles/TileList";
 import { initHomeFn } from "../common/commonFunctions/homeFn";
@@ -34,9 +34,9 @@ const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
     const [selProduct, setSelProduct] = useState(null);
-    const [isShowUserProfile, setisShowUserProfile] = useState(false);
-    const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
-    const [isShowEndSession, setisShowEndSession] = useState(false);
+    // const [isShowUserProfile, setisShowUserProfile] = useState(false);
+    // const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
+    // const [isShowEndSession, setisShowEndSession] = useState(false);
 
     const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
     const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
@@ -121,15 +121,15 @@ const Home = () => {
     const closePopUp = () => {
         setisShowPopups(false)
     }
-    const toggleUserProfile = () => {
-        setisShowUserProfile(!isShowUserProfile)
-    }
-    const toggleShowEndSession = () => {
-        setisShowEndSession(!isShowEndSession)
-    }
-    const toggleSwitchUser = () => {
-        setisShowSwitchUser(!isShowSwitchUser)
-    }
+    // const toggleUserProfile = () => {
+    //     setisShowUserProfile(!isShowUserProfile)
+    // }
+    // const toggleShowEndSession = () => {
+    //     setisShowEndSession(!isShowEndSession)
+    // }
+    // const toggleSwitchUser = () => {
+    //     setisShowSwitchUser(!isShowSwitchUser)
+    // }
     const toggleOrderNote = () => {
         setisShowOrderNote(!isShowOrderNote)
     }
@@ -201,7 +201,7 @@ const addNote=(e)=>
                 {/* prodct list/item list */}
                 {/* cart list */}
                 <LeftNavBar toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
-                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch} toggleUserProfile={toggleUserProfile} toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch}toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
@@ -216,7 +216,7 @@ const addNote=(e)=>
                 {/* link launcher */}
                 {/* notifications */}
                 {/* user info */}
-                <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
+                {/* <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo> */}
                 {/* <AppLauncher></AppLauncher> */}
                 {/* <LinkLauncher></LinkLauncher> */}
                 <Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications>
@@ -232,8 +232,8 @@ const addNote=(e)=>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
             <CreateCustomer  isShow={isShowCreateCustomer}  toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
-            <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
-            <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
+            {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
+            <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
             {/* iframe subview */}
             {/* create customer */}

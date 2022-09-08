@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import LeftNavBar from "../../common/LeftNavBar";
+import LeftNavBar from "../../common/commonComponents/LeftNavBar";
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import Oliver_Icon_BaseBlue from '../../../images/svg/Oliver-Icon-BaseBlue.svg';
 import Coin_Blue from '../../../images/svg/Coin-Blue.svg';
@@ -48,7 +48,7 @@ const Product = (props) => {
     const [isOutOfStock, setisOutOfStock] = useState(false);
     const [productQty, setProductQty] = useState(1);
     const [note, setNote] = useState("");
-
+    const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
@@ -515,7 +515,7 @@ const Product = (props) => {
     }
     var selVariations = [];
     var _disableAttribute = [];
-    const optionClick = async (option, attribute, AttrIndex) => {
+    const optionClick1 = async (option, attribute, AttrIndex) => {
         _disableAttribute = []
         var _item = selVariations.findIndex((element) => {
             return element.Name === attribute.Name;
@@ -549,7 +549,7 @@ const Product = (props) => {
                         return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
-                    // console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
+                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     var filteredAttribute1 = allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
@@ -581,6 +581,10 @@ const Product = (props) => {
                         // }
                         return result;
                     })
+                    filteredAttribute1 && filteredAttribute1.length>0 && filteredAttribute1.map(a=>{
+                        console.log("-------combi----"+a.combination);
+                    })
+                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute1.length));
                     console.log("--allVariatiooo--- ", JSON.stringify(_disableAttribute));
                     console.log("--allVariations--- ", JSON.stringify(allVariations));
 
@@ -589,6 +593,323 @@ const Product = (props) => {
             });
         }
     }
+
+    ///-------xxxxx-------
+    var filterTerms=[];
+    var selectedAttribute=[];
+    var filteredAttributeArray=[];
+    var selectedOptionCode=[];
+    var selectedOptions=[];
+    var variationfound={};
+    var Variations=[];
+    const optionClick=(option, attribute, AttrIndex)=> {
+        
+        getAllProducts().then((rows) => {
+            var data = rows.filter(a => a.ParentId === props.selProduct.WPID);
+             Variations = getTaxAllProduct(data)
+
+        
+
+        //var filterTerms = this.state.filterTerms;
+        var optExist = false;
+        filterTerms && filterTerms.map(opItem => {
+            if (opItem.attribute === attribute) {
+                opItem.attribute = attribute;
+                opItem.option = option;
+                optExist = true
+            }
+        })
+        if (optExist == false) {
+            filterTerms.push({
+                attribute: attribute,
+                option: option,
+                index: AttrIndex
+            })
+            // this.state.filterTerms = filterTerms
+            // this.setState({ filterTerms: filterTerms })
+        }
+        // this.setState({ filterTerms: filterTerms })
+        // if (this.clickTimeout !== null) {
+        //     clearTimeout(this.clickTimeout)
+        //     this.clickTimeout = null
+        // } else {
+        //     this.clickTimeout = setTimeout(() => {
+        //         clearTimeout(this.clickTimeout)
+        //         this.clickTimeout = null
+        //     }, 300);
+            //this.setState({
+                selectedAttribute= attribute;
+            //});
+            if (props.selProduct.ProductAttributes && props.selProduct.ProductAttributes.length > 1) {
+                var filteredAttribute = Variations.filter(item => {
+                    var optionRes = option.replace(/\s/g, '-').toLowerCase();
+                    optionRes = optionRes.replace(/\//g, "-").toLowerCase();
+                    var isExist = false;
+                    item && item.combination !== null && item.combination !== undefined && item.combination.split("~").map(combination => {
+                        if (combination.replace(/\s/g, '-').replace(/\//g, "-").toLowerCase() === optionRes || combination == "**")
+                            isExist = true;
+                    })
+                    return isExist;
+                })
+                filteredAttributeArray= filteredAttribute ;
+            }
+            setSelectedOption(option, attribute, AttrIndex);
+            // var attributeLenght = this.getAttributeLenght();
+            searchvariationProduct(option);
+        //}
+    });
+    }
+
+    const setSelectedOption=(option, attribute, AttrIndex)=> {
+        //Find Attribute Code----------------------------------------------
+        var attribute_list=[];
+        if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) 
+            {attribute_list= respAttribute.data.content;}
+
+        //var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
+        var sub_attribute;
+
+        var found = null;
+        if (attribute_list !== null && attribute_list !== undefined) {
+            found = attribute_list.find(function (element) {
+                return element.Code.toLowerCase() == attribute.Name.toLowerCase()
+            })
+        }
+        if (found !== null && found !== undefined) {
+            sub_attribute = found.SubAttributes && found.SubAttributes.find(function (element) {
+                return element.Value.toLowerCase() == option.toLowerCase()
+            })
+        }
+        var newOption = sub_attribute ? sub_attribute.Code : option;
+        selectedOptionCode = newOption;
+        //this.setState({ selectedOptionCode: newOption })
+        //---------Array of selected options-----------------------------
+        var arrAttr = selectedOptionCode ? selectedOptionCode : [];
+        var isAttributeExist = false;
+        arrAttr && Array.isArray(arrAttr)==true && arrAttr.length > 0 && arrAttr.map(item => {
+            if (item.attribute.toLowerCase() == attribute.Name.toLowerCase()) {
+                item.option = option;
+                isAttributeExist = true;
+            }
+        })
+        if (isAttributeExist == false)
+        Array.isArray(arrAttr)==true && arrAttr.push({ attribute: attribute, option: selectedOptionCode, index: AttrIndex });
+        //Remove Dumplecate attribute------------
+        arrAttr = Array.isArray(arrAttr)==true && arrAttr.filter((val, id, array) => {
+            return array.indexOf(val) == id;
+        });
+         selectedOptions= arrAttr ;
+
+         console.log("----selectedOptions---"+JSON.stringify(selectedOptions));
+        //-------------------------------------------------------
+    }
+
+    const combo=(c)=> {
+        var r = [];
+        var len = c.length;
+        var tmp = [];
+        function nodup() {
+            var got = {};
+            for (var l = 0; l < tmp.length; l++) {
+                if (got[tmp[l]]) return false;
+                got[tmp[l]] = true;
+            }
+            return true;
+        }
+        function iter(col, done) {
+            var l, rr;
+            if (col === len) {
+                if (nodup()) {
+                    rr = [];
+                    for (l = 0; l < tmp.length; l++)
+                        rr.push(c[tmp[l]]);
+                    r.push(rr.join('~'));
+                }
+            } else {
+                for (l = 0; l < len; l++) {
+                    tmp[col] = l;
+                    iter(col + 1);
+                }
+            }
+        }
+        iter(0);
+        return r;
+    }
+   
+    // Decription: Update the product search on the basis of product combination. also handle the '**' search in combination  
+    const searchvariationProduct=(options)=> {
+        var filteredArr = []
+       // this.state.showQantity = false
+        filterTerms.map(itm => {
+            var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
+            var sub_attribute;
+            if (attribute_list && attribute_list != undefined && attribute_list.length > 0){
+                var found = attribute_list && attribute_list.find(function (element) {
+                    return element.Code.toLowerCase() == itm.attribute.Name.toLowerCase()
+                })
+                if (found) {
+                    var SubAttributes = found.SubAttributes;
+                    if (SubAttributes) {
+                        sub_attribute = SubAttributes.find(function (element) {
+                            return (element.Value).toLowerCase() == itm.option.toLowerCase();
+                        })
+                    }
+                }
+            }
+            filteredArr.push(sub_attribute ? sub_attribute.Code : itm.option);
+        })
+        var cominationArr = combo(filteredArr);
+        console.log("----cominationArr---"+JSON.stringify(cominationArr));
+        var variations = Variations;
+        var getVariationProductData = props.selProduct
+        var _fileterTerm = filterTerms ? filterTerms : "";
+        var checkFound = false;
+        var found = variations.find(function (element) {
+            cominationArr && cominationArr.map(comb => {
+                if (element && element !== undefined && element.combination && element.combination !== undefined && element.combination.replace(/\s/g, '-').replace(/\//g, "-").toLowerCase() === comb.replace(/\s/g, '-').replace(/\//g, "-").toLowerCase()) {
+                    checkFound = true;
+                    return true;
+                }
+            })
+            if (checkFound == true) {
+                return true;
+            }
+            // if product not found then--------------------------------
+            ///------check 'Any One' option --------------------------------        
+            if (checkFound == false) {
+                //=======check variation exist for option==========================   
+                // ckeck when render the attribute options-------------------  
+                var checkExist = [];
+                if (_fileterTerm) {
+                    var sortArr = _fileterTerm.sort(function (obj1, obj2) {
+                        return obj1.index - obj2.index;
+                    })
+                    sortArr && sortArr.map(filterattr => {
+                        var arrComb = element && element !== undefined && element.combination !== null && element.combination !==undefined && element.combination.split('~');
+                        if (arrComb && arrComb.length > 0) {
+                            var combinationAtindex = arrComb[filterattr.index];
+                            if (combinationAtindex && filterattr.option && (combinationAtindex.toLowerCase() === filterattr.option.toLowerCase() || combinationAtindex == '**'))  //variation exist for option to be displayed
+                            {
+                                checkExist.push('match');                               
+                            } else {
+                                checkExist.push('mismatch');                                  
+                            }
+                        }
+                    })
+                    if (!checkExist.includes("mismatch")) {
+                        return element;
+                    }
+                   
+
+                    // if product not found then--------------------------------
+                    ///------check 'Any One' option --------------------------------    
+                    var _attribute = getVariationProductData.ProductAttributes.filter(item => item.Variation == true)
+                    if (!found && checkFound == false && _fileterTerm.length == _attribute.length)  //checking all attrbite's option selceted 
+                    {
+                        //=======check variation exist for option==========================   
+                        // ckeck when render the attribute options-------------------  
+                        var checkExist = [];
+                        if (_fileterTerm) {
+                            var sortArr = _fileterTerm.sort(function (obj1, obj2) {
+                                return obj1.index - obj2.index;
+                            })
+
+                            sortArr && sortArr.map(filterattr => {
+                                var arrComb = element.combination.split('~');
+                                if (arrComb && arrComb.length > 0) {
+                                    var combinationAtindex = arrComb[filterattr.index];
+                                    if (combinationAtindex.toLowerCase() === filterattr.option.toLowerCase() || combinationAtindex == '**')  //variation exist for option to be displayed
+                                    {
+                                        checkExist.push('match');
+                                    } else {
+                                        checkExist.push('mismatch');
+                                    }
+                                }
+                            })
+                        }
+                        if (!checkExist.includes("mismatch")) {
+                            return element;
+                        }
+                    }
+                }
+            }
+        })
+
+        // if (this.props.single_product) {
+        //     if ( found && this.props.single_product && found.WPID !== this.props.single_product.WPID) {
+        //         localStorage.removeItem("PRODUCT");
+        //         localStorage.removeItem("SINGLE_PRODUCT")
+        //         this.props.dispatch(cartProductActions.singleProductDiscount());
+        //     }
+        // }
+        // this.setState({ showSelectStatus: false })
+        if (typeof found !== 'undefined') {
+            var cartItemList = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : []
+            var qty = 0;
+            cartItemList.map(item => {
+                if (found.WPID == item.variation_id) {
+
+                    qty = item.quantity;
+
+                }
+            })
+            variationfound = found;
+            console.log("--variationfound--"+JSON.stringify(variationfound))
+            // when active selected product show change variationDefaultQunatity.
+            var selectedDefaultQty = 0;
+            // if (this.props.showSelectedProduct && found) {
+            //     const { showSelectedProduct } = this.props;
+            //     if (showSelectedProduct.ParentId == found.ParentId && showSelectedProduct.WPID == found.WPID) {
+            //         selectedDefaultQty = showSelectedProduct.quantity
+            //     }
+            // }
+            // if(found){
+            //     var _addTaxFoundData = getVariatioModalProduct(found, selectedDefaultQty !== 0 ? selectedDefaultQty : 1);
+            //     console.log("_addTaxFoundData", _addTaxFoundData);
+            // }
+           // if(found){ found=this.updateActualStockQty(found);}
+        
+            // this.setState({
+            //     variationTitle: found.Title && found.Title != "" ? found.Title : found.Sku,
+            //     Sku: found.Sku && found.Sku != "" ? found.Sku : '',
+            //     variationId: found && found.WPID,
+            //     variationParentId: found && found.ParentId,
+            //     variationPrice: found.Price,
+            //     variationStockQunatity: (found.ManagingStock == true && found.StockStatus == "outofstock") ? "outofstock" : (found.StockStatus == null || found.StockStatus == 'instock') && found.ManagingStock == false ? "Unlimited" : found.StockQuantity - qty,
+            //     variationImage: (found.ProductImage == null) ? this.state.variationImage : found.ProductImage,
+            //     variationIsTaxable: found.Taxable,
+            //     variationDefaultQunatity: selectedDefaultQty !== 0 ? selectedDefaultQty : 1,
+            //     ManagingStock: found.ManagingStock,
+            //     old_price: found.old_price,
+            //     incl_tax: this.state.incl_tax,
+            //     excl_tax: this.state.excl_tax,
+            //     variationfound: found
+            // });
+            variationfound= found;
+            //this.state.variationStyles = { cursor: "pointer", pointerEvents: "auto" }
+            // $("#add_variation_product_btn").css({ "cursor": "pointer", "pointer-events": "auto" });
+            // var _attribute = getVariationProductData.ProductAttributes.filter(item => item.Variation == true)
+            // if(found && _fileterTerm.length == _attribute.length && found.ManagingStock == true){
+            //     this.setState({isFetchWarehouseQty:true  ,isRefereshIconInventory : true}) 
+            //     this.props.dispatch(allProductActions.productWarehouseQuantity(found.WPID));
+            // }
+            // if( found.ManagingStock == false){  //check the product managing stock is false then we are not calling the productWarehouseQuantity api
+            //     this.state.isAttributeDelete=true;
+            //     this.setState({ isRefereshIconInventory : false })
+            // }
+        } else {
+            // this.setState({
+            //     variationParentId: 0,
+            //     variationPrice: 0,
+            //     variationStockQunatity: 0,
+            //     variationImage: "",
+            //     ManagingStock: null,
+            // });
+        }
+    }
+
+
+    ///-------xxxxx-------
     const addToCart = () => {
         if (props && props.selProduct) {
             var _product = props.selProduct;

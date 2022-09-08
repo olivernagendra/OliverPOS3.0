@@ -421,4 +421,152 @@ export const  initHomeFn=()=>{
             document.getElementById("mobileNavToggle").classList.remove("opened");
         }
         document.querySelector(".navbar").classList.remove("open");
-    }}
+    }
+    let holdDownTimer,
+	hasFired = false,
+	currentProductButton = null, //For touch screen
+	touchMoved = false;
+
+//Handles Product section buttons for touch devices
+//For each button there is a regular touch and then a touch and hold to be able to delete buttons
+
+// document.querySelectorAll(".products > button").forEach((button) => {
+// 	//Touch start
+// 	button.addEventListener("touchstart", (e) => {
+// 		touchMoved = false;
+// 		currentProductButton = e.currentTarget;
+// 		holdDownTimer = setTimeout(() => {
+// 			if (!currentProductButton.classList.contains("add-tile") && !currentProductButton.classList.contains("remove-state")) {
+// 				currentProductButton.classList.add("remove-state");
+// 				currentProductButton.insertAdjacentHTML(
+// 					"beforeend",
+// 					`<div class="remove-cover"><div class="remove-button"><img src="../Assets/Images/SVG/X-Icon-DarkBlue.svg" alt=""></div></div>`
+// 				);
+// 				hasFired = true;
+// 			}
+// 		}, 1000);
+// 	});
+// 	//Touch up
+// 	button.addEventListener("touchend", (e) => {
+// 		clearTimeout(holdDownTimer);
+// 		if (!hasFired && !touchMoved) {
+// 			if (e.currentTarget.classList.contains("add-tile")) {
+// 				toggleSubwindow("add-tile");
+// 			} else if (e.currentTarget.classList.contains("product")) {
+// 				if (e.currentTarget.classList.contains("remove-state")) {
+// 					if (
+// 						(e.target.tagName == "IMG" && e.target.parentNode.classList.contains("remove-button")) ||
+// 						e.target.classList.contains("remove-button")
+// 					) {
+// 						e.currentTarget.remove();
+// 					}
+// 				} else {
+// 					//xlocation.href = "./Product.html";
+// 				}
+// 			} else if (e.currentTarget.classList.contains("category")) {
+// 				if (e.currentTarget.classList.contains("remove-state")) {
+// 					if (
+// 						(e.target.tagName == "IMG" && e.target.parentNode.classList.contains("remove-button")) ||
+// 						e.target.classList.contains("remove-button")
+// 					) {
+// 						e.currentTarget.remove();
+// 					}
+// 				} else {
+// 					console.log("subpage");
+// 				}
+// 			}
+// 		}
+// 		hasFired = false;
+// 		e.preventDefault();
+// 	});
+
+// 	button.addEventListener("touchmove", (e) => {
+// 		if (!touchMoved) {
+// 			touchMoved = true;
+// 		}
+// 	});
+// });
+// document.body.addEventListener("touchstart", (e) => {
+// 	if (
+// 		!e.targetTouches[0].target.classList.contains("remove-cover") &&
+// 		!e.targetTouches[0].target.classList.contains("remove-button") &&
+// 		!e.targetTouches[0].target.parentNode.classList.contains("remove-button")
+// 	) {
+// 		document.querySelectorAll("button.remove-state").forEach((button) => {
+// 			button.classList.remove("remove-state");
+// 			button.querySelector(".remove-cover").remove();
+// 		});
+// 	}
+// });
+
+//Handles Product section buttons for desktop
+//For each button there is a regular click and then a click and hold to be able to delete buttons
+
+// document.querySelectorAll(".products > button").forEach((button) => {
+// 	//Mouse down
+// 	button.addEventListener("mousedown", (e) => {
+// 		currentProductButton = e.currentTarget;
+// 		holdDownTimer = setTimeout(() => {
+// 			if (!currentProductButton.classList.contains("add-tile") && !currentProductButton.classList.contains("remove-state")) {
+// 				currentProductButton.classList.add("remove-state");
+// 				currentProductButton.insertAdjacentHTML(
+// 					"beforeend",
+// 					`<div class="remove-cover"><div class="remove-button"><img src="../../assets/images/svg/X-Icon-DarkBlue.svg" alt=""></div></div>`
+// 				);
+// 				hasFired = true;
+// 			}
+// 		}, 1000);
+// 	});
+// 	//Mouse up
+// 	button.addEventListener("mouseup", (e) => {
+// 		clearTimeout(holdDownTimer);
+// 		if (!hasFired) {
+// 			if (e.currentTarget.classList.contains("add-tile")) {
+// 				toggleSubwindow("add-tile");
+// 			} else if (e.currentTarget.classList.contains("product")) {
+// 				if (e.currentTarget.classList.contains("remove-state")) {
+// 					if (
+// 						(e.target.tagName == "IMG" && e.target.parentNode.classList.contains("remove-button")) ||
+// 						e.target.classList.contains("remove-button")
+// 					) {
+// 						e.currentTarget.remove();
+// 					}
+// 				} else {
+// 					//location.href = "./Product.html";
+// 				}
+// 			} else if (e.currentTarget.classList.contains("category")) {
+// 				if (e.currentTarget.classList.contains("remove-state")) {
+// 					if (
+// 						(e.target.tagName == "IMG" && e.target.parentNode.classList.contains("remove-button")) ||
+// 						e.target.classList.contains("remove-button")
+// 					) {
+// 						e.currentTarget.remove();
+// 					}
+// 				} else {
+// 					console.log("subpage");
+// 				}
+// 			}
+// 		}
+// 		hasFired = false;
+// 	});
+// 	//Mouse out
+// 	button.addEventListener("mouseout", (e) => {
+// 		clearTimeout(holdDownTimer);
+// 		// e.currentTarget.blur();
+// 	});
+// });
+
+// document.body.addEventListener("mousedown", (e) => {
+// 	if (
+// 		!e.target.classList.contains("remove-cover") &&
+// 		!e.target.classList.contains("remove-button") &&
+// 		!e.target.parentNode.classList.contains("remove-button")
+// 	) {
+// 		document.querySelectorAll("button.remove-state").forEach((button) => {
+// 			button.classList.remove("remove-state");
+// 			button.querySelector(".remove-cover").remove();
+// 		});
+// 	}
+// });
+
+}

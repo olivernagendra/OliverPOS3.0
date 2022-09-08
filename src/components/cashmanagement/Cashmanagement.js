@@ -4,7 +4,7 @@ import { cashRecords, getDetails } from './CashmanagementSlice'
 import moment from 'moment';
 import Config from '../../Config'
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
-import LeftNavBar from '../common/LeftNavBar'
+import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import STATUSES from "../../constants/apiStatus";
 import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 function Cashmanagement() {

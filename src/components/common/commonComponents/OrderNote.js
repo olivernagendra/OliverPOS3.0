@@ -1,5 +1,5 @@
 import React, { useState,useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 const OrderNote = (props) => {
     const [note,setNote]=useState('');
     const handleNote = () => {
