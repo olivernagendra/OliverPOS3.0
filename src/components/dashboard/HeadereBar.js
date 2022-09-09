@@ -32,7 +32,7 @@ const HeadereBar = (props) => {
     const clearCart=()=>
     {
         removeCheckOutList();
-        dispatch(product({}));
+        dispatch(product());
     }
     return (<React.Fragment>
         <div className="header">

@@ -956,7 +956,7 @@ const Product = (props) => {
                 }
                 else {
                     setTimeout(() => {
-                        dispatch(product({}));
+                        dispatch(product());
                     }, 100);
                    
                 }

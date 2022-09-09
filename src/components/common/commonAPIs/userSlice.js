@@ -17,7 +17,7 @@ export const userList = createAsyncThunk(
   async (parameter,{rejectWithValue}) => {   
    
    try {
-     const response = await userListAPI(parameter);
+     const response = await userListAPI();
           // The value we return becomes the `fulfilled` action payload
           return response;
    } catch (err) {

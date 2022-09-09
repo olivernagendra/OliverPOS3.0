@@ -223,7 +223,7 @@ const AdvancedSearch = (props) => {
             props.toggleOutOfStock();
         }
         else {
-            dispatch(product({}));
+            dispatch(product());
             props.toggleAdvancedSearch();
         }
     }

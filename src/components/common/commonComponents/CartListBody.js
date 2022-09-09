@@ -89,7 +89,7 @@ const CartListBody = (props) => {
         // setTotal(_total);
         // setDiscount(_dis);
         // setTaxes(RoundAmount(_taxAmount));
-        props.setValues && props.setValues(_subtotal,_taxAmount,_dis,_total);
+        props.setValues && props.setValues(_subtotal,RoundAmount(_taxAmount) ,_dis,_total);
         //    this.setState({
         //         subTotal: RoundAmount(_subtotal),
         //         totalAmount: RoundAmount(_total),// parseFloat(_subtotal) - parseFloat(nextProps.discountAmount),           

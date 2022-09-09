@@ -31,7 +31,7 @@ const CartList = (props) => {
     const deleteItem = (item) => {
         if (item) {
             deleteProduct(item);
-            dispatch(product({}));
+            dispatch(product());
         }
     }
     const doCheckout = () => {
@@ -547,11 +547,12 @@ const CartList = (props) => {
                         <p>Subtotal</p>
                         <p><b>${subTotal}</b></p>
                     </div>
+                    {discount && discount>0 ?
                     <div className="row">
                         <p>Cart Discount - 25%</p>
                         <button id="editCartDiscount">edit</button>
                         <p><b>-${discount}</b></p>
-                    </div>
+                    </div>:<div className="row"><button id="editCartDiscount">Discount</button></div>}
                     <div className="row">
                         <button id="taxesButton">Taxes</button>
                         <p>(15%)</p>

@@ -27,6 +27,7 @@ import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
 import { product } from "./product/productSlice";
 import {userList} from "../common/commonAPIs/userSlice";
+import { getRates,isMultipleTaxSupport } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
@@ -59,6 +60,12 @@ const Home = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+       var multiple_tax_support= localStorage.getItem("multiple_tax_support")?JSON.parse(localStorage.getItem("multiple_tax_support")):false
+       var get_tax_rates= localStorage.getItem("TAXT_RATE_LIST")?JSON.parse(localStorage.getItem("TAXT_RATE_LIST")):[]; 
+       getTax(multiple_tax_support,get_tax_rates);
+    }, []);
+
     const getFavourites = () => {
         var regId = localStorage.getItem('register');
         if (typeof regId != "undefined" && regId != null) {
@@ -74,8 +81,10 @@ const Home = () => {
     const fetchData = async () => { //calling multiple api
         dispatch(attribute());
         dispatch(category());
-        dispatch(product({}));
-        dispatch(userList({}));
+        dispatch(product());
+        dispatch(userList());
+        dispatch(getRates());
+        dispatch(isMultipleTaxSupport());
         getFavourites();
         var locationId = localStorage.getItem('Location')
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -174,6 +183,133 @@ const Home = () => {
     }
     const toggleCreateCustomer = () => {
         setisShowCreateCustomer(!isShowCreateCustomer)
+    }
+    const getTax=(multiple_tax_support,get_tax_rates)=>
+    {
+        if (multiple_tax_support && multiple_tax_support == true) {
+            var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
+            if ((typeof taxList !== 'undefined') && taxList !== null && taxList && taxList.length > 0) {
+                var taxData = [];
+                taxList && taxList.length > 0 && taxList.map(rate => {
+                    taxData.push({
+                        check_is: rate.check_is,
+                        TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                        TaxName: rate.TaxName ? rate.TaxName : '',
+                        TaxId: rate.TaxId ? rate.TaxId : '',
+                        Country: rate.Country ? rate.Country : '',
+                        State: rate.State ? rate.State : '',
+                        TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                        Priority: rate.Priority ? rate.Priority : ''
+                    })
+                })
+                localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxData))
+                // setTimeout(function () {
+                //     //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
+                //     if (typeof setHeightDesktop != "undefined") { setHeightDesktop() };
+                // }, 500);
+            } else {
+                localStorage.setItem('DEFAULT_TAX_STATUS', 'true')
+                var taxData = [];
+                var inactiveTaxData = [];
+                if (get_tax_rates && get_tax_rates.length > 0) {
+                    get_tax_rates && get_tax_rates.length > 0 && get_tax_rates.map(rate => {
+                        taxData.push({
+                            check_is: true,
+                            TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                            TaxName: rate.TaxName ? rate.TaxName : '',
+                            TaxId: rate.TaxId ? rate.TaxId : '',
+                            Country: rate.Country ? rate.Country : '',
+                            State: rate.State ? rate.State : '',
+                            TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                            Priority: rate.Priority ? rate.Priority : ''
+                        })
+                        inactiveTaxData.push({
+                            check_is: false,
+                            TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                            TaxName: rate.TaxName ? rate.TaxName : '',
+                            TaxId: rate.TaxId ? rate.TaxId : '',
+                            Country: rate.Country ? rate.Country : '',
+                            State: rate.State ? rate.State : '',
+                            TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                            Priority: rate.Priority ? rate.Priority : ''
+                        })
+                    })
+                    localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(inactiveTaxData))
+                    if (!localStorage.getItem("SELECTED_TAX")) {
+                        localStorage.setItem("SELECTED_TAX", JSON.stringify(inactiveTaxData));
+                    }
+                    //Update by Nagendra: Remove the tax which has same priority and lower rate, only for default tax..................................
+                    taxData && taxData.length > 0 && taxData.map(rate => {
+                        var duplicateArr = taxData.filter((ele, index) =>  ele.TaxClass == rate.TaxClass && ele.Priority == rate.Priority && ele.TaxClass == "");
+                        if (duplicateArr && duplicateArr.length > 0) {                            
+                            duplicateArr.map(dup => {
+                                if (rate.TaxId < dup.TaxId) {
+                                    taxData.splice(taxData.indexOf(dup), 1);
+                                }
+                            });
+                        
+                             if (taxData && taxData.length > 0) {                               
+                                var taxfilterData = taxData.filter((ele, index) =>  ele.TaxClass == "");
+                                if (taxfilterData) {
+                                    taxData = taxfilterData;
+                                }
+                            }
+                     
+                            //..............................................................................
+                        }
+                    })
+                    // taxData && taxData.length > 0 && taxData.map(rate => {
+                    //     var duplicateArr = taxData.filter((ele, index) => ele.TaxId !== rate.TaxId && ele.Priority == rate.Priority && ele.TaxClass == "");
+                    //     if (duplicateArr && duplicateArr.length > 0) {
+                    //         duplicateArr && duplicateArr.length > 0 && duplicateArr.map(dup => {
+                    //             if (parseFloat(rate.TaxRate.replace("%", '')) > parseFloat(dup.TaxRate.replace("%", ''))) {
+                    //                 taxData.splice(taxData.indexOf(dup), 1);
+                    //             }
+                    //         });
+                    //         //Apply only single default tax rate which have Priority One.
+                    //         if (duplicateArr && duplicateArr.length == 1) {
+                    //             taxData = duplicateArr;
+                    //         }
+                    //         else if (taxData && taxData.length > 1) {
+                    //             var taxfilterData = taxData.filter((ele, index) => ele.Priority == 1 && ele.TaxClass == "");
+                    //             if (taxfilterData) {
+                    //                 taxData = taxfilterData;
+                    //             }
+                    //         }
+                    //         //..............................................................................
+                    //     }
+                    // })
+                    localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData));
+                }
+            }
+        } else if ( !multiple_tax_support || multiple_tax_support == false) {
+            var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
+            if (taxList && taxList.length == 0) {
+                localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
+                var taxData = [];
+                if (get_tax_rates && get_tax_rates.length > 0) {
+                    get_tax_rates && get_tax_rates.length > 0 && get_tax_rates.map(rate => {
+                        taxData.push({
+                            check_is: true,
+                            TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                            TaxName: rate.TaxName ? rate.TaxName : '',
+                            TaxId: rate.TaxId ? rate.TaxId : '',
+                            Country: rate.Country ? rate.Country : '',
+                            State: rate.State ? rate.State : '',
+                            TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                            Priority: rate.Priority ? rate.Priority : ''
+                        })
+                    })
+                    var taxRateListIs = []
+                    taxRateListIs.push(taxData[0]);
+                    localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData))
+                    if(typeof multiple_tax_support!="undefined")
+                    {
+                        localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxRateListIs))
+                    }
+                }
+            }
+        }
     }
 const addNote=(e)=>
 {
