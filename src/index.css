@@ -161,3 +161,195 @@ code {
 {
 	display: flex !important;
 }
+
+
+.popup {
+	box-sizing: border-box;
+	position: fixed;
+	background-color: #fff;
+	border-radius: 1.85vw;
+	z-index: 3;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+.loaderThemeBg {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	top: 0px;
+	margin: auto;
+	background-color: rgba(81, 80, 80, .51);
+}
+
+/* .loaderThemeBg img {
+	border: none;
+	margin-left: 0px;
+	margin-right: 0px;
+	display: block;
+	width: 150px;
+	height: 150px;
+	margin: auto;
+} */
+
+.preloaderbackground {
+	background-color: #fff;
+	/* min-width: 221px; */
+	text-align: center;
+	border-radius: 14px;
+	padding: 20px 40px;
+}
+.fn-poppins {
+	font-family: Poppins;
+}
+.ologo-1 {
+	animation: animate-svg-fill-1 3s ease-in 0.2s both infinite;
+  }
+  
+  @keyframes animate-svg-fill-2 {
+	0%, 80%, 100% {
+	  transform: scale(0.98);
+	  fill: transparent;
+	}
+	10%, 70% {
+	  transform: scale(1);
+	  fill: #47d2a5;
+	}
+  }
+  .ologo-2 {
+	animation: animate-svg-fill-2 3s ease-in 0.4s both infinite;
+  }
+  
+  @keyframes animate-svg-fill-3 {
+	0%, 80%, 100% {
+	  transform: scale(0.98);
+	  fill: transparent;
+	}
+	10%, 70% {
+	  transform: scale(1);
+	  fill: #1db9ca;
+	}
+  }
+  .ologo-3 {
+	animation: animate-svg-fill-3 3s ease-in 0.6s both infinite;
+  }
+  
+  @keyframes animate-svg-fill-4 {
+	0%, 80%, 100% {
+	  transform: scale(0.98);
+	  fill: transparent;
+	}
+	10%, 70% {
+	  transform: scale(1);
+	  fill: #2797e8;
+	}
+  }
+  .ologo-4 {
+	animation: animate-svg-fill-4 3s ease-in 0.8s both infinite;
+  }
+  
+  @keyframes animate-svg-fill-5 {
+	0%, 80%, 100% {
+	  transform: scale(0.98);
+	  fill: transparent;
+	}
+	10%, 70% {
+	  transform: scale(1);
+	  fill: #a568bc;
+	}
+  }
+  .ologo-5 {
+	animation: animate-svg-fill-5 3s ease-in 0.9s both infinite;
+  }
+  
+  @keyframes animate-svg-fill-6 {
+	0%, 80%, 100% {
+	  transform: scale(0.98);
+	  fill: transparent;
+	}
+	10%, 70% {
+	  transform: scale(1);
+	  fill: #ff525f;
+	}
+  }
+  .ologo-6 {
+	animation: animate-svg-fill-6 3s ease-in 1.1s both infinite;
+  }
+  
+  @keyframes animate-svg-fill-7 {
+	0%, 80%, 100% {
+	  transform: scale(0.98);
+	  fill: transparent;
+	}
+	10%, 70% {
+	  transform: scale(1);
+	  fill: #ff8552;
+	}
+  }
+  .ologo-7 {
+	animation: animate-svg-fill-7 3s ease-in 1.2s both infinite;
+  }
+  
+  @keyframes animate-svg-fill-8 {
+	0% {
+	  transform: translate(35px, -35px);
+	  fill: transparent;
+	}
+	10%, 40% {
+	  transform: translate(0px, 0px);
+	  fill: #ffd026;
+	}
+	50%, 100% {
+	  transform: translate(-35px, 35px);
+	  fill: transparent;
+	}
+  }
+  .ologo-8 {
+	animation: animate-svg-fill-8 3s ease-in-out 1.3s both infinite;
+  }
+  
+  .st0 {
+	fill: #A1E663;
+  }
+  
+  .st1 {
+	fill: #47D2A5;
+  }
+  
+  .st2 {
+	fill: #1DB9CA;
+  }
+  
+  .st3 {
+	fill: #2797E8;
+  }
+  
+  .st4 {
+	fill: #A568BC;
+  }
+  
+  .st5 {
+	fill: #FF525F;
+  }
+  
+  .st6 {
+	fill: #FF8552;
+  }
+  
+  .st7 {
+	fill: #FFD026;
+  }
+
+  .text-center {
+	text-align: center !important;
+  }
+  .w-100 {
+	width: 100% !important;
+  }
+  .user-info-wrapper
+  {
+	z-index: 9;
+  }

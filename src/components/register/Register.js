@@ -13,6 +13,7 @@ import { firebaseRegister } from "./firebaseRegisterSlice";
 import { useNavigate } from 'react-router-dom';
 import { get_locName, get_UDid, get_userName } from "../common/localSettings";
 import { toggleSubwindow } from "../common/EventFunctions";
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
     const dispatch = useDispatch();
@@ -86,11 +87,12 @@ const Register = () => {
             navigate('/pin');
     }
 
-    if (respRegister.status == STATUSES.LOADING) {
-        return <div> Loading... </div>
-    }
+    // if (respRegister.status == STATUSES.LOADING) {
+    //     return <div> Loading... </div>
+    // }
     return (
         <React.Fragment>
+            {respRegister.status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}
             <div className="choose-wrapper">
                 <div className="choose-header">
                     <button id="backButton" onClick={() => window.location = "/location"} >

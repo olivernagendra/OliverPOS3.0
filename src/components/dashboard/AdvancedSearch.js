@@ -232,7 +232,32 @@ const AdvancedSearch = (props) => {
         props.toggleAdvancedSearch();
         // toggleSubwindow();
     }
-
+    const addCustomerToSale=(cutomer_data)=> {
+        var data =cutomer_data;
+        localStorage.setItem('AdCusDetail', JSON.stringify(data))
+        var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
+        if (list != null) {
+            const CheckoutList = {
+                ListItem: list.ListItem,
+                customerDetail: data ? data : [],
+                totalPrice: list.totalPrice,
+                discountCalculated: list.discountCalculated,
+                tax: list.tax,
+                subTotal: list.subTotal,
+                TaxId: list.TaxId,
+                TaxRate: list.TaxRate,
+                oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+                order_date: list.order_date,
+                order_id: list.order_id,
+                status: list.status,
+                showTaxStaus: list.showTaxStaus,
+                _wc_points_redeemed: list._wc_points_redeemed,
+                _wc_amount_redeemed: list._wc_amount_redeemed,
+                _wc_points_logged_redemption: list._wc_points_logged_redemption
+            }
+            localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+        }
+    }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleAdvancedSearch();
@@ -381,7 +406,7 @@ const AdvancedSearch = (props) => {
                                         <img src={Transactions_Icon_White} alt="" />
                                         Transactions
                                     </button>
-                                    <button className="search-add-to-sale">
+                                    <button className="search-add-to-sale" onClick={()=>addCustomerToSale(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>

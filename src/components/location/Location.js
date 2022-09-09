@@ -8,6 +8,7 @@ import { get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Location = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -41,10 +42,10 @@ const Location = () => {
             navigate('/register')
         }
     }
-    if (status == STATUSES.LOADING) {
-        return <div> Loading... </div>
-    }
-    return <div className="choose-wrapper">
+    // if (status == STATUSES.LOADING) {
+    //     return <div> Loading... </div>
+    // }
+    return <React.Fragment>{status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}<div className="choose-wrapper">
         <div className="choose-header">
             <button id="backButton" onClick={() => window.location = "/site"}>
                 <img src={AngledBracket_Left_Blue} alt="" />
@@ -105,6 +106,6 @@ const Location = () => {
                 </button> */}
             </div>
         </div>
-    </div>
+    </div></React.Fragment> 
 }
 export default Location

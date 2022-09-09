@@ -26,6 +26,7 @@ import { group } from "../common/commonAPIs/groupSlice";
 import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
 import { product } from "./product/productSlice";
+import {userList} from "../common/commonAPIs/userSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
@@ -74,11 +75,12 @@ const Home = () => {
         dispatch(attribute());
         dispatch(category());
         dispatch(product({}));
+        dispatch(userList({}));
         getFavourites();
         var locationId = localStorage.getItem('Location')
-        var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-        if (user && user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined") {
-            dispatch(group({ "locationId": locationId, "group_sales": user.group_sales_by }));
+        var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        if (user_ && user_.group_sales && user_.group_sales !== null && user_.group_sales !== "" && user_.group_sales !== "undefined") {
+            dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
         }
     }
 

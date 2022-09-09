@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { checkStock } from "../../checkout/checkoutSlice";
 import { typeOfTax } from "../../common/TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
+import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const CartList = (props) => {
     const [checkoutData, setCheckoutData] = useState(0.00);
     const [updateProductStatus, setUpdateProductStatus] = useState(false)
     const [checkseatStatus, setCheckseatStatus] = useState(false)
-
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         calculateCart();
@@ -48,6 +49,7 @@ const CartList = (props) => {
         //     }
         // })
         //this.setState({ isLoading: true })
+        setIsLoading(true);
         localStorage.removeItem('RESERVED_SEATS');
         localStorage.removeItem("BOOKED_SEATS");
         var setting = localStorage.getItem('TickeraSetting') && typeof (localStorage.getItem('TickeraSetting')) !== 'undefined' && localStorage.getItem('TickeraSetting') !== 'undefined' ? JSON.parse(localStorage.getItem('TickeraSetting')) : '';
@@ -109,8 +111,14 @@ const CartList = (props) => {
         }
         // const { dispatch } = this.props;
         // const { addcust, taxRate } = this.state;
-        var addcust = {};
-        var taxRate = [];
+        var addcust =null
+        var AdCusDetail = localStorage.getItem('AdCusDetail');
+        if (AdCusDetail != null) {
+            addcust= JSON.parse(AdCusDetail);
+        } 
+
+       
+       // var taxRate = [];
         const CheckoutList = {
             ListItem: ListItem,
             customerDetail: addcust,
@@ -136,9 +144,8 @@ const CartList = (props) => {
         }
         if (ListItem.length == 0 || productCount == 0) {
             alert("Please add at least one product in cart !");
+            setIsLoading(false)
         } else {
-            // this.setState({ updateProductStatus: true });
-            // this.state.updateProductStatus = true;
             setUpdateProductStatus(true);
             var tickValiData = []
             var field = ''
@@ -160,8 +167,6 @@ const CartList = (props) => {
             })
             if (staticField.length == 0) {
                 setCheckoutData(false);
-                // this.setState({ checkoutData: false })
-                // this.state.checkoutData = false;
             }
             if (tickValiData && tickValiData.length > 0) {
                 var requiredDataIsNull = tickValiData.find(is_null => is_null.length == 0 || quant !== is_null.length);
@@ -170,19 +175,16 @@ const CartList = (props) => {
                     var a = requiredList ? requiredList.map(itm => {
                         var is_field = itm.field_info && JSON.parse(itm.field_info);
                         if (is_field.is_required == true || staticField !== '') {
-                            // this.setState({ checkoutData: true })
-                            // this.state.checkoutData = true;
                             setCheckoutData(true);
                         }
                     })
                         :
                         staticField !== ''
                     setCheckoutData(true);
-                    // this.setState({ checkoutData: true })
-                    // this.state.checkoutData = true;
                 }
             }
             if (checkoutData == true) {
+                setIsLoading(false)
                 // this.setState({ isLoading: false })
                 alert("Please fill the required fields of selected ticket.");
                 //     if (isMobileOnly == true) {
@@ -274,6 +276,7 @@ const CartList = (props) => {
         }
         //show message popup here
         alert(msg);
+        setIsLoading(false)
     }
     const calculateCart = () => {
         var _subtotal = 0.0;
@@ -399,6 +402,8 @@ const CartList = (props) => {
         }
     }, [resCheckStock]);
     return (
+        <React.Fragment>
+       {isLoading?<LoadingModal></LoadingModal>:null}
         <div className="cart">
             <div className="mobile-header">
                 <p>Cart</p>
@@ -557,7 +562,7 @@ const CartList = (props) => {
                     <button onClick={() => doCheckout()}>Checkout - ${total}</button>
                 </div>
             </div>
-        </div>)
+        </div></React.Fragment>)
 }
 
 export default CartList 
