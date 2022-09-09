@@ -2,6 +2,7 @@ import React, { useState } from "react"
 // import { useDispatch, useSelector } from 'react-redux';
 import { get_locName, get_regName } from '../common/localSettings'
 import imgOpenReg from '../../images/svg/OpenSign.svg'
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 // import imgBackSpace from '../../images/svg/Backspace-BaseBlue.svg'
 
 // import {createPin, validatePin} from "./pinSlice"
@@ -201,10 +202,10 @@ const Pin = () => {
                 <div className="divider"></div>
                 <p className="style2">{get_regName()}</p>
                 <p className="style3">{get_locName()}</p>
-                <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >Close Register</button>
+                <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
             </div>
         </header>
-        <main>{<PinPad></PinPad>} <button id="closeRegister2">Close Register</button></main>
+        <main>{<PinPad></PinPad>} <button id="closeRegister2">{LocalizedLanguage.closeRegister}</button></main>
     </div>
 }
 

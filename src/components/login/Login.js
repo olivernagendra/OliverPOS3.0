@@ -11,6 +11,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { userLogin, userExternalLogin, GetUserProfileLogin } from '../login/loginSlice';
 import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 function Login() {
     var auth2 = ''
     const bridgDomain = "https://hub.oliverpos.com";
@@ -453,7 +454,7 @@ function Login() {
                     Remember Me?
                 </label>
             </div>
-            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>Sign In</button>
+            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
         </form>
         <div className="or-row">
             <div className="divider"></div>
