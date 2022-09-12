@@ -121,7 +121,7 @@ const Home = () => {
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
     const editPopUp = async (item) => {
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID);
+        var _item = await getByID(item.product_id ? item.product_id : item.WPID?item.WPID:item.Product_Id);
 
         // setSelProduct(_item)
         var _product = getTaxAllProduct([_item])
@@ -130,7 +130,7 @@ const Home = () => {
     }
     const openPopUp = async (item) => {
         updateVariationProduct(null);
-        var _item = await getByID(item.Product_Id ? item.Product_Id : item.WPID);
+        var _item = await getByID(item.product_id ? item.product_id : item.WPID?item.WPID:item.Product_Id);
         var _product = getTaxAllProduct([_item])
         setSelProduct(_product[0]);
         setisShowPopups(true)
