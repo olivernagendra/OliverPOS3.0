@@ -129,13 +129,14 @@ const Home = () => {
         setisShowPopups(true)
     }
     const openPopUp = async (item) => {
+        updateVariationProduct(null);
         var _item = await getByID(item.Product_Id ? item.Product_Id : item.WPID);
         var _product = getTaxAllProduct([_item])
         setSelProduct(_product[0]);
         setisShowPopups(true)
     }
     const closePopUp = () => {
-        setisShowPopups(false)
+        setisShowPopups(false);
     }
     // const toggleUserProfile = () => {
     //     setisShowUserProfile(!isShowUserProfile)
@@ -321,7 +322,7 @@ const addNote=(e)=>
     useEffect(() => {
         if (resAddTile && resAddTile.status == STATUSES.IDLE && resAddTile.is_success) {
             getFavourites && getFavourites();
-            toggleAddTitle();
+            //toggleAddTitle();
         }
     }, [resAddTile]);
 

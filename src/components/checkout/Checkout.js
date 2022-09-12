@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
 import EmptyCart from '../../images/svg/EmptyCart.svg'
 import person from '../../images/svg/person.svg'
-import { get_UDid, get_userName } from '../common/localSettings';
+import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
@@ -24,22 +24,28 @@ const Checkout = () => {
         setDiscount(dis);
         setTotal(tt);
     }
+    const addCustomer=()=>
+    {
+        alert('add customer to order');
+    }
 
     return <div className="checkout-wrapper">
         <LeftNavBar ></LeftNavBar>
         <Header ></Header>
         <div className="cart">
             <div className="checkout-cart-header">
-                <button>Add Customer to Order</button>
+                {get_customerName()==null?
+                <button onClick={()=>addCustomer()}>Add Customer to Order</button>:
                 <div className="cart-customer">
                     <div className="avatar">
                         <img src={person} alt="" />
                     </div>
                     <div className="text-col">
-                        <p className="style1">Earnst S. Blofeld</p>
-                        <p className="style2">esb@spectra.com</p>
+                        <p className="style1">{get_customerName().Name}</p>
+                        <p className="style2">{get_customerName().Email}</p>
                     </div>
                 </div>
+}
             </div>
             <CartListBody setValues={setValues}></CartListBody>
             {/* <div className="body">

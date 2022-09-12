@@ -168,7 +168,7 @@ code {
 	position: fixed;
 	background-color: #fff;
 	border-radius: 1.85vw;
-	z-index: 3;
+	z-index: 9;
 	overflow-x: hidden;
 	overflow-y: scroll;
 }

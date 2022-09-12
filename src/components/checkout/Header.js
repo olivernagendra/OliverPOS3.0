@@ -11,6 +11,8 @@ import SwitchUser from "../common/commonComponents/SwitchUser";
 import EndSession from "../common/commonComponents/EndSession";
 import OrderNote from "../common/commonComponents/OrderNote";
 import { useNavigate, useLocation } from 'react-router-dom';
+import AppLauncher from "../common/commonComponents/AppLauncher";
+import IframeWindow from "../dashboard/IframeWindow";
 import ParkSale from "./ParkSale";
 const Header = (props) => {
     const dispatch = useDispatch();
@@ -20,6 +22,9 @@ const Header = (props) => {
     const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
     const [isShowEndSession, setisShowEndSession] = useState(false);
     const [isShowParkSale, setisShowParkSale] = useState(false);
+    const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
+    const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+    const [isShowOptionPage, setisShowOptionPage] = useState(false);
     const toggleOrderNote = () => {
         setisShowOrderNote(!isShowOrderNote)
     }
@@ -35,6 +40,17 @@ const Header = (props) => {
     const toggleParkSale = () => {
         setisShowParkSale(!isShowParkSale)
     }
+    const toggleAppLauncher = () => {
+        setisShowAppLauncher(!isShowAppLauncher)
+        setisShowOptionPage(false)
+    }
+    const toggleiFrameWindow = () => {
+        setisShowiFrameWindow(!isShowiFrameWindow)
+    }
+    const toggleOptionPage = () => {
+        setisShowOptionPage(!isShowOptionPage)
+    }
+
     const addNote = (e) => {
         console.log("----order note-----" + e);
         toggleOrderNote()
@@ -51,14 +67,15 @@ const Header = (props) => {
             <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                 <img src={avatar} alt="" />
             </button>
-            <button id="mobileOptionsButton">
+            <button id="mobileOptionsButton" onClick={()=>toggleOptionPage()} className={isShowOptionPage?"filter":""}>
                 <img src={Ellipsis_Icon_DarkBlue} alt="" />
             </button>
             <button id="mobileAppsButton">
-                <img src={Oliver_Icon_BaseBlue} alt="" />
+                <img src={Oliver_Icon_BaseBlue} alt="" onClick={()=>toggleAppLauncher()}  />
             </button>
         </div>
-        <div id="pageOptions" className="page-options-wrapper hidden">
+        
+        <div id="pageOptions" className={isShowOptionPage? "page-options-wrapper":"page-options-wrapper hidden"}>
             <div className="page-options">
                 <p>Options Menu</p>
                 <button id="parkSaleButton"  onClick={() => toggleParkSale()}>
@@ -80,6 +97,8 @@ const Header = (props) => {
         <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
         <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
         <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} addNote={addNote}></ParkSale>
+        <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
+        <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
     </React.Fragment>)
 }
 

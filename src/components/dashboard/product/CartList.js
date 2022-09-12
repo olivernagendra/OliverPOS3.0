@@ -555,7 +555,7 @@ const CartList = (props) => {
                     </div>:<div className="row"><button id="editCartDiscount">Discount</button></div>}
                     <div className="row">
                         <button id="taxesButton">Taxes</button>
-                        <p>(15%)</p>
+                        <p>(%)</p>
                         <p><b>${taxes}</b></p>
                     </div>
                 </div>

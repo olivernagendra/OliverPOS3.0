@@ -30,6 +30,16 @@ export const get_userName = () => {
 export const get_userId = () => {
   return localStorage.getItem('userId') ? localStorage.getItem('userId') : ''
 }
+
+export const get_customerName = () => {
+  var customer= localStorage.getItem('AdCusDetail') ? JSON.parse(localStorage.getItem('AdCusDetail')) : null;
+  if(customer!=null)
+  {
+    return {"Name":customer.FirstName +" "+customer.LastName,"Email":customer.Email}
+  }
+  else
+  return null;
+}
 /*------------------ array ----------------------*/
 export const chunkArray = (myArray, chunk_size) => {
   var index = 0;

@@ -980,6 +980,7 @@ const Product = (props) => {
 
     useEffect(() => {
         if (props.isShowPopups == true) {
+            setSelVariations([]);
             getModifiers();
             getRecomProducts();
         }
