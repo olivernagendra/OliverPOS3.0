@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { cashRecordsAPI ,getDetailsAPI ,openRegisterAPI ,closeRegisterAPI,SaveClosingNoteAPI } from './CashManagementAPI'
+import { cashRecordsAPI ,getDetailsAPI ,openRegisterAPI ,closeRegisterAPI,SaveClosingNoteAPI ,GetOpenRegisterAPI } from './CashManagementAPI'
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -9,6 +9,26 @@ const initialState = {
   "error":'',
   "is_success":false
 };
+
+
+
+export const GetOpenRegister = createAsyncThunk(
+  'GetOpenRegister/GetOpenRegisterAPI',
+  async (parameter,{rejectWithValue}) => {  
+   
+   try {
+     const response = await GetOpenRegisterAPI(parameter);
+          return response;
+   } catch (err) {
+    return rejectWithValue(err.response.data)
+  }
+         
+  }
+);
+
+
+
+
 
 export const openRegister = createAsyncThunk(
   'openRegister/openRegisterAPI',
@@ -304,4 +324,49 @@ export const CashmanagementSecondSlice = createSlice({
   //   }
   // };
   
-  export default {CashmanagementSlice,CashmanagementSecondSlice,CashmanagementThirdSlice ,CashmanagementFourthSlice ,CashmanagementFifthSlice};
+
+
+
+
+  
+
+ export const GetOpenRegisterSlice = createSlice({
+  name: 'GetOpenRegister',
+  initialState,
+  reducers: { 
+   
+  },
+  extraReducers: (builder) => {    
+    builder   
+      .addCase(GetOpenRegister.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.dataone="";
+        state.error="";
+        state.is_success=false;
+      })
+      .addCase(GetOpenRegister.fulfilled, (state, action) => {       
+          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.dataone=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_success=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(GetOpenRegister.rejected, (state,action) => {
+        state.status = STATUSES.IDLE;
+        state.dataone="";
+        state.error = action.error;
+        state.is_success=false;
+      })
+  },
+});
+
+
+ export const {  } = GetOpenRegisterSlice.actions;
+
+
+
+
+
+
+
+
+  export default {CashmanagementSlice,CashmanagementSecondSlice,CashmanagementThirdSlice ,CashmanagementFourthSlice ,CashmanagementFifthSlice ,GetOpenRegisterSlice};

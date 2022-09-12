@@ -9,7 +9,7 @@ import { receiptSettingSlice } from '../components/serverSetting/receiptSettingS
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 
 import { tileSlice, addTileSlice, deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
-import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice } from '../components/cashmanagement/CashmanagementSlice';
+import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice  , GetOpenRegisterSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
@@ -51,8 +51,8 @@ export const store = configureStore({
     customer: customerSlice.reducer,
     customergetPage: CustomergetPageSlice.reducer,
     product: productSlice.reducer,
-    customersave:CustomerSaveSlice.reducer
-
+    customersave:CustomerSaveSlice.reducer,
+    GetOpenRegister:GetOpenRegisterSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>
