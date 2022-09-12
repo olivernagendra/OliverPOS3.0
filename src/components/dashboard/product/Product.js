@@ -509,7 +509,7 @@ const Product = (props) => {
                 var aa = await getProductByID(id).then((row) => {
                     return row;
                 });
-                recomProducts.push(aa);
+                aa && recomProducts.push(aa);
                 if (ids.length == recomProducts.length) {
                     setRecommProducts(recomProducts);
                 }
@@ -940,10 +940,9 @@ const Product = (props) => {
     ///-------xxxxx-------
     const addToCart = () => {
         if (checkLength() === true) {
-            
+
             var _product = props.variationProduct ? props.variationProduct : props.selProduct;
-            if (_product)
-            {
+            if (_product) {
                 // _product = props.selProduct;
                 _product.quantity = productQty;
                 if (note != "") {
@@ -958,7 +957,7 @@ const Product = (props) => {
                     setTimeout(() => {
                         dispatch(product());
                     }, 100);
-                   
+
                 }
 
             }
@@ -1058,7 +1057,7 @@ const Product = (props) => {
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
                                                         allVariations.push(a.replace(/\//g, "-").toLowerCase())
-                                                        return <label key={"l_"+a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                        return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
                                             </div></React.Fragment>
@@ -1221,7 +1220,7 @@ const Product = (props) => {
                     <div className="recommended-upsells">
                         <p>Recommended Upsells</p>
                         <div className="button-row">
-                            {recommProducts && recommProducts.map(a => {
+                            {recommProducts && recommProducts.length > 0 && recommProducts.map(a => {
                                 return <button onClick={() => props.openPopUp(a)} key={a.WPID}>
                                     <div className="img-container">
                                         <img src={a && a.ProductImage} alt="" className="height-fit" />

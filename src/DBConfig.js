@@ -1,5 +1,5 @@
 export const DBConfig = {
-  name: "MyDB",
+  name: "POSDB",
   version: 1,
   objectStoresMeta: [
     {
