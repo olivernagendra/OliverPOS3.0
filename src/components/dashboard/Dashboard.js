@@ -317,6 +317,8 @@ const addNote=(e)=>
     console.log("----order note-----"+e);
     toggleOrderNote()
 }
+
+
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {

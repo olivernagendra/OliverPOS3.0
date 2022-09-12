@@ -12,6 +12,7 @@ import { userLogin, userExternalLogin, GetUserProfileLogin } from '../login/logi
 import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 function Login() {
     var auth2 = ''
     const bridgDomain = "https://hub.oliverpos.com";
@@ -459,7 +460,7 @@ function Login() {
                     Remember Me?
                 </label>
             </div>
-            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>Sign In</button>
+            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
         </form>
         <div className="or-row">
             <div className="divider"></div>

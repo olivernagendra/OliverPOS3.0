@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
-
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
 //import Oliver_Icon_White from '../../images/svg/Oliver-Icon-White.svg'
 import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
@@ -10,12 +10,30 @@ import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg'
 import { encode_UDid } from "../common/localSettings";
 
 const Site = () => {
+
+
+    let useCancelled = false;
+    useEffect(() => {
+        if (useCancelled == false) {
+            var lang = localStorage.getItem('LANG') ? localStorage.getItem('LANG').toString() : 'en';
+            var currentLanguage = LocalizedLanguage.getLanguage();
+            console.log("currentlanguage", currentLanguage, " local", lang)
+            if (lang !== currentLanguage) {
+                window.location.reload() // to set language need refresh page
+            }
+        }
+        return () => {
+            useCancelled = true;
+        }
+    }, []);
+
+
+
     const navigate = useNavigate();
-    const handleSiteClick=(item)=>
-    {
-        var udid=item.subscription_detail.udid;
-        var user_full_name=item.user_full_name
-        localStorage.setItem('user_full_name',user_full_name);
+    const handleSiteClick = (item) => {
+        var udid = item.subscription_detail.udid;
+        var user_full_name = item.user_full_name
+        localStorage.setItem('user_full_name', user_full_name);
 
         encode_UDid(udid);
         navigate('/location')
@@ -25,13 +43,13 @@ const Site = () => {
     console.log("siteData", siteData)
     return <div className="choose-wrapper">
         <div className="choose-header">
-            <button id="backButton" onClick={()=>navigate('/')}>
+            <button id="backButton" onClick={() => navigate('/')}>
                 <img src={AngledBracket_Left_Blue} alt="" />
-                Logout
+              {LocalizedLanguage.logout}  
             </button>
         </div>
         <div className="choose-body-default">
-            <p>Choose Site</p>
+            <p>{LocalizedLanguage.selectSite}</p>
             <div className="divider"></div>
             <div className="button-container">
                 {/* <button className="option">
@@ -48,7 +66,7 @@ const Site = () => {
                 {Sitelist !== null && Sitelist !== undefined && Sitelist.subscriptions &&
                     Sitelist.subscriptions.map((link, index) => {
                         return (
-                            <button  key={index} className="option" onClick={()=>handleSiteClick(link)}>
+                            <button key={index} className="option" onClick={() => handleSiteClick(link)}>
                                 <div className="img-container background-blue">
                                     <img src={WWW_Icon} alt="" className="www-icon" />
                                 </div>
@@ -57,7 +75,7 @@ const Site = () => {
                                     {/* <p className="style2">{link.subscription_detail.url}</p> */}
                                 </div>
                                 <img src={AngledBracket_Right_Grey} alt="" />
-                                <div className="fake-button background-blue">Select</div>
+                                <div className="fake-button background-blue">{LocalizedLanguage.select}  </div>
                             </button>
                         )
                     })

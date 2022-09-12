@@ -10,6 +10,7 @@ import { get_UDid } from "./common/localSettings";
 import STATUSES from "../constants/apiStatus";
 import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
 import moment from 'moment';
+import LocalizedLanguage from "../settings/LocalizedLanguage";
 
 
 const PinPad = React.memo(props => {
@@ -240,7 +241,7 @@ const PinPad = React.memo(props => {
     }
     return <React.Fragment>
         {(status === STATUSES.ERROR && <div>{error}</div>)}
-        <p>Enter Your User ID</p>
+        <p>{LocalizedLanguage.enteryouruserid}</p>
         <div className="pinpad">
             {hasPin !== "true" && <ShowCreatePin />}
             <div className="pin-entries">

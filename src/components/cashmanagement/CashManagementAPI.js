@@ -48,3 +48,13 @@ export function SaveClosingNoteAPI(prameters) {
         });
 }
 
+
+export function GetOpenRegisterAPI(RegisterId) {
+    //console.log("Servicecall",RegisterId);
+    // console.log("Param", RegisterId)
+    return serverRequest.clientServiceRequest('GET', `/CashManagement/GetOpenRegister?registerId=${RegisterId}&salesPersonId=''`, '')
+        .then(cashDetail => {
+            console.log("cashDetail", cashDetail);
+            return cashDetail;
+        })
+}
