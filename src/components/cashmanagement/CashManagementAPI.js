@@ -58,3 +58,13 @@ export function GetOpenRegisterAPI(RegisterId) {
             return cashDetail;
         })
 }
+
+export function addRemoveCashAPI(addRemoveCashParm) {
+
+    return serverRequest.clientServiceRequest('POST', `/CashManagement/AddRemoveCash`, addRemoveCashParm)
+        .then(result => {
+            return result;
+        });
+}
+
+

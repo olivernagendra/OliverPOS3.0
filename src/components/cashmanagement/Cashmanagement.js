@@ -8,13 +8,22 @@ import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import STATUSES from "../../constants/apiStatus";
 import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
+import AddCashPopup from './AddCashPopup'
 function Cashmanagement() {
   const dispatch = useDispatch();
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
+  const [cashPopUpOpen, setcashPopUpOpen] = useState(false)
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
+
+  const HundleCashPopup = ()=>{
+    setcashPopUpOpen(true)
+  }
+  const HundlePOpupClose=()=>{
+    setcashPopUpOpen(false)
+  }
 
 
   const getCashDrawerPaymentDetail = (OrderId, index) => {
@@ -41,6 +50,11 @@ function Cashmanagement() {
 
     }
   }
+
+  const { statuscashpopup, datacashpopup, errorcashpopup, is_successcashpopup } = useSelector((state) => state.addRemoveCashmanagement)
+   console.log("datacashpopup",datacashpopup)
+
+
 
   let useCancelled = false;
   useEffect(() => {
@@ -98,20 +112,15 @@ function Cashmanagement() {
 
   const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
   if (statusgetdetail === STATUSES.IDLE && is_successgetdetail) {
-
     var CashDrawerPaymentDetail = getdetail && getdetail.content
   }
 
   if (callDetailApiOnLoad === true && firstRecordId !== "") {
-
     setCallDetailApiOnLoad(false)
     getCashDrawerPaymentDetail(firstRecordId);
     firstRecordId = ""
 
   }
-
-
-
 
   var _balance = 0;
   if (CashDrawerPaymentDetail) {
@@ -145,7 +154,7 @@ function Cashmanagement() {
                 <p className="style1"> {CashDrawerPaymentDetail && !CashDrawerPaymentDetail.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
                 <div className="row">
                   <p className="style2">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  {/* <p className="style3 green">OPEN</p> */}
+                  <p className="style3 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status.toLowerCase() ==="open" ?"OPEN":"CLOSE" }</p>
                 </div>
                 <p className="style4">User: {CashDrawerPaymentDetail && CashDrawerPaymentDetail.SalePersonName}</p>
               </button>
@@ -161,7 +170,7 @@ function Cashmanagement() {
                           <button className="no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
                             <div className="row">
                               <p className="style1"> {order.RegisterName}</p>
-                              <p className="style2">  {!order.ClosedTime ? "OPEN" : "Closed " + order.ClosedTime}</p>
+                              <p className="style2">  {!order.ClosedTime ? "OPEN" : "CLOSED " + order.ClosedTime}</p>
                             </div>
                             <div className="row">
                               <p className="style2">User: {order.SalePersonName}</p>
@@ -178,6 +187,8 @@ function Cashmanagement() {
             </>
           }
         </div>
+        {cashPopUpOpen == true?   
+        <AddCashPopup HundlePOpupClose={HundlePOpupClose} />:""}
         <div className="cm-detailed-view">
           <div className="detailed-header">
             <p>Transaction History</p>
@@ -185,10 +196,10 @@ function Cashmanagement() {
               <div className="inner-group">
                 <div className="row">
                   <p className="style1">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
+                  <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status.toLowerCase() ==="open" ?"OPEN":"CLOSE" }</p>
                 </div>
-                <p className="style3">{Status === "Open"
-                  ? _openDateTime : _openDateTime + " to " + _closeDateTime} </p>
+                <p className="style3">{Status&&Status.toLowerCase() === "Open"
+                  ? _openDateTime : _openDateTime } </p>
               </div>
               <div className="inner-group">
                 <p className="style1">Cash Drawer Ending Balance</p>
@@ -203,8 +214,9 @@ function Cashmanagement() {
           </div>
           <div className="detailed-footer">
             <button>Remove Cash</button>
-            <button>Add Cash</button>
+            <button onClick={HundleCashPopup}  >Add Cash  </button>
           </div>
+          
         </div>
       </div>
     </>

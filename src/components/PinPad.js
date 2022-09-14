@@ -31,7 +31,7 @@ const PinPad = React.memo(props => {
     
 
     useEffect(() => {
-        // console.log("useEffect")
+         //console.log("useEffect")
         if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
             navigate('/openregister')
         }
@@ -39,12 +39,13 @@ const PinPad = React.memo(props => {
             pinSuccessful()
         }
 
-        focusInput()
+       focusInput()
     }, [data])
 
 
 
     const pinSuccessful = () => {
+       // console.log("pinSuccessful")
         if (status === STATUSES.error) {
           //  console.log(error)
         }
@@ -69,7 +70,7 @@ const PinPad = React.memo(props => {
             var user = JSON.parse(localStorage.getItem("user"))
             var lang = user && user.language ? user.language : 'en';
             localStorage.setItem("LANG", lang);
-
+          //  focusInput()
             //Reloading the component if new language set for the login user.                  
             if (_lang && _lang !== lang) {
                 // window.location = '/';
@@ -192,12 +193,9 @@ const PinPad = React.memo(props => {
                     }
 
                     if (enteredPin !== null && enteredPin !== '' && userID && userID !== '') {
-
-
                         console.log(typeof (enteredPin), enteredPin, txtValue,);
                         if (hasPin !== 'false') {
                             dispatch(validatePin({ "pin": enteredPin, "userid": userID, "UDID": get_UDid('UDID') }));
-
                         } else {
                             dispatch(createPin({ "pin": enteredPin, "id": userID }));
                         }
@@ -242,26 +240,23 @@ const PinPad = React.memo(props => {
 
 
     if (props.onClick == true) {
-       // console.log("outer click")
         focusInput()
     }
 
 
     if (status === STATUSES.ERROR) {
-        inputElement.current.focus();
+    document.getElementById("whichkey").value='';
         focusInput()
-         console.log(status)
         // setTotalSize(0)
         // setTxtValue("")
         // addToScreen('c')
         isloading == true && setIsloading(false)
-        
     }
     return <React.Fragment>
         {(status === STATUSES.ERROR && <div>{error}</div>)}
         <p>{LocalizedLanguage.enteryouruserid}</p>
 
-        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue" }} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
+        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue" }} onChange={handle} onKeyDown={handleBack}  autoComplete="off" />
         <div className="pinpad">
             {hasPin !== "true" && <ShowCreatePin />}
             <div className="pin-entries">
