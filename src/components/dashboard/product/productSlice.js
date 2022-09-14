@@ -16,7 +16,7 @@ export const product = createAsyncThunk(
   'product/productAPI',
   async (parameter, { rejectWithValue }) => {
     try {
-      const response = await productAPI(parameter);
+      const response = await productAPI();
       // The value we return becomes the `fulfilled` action payload
       return response;
     } catch (err) {

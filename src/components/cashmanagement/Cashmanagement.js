@@ -4,9 +4,10 @@ import { cashRecords, getDetails } from './CashmanagementSlice'
 import moment from 'moment';
 import Config from '../../Config'
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
-import LeftNavBar from '../common/LeftNavBar'
+import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import STATUSES from "../../constants/apiStatus";
 import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
+import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
 function Cashmanagement() {
   const dispatch = useDispatch();
   var registerId = localStorage.getItem('register');
@@ -136,7 +137,8 @@ function Cashmanagement() {
         </div>
         <div className="cm-register-view">
           {((!allCashRecords) || allCashRecords.length == 0) ? <>
-            <div>loading...</div>
+            {/* <div>loading...</div> */}
+            <LoadingSmallModal></LoadingSmallModal>
           </> :
             <>
               <button className="no-transform">

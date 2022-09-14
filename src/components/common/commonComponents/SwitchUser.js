@@ -1,18 +1,14 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg';
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-import SwitchUser_Icon from '../../images/svg/SwitchUser-Icon.svg';
-import Backspace_BaseBlue from '../../images/svg/Backspace-BaseBlue.svg';
-import PinPad from "../PinPad";
+import AngledBracket_Left_Blue from '../../../images/svg/AngledBracket-Left-Blue.svg';
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import SwitchUser_Icon from '../../../images/svg/SwitchUser-Icon.svg';
+import Backspace_BaseBlue from '../../../images/svg/Backspace-BaseBlue.svg';
+import PinPad from "../../PinPad";
 const SwitchUser = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleOrderNote();
+            props.toggleSwitchUser();
         }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
     }
     return <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
         <div className={props.isShow===true?"subwindow switch-user current":"subwindow switch-user"}>

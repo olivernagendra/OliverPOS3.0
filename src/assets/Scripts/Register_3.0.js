@@ -411,8 +411,8 @@ function iframeSetup(clickedButton, iframeSRC = null, author = null) {
 }
 
 //If page contains products then runs ImageFit on images
-imageFit(document.querySelectorAll(".products button.product img"))
-
+// imageFit(document.querySelectorAll(".products button.product img"))
+imageFit(document.querySelectorAll(".products > .product > .body > img"));
 //If page contains recommended upsells run ImageFit function on the image
 imageFit(document.querySelectorAll(".recommended-upsells img"));
 

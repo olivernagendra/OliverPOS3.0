@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import Oliver_Icon_Color from '../../images/svg/Oliver-Icon-Color.svg';
-import Oliver_Type from '../../images/svg/Oliver-Type.svg';
-import Register_Icon from '../../images/svg/Register-Icon.svg';
-import Customers_Icon from '../../images/svg/Customers-Icon.svg';
-import Transactions_Icon from '../../images/svg/Transactions-Icon.svg';
-import CashManagement_Icon from '../../images/svg/CashManagement-Icon.svg';
-import LinkLauncher_Icon from '../../images/svg/LinkLauncher-Icon.svg';
-import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
-import ToggleNavbar_Icon from '../../images/svg/ToggleNavbar-Icon.svg';
+import Oliver_Icon_Color from '../../../images/svg/Oliver-Icon-Color.svg';
+import Oliver_Type from '../../../images/svg/Oliver-Type.svg';
+import Register_Icon from '../../../images/svg/Register-Icon.svg';
+import Customers_Icon from '../../../images/svg/Customers-Icon.svg';
+import Transactions_Icon from '../../../images/svg/Transactions-Icon.svg';
+import CashManagement_Icon from '../../../images/svg/CashManagement-Icon.svg';
+import LinkLauncher_Icon from '../../../images/svg/LinkLauncher-Icon.svg';
+import Oliver_Icon_BaseBlue from '../../../images/svg/Oliver-Icon-BaseBlue.svg';
+import ToggleNavbar_Icon from '../../../images/svg/ToggleNavbar-Icon.svg';
 
-import ClockIn_Icon from '../../images/Temp/ClockIn_Icon.png';
-import MC_Logo1 from '../../images/Temp/MC_Logo 1.png';
-import Quickbooks1 from '../../images/Temp/Quickbooks 1.png';
+import ClockIn_Icon from '../../../images/Temp/ClockIn_Icon.png';
+import MC_Logo1 from '../../../images/Temp/MC_Logo 1.png';
+import Quickbooks1 from '../../../images/Temp/Quickbooks 1.png';
 import { useNavigate,useLocation } from 'react-router-dom';
 import AppLauncher from "./AppLauncher"; 
 import LinkLauncher from "./LinkLauncher";
-import IframeWindow from "../dashboard/IframeWindow";
+import IframeWindow from "../../dashboard/IframeWindow";
 const LeftNavBar = (props) => {
     const navigate = useNavigate();
     const location = useLocation();

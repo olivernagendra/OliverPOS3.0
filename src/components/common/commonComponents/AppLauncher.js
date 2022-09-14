@@ -1,13 +1,13 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import AngledBracket_Left_BaseBlue from '../../images/svg/AngledBracket-Left-BaseBlue.svg';
-import NoApps_Message from '../../images/svg/NoApps-Message.svg';
-import ClockIn_Icon from '../..//images/Temp/GiftCard_Icon.png';
-import Stripe_Icon from '../..//images/Temp/Stripe Icon.png';
-import GiftCard_Icon from '../..//images/Temp/GiftCard_Icon.png';
-import QRCode_Icon from '../..//images/Temp/QRCode_Icon.png';
-import DYMO_Icon from '../..//images/Temp/DYMO-Icon.png';
-import Fortis_Icon from '../..//images/Temp/Fortis-Icon.png';
-import QuoteApp_Icon from '../..//images/Temp/QuoteApp_Icon.png';
+import AngledBracket_Left_BaseBlue from '../../../images/svg/AngledBracket-Left-BaseBlue.svg';
+import NoApps_Message from '../../../images/svg/NoApps-Message.svg';
+import ClockIn_Icon from '../../../images/Temp/GiftCard_Icon.png';
+import Stripe_Icon from '../../../images/Temp/Stripe Icon.png';
+import GiftCard_Icon from '../../../images/Temp/GiftCard_Icon.png';
+import QRCode_Icon from '../../../images/Temp/QRCode_Icon.png';
+import DYMO_Icon from '../../../images/Temp/DYMO-Icon.png';
+import Fortis_Icon from '../../../images/Temp/Fortis-Icon.png';
+import QuoteApp_Icon from '../../../images/Temp/QuoteApp_Icon.png';
 const AppLauncher = (props) => {
     return (
         <div id="appLauncherWrapper" className={props.isShow===true? "app-launcher-wrapper":"app-launcher-wrapper hidden"} onClick={()=>props.toggleAppLauncher()}>

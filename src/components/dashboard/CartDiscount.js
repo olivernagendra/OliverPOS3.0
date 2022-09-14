@@ -51,7 +51,7 @@ const CartDiscount = (props) => {
 					<p className="style1">Select an option:</p>
 					<div className="toggle-container">
 						<label >
-							<input type="radio" id="customFeeRadio" name="customFeeDiscount" checked={isShowDiscount==false?true:false} />
+							<input type="radio" id="customFeeRadio" name="customFeeDiscount" defaultChecked={isShowDiscount==false?true:false} />
 							<div className="custom-radio" onClick={()=>toggleShowDiscount()}>
 								<p>Custom Fee</p>
 							</div>

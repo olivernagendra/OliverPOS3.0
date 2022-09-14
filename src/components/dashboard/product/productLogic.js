@@ -30,12 +30,12 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
     if (cartlist.length > 0) {
         cartlist.map(findId => {
             if (findId.product_id === product.WPID) {
-                // product['after_discount'] = findId ? findId.after_discount : 0,
-                //     product['discount_amount'] = findId ? findId.discount_amount : 0,
-                //     product['product_after_discount'] = findId ? findId.product_after_discount : 0,
-                //     product['product_discount_amount'] = findId ? findId.product_discount_amount : 0,
-                //     product['discount_type'] = findId ? findId.discount_type : "",
-                //     product['new_product_discount_amount'] = findId ? findId.new_product_discount_amount : 0
+                product['after_discount'] = findId ? findId.after_discount : 0;
+                product['discount_amount'] = findId ? findId.discount_amount : 0;
+                product['product_after_discount'] = findId ? findId.product_after_discount : 0;
+                product['product_discount_amount'] = findId ? findId.product_discount_amount : 0;
+                product['discount_type'] = findId ? findId.discount_type : "";
+                product['new_product_discount_amount'] = findId ? findId.new_product_discount_amount : 0;
             }
         });
 
@@ -100,9 +100,9 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             //-----------------------------------------
             stockUpdateQuantity(cartlist, data, product)
             if ((!localStorage.getItem("APPLY_DEFAULT_TAX")) || localStorage.getItem("APPLY_DEFAULT_TAX") == null) {
-                setTimeout(() => {
+                // setTimeout(() => {
                     addtoCartProduct(cartlist);
-                }, 400);
+                // }, 400);
             } else {
                 addtoCartProduct(cartlist);
             }

@@ -1,14 +1,19 @@
-import React, { useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import React, { useState,useEffect, useLayoutEffect } from "react";
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 const OrderNote = (props) => {
+    const [note,setNote]=useState('');
+    const handleNote = () => {
+        if(note!="" && props && props.addNote)
+        {
+            props.addNote(note);
+            setNote('');
+        }
+    }
+
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleOrderNote();
         }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
@@ -22,8 +27,8 @@ const OrderNote = (props) => {
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
                     <label htmlFor="orderNote">Enter a note for this order:</label>
-                    <textarea name="order-note" id="orderNote" placeholder="Add note to order"></textarea>
-                    <button>Add Note</button>
+                    <textarea name="order-note" id="orderNote" placeholder="Add note to order" value={note} onChange={(e)=>setNote(e.target.value)}></textarea>
+                    <button onClick={()=>handleNote()}>Add Note</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
             </div>

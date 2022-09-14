@@ -26,7 +26,7 @@ const [note,setNote]=useState('');
                 </div>
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
-                    <label for="productNote">Enter a note for this product:</label>
+                    <label htmlFor="productNote">Enter a note for this product:</label>
                     <textarea id="productNote" placeholder="Add note to product." value={note} onChange={(e)=>setNote(e.target.value)}></textarea>
                     <button onClick={()=>handleNote()}>Add Note</button>
                     <div className="auto-margin-bottom"></div>

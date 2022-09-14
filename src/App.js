@@ -23,8 +23,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import OpenRegister from './components/OpenRegister';
 import Closeregister from './components/cashmanagement/Closeregister';
 import Customercreate from './components/customer/Customercreate';
-
-
+import Checkout from './components/checkout/Checkout';
 initDB(DBConfig);
 function App() {
 
@@ -52,6 +51,7 @@ function App() {
       <Route path="/closeregister" element={<Closeregister />} />
       <Route path="*" element={<NoPage />} />
       <Route path="/customer" element={<Customercreate />} />
+      <Route path="/checkout" element={<Checkout />} />
     </Routes>
   </Router>
 

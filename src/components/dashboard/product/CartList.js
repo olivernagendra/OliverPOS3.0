@@ -5,15 +5,24 @@ import EmptyCart from '../../../images/svg/EmptyCart.svg';
 import CircledX_Grey from '../../../images/svg/CircledX-Grey.svg';
 import { deleteProduct } from './productLogic';
 import { RoundAmount } from "../../common/TaxSetting";
-
 import { product } from "./productSlice";
+import { useNavigate } from "react-router-dom";
+import { checkStock } from "../../checkout/checkoutSlice";
+import { typeOfTax } from "../../common/TaxSetting";
+import STATUSES from "../../../constants/apiStatus";
+import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 const CartList = (props) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [subTotal, setSubTotal] = useState(0.00);
     const [taxes, setTaxes] = useState(0.00);
     const [discount, setDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
     const [taxRate, setTaxRate] = useState(0.00);
+    const [checkoutData, setCheckoutData] = useState(0.00);
+    const [updateProductStatus, setUpdateProductStatus] = useState(false)
+    const [checkseatStatus, setCheckseatStatus] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         calculateCart();
@@ -22,8 +31,252 @@ const CartList = (props) => {
     const deleteItem = (item) => {
         if (item) {
             deleteProduct(item);
-            dispatch(product({}));
+            dispatch(product());
         }
+    }
+    const doCheckout = () => {
+        checkout(props.listItem);
+        //navigate('/checkout');
+    }
+
+    const checkout = (ListItem) => {
+        // ListItem && ListItem.length > 0 && ListItem.map(litem => {
+        //     if (this.props.AllProductList) {
+        //         var itemFound = this.props.AllProductList.find(item => item.WPID == litem.product_id);
+        //         if (itemFound) {
+        //             litem["ManagingStock"] = itemFound.ManagingStock;
+        //         }
+        //     }
+        // })
+        //this.setState({ isLoading: true })
+        setIsLoading(true);
+        localStorage.removeItem('RESERVED_SEATS');
+        localStorage.removeItem("BOOKED_SEATS");
+        var setting = localStorage.getItem('TickeraSetting') && typeof (localStorage.getItem('TickeraSetting')) !== 'undefined' && localStorage.getItem('TickeraSetting') !== 'undefined' ? JSON.parse(localStorage.getItem('TickeraSetting')) : '';
+        var selectedSeats = [];
+        var tikeraSelectedSeats = localStorage.getItem('TIKERA_SELECTED_SEATS') ? JSON.parse(localStorage.getItem('TIKERA_SELECTED_SEATS')) : [];
+        var getDistinctTicketSeat = {};
+        tikeraSelectedSeats.length > 0 && tikeraSelectedSeats.map(item => {
+            if (item.seat_check == "true") {
+                var dateKey = item.product_id;
+                if (!getDistinctTicketSeat.hasOwnProperty(dateKey)) {
+                    getDistinctTicketSeat[dateKey] = new Array(item);
+                } else {
+                    if (typeof getDistinctTicketSeat[dateKey] !== 'undefined' && getDistinctTicketSeat[dateKey].length > 0) {
+                        getDistinctTicketSeat[dateKey].push(item)
+                    }
+                }
+            }
+        })
+        var productCount = 0;
+        ListItem !== null && ListItem.length > 0 && ListItem.map(items => {
+            if (items.product_id != null) {
+                productCount += 1;
+                if (getDistinctTicketSeat) {
+                    var getTicketSeats = getDistinctTicketSeat[items.product_id];
+                    getTicketSeats && getTicketSeats.map((Tkt, indexing) => {
+                        if (Tkt.product_id == items.product_id) {
+                            items.ticket_info && items.ticket_info.map((match_index, index) => {
+                                if (index == indexing) {
+                                    match_index['seat_label'] = Tkt.seat_label;
+                                    match_index['chart_id'] = Tkt.chart_id;
+                                    match_index['seat_id'] = Tkt.seat_id;
+                                }
+                            })
+                        }
+                    })
+                }
+            }
+        })
+        var discountIs = 0;
+        discountIs = discount;
+        var _checklist = (typeof localStorage.getItem("CHECKLIST") !== 'undefined') ? JSON.parse(localStorage.getItem("CHECKLIST")) : null;
+        var taxratelist;
+        var _TaxIs = [];
+        var deafult_tax = localStorage.getItem('APPLY_DEFAULT_TAX') ? JSON.parse(localStorage.getItem("APPLY_DEFAULT_TAX")) : null;
+        var selected_tax = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : null;
+        var apply_defult_tax = localStorage.getItem('DEFAULT_TAX_STATUS') ? localStorage.getItem('DEFAULT_TAX_STATUS').toString() : null;
+        var TaxRate = apply_defult_tax == "true" ? deafult_tax : selected_tax;
+        if (TaxRate && TaxRate.length > 0) {
+            TaxRate.map(addTax => {
+                if (addTax.check_is == true) {
+                    if (apply_defult_tax == "true") {
+                        _TaxIs.push({ [addTax.TaxId]: parseFloat(addTax.TaxRate) })
+                    }
+                    if (apply_defult_tax == "false") {
+                        _TaxIs.push({ [addTax.TaxId]: parseFloat(addTax.TaxRate) })
+                    }
+                }
+            })
+        }
+        // const { dispatch } = this.props;
+        // const { addcust, taxRate } = this.state;
+        var addcust =null
+        var AdCusDetail = localStorage.getItem('AdCusDetail');
+        if (AdCusDetail != null) {
+            addcust= JSON.parse(AdCusDetail);
+        } 
+
+       
+       // var taxRate = [];
+        const CheckoutList = {
+            ListItem: ListItem,
+            customerDetail: addcust,
+            totalPrice: total,
+            discountCalculated: discountIs ? discountIs : 0,
+            tax: taxes,
+            subTotal: subTotal,
+            TaxId: _TaxIs,
+            TaxRate: taxRate,
+            _checklist: _checklist !== null ? _checklist.order_id : 0,
+            oliver_pos_receipt_id: _checklist && _checklist !== null && _checklist.oliver_pos_receipt_id !== null ? _checklist.oliver_pos_receipt_id : "",
+            // showTaxStaus: this.state.showTaxStaus,
+            showTaxStaus: typeOfTax(),
+            _wc_points_redeemed: 0,
+            _wc_amount_redeemed: 0,
+            _wc_points_logged_redemption: 0
+        }
+
+        if (addcust && addcust.content) {
+            sessionStorage.setItem("CUSTOMER_ID", addcust.content.UID ? addcust.content.UID : addcust.content.WPId);
+        } else {
+            sessionStorage.removeItem("CUSTOMER_ID");
+        }
+        if (ListItem.length == 0 || productCount == 0) {
+            alert("Please add at least one product in cart !");
+            setIsLoading(false)
+        } else {
+            setUpdateProductStatus(true);
+            var tickValiData = []
+            var field = ''
+            var staticField_value = ["first_name", "last_name", "owner_email"];
+            var staticField = [];
+            var quant = 0;
+            ListItem.find(findId => {
+                quant = findId.quantity;
+                if (findId.ticket_status == true && (findId.ticket_info.length == 0 || quant !== findId.ticket_info.length)) {
+                    staticField = staticField_value.filter(function (value, index, arr) {
+                        return value == "first_name" && setting !== null && setting !== undefined && setting.show_attendee_first_and_last_name_fields == "yes" ||
+                            value == "last_name" && setting !== null && setting !== undefined && setting.show_attendee_first_and_last_name_fields == "yes"
+                            || value == "owner_email" && setting !== null && setting !== undefined && setting.show_owner_email_field == "yes";
+                    });
+                    tickValiData.push(findId.ticket_info);
+                    field = findId.product_ticket ? JSON.stringify(findId.product_ticket.fields) : ''
+                }
+
+            })
+            if (staticField.length == 0) {
+                setCheckoutData(false);
+            }
+            if (tickValiData && tickValiData.length > 0) {
+                var requiredDataIsNull = tickValiData.find(is_null => is_null.length == 0 || quant !== is_null.length);
+                if (requiredDataIsNull) {
+                    var requiredList = field && JSON.parse(field);
+                    var a = requiredList ? requiredList.map(itm => {
+                        var is_field = itm.field_info && JSON.parse(itm.field_info);
+                        if (is_field.is_required == true || staticField !== '') {
+                            setCheckoutData(true);
+                        }
+                    })
+                        :
+                        staticField !== ''
+                    setCheckoutData(true);
+                }
+            }
+            if (checkoutData == true) {
+                setIsLoading(false)
+                // this.setState({ isLoading: false })
+                alert("Please fill the required fields of selected ticket.");
+                //     if (isMobileOnly == true) {
+                //         $('#common_msg_popup').addClass('show')
+                //     }
+                //    // $('#common_msg_popup').modal('show')
+                //     showModal('common_msg_popup');
+            }
+            checkoutData == false && ListItem.map(findId => {
+                if (findId.ticket_info && findId.ticket_info.length > 0 && findId.ticket_info !== '[]') {
+                    findId.ticket_info.map(chart_Id => {
+                        var chart_id = chart_Id && chart_Id.chart_id ? chart_Id.chart_id : null;
+                        if (chart_id) {
+                            setCheckseatStatus(true)
+                            // ### this.setState({
+                            //     isLoading: true,
+                            //     checkseatStatus: true
+                            // })
+                            //### this.props.dispatch(cartProductActions.getReservedTikeraChartSeat(chart_id, 1));
+                        }
+                    })
+                }
+            })
+            if (addcust && addcust.customerDetail && addcust.customerDetail.content) {
+                var cust = addcust.customerDetail.content;
+                sessionStorage.setItem("CUSTOMER_ID", cust.UID ? cust.UID : cust.WPId);
+            }
+            localStorage.setItem("CHECKLIST", JSON.stringify(CheckoutList))
+            var demoUser = localStorage.getItem("demoUser") ? localStorage.getItem("demoUser") : false;
+            if (demoUser == 'true') {
+                navigate('/checkout')
+                //window.location = '/checkout'
+            } else {
+                checkItemList(CheckoutList);
+                //dispatch(checkoutActions.checkItemList(CheckoutList))
+            }
+        }
+    }
+    const checkItemList = (checkout_list) => {
+        //var list_item = checkout_list ? checkout_list.ListItem : null;   
+        var list_item = checkout_list && checkout_list.ListItem ? checkout_list.ListItem.filter(item => { return (item.ManagingStock !== false) }) : null;
+        if (!list_item || list_item == null || list_item.length == 0) {
+            var _item = [];
+            if (checkout_list && checkout_list.ListItem) {
+                checkout_list.ListItem.map(item => {
+                    _item.push({ Message: "", ProductId: item.product_id, Quantity: item.quantity, Message: "", success: true, psummary: item.psummary });
+                });
+            }
+            //  dispatch(success( _item ));
+            return _item;
+        } else {
+            var demoUser = localStorage.getItem("demoUser") ? localStorage.getItem("demoUser") : false;
+            if (demoUser == false) {
+                dispatch(checkStock(list_item));
+            }
+        }
+
+    }
+    const checkStockResult = (checkout_list) => {
+        var msg = '';
+        var cartProductList = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : null;
+        var blank_quntity = []
+        var new_data = [];
+        checkout_list && checkout_list.map(checkfalse => {
+            if (checkfalse.success === false) {
+                new_data.push(checkfalse)
+            }
+        })
+
+        if (cartProductList && new_data) {
+            new_data.map(isExsit => {
+                cartProductList.map(idExsit => {
+                    if (idExsit.variation_id == 0 ? idExsit.product_id === isExsit.ProductId : idExsit.variation_id === isExsit.ProductId) {
+                        blank_quntity.push(idExsit.Title)
+                    }
+                })
+            })
+        }
+        if (blank_quntity.length > 0) {
+            msg = 'messageCartProductNotAvailable';
+            msg += blank_quntity.map(name => {
+                return (
+                    name + ", "
+                )
+            })
+        }
+        else {
+            msg = "messageCartNoProduct";
+        }
+        //show message popup here
+        alert(msg);
+        setIsLoading(false)
     }
     const calculateCart = () => {
         var _subtotal = 0.0;
@@ -103,7 +356,54 @@ const CartList = (props) => {
         //         cartDiscountAmount : _cartDiscountAmount
         //     })  
     }
+    const [resCheckStock] = useSelector((state) => [state.checkStock])
+    useEffect(() => {
+        if (resCheckStock && resCheckStock.status == STATUSES.IDLE && resCheckStock.is_success) {
+            console.log("---resCheckStock--" + JSON.stringify(resCheckStock.data));
+            var checkout_list = resCheckStock.data.content;
+            var IsExist = false;
+            var IsExsitTicket = false;
+            if (checkout_list && checkout_list.length > 0 && updateProductStatus == true) {
+                var checkProductUpdate;
+                IsExist = false
+                checkProductUpdate = checkout_list.find(item => item.success == false);
+                if (checkProductUpdate && checkProductUpdate.ProductId !== 0) {
+                    IsExist = false;
+                    checkStockResult(checkout_list);
+                } else {
+                    IsExist = true;
+                }
+                // if (nextProps.cartproductlist) {
+                //     nextProps.cartproductlist && nextProps.cartproductlist.map(ticketInfo => {
+                //         if (ticketInfo.ticket_info && ticketInfo.ticket_info.length > 0 && ticketInfo.ticket_info !== "[]") {
+                //             CHECKLIST && CHECKLIST.ListItem.map(findId => {
+                //                 if (findId.ticket_info && findId.ticket_info.length > 0) {
+                //                     findId.ticket_info.map(chart_Id => {
+                //                         var chart_id = chart_Id && chart_Id.chart_id ? chart_Id.chart_id : null;
+                //                         if (chart_id) {
+                //                             IsExsitTicket = true;
+                //                         }
+                //                     })
+                //                 }
+                //             })
+                //         }
+                //     })
+                // }
+
+                if (IsExist === true && IsExsitTicket === false && checkseatStatus == false && checkoutData == false) {
+                    localStorage.removeItem("oliver_order_payments");
+                    localStorage.removeItem("VOID_SALE")
+                    navigate('/checkout');
+                }
+                setUpdateProductStatus(true);
+            }
+
+
+        }
+    }, [resCheckStock]);
     return (
+        <React.Fragment>
+       {isLoading?<LoadingModal></LoadingModal>:null}
         <div className="cart">
             <div className="mobile-header">
                 <p>Cart</p>
@@ -134,7 +434,7 @@ const CartList = (props) => {
                 </div> */}
                 {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
 
-                    return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/>
+                    return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
                         <div className="main-row" >
                             <p className="quantity">{a.quantity && a.quantity}</p>
                             <p className="content-style">{a.Title && a.Title}</p>
@@ -247,22 +547,23 @@ const CartList = (props) => {
                         <p>Subtotal</p>
                         <p><b>${subTotal}</b></p>
                     </div>
-                    {/* <div className="row">
+                    {discount && discount>0 ?
+                    <div className="row">
                         <p>Cart Discount - 25%</p>
                         <button id="editCartDiscount">edit</button>
                         <p><b>-${discount}</b></p>
-                    </div> */}
+                    </div>:<div className="row"><button id="editCartDiscount">Discount</button></div>}
                     <div className="row">
                         <button id="taxesButton">Taxes</button>
-                        {/* <p>(15%)</p> */}
+                        <p>(%)</p>
                         <p><b>${taxes}</b></p>
                     </div>
                 </div>
                 <div className="checkout-container">
-                    <button>Checkout - ${total}</button>
+                    <button onClick={() => doCheckout()}>Checkout - ${total}</button>
                 </div>
             </div>
-        </div>)
+        </div></React.Fragment>)
 }
 
 export default CartList 

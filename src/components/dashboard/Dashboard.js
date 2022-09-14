@@ -5,18 +5,18 @@ import AdvancedSearch from "./AdvancedSearch";
 import CartDiscount from "./CartDiscount";
 import CreateCustomer from "./CreateCustomer";
 import Notifications from "./Notifications";
-import OrderNote from "./OrderNote";
-import SwitchUser from "./SwitchUser";
+import OrderNote from "../common/commonComponents/OrderNote";
+
 import MsgPopup_ProductNotFound from "./MsgPopup_ProductNotFound";
 import MsgPopup_UpgradeToUnlock from "./MsgPopup_UpgradeToUnlock";
-import MsgPopup_EndSession from "./MsgPopup_EndSession";
-import LinkLauncher from "../common/LinkLauncher";
-import AppLauncher from "../common/AppLauncher";
+
+import LinkLauncher from "../common/commonComponents/LinkLauncher";
+import AppLauncher from "../common/commonComponents/AppLauncher";
 import IframeWindow from "./IframeWindow";
-import LeftNavBar from "../common/LeftNavBar";
+import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import HeadereBar from "./HeadereBar";
 // import IframeWindow from "./IframeWindow";
-import UserInfo from "./UserInfo";
+
 import CartList from "./product/CartList";
 import TileList from "./tiles/TileList";
 import { initHomeFn } from "../common/commonFunctions/homeFn";
@@ -26,6 +26,8 @@ import { group } from "../common/commonAPIs/groupSlice";
 import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
 import { product } from "./product/productSlice";
+import {userList} from "../common/commonAPIs/userSlice";
+import { getRates,isMultipleTaxSupport } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
@@ -34,9 +36,9 @@ const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
     const [selProduct, setSelProduct] = useState(null);
-    const [isShowUserProfile, setisShowUserProfile] = useState(false);
-    const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
-    const [isShowEndSession, setisShowEndSession] = useState(false);
+    // const [isShowUserProfile, setisShowUserProfile] = useState(false);
+    // const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
+    // const [isShowEndSession, setisShowEndSession] = useState(false);
 
     const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
     const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
@@ -52,10 +54,16 @@ const Home = () => {
     const [listItem,setListItem]=useState([]);
     const [isOutOfStock, setisOutOfStock] = useState(false);
     const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
-
+    const [variationProduct,setVariationProduct]=useState(null);
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
+    }, []);
+
+    useEffect(() => {
+       var multiple_tax_support= localStorage.getItem("multiple_tax_support")?JSON.parse(localStorage.getItem("multiple_tax_support")):false
+       var get_tax_rates= localStorage.getItem("TAXT_RATE_LIST")?JSON.parse(localStorage.getItem("TAXT_RATE_LIST")):[]; 
+       getTax(multiple_tax_support,get_tax_rates);
     }, []);
 
     const getFavourites = () => {
@@ -64,16 +72,24 @@ const Home = () => {
             dispatch(tile({ "id": regId }));
         }
     }
+    const updateVariationProduct=(item)=>
+    {
+        //setSelProduct(item);
+        setVariationProduct(item);
+    }
 
     const fetchData = async () => { //calling multiple api
         dispatch(attribute());
         dispatch(category());
-        dispatch(product({}));
+        dispatch(product());
+        dispatch(userList());
+        dispatch(getRates());
+        dispatch(isMultipleTaxSupport());
         getFavourites();
         var locationId = localStorage.getItem('Location')
-        var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-        if (user && user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined") {
-            dispatch(group({ "locationId": locationId, "group_sales": user.group_sales_by }));
+        var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        if (user_ && user_.group_sales && user_.group_sales !== null && user_.group_sales !== "" && user_.group_sales !== "undefined") {
+            dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
         }
     }
 
@@ -105,7 +121,7 @@ const Home = () => {
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
     const editPopUp = async (item) => {
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID);
+        var _item = await getByID(item.product_id ? item.product_id : item.WPID?item.WPID:item.Product_Id);
 
         // setSelProduct(_item)
         var _product = getTaxAllProduct([_item])
@@ -113,23 +129,24 @@ const Home = () => {
         setisShowPopups(true)
     }
     const openPopUp = async (item) => {
-        var _item = await getByID(item.Product_Id ? item.Product_Id : item.WPID);
+        updateVariationProduct(null);
+        var _item = await getByID(item.product_id ? item.product_id : item.WPID?item.WPID:item.Product_Id);
         var _product = getTaxAllProduct([_item])
         setSelProduct(_product[0]);
         setisShowPopups(true)
     }
     const closePopUp = () => {
-        setisShowPopups(false)
+        setisShowPopups(false);
     }
-    const toggleUserProfile = () => {
-        setisShowUserProfile(!isShowUserProfile)
-    }
-    const toggleShowEndSession = () => {
-        setisShowEndSession(!isShowEndSession)
-    }
-    const toggleSwitchUser = () => {
-        setisShowSwitchUser(!isShowSwitchUser)
-    }
+    // const toggleUserProfile = () => {
+    //     setisShowUserProfile(!isShowUserProfile)
+    // }
+    // const toggleShowEndSession = () => {
+    //     setisShowEndSession(!isShowEndSession)
+    // }
+    // const toggleSwitchUser = () => {
+    //     setisShowSwitchUser(!isShowSwitchUser)
+    // }
     const toggleOrderNote = () => {
         setisShowOrderNote(!isShowOrderNote)
     }
@@ -168,13 +185,146 @@ const Home = () => {
     const toggleCreateCustomer = () => {
         setisShowCreateCustomer(!isShowCreateCustomer)
     }
+    const getTax=(multiple_tax_support,get_tax_rates)=>
+    {
+        if (multiple_tax_support && multiple_tax_support == true) {
+            var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
+            if ((typeof taxList !== 'undefined') && taxList !== null && taxList && taxList.length > 0) {
+                var taxData = [];
+                taxList && taxList.length > 0 && taxList.map(rate => {
+                    taxData.push({
+                        check_is: rate.check_is,
+                        TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                        TaxName: rate.TaxName ? rate.TaxName : '',
+                        TaxId: rate.TaxId ? rate.TaxId : '',
+                        Country: rate.Country ? rate.Country : '',
+                        State: rate.State ? rate.State : '',
+                        TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                        Priority: rate.Priority ? rate.Priority : ''
+                    })
+                })
+                localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxData))
+                // setTimeout(function () {
+                //     //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
+                //     if (typeof setHeightDesktop != "undefined") { setHeightDesktop() };
+                // }, 500);
+            } else {
+                localStorage.setItem('DEFAULT_TAX_STATUS', 'true')
+                var taxData = [];
+                var inactiveTaxData = [];
+                if (get_tax_rates && get_tax_rates.length > 0) {
+                    get_tax_rates && get_tax_rates.length > 0 && get_tax_rates.map(rate => {
+                        taxData.push({
+                            check_is: true,
+                            TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                            TaxName: rate.TaxName ? rate.TaxName : '',
+                            TaxId: rate.TaxId ? rate.TaxId : '',
+                            Country: rate.Country ? rate.Country : '',
+                            State: rate.State ? rate.State : '',
+                            TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                            Priority: rate.Priority ? rate.Priority : ''
+                        })
+                        inactiveTaxData.push({
+                            check_is: false,
+                            TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                            TaxName: rate.TaxName ? rate.TaxName : '',
+                            TaxId: rate.TaxId ? rate.TaxId : '',
+                            Country: rate.Country ? rate.Country : '',
+                            State: rate.State ? rate.State : '',
+                            TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                            Priority: rate.Priority ? rate.Priority : ''
+                        })
+                    })
+                    localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(inactiveTaxData))
+                    if (!localStorage.getItem("SELECTED_TAX")) {
+                        localStorage.setItem("SELECTED_TAX", JSON.stringify(inactiveTaxData));
+                    }
+                    //Update by Nagendra: Remove the tax which has same priority and lower rate, only for default tax..................................
+                    taxData && taxData.length > 0 && taxData.map(rate => {
+                        var duplicateArr = taxData.filter((ele, index) =>  ele.TaxClass == rate.TaxClass && ele.Priority == rate.Priority && ele.TaxClass == "");
+                        if (duplicateArr && duplicateArr.length > 0) {                            
+                            duplicateArr.map(dup => {
+                                if (rate.TaxId < dup.TaxId) {
+                                    taxData.splice(taxData.indexOf(dup), 1);
+                                }
+                            });
+                        
+                             if (taxData && taxData.length > 0) {                               
+                                var taxfilterData = taxData.filter((ele, index) =>  ele.TaxClass == "");
+                                if (taxfilterData) {
+                                    taxData = taxfilterData;
+                                }
+                            }
+                     
+                            //..............................................................................
+                        }
+                    })
+                    // taxData && taxData.length > 0 && taxData.map(rate => {
+                    //     var duplicateArr = taxData.filter((ele, index) => ele.TaxId !== rate.TaxId && ele.Priority == rate.Priority && ele.TaxClass == "");
+                    //     if (duplicateArr && duplicateArr.length > 0) {
+                    //         duplicateArr && duplicateArr.length > 0 && duplicateArr.map(dup => {
+                    //             if (parseFloat(rate.TaxRate.replace("%", '')) > parseFloat(dup.TaxRate.replace("%", ''))) {
+                    //                 taxData.splice(taxData.indexOf(dup), 1);
+                    //             }
+                    //         });
+                    //         //Apply only single default tax rate which have Priority One.
+                    //         if (duplicateArr && duplicateArr.length == 1) {
+                    //             taxData = duplicateArr;
+                    //         }
+                    //         else if (taxData && taxData.length > 1) {
+                    //             var taxfilterData = taxData.filter((ele, index) => ele.Priority == 1 && ele.TaxClass == "");
+                    //             if (taxfilterData) {
+                    //                 taxData = taxfilterData;
+                    //             }
+                    //         }
+                    //         //..............................................................................
+                    //     }
+                    // })
+                    localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData));
+                }
+            }
+        } else if ( !multiple_tax_support || multiple_tax_support == false) {
+            var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
+            if (taxList && taxList.length == 0) {
+                localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
+                var taxData = [];
+                if (get_tax_rates && get_tax_rates.length > 0) {
+                    get_tax_rates && get_tax_rates.length > 0 && get_tax_rates.map(rate => {
+                        taxData.push({
+                            check_is: true,
+                            TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                            TaxName: rate.TaxName ? rate.TaxName : '',
+                            TaxId: rate.TaxId ? rate.TaxId : '',
+                            Country: rate.Country ? rate.Country : '',
+                            State: rate.State ? rate.State : '',
+                            TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                            Priority: rate.Priority ? rate.Priority : ''
+                        })
+                    })
+                    var taxRateListIs = []
+                    taxRateListIs.push(taxData[0]);
+                    localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData))
+                    if(typeof multiple_tax_support!="undefined")
+                    {
+                        localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxRateListIs))
+                    }
+                }
+            }
+        }
+    }
+const addNote=(e)=>
+{
+    console.log("----order note-----"+e);
+    toggleOrderNote()
+}
+
 
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
         if (resAddTile && resAddTile.status == STATUSES.IDLE && resAddTile.is_success) {
             getFavourites && getFavourites();
-            toggleAddTitle();
+            //toggleAddTitle();
         }
     }, [resAddTile]);
 
@@ -183,21 +333,21 @@ const Home = () => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
             setisShowPopups(false);
-            console.log("---resProduct--" + JSON.stringify(resProduct.data));
+           // console.log("---resProduct--" + JSON.stringify(resProduct.data));
         }
     }, [resProduct]);
 
 
     return (
         <React.Fragment>
-            <Product openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
+            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
             <div className="homepage-wrapper" style={{ display: isShowPopups == false ? "grid" : "none" }}>
                 {/* left nav bar */}
                 {/* top header */}
                 {/* prodct list/item list */}
                 {/* cart list */}
                 <LeftNavBar toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
-                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch} toggleUserProfile={toggleUserProfile} toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch}toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
@@ -212,7 +362,7 @@ const Home = () => {
                 {/* link launcher */}
                 {/* notifications */}
                 {/* user info */}
-                <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
+                {/* <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo> */}
                 {/* <AppLauncher></AppLauncher> */}
                 {/* <LinkLauncher></LinkLauncher> */}
                 <Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications>
@@ -223,13 +373,13 @@ const Home = () => {
            
             <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
-            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote}></OrderNote>
+            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} addNote={addNote}></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
             <CreateCustomer  isShow={isShowCreateCustomer}  toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
-            <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
-            <MsgPopup_EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></MsgPopup_EndSession>
+            {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
+            <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
             {/* iframe subview */}
             {/* create customer */}

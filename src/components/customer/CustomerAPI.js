@@ -34,7 +34,7 @@ export function getPageAPI(parameter) {
                     }
                 })
                 result.content['Records'] = customer_list;
-                console.log("customer_list",customer_list)
+                //console.log("customer_list",customer_list)
                 sessionStorage.setItem("CUSTOMER_ID", customer_list[0].WPId)
             }
            

@@ -5,9 +5,10 @@ import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.
 import Store_Icon_White from '../../images/svg/Store-Icon-White.svg'
 import { location } from './locationSlice';
 import { get_UDid, get_userName } from '../common/localSettings';
-
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Location = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -41,19 +42,19 @@ const Location = () => {
             navigate('/register')
         }
     }
-    if (status == STATUSES.LOADING) {
-        return <div> Loading... </div>
-    }
-    return <div className="choose-wrapper">
+    // if (status == STATUSES.LOADING) {
+    //     return <div> Loading... </div>
+    // }
+    return <React.Fragment>{status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}<div className="choose-wrapper">
         <div className="choose-header">
             <button id="backButton" onClick={() => window.location = "/site"}>
                 <img src={AngledBracket_Left_Blue} alt="" />
-                Back
+            {LocalizedLanguage.back}
             </button>
             <p>{get_userName()}</p>
         </div>
         <div className="choose-body-default">
-            <p>Choose Location</p>
+            <p>{LocalizedLanguage.chooseLocation}</p>
             <div className="divider"></div>
             <div className="button-container">
 
@@ -69,7 +70,7 @@ const Location = () => {
                                     <p className="style1">{item.name}</p>
                                 </div>
                                 <img src={AngledBracket_Right_Grey} alt="" />
-                                <div className="fake-button background-blue">Select</div>
+                                <div className="fake-button background-blue">{LocalizedLanguage.select}</div>
                             </button>
                         )
                     })}
@@ -105,6 +106,6 @@ const Location = () => {
                 </button> */}
             </div>
         </div>
-    </div>
+    </div></React.Fragment> 
 }
 export default Location

@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import { useNavigate } from 'react-router-dom';
-const MsgPopup_EndSession = (props) => {
+const EndSession = (props) => {
     const navigate = useNavigate();
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
@@ -40,4 +40,4 @@ const MsgPopup_EndSession = (props) => {
     </div></div>)
 }
 
-export default MsgPopup_EndSession 
+export default EndSession 

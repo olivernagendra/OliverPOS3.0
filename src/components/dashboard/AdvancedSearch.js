@@ -19,6 +19,7 @@ import { product } from "./product/productSlice";
 
 
 const AdvancedSearch = (props) => {
+   
     const dispatch = useDispatch();
     const [respGroup] = useSelector((state) => [state.group])
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
@@ -37,7 +38,7 @@ const AdvancedSearch = (props) => {
         var allData = [];
         getAll().then((rows) => {
             var allProdcuts = getTaxAllProduct(rows)
-            console.log("allProdcuts", allProdcuts)
+            //console.log("allProdcuts", allProdcuts)
             setAllProductList(allProdcuts)
             setParentProductList(allProdcuts)
             setTotalRecords(allProdcuts ? allProdcuts.length : 0);
@@ -66,7 +67,6 @@ const AdvancedSearch = (props) => {
         if (useCancelled == false) {
             getProductFromIDB()
             GetCustomerFromIDB()
-            console.log(product_List)
         }
         return () => {
             useCancelled = true;
@@ -139,6 +139,9 @@ const AdvancedSearch = (props) => {
                 })
                 parentProduct = parentProduct ? parentProduct : []
                 _filtered = [...new Set([..._filtered, ...parentProduct])];
+
+                if(_filtered && _filtered.length>10)
+                {_filtered = _filtered.slice(0, 10);}
             }
         }
         if (filterType === "customer" || filterType === "all") {
@@ -221,7 +224,7 @@ const AdvancedSearch = (props) => {
             props.toggleOutOfStock();
         }
         else {
-            dispatch(product({}));
+            dispatch(product());
             props.toggleAdvancedSearch();
         }
     }
@@ -230,15 +233,36 @@ const AdvancedSearch = (props) => {
         props.toggleAdvancedSearch();
         // toggleSubwindow();
     }
-
+    const addCustomerToSale=(cutomer_data)=> {
+        var data =cutomer_data;
+        localStorage.setItem('AdCusDetail', JSON.stringify(data))
+        var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
+        if (list != null) {
+            const CheckoutList = {
+                ListItem: list.ListItem,
+                customerDetail: data ? data : [],
+                totalPrice: list.totalPrice,
+                discountCalculated: list.discountCalculated,
+                tax: list.tax,
+                subTotal: list.subTotal,
+                TaxId: list.TaxId,
+                TaxRate: list.TaxRate,
+                oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+                order_date: list.order_date,
+                order_id: list.order_id,
+                status: list.status,
+                showTaxStaus: list.showTaxStaus,
+                _wc_points_redeemed: list._wc_points_redeemed,
+                _wc_amount_redeemed: list._wc_amount_redeemed,
+                _wc_points_logged_redemption: list._wc_points_logged_redemption
+            }
+            localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+        }
+    }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleAdvancedSearch();
         }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
     }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
@@ -257,28 +281,28 @@ const AdvancedSearch = (props) => {
                         <img src={down_angled_bracket} alt="" />
                     </div>
                     <label onClick={() => SetFilter('all')}>
-                        <input type="radio" id="allResults" name="search_modifier" value="allResults" checked={filterType === 'all' ? true : false} />
+                        <input type="radio" id="allResults" name="search_modifier" value="allResults" defaultChecked={filterType === 'all' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>All Results</p>
                     </label>
                     <label onClick={() => SetFilter('product')}>
-                        <input type="radio" id="products" name="search_modifier" value="products" checked={filterType === 'product' ? true : false} />
+                        <input type="radio" id="products" name="search_modifier" value="products" defaultChecked={filterType === 'product' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Products</p>
                     </label>
                     <label onClick={() => SetFilter('customer')}>
-                        <input type="radio" id="customers" name="search_modifier" value="customers" checked={filterType === 'customer' ? true : false} />
+                        <input type="radio" id="customers" name="search_modifier" value="customers" defaultChecked={filterType === 'customer' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
                         <p>Customers</p>
                     </label>
                     <label onClick={() => SetFilter('group')}>
-                        <input type="radio" id="groups" name="search_modifier" value="groups" checked={filterType === 'group' ? true : false} />
+                        <input type="radio" id="groups" name="search_modifier" value="groups" defaultChecked={filterType === 'group' ? true : false} />
                         <div className="custom-radio" >
                             <img src={BlueDot} alt="" />
                         </div>
@@ -309,7 +333,7 @@ const AdvancedSearch = (props) => {
                         </p>
                         <div className="divider"></div>
                         <p className="style2">Customer not found? Try creating a new customer:</p>
-                        <button onClick={() => props.toggleCreateCustomer()}  >
+                        <button onClick={() => props.toggleCreateCustomer(serachString)}  >
                             <img src={CircledPlus_Icon_Blue} alt="" />
                             Create New Customer
                         </button>
@@ -339,7 +363,7 @@ const AdvancedSearch = (props) => {
 
                     {
                         product_List && product_List.map((item, index) => {
-                            return <div className="search-result product">
+                            return <div className="search-result product" key={item.WPID}>
                                 <div className="col">
                                     {/* <p className="style1">Product</p>
                             <p className="style2">Funky Fresh White Sneakers long name to get cut off</p>
@@ -367,7 +391,7 @@ const AdvancedSearch = (props) => {
                     }
                     {
                         filteredCustomer && filteredCustomer.map((item, index) => {
-                            return <div className="search-result customer">
+                            return <div className="search-result customer" key={item.Email}>
                                 <div className="col">
                                     <p className="style1">Customer</p>
                                     <p className="style2">{item.FirstName + " " + item.LastName}</p>
@@ -383,7 +407,7 @@ const AdvancedSearch = (props) => {
                                         <img src={Transactions_Icon_White} alt="" />
                                         Transactions
                                     </button>
-                                    <button className="search-add-to-sale">
+                                    <button className="search-add-to-sale" onClick={()=>addCustomerToSale(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>

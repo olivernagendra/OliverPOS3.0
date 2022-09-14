@@ -1,9 +1,9 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import AngledBracket_Left_BaseBlue from '../../images/svg/AngledBracket-Left-BaseBlue.svg';
-import NoLink_Image from '../../images/svg/NoLink-Image.svg';
-import OliverKnowledge_Icon from '../../images/Temp/OliverKnowledge-Icon.png';
-import FB_Icon from '../../images/Temp/FB-Icon.png';
-import Etsy_Icon from '../../images/Temp/Etsy-Icon.png';
+import AngledBracket_Left_BaseBlue from '../../../images/svg/AngledBracket-Left-BaseBlue.svg';
+import NoLink_Image from '../../../images/svg/NoLink-Image.svg';
+import OliverKnowledge_Icon from '../../../images/Temp/OliverKnowledge-Icon.png';
+import FB_Icon from '../../../images/Temp/FB-Icon.png';
+import Etsy_Icon from '../../../images/Temp/Etsy-Icon.png';
 const LinkLauncher = (props) => {
     return (
         <div id="linkLauncherWrapper" className={props.isShow===true?"link-launcher-wrapper":"link-launcher-wrapper hidden"} onClick={()=>props.toggleLinkLauncher()}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, {useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import avatar from '../../images/svg/avatar.svg';
 import Oliver_Type from '../../images/svg/Oliver-Type.svg';
@@ -12,12 +12,27 @@ import Notifications_Icon from '../../images/svg/Notifications-Icon.svg';
 import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
 import { removeCheckOutList } from '../dashboard/product/productLogic';
 import { product } from "../dashboard/product/productSlice";
+import UserInfo from "../common/commonComponents/UserInfo";
+import SwitchUser from "../common/commonComponents/SwitchUser";
+import EndSession from "../common/commonComponents/EndSession";
 const HeadereBar = (props) => {
     const dispatch = useDispatch();
+    const [isShowUserProfile, setisShowUserProfile] = useState(false);
+    const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
+    const [isShowEndSession, setisShowEndSession] = useState(false);
+    const toggleUserProfile = () => {
+        setisShowUserProfile(!isShowUserProfile)
+    }
+    const toggleShowEndSession = () => {
+        setisShowEndSession(!isShowEndSession)
+    }
+    const toggleSwitchUser = () => {
+        setisShowSwitchUser(!isShowSwitchUser)
+    }
     const clearCart=()=>
     {
         removeCheckOutList();
-        dispatch(product({}));
+        dispatch(product());
     }
     return (<React.Fragment>
         <div className="header">
@@ -30,7 +45,7 @@ const HeadereBar = (props) => {
                     <img src={Search_Icon_Blue} alt="" />
                     Search Console
                 </button>
-                <button id="userInfoButton" onClick={()=>props.toggleUserProfile()}>
+                <button id="userInfoButton" onClick={()=>toggleUserProfile()}>
                     <img src={avatar} alt="" />
                 </button>
                 <button id="mobileOptionsButton">
@@ -69,7 +84,11 @@ const HeadereBar = (props) => {
                     <p>Clear Cart</p>
                 </button>
             </div>
-        </div></React.Fragment>)
+        </div>
+        <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
+            <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
+            <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
+        </React.Fragment>)
 }
 
 export default HeadereBar 

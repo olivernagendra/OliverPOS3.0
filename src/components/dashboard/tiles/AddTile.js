@@ -5,7 +5,10 @@ import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import { AddItemType } from "../../common/EventFunctions";
 import { addTile, tile } from '../tiles/tileSlice';
 import { get_regId, get_UDid, get_userId } from "../../common/localSettings";
+import STATUSES from "../../../constants/apiStatus";
 // import { initDropDown } from "../../common/commonFunctions/tileFn";
+import { LoadingModal } from "../../common/commonComponents/LoadingModal";
+
 function encodeHtml(txt) {
     //return $('<textarea />').html(txt).text();
 }
@@ -19,6 +22,7 @@ const AddTile = (props) => {
     // const [parentProductList, setParentProductList] = useState([])
     const [product_List, setProduct_List] = useState([])
     const [filterList, setfilterList] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
     const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
     const dispatch = useDispatch();
 
@@ -35,6 +39,14 @@ const AddTile = (props) => {
             setcategoryList(_categoryList)
         }
     }
+    // It is refreshing the tile list from server when a new tile is added
+    const [resAddTile] = useSelector((state) => [state.addTile])
+    useEffect(() => {
+        if (isLoading===true && resAddTile && resAddTile.status == STATUSES.IDLE && (resAddTile.is_success===true || resAddTile.is_success===false)) {
+            setIsLoading(false);
+            props.toggleAddTitle();
+        }
+    }, [resAddTile]);
 
     const recursivelyFindKeyValue = (key, keyValue, list, depth = 0) => {
         //console.log("Searching list: ", list);
@@ -92,6 +104,7 @@ const AddTile = (props) => {
                     fPList = AddItemType(fPList, "product");
                     // _filteredData.concat(fPList);
                     _filteredData = [...new Set([..._filteredData, ...fPList])];
+                    {_filteredData = _filteredData.slice(0, 10);}
                 }
                 setfilterList(_filteredData);
                 console.log("---search data----" + JSON.stringify(_filteredData))
@@ -111,6 +124,7 @@ const AddTile = (props) => {
         // }
     }
     const submitChanges = (id, type, slug) => {
+        
         var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0 }
         dispatch(addTile(param));
     }
@@ -134,7 +148,7 @@ const AddTile = (props) => {
             id = item.Id;
             slug = item.Code && item.Code;
         }
-
+       
         var isExist = false;
         var positionIndex = pos;
         if (type == "product") {
@@ -170,9 +184,10 @@ const AddTile = (props) => {
         }
 
         if (id && type && isExist == false) {
+            setfilterList([]);
             console.log("-----new favv--" + id, type, slug);
+            setIsLoading(true);
             submitChanges(id, type, slug)
-            //this.props.status(true, type, id, slug, positionIndex)
 
         } else {
             if (item.type) { //apply check to protect msg display if no item selected and click on save button
@@ -195,7 +210,6 @@ const AddTile = (props) => {
     useEffect(() => {
         if (useCancelled == false) {
             getProductFromIDB()
-            console.log(product_List)
         }
         return () => {
             useCancelled = true;
@@ -206,13 +220,11 @@ const AddTile = (props) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleAddTitle();
         }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
-        //
     }
-    return (<div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
+    return (
+    <React.Fragment>
+        
+    <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
         <div className={props.isShow === true ? "subwindow add-tile current" : "subwindow add-tile"}>
             <div className="subwindow-header">
                 <p>Add Tile</p>
@@ -286,7 +298,7 @@ const AddTile = (props) => {
                 <button>Add Tile</button>
                 <div className="auto-margin-bottom"></div>
             </div>
-        </div></div>)
+        </div></div>{isLoading===true?<LoadingModal></LoadingModal>:null}</React.Fragment>)
 }
 
 export default AddTile 

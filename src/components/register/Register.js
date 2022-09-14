@@ -5,7 +5,7 @@ import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.
 import Register_Icon_White from '../../images/svg/Register-Icon-White.svg'
 import Kiosk_Icon_White from '../../images/svg/Kiosk-Icon-White.svg'
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg'
-
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 
 import STATUSES from "../../constants/apiStatus";
 import { register } from "./registerSlice";
@@ -13,6 +13,7 @@ import { firebaseRegister } from "./firebaseRegisterSlice";
 import { useNavigate } from 'react-router-dom';
 import { get_locName, get_UDid, get_userName } from "../common/localSettings";
 import { toggleSubwindow } from "../common/EventFunctions";
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
     const dispatch = useDispatch();
@@ -86,24 +87,25 @@ const Register = () => {
             navigate('/pin');
     }
 
-    if (respRegister.status == STATUSES.LOADING) {
-        return <div> Loading... </div>
-    }
+    // if (respRegister.status == STATUSES.LOADING) {
+    //     return <div> Loading... </div>
+    // }
     return (
         <React.Fragment>
+            {respRegister.status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}
             <div className="choose-wrapper">
                 <div className="choose-header">
                     <button id="backButton" onClick={() => window.location = "/location"} >
                         <img src={AngledBracket_Left_Blue} alt="" />
-                        Back
+                        {LocalizedLanguage.back}  
                     </button>
                     <p>{get_userName() + " - " + get_locName()}</p>
                 </div>
                 <div className="choose-body-default">
-                    <p>Choose Register/Device</p>
+                    <p>{LocalizedLanguage.registerdevice}</p>
                     <div className="divider"></div>
                     <div className="button-container">
-                        <p>Registers</p>
+                        <p>{LocalizedLanguage.register}</p>
                         <div className="divider"></div>
                         <div className="button-group col">
                             {
@@ -124,14 +126,14 @@ const Register = () => {
                                         </div>
                                         <div className="col">
                                             <p className="style1">{item.name}</p>
-                                            <p className="style2">{inr == true ? 'Available' : 'Assigned'}</p>
+                                            <p className="style2">{inr == true ? <>{LocalizedLanguage.available}</> : <> {<>{LocalizedLanguage.assigned}</>} </> }</p>
                                         </div>
                                         {inr === true ?
                                             <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
-                                                <div className="fake-button background-blue">Select</div></React.Fragment>
+                                                <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
                                             : <React.Fragment>
                                                 <img src={AngledBracket_Right_Grey} alt="" />
-                                                <div className="fake-button background-blue">Take Over</div></React.Fragment>}
+                                                <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
                                     </button>
 
                                 })}
@@ -147,10 +149,10 @@ const Register = () => {
                                     </div>
                                     <div className="col">
                                         <p className="style1">{item.name}</p>
-                                        <p className="style2">Available</p>
+                                        <p className="style2">{LocalizedLanguage.available}</p>
                                     </div>
                                     <img src={AngledBracket_Right_Grey} alt="" />
-                                    <div className="fake-button background-violet">Select</div>
+                                    <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
                                 </button>
                             })}
                         </div>
