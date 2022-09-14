@@ -248,8 +248,9 @@ const PinPad = React.memo(props => {
 
 
     if (status === STATUSES.ERROR) {
+        inputElement.current.focus();
         focusInput()
-        // console.log(status)
+         console.log(status)
         // setTotalSize(0)
         // setTxtValue("")
         // addToScreen('c')
@@ -261,20 +262,13 @@ const PinPad = React.memo(props => {
         <p>{LocalizedLanguage.enteryouruserid}</p>
 
         <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue" }} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
-
-
         <div className="pinpad">
             {hasPin !== "true" && <ShowCreatePin />}
             <div className="pin-entries">
                 <TrashPin />
             </div>
-            {/* {dispalyInput == true &&
-                                                    <input id="whichkey" maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent' }} value={notxtValue} autoFocus={dispalyInput == true ? true : false} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
-                                                } */}
             <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" />
-
         </div>
-
     </React.Fragment>
 })
 
