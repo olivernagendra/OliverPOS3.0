@@ -17,8 +17,8 @@ import { get_UDid } from "../common/localSettings";
 const Pin = () => {
     const dispatch = useDispatch();
     const UID = get_UDid('UDID');
-    //     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [onClick, setOnClick] = useState(false)
     const register_Id = localStorage.getItem('register');
 
     
@@ -250,9 +250,14 @@ const fetchData = ()=>{
     //             //event.preventDefault();
     //         }
     //     }
-    return <div className="idle-register-wrapper">
+    const hundleTrue = ()=>{
+console.log("outer click")
+        setOnClick(true)
+    }
+
+    return <div className="idle-register-wrapper" onClick={hundleTrue}>
         <header>
-            <img src={imgOpenReg} alt="" />
+            <img src={imgOpenReg} alt="" /> 
             <div className="col">
                 <p className="style1">{get_locName()}</p>
                 <div className="divider"></div>
@@ -261,7 +266,7 @@ const fetchData = ()=>{
                 <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
             </div>
         </header>
-        <main>{<PinPad></PinPad>} <button id="closeRegister2">{LocalizedLanguage.closeRegister}</button></main>
+        <main>{<PinPad onClick={onClick}></PinPad>} <button id="closeRegister2">{LocalizedLanguage.closeRegister}</button></main>
     </div>
 }
 

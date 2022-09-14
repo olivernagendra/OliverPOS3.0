@@ -9,6 +9,7 @@ import STATUSES from "../../constants/apiStatus";
 import { useIndexedDB } from 'react-indexed-db';
 import Config from '../../Config'
 const CreateCustomer = (props) => {
+  //  console.log("props",props.serachString)
     const navigate = useNavigate();
     const dispatch = useDispatch();
     var UID = get_UDid('UDID');
@@ -86,6 +87,9 @@ const CreateCustomer = (props) => {
     
 
     const handleChange = (name, value) => {
+        // console.log("value",value)
+        // console.log("name",name)
+        console.log("props.serachString",props.serachString)
         setValues({
             ...values,
             [name]: value
@@ -95,7 +99,7 @@ const CreateCustomer = (props) => {
 
 
     const validate = (values) => {
-       // console.log("values validate", values.email)
+        console.log("values validate", values)
         let temp = { ...errors }
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
         const alphabets = /^[a-zA-Z ]+$/
@@ -181,6 +185,7 @@ const CreateCustomer = (props) => {
 
    const clearInputFeild = ()=>{
     setTimeout(() => {
+
         setValues({
             WPId:"",fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", shippingCountry: "", email: "",phone:""
         })

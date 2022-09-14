@@ -19,6 +19,7 @@ import { product } from "./product/productSlice";
 
 
 const AdvancedSearch = (props) => {
+   
     const dispatch = useDispatch();
     const [respGroup] = useSelector((state) => [state.group])
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
@@ -332,7 +333,7 @@ const AdvancedSearch = (props) => {
                         </p>
                         <div className="divider"></div>
                         <p className="style2">Customer not found? Try creating a new customer:</p>
-                        <button onClick={() => props.toggleCreateCustomer()}  >
+                        <button onClick={() => props.toggleCreateCustomer(serachString)}  >
                             <img src={CircledPlus_Icon_Blue} alt="" />
                             Create New Customer
                         </button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { chunkArray, get_locName, get_regName } from './common/localSettings'
 // import imgOpenReg from '../images/svg/OpenSign.svg'
@@ -14,7 +14,8 @@ import LocalizedLanguage from "../settings/LocalizedLanguage";
 
 
 const PinPad = React.memo(props => {
-
+    // console.log("props",props)
+    const inputElement = useRef();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [totalSize, setTotalSize] = useState(0)
@@ -27,7 +28,7 @@ const PinPad = React.memo(props => {
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-
+    
 
     useEffect(() => {
         // console.log("useEffect")
@@ -38,14 +39,14 @@ const PinPad = React.memo(props => {
             pinSuccessful()
         }
 
-
+        focusInput()
     }, [data])
 
 
 
     const pinSuccessful = () => {
         if (status === STATUSES.error) {
-            console.log(error)
+          //  console.log(error)
         }
 
         if (is_success === true) {
@@ -139,9 +140,9 @@ const PinPad = React.memo(props => {
         fillPass();
     }
     const addToScreen = (inputNo) => {
-        if (inputNo === " ") { return }
-        //var lenght_is = e.length - 1
-        //var newString = inputNo;//e[lenght_is];
+        // if (inputNo === " ") { return }
+        var lenght_is = inputNo.length - 1
+        var newString = inputNo[lenght_is];//e[lenght_is];
         if (inputNo === "c") {
             if (totalSize > 0) {
                 resetScreen();
@@ -152,7 +153,7 @@ const PinPad = React.memo(props => {
             return;
         }
         if (totalSize < 4) {
-            var value = txtValue + inputNo
+            var value = txtValue + newString
             var size = totalSize + 1
             setTxtValue(value);
             setTotalSize(size);
@@ -171,8 +172,10 @@ const PinPad = React.memo(props => {
             //$('#whichkey').focus();
         }
     }
-    const fillPass = (enteredPin) => {
 
+
+
+    const fillPass = (enteredPin) => {
         if (enteredPin && enteredPin.length >= 4) {
             //const { dispatch } = this.props;
             if (isloading === false) {
@@ -225,23 +228,41 @@ const PinPad = React.memo(props => {
         }
         var key = e.which || e.keyCode;
         if (key === 8) {
-            this.addToScreen('c')
+            addToScreen('c')
             e.preventDefault();
         }
         if (key === 13) {
-            //event.preventDefault();
+            e.preventDefault();
         }
     }
+
+    const focusInput = () => {
+        inputElement.current.focus();
+    };
+
+
+    if (props.onClick == true) {
+       // console.log("outer click")
+        focusInput()
+    }
+
+
     if (status === STATUSES.ERROR) {
-        // console.log(error)
+        focusInput()
+        // console.log(status)
         // setTotalSize(0)
         // setTxtValue("")
         // addToScreen('c')
         isloading == true && setIsloading(false)
+        
     }
     return <React.Fragment>
         {(status === STATUSES.ERROR && <div>{error}</div>)}
         <p>{LocalizedLanguage.enteryouruserid}</p>
+
+        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue" }} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
+
+
         <div className="pinpad">
             {hasPin !== "true" && <ShowCreatePin />}
             <div className="pin-entries">
@@ -250,7 +271,7 @@ const PinPad = React.memo(props => {
             {/* {dispalyInput == true &&
                                                     <input id="whichkey" maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent' }} value={notxtValue} autoFocus={dispalyInput == true ? true : false} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
                                                 } */}
-            <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" onKeyDown={(e) => handleBack(e)} />
+            <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" />
 
         </div>
 
