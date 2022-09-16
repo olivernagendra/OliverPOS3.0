@@ -470,14 +470,14 @@ function Login() {
                 </button>
 
 
-                {/* <button type="submit" id="appleid-signin" title="Log in using your Apple account"
-            data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
-            className="apple_login_btn">
-            <div className="img-container" >
-                <img src={imgApple} alt="" />
-            </div>
-            Sign in with Apple
-        </button> */}
+                <button type="submit" id="appleid-signin" title="Log in using your Apple account"
+                    data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
+                    className="apple_login_btn">
+                    <div className="img-container" >
+                        <img src={imgApple} alt="" />
+                    </div>
+                    Sign in with Apple
+                </button>
 
                 <div className="row">
                     <p>Don't have an account?</p>
