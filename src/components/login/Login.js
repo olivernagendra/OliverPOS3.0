@@ -37,13 +37,13 @@ function Login() {
     const dispatch = useDispatch();
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
-
-    if (status == STATUSES.ERROR) {
-        console.log(error)
-    }
     if (status == STATUSES.IDLE && is_success) {
         navigate('/site')
     }
+    if (status == STATUSES.ERROR) {
+        console.log(error)
+    }
+
 
 
     const handleKey = (e) => {
@@ -433,51 +433,51 @@ function Login() {
     // }
 
     return (
-    <React.Fragment>{status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}
-    <div className="login-wrapper">
-        <div className="auto-margin-top"></div>
-        {/* counter: {counter} */}
-        <img src={imglogo} />
-        <p >Sign in to your Oliver POS Account</p>
-        {/* {error !== "" && <div className="danger">{error} </div>} */}
-        {vlidationError != "" &&
-            <div className="danger">
+        <React.Fragment>{status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+            <div className="login-wrapper">
+                <div className="auto-margin-top"></div>
+                {/* counter: {counter} */}
+                <img src={imglogo} />
+                <p >Sign in to your Oliver POS Account</p>
+                {/* {error !== "" && <div className="danger">{error} </div>} */}
+                {vlidationError != "" &&
+                    <div className="danger">
 
-                {setWentWrongErr !== '' ? setWentWrongErr : setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : ""}
-            </div>}
-        <form className="login-form">
-            <label htmlFor="email">Email</label>
-            <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
-            <div className="row">
-                <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
-                <label className="custom-checkbox-wrapper">
-                    <input type="checkbox" />
-                    <div className="custom-checkbox">
-                        <img src={Checkmark} alt="" />
+                        {setWentWrongErr !== '' ? setWentWrongErr : setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : ""}
+                    </div>}
+                <form className="login-form">
+                    <label htmlFor="email">Email</label>
+                    <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
+                    <label htmlFor="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
+                    <div className="row">
+                        <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
+                        <label className="custom-checkbox-wrapper">
+                            <input type="checkbox" />
+                            <div className="custom-checkbox">
+                                <img src={Checkmark} alt="" />
+                            </div>
+                            Remember Me?
+                        </label>
                     </div>
-                    Remember Me?
-                </label>
-            </div>
-            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
-        </form>
-        <div className="or-row">
-            <div className="divider"></div>
-            <p>OR</p>
-            <div className="divider"></div>
-        </div>
-        <button id="googleButton" ref={googleLoginBtn} type="submit"   >
-            <div className="img-container">
-                <img src={imgGoogle} alt="" />
+                    <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
+                </form>
+                <div className="or-row">
+                    <div className="divider"></div>
+                    <p>OR</p>
+                    <div className="divider"></div>
+                </div>
+                <button id="googleButton" ref={googleLoginBtn} type="submit"   >
+                    <div className="img-container">
+                        <img src={imgGoogle} alt="" />
 
-            </div>
-            Sign in with Google
+                    </div>
+                    Sign in with Google
 
-        </button>
+                </button>
 
 
-        {/* <GoogleLogin
+                {/* <GoogleLogin
             clientId={Config.key.FACEBOOK_CLIENT_ID}
             buttonText=" Sign in with Google"
             onSuccess={responseGoogle}
@@ -486,26 +486,26 @@ function Login() {
         /> */}
 
 
-        <button id="facebookButton">
-            <div className="img-container">
-                <img src={imgFaceBook} alt="" />
-            </div>
-            <FacebookLogin cssClass="btn user_login_fb_on"
-                appId={Config.key.FACEBOOK_CLIENT_ID}
-                autoLoad={false}
-                fields="first_name, last_name,name,email"
-                scope="public_profile, email"
-                onClick={componentClicked}
-                callback={responseFacebook}
-                textButton="Sign in with Facebook"
+                <button id="facebookButton">
+                    <div className="img-container">
+                        <img src={imgFaceBook} alt="" />
+                    </div>
+                    <FacebookLogin cssClass="btn user_login_fb_on"
+                        appId={Config.key.FACEBOOK_CLIENT_ID}
+                        autoLoad={false}
+                        fields="first_name, last_name,name,email"
+                        scope="public_profile, email"
+                        onClick={componentClicked}
+                        callback={responseFacebook}
+                        textButton="Sign in with Facebook"
 
-            />
-
-
-        </button>
+                    />
 
 
-        {/* <button type="submit" id="appleid-signin" title="Log in using your Apple account"
+                </button>
+
+
+                {/* <button type="submit" id="appleid-signin" title="Log in using your Apple account"
             data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
             className="apple_login_btn">
             <div className="img-container" >
@@ -514,13 +514,13 @@ function Login() {
             Sign in with Apple
         </button> */}
 
-        <div className="row">
-            <p>Don't have an account?</p>
-            <a href="#" onClick={() => handleSignInClick()} >Sign up Now!</a>
-        </div>
-        <div className="auto-margin-bottom"></div>
+                <div className="row">
+                    <p>Don't have an account?</p>
+                    <a href="#" onClick={() => handleSignInClick()} >Sign up Now!</a>
+                </div>
+                <div className="auto-margin-bottom"></div>
 
-    </div></React.Fragment>
+            </div></React.Fragment>
     )
 };
 
