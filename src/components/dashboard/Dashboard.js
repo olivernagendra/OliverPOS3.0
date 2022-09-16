@@ -26,12 +26,13 @@ import { group } from "../common/commonAPIs/groupSlice";
 import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
 import { product } from "./product/productSlice";
-import {userList} from "../common/commonAPIs/userSlice";
-import { getRates,isMultipleTaxSupport } from "../common/commonAPIs/taxSlice";
+import { userList } from "../common/commonAPIs/userSlice";
+import { getRates, isMultipleTaxSupport, getTaxRateList } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
 import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
+import TaxList from "./TaxList";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -51,19 +52,25 @@ const Home = () => {
     const [isShowAdvancedSearch, setisShowAdvancedSearch] = useState(false);
     const [isShowAddTitle, setisShowAddTitle] = useState(false);
     const [isShowOptionPage, setisShowOptionPage] = useState(false);
-    const [listItem,setListItem]=useState([]);
+    const [listItem, setListItem] = useState([]);
     const [isOutOfStock, setisOutOfStock] = useState(false);
     const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
-    const [variationProduct,setVariationProduct]=useState(null);
+    const [variationProduct, setVariationProduct] = useState(null);
+    const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
+    const [isSelectDiscountBtn, setisSelectDiscountBtn] = useState(false);
+    const [isShowTaxList, setisShowTaxList] = useState(false);
+
+
+
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
     }, []);
 
     useEffect(() => {
-       var multiple_tax_support= localStorage.getItem("multiple_tax_support")?JSON.parse(localStorage.getItem("multiple_tax_support")):false
-       var get_tax_rates= localStorage.getItem("TAXT_RATE_LIST")?JSON.parse(localStorage.getItem("TAXT_RATE_LIST")):[]; 
-       getTax(multiple_tax_support,get_tax_rates);
+        var multiple_tax_support = localStorage.getItem("multiple_tax_support") ? JSON.parse(localStorage.getItem("multiple_tax_support")) : false
+        var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
+        getTax(multiple_tax_support, get_tax_rates);
     }, []);
 
     const getFavourites = () => {
@@ -72,8 +79,7 @@ const Home = () => {
             dispatch(tile({ "id": regId }));
         }
     }
-    const updateVariationProduct=(item)=>
-    {
+    const updateVariationProduct = (item) => {
         //setSelProduct(item);
         setVariationProduct(item);
     }
@@ -85,6 +91,8 @@ const Home = () => {
         dispatch(userList());
         dispatch(getRates());
         dispatch(isMultipleTaxSupport());
+        dispatch(getTaxRateList());
+
         getFavourites();
         var locationId = localStorage.getItem('Location')
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -121,7 +129,7 @@ const Home = () => {
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
     const editPopUp = async (item) => {
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID?item.WPID:item.Product_Id);
+        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
 
         // setSelProduct(_item)
         var _product = getTaxAllProduct([_item])
@@ -130,7 +138,7 @@ const Home = () => {
     }
     const openPopUp = async (item) => {
         updateVariationProduct(null);
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID?item.WPID:item.Product_Id);
+        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
         var _product = getTaxAllProduct([_item])
         setSelProduct(_product[0]);
         setisShowPopups(true)
@@ -152,6 +160,11 @@ const Home = () => {
     }
     const toggleCartDiscount = () => {
         setisShowCartDiscount(!isShowCartDiscount)
+    }
+    const toggleEditCartDiscount = () => {
+        setisSelectDiscountBtn(true);
+        setisShowCartDiscount(!isShowCartDiscount)
+
     }
     const toggleNotifications = () => {
         setisShowNotifications(!isShowNotifications)
@@ -179,14 +192,29 @@ const Home = () => {
     const toggleOptionPage = () => {
         setisShowOptionPage(!isShowOptionPage)
     }
-     const toggleOutOfStock = () => {
+    const toggleOutOfStock = () => {
         setisOutOfStock(!isOutOfStock)
     }
     const toggleCreateCustomer = () => {
         setisShowCreateCustomer(!isShowCreateCustomer)
     }
-    const getTax=(multiple_tax_support,get_tax_rates)=>
-    {
+    const toggleShowMobLeftNav = () => {
+        setisShowMobLeftNav(!isShowMobLeftNav)
+    }
+    const toggleSelectDiscountBtn = () => {
+        setisSelectDiscountBtn(!isSelectDiscountBtn)
+    }
+    const toggleTaxList = () => {
+
+        // var subscriptionClientDetail = localStorage.getItem('clientDetail') ? JSON.parse(localStorage.getItem('clientDetail')) : '';
+        // if (subscriptionClientDetail && subscriptionClientDetail.subscription_detail && subscriptionClientDetail.subscription_detail.subscription_type !== "oliverpos-free") {
+            setisShowTaxList(!isShowTaxList)
+        // }
+        // else {
+        //     alert('This "Feature" is not included in your plan! ;In order to upgrade please go to the Oliver HUB')
+        // }
+    }
+    const getTax = (multiple_tax_support, get_tax_rates) => {
         if (multiple_tax_support && multiple_tax_support == true) {
             var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
             if ((typeof taxList !== 'undefined') && taxList !== null && taxList && taxList.length > 0) {
@@ -241,21 +269,21 @@ const Home = () => {
                     }
                     //Update by Nagendra: Remove the tax which has same priority and lower rate, only for default tax..................................
                     taxData && taxData.length > 0 && taxData.map(rate => {
-                        var duplicateArr = taxData.filter((ele, index) =>  ele.TaxClass == rate.TaxClass && ele.Priority == rate.Priority && ele.TaxClass == "");
-                        if (duplicateArr && duplicateArr.length > 0) {                            
+                        var duplicateArr = taxData.filter((ele, index) => ele.TaxClass == rate.TaxClass && ele.Priority == rate.Priority && ele.TaxClass == "");
+                        if (duplicateArr && duplicateArr.length > 0) {
                             duplicateArr.map(dup => {
                                 if (rate.TaxId < dup.TaxId) {
                                     taxData.splice(taxData.indexOf(dup), 1);
                                 }
                             });
-                        
-                             if (taxData && taxData.length > 0) {                               
-                                var taxfilterData = taxData.filter((ele, index) =>  ele.TaxClass == "");
+
+                            if (taxData && taxData.length > 0) {
+                                var taxfilterData = taxData.filter((ele, index) => ele.TaxClass == "");
                                 if (taxfilterData) {
                                     taxData = taxfilterData;
                                 }
                             }
-                     
+
                             //..............................................................................
                         }
                     })
@@ -283,7 +311,7 @@ const Home = () => {
                     localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData));
                 }
             }
-        } else if ( !multiple_tax_support || multiple_tax_support == false) {
+        } else if (!multiple_tax_support || multiple_tax_support == false) {
             var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
             if (taxList && taxList.length == 0) {
                 localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
@@ -304,19 +332,17 @@ const Home = () => {
                     var taxRateListIs = []
                     taxRateListIs.push(taxData[0]);
                     localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData))
-                    if(typeof multiple_tax_support!="undefined")
-                    {
+                    if (typeof multiple_tax_support != "undefined") {
                         localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxRateListIs))
                     }
                 }
             }
         }
     }
-const addNote=(e)=>
-{
-    console.log("----order note-----"+e);
-    toggleOrderNote()
-}
+    const addNote = (e) => {
+        console.log("----order note-----" + e);
+        toggleOrderNote()
+    }
 
 
     // It is refreshing the tile list from server when a new tile is added
@@ -328,34 +354,39 @@ const addNote=(e)=>
         }
     }, [resAddTile]);
 
-    const [resProduct] = useSelector((state) => [state.product])
+    const [resProduct,respupdateTaxRateList] = useSelector((state) => [state.product,state.updateTaxRateList])
+    useEffect(() => {
+        if (respupdateTaxRateList && respupdateTaxRateList.status == STATUSES.IDLE && respupdateTaxRateList.is_success) {
+            getTax();
+        }
+    }, [respupdateTaxRateList]);
     useEffect(() => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
             setisShowPopups(false);
-           // console.log("---resProduct--" + JSON.stringify(resProduct.data));
+            // console.log("---resProduct--" + JSON.stringify(resProduct.data));
         }
     }, [resProduct]);
 
 
     return (
         <React.Fragment>
-            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
-            <div className="homepage-wrapper" style={{ display: isShowPopups == false ? "grid" : "none" }}>
+            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product>
+            <div className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
                 {/* left nav bar */}
                 {/* top header */}
                 {/* prodct list/item list */}
                 {/* cart list */}
-                <LeftNavBar toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
-                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch}toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher}
+                    toggleAdvancedSearch={toggleAdvancedSearch} toggleShowMobLeftNav={toggleShowMobLeftNav}
+                    toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle}></TileList>
-                <CartList listItem={listItem} editPopUp={editPopUp}></CartList>
-                <div className="mobile-homepage-footer">
-                    <button id="openMobileCart">View Cart (2) - $24.99</button>
-                </div>
+                <CartList listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
+
 
                 {/* top naviagtion bar */}
                 {/* app launcher */}
@@ -370,14 +401,14 @@ const addNote=(e)=>
             </div>
             {/* <div className="subwindow-wrapper"> */}
 
-           
-            <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
+            <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList>
+            <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} addNote={addNote}></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch  toggleCreateCustomer={toggleCreateCustomer}  openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
-            <CreateCustomer  isShow={isShowCreateCustomer}  toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
+            <AdvancedSearch toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
@@ -392,7 +423,7 @@ const addNote=(e)=>
             {/* swtich  user */}
             {/* end session */}
 
-            <div className="subwindow tax-rate-small">
+            {/* <div className="subwindow tax-rate-small">
                 <div className="subwindow-header">
                     <p>Select Tax Rate</p>
                     <button>Edit</button>
@@ -415,7 +446,7 @@ const addNote=(e)=>
                         </div>
                     </label>
                 </div>
-            </div>
+            </div> */}
             {/* </div> */}
         </React.Fragment>)
     // }

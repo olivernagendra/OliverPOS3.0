@@ -34,6 +34,11 @@ const AdvancedSearch = (props) => {
     const [allCustomerList, setAllCustomerList] = useState([])
     const [filterType, setFilterType] = useState('all')
     const [serachString, setSerachString] = useState('')
+    const [isShowDDNSearch, setisShowDDNSearch] = useState(false)
+
+    const toggleDDNSearch = () => {
+        setisShowDDNSearch(!isShowDDNSearch)
+    }
     const getProductFromIDB = () => {
         var allData = [];
         getAll().then((rows) => {
@@ -54,6 +59,7 @@ const AdvancedSearch = (props) => {
         productDataSearch(item1)
     }
     const SetFilter = (ftype) => {
+        toggleDDNSearch();
         setFilterType(ftype);
         productDataSearch(serachString)
     }
@@ -102,8 +108,17 @@ const AdvancedSearch = (props) => {
        
         setfiltered([]);
         if (item1 == '') {
-            if (filterType === "product" || filterType === "all") {
-                setProduct_List(allProductList);
+            if (filterType === "product" || filterType === "customer" || filterType === "all") {
+                if(filterType==="product")
+                {
+                    setProduct_List(allProductList);
+                    setfilteredCustomer([]);
+                }
+                else if(filterType==="customer")
+                {
+                    setfilteredCustomer(allCustomerList);
+                    setProduct_List([]);
+                }
             }
             return;
         }
@@ -113,6 +128,7 @@ const AdvancedSearch = (props) => {
             if(filterType==="product")
             {
                 setfilteredCustomer([]);
+                setfiltered([]);
             }
             
             // Search in Products
@@ -147,7 +163,9 @@ const AdvancedSearch = (props) => {
         if (filterType === "customer" || filterType === "all") {
             if(filterType==="customer")
             {
+                _filtered=[];
                 setProduct_List([]);
+                setfiltered([]);
             }
             // Search in Customer
             var _filteredCustomer = allCustomerList.filter((item) => (
@@ -166,39 +184,43 @@ const AdvancedSearch = (props) => {
         //         //console.log("---_filteredGroup---" + JSON.stringify(_filteredGroup));
         //         setfilteredGroup(_filteredGroup)
         // }
-
-        // Search by Attributes
-        parentProductList && parentProductList.map((item) => {
-            item.ProductAttributes && item.ProductAttributes.map(attri => {
-                if (String(attri.Slug).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1 ||
-                    String(attri.Name).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-                    _filtered.push(item)
-                }
-            })
-        })
-        // Search by Categories
-        parentProductList && parentProductList.map((item) => {
-            item.Categories && item.Categories !== undefined && item.Categories.split(",").map(category => {
-                if (String(category).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-                    if (_filtered.indexOf(item) === -1) {
-                        _filtered.push(item)
-                    }
-                }
-            })
-        })
-        // Search by Sub Attributes
-        parentProductList && parentProductList.map((item) => {
-            item.ProductAttributes && item.ProductAttributes.map(proAtt => {
-                var dataSplitArycomma = proAtt.Option.split(',');
-                dataSplitArycomma && dataSplitArycomma !== undefined && dataSplitArycomma.map(opt => {
-                    if (String(opt).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-                        if (_filtered.indexOf(item) === -1) {
-                            _filtered.push(item)
-                        }
-                    }
-                })
-            })
-        })
+    //     if (filterType === "product" || filterType === "all") {
+    //     // Search by Attributes
+    //     parentProductList && parentProductList.map((item) => {
+    //         item.ProductAttributes && item.ProductAttributes.map(attri => {
+    //             if (String(attri.Slug).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1 ||
+    //                 String(attri.Name).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+    //                 _filtered.push(item)
+    //             }
+    //         })
+    //     })
+    //     // Search by Categories
+    //     parentProductList && parentProductList.map((item) => {
+    //         item.Categories && item.Categories !== undefined && item.Categories.split(",").map(category => {
+    //             if (String(category).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+    //                 if (_filtered.indexOf(item) === -1) {
+    //                     _filtered.push(item)
+    //                 }
+    //             }
+    //         })
+    //     })
+    //     // Search by Sub Attributes
+    //     parentProductList && parentProductList.map((item) => {
+    //         item.ProductAttributes && item.ProductAttributes.map(proAtt => {
+    //             var dataSplitArycomma = proAtt.Option.split(',');
+    //             dataSplitArycomma && dataSplitArycomma !== undefined && dataSplitArycomma.map(opt => {
+    //                 if (String(opt).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+    //                     if (_filtered.indexOf(item) === -1) {
+    //                         _filtered.push(item)
+    //                     }
+    //                 }
+    //             })
+    //         })
+    //     })
+    //     _filtered = _filtered.filter(item => {
+    //         return (item.ParentId === 0)
+    //     })
+    // }
 
         //}
         // _filtered = [...new Map(_filtered.map(item =>
@@ -206,14 +228,16 @@ const AdvancedSearch = (props) => {
         // console.log("----filtered---" + JSON.stringify(_filtered.length));
         //if(_filtered && _filtered.length>0)
 
-        _filtered = _filtered.filter(item => {
-            return (item.ParentId === 0)
-        })
+       
         console.log("----filtered--->>" + JSON.stringify(_filtered.length));
+        if(_filtered && _filtered.length>0)
+       {
         _filtered = AddItemType(_filtered, "product");
+       }
+   
+      
         setProduct_List(_filtered);
         setfiltered(_filtered);
-
     }
     // console.log(allProductList)
     // console.log(totalRecords)
@@ -276,7 +300,7 @@ const AdvancedSearch = (props) => {
             <div className="left-col">
                 <p>Search by</p>
                 <div className="radio-group">
-                    <div id="mobileSearchModToggle" className="dropdown-input">
+                    <div id="mobileSearchModToggle" className={isShowDDNSearch===true? "dropdown-input open":"dropdown-input"} onClick={()=>toggleDDNSearch()}>
                         <p><b>Search for:</b> All Results</p>
                         <img src={down_angled_bracket} alt="" />
                     </div>

@@ -16,6 +16,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AppLauncher from "./AppLauncher";
 import LinkLauncher from "./LinkLauncher";
 import IframeWindow from "../../dashboard/IframeWindow";
+import { isMobile } from "react-device-detect";
 const LeftNavBar = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -23,6 +24,7 @@ const LeftNavBar = (props) => {
     const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
     const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
     const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+    const [isShowMobileView, setisShowMobileView] = useState(false);
     const toggleLeftMenu = () => {
         setisShowLeftMenu(!isShowLeftMenu)
     }
@@ -40,9 +42,16 @@ const LeftNavBar = (props) => {
     const toggleiFrameWindow = () => {
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
+    const toggleMobileView = () => {
+        setisShowMobileView(!isShowMobileView)
+    }
+
+
+
     return (
         <React.Fragment>
-            <div className={isShowLeftMenu == true ? "navbar open" : "navbar"} >
+
+            <div className={isShowLeftMenu == true || (props.isShowMobLeftNav && props.isShowMobLeftNav === true) ? "navbar open" : "navbar"} >
                 <div className="header-row">
                     <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
                     <img src={Oliver_Type} alt="" className="oliver-text" />
@@ -112,6 +121,7 @@ const LeftNavBar = (props) => {
                     </div>
                     <p>Minimize Sidebar</p>
                 </button>
+
             </div>
             <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
             <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>

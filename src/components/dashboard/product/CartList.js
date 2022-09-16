@@ -23,7 +23,11 @@ const CartList = (props) => {
     const [updateProductStatus, setUpdateProductStatus] = useState(false)
     const [checkseatStatus, setCheckseatStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-
+    const [totalItems, setTotalItems] = useState(0)
+    const [isShowMobileCartList, setisShowMobileCartList] = useState(false)
+    const toggleMobileCartList = () => {
+        setisShowMobileCartList(!isShowMobileCartList)
+    }
     useEffect(() => {
         calculateCart();
     }, [props.listItem]);
@@ -334,6 +338,22 @@ const CartList = (props) => {
                 }
             }
         })
+
+        //total count of the prodcuts in the cart
+        if (props.listItem && props.listItem.length > 0) {
+            var qty = 0;
+            props.listItem.map(item => {
+                if (item && item.Price && item.Price != "" && typeof item.product_id != "undefined") {
+                    qty += item.quantity;
+                }
+            })
+            if (qty !== 0)
+            {
+                setTotalItems(qty)
+            }
+                
+        }
+
         _seprateDiscountAmount = _subtotalPrice - _subtotalDiscount;
         _subtotal = _subtotalPrice - _productDiscountAmount;
         _totalDiscountedAmount = _subtotalDiscount;
@@ -341,8 +361,8 @@ const CartList = (props) => {
             _taxAmount = parseFloat(_exclTax) + parseFloat(_inclTax);
         }
         _total = parseFloat(_seprateDiscountAmount) + parseFloat(_exclTax);
-        setSubTotal(_subtotal);
-        setTotal(_total);
+        setSubTotal(RoundAmount(_subtotal));
+        setTotal(RoundAmount(_total));
         setDiscount(_totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0);
         setTaxes(RoundAmount(_taxAmount));
         //    this.setState({
@@ -404,10 +424,10 @@ const CartList = (props) => {
     return (
         <React.Fragment>
        {isLoading?<LoadingModal></LoadingModal>:null}
-        <div className="cart">
+        <div className={isShowMobileCartList==true? "cart open":"cart"}>
             <div className="mobile-header">
                 <p>Cart</p>
-                <button id="exitCart">
+                <button id="exitCart" onClick={()=>toggleMobileCartList()}>
                     <img src={X_Icon_DarkBlue} alt="" />
                 </button>
             </div>
@@ -444,8 +464,8 @@ const CartList = (props) => {
                             </button>
                         </div>
                         <div className="secondary-col">
-                            <p>Medium</p>
-                            <p>Navy</p>
+                            {/* <p>Medium</p>
+                            <p>Navy</p> */}
                         </div>
                     </div>
 
@@ -550,11 +570,11 @@ const CartList = (props) => {
                     {discount && discount>0 ?
                     <div className="row">
                         <p>Cart Discount - 25%</p>
-                        <button id="editCartDiscount">edit</button>
+                        <button id="editCartDiscount" onClick={()=>props.toggleEditCartDiscount()}>edit</button>
                         <p><b>-${discount}</b></p>
-                    </div>:<div className="row"><button id="editCartDiscount">Discount</button></div>}
+                    </div>:null}
                     <div className="row">
-                        <button id="taxesButton">Taxes</button>
+                        <button id="taxesButton" onClick={()=>props.toggleTaxList()}>Taxes</button>
                         <p>(%)</p>
                         <p><b>${taxes}</b></p>
                     </div>
@@ -563,7 +583,11 @@ const CartList = (props) => {
                     <button onClick={() => doCheckout()}>Checkout - ${total}</button>
                 </div>
             </div>
-        </div></React.Fragment>)
+        </div>
+        <div className="mobile-homepage-footer">
+				<button id="openMobileCart" onClick={()=>toggleMobileCartList()}>View Cart {totalItems!=0?("("+totalItems+")"):""} - ${total}</button>
+			</div>
+        </React.Fragment>)
 }
 
 export default CartList 

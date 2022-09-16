@@ -20,23 +20,33 @@ const HeadereBar = (props) => {
     const [isShowUserProfile, setisShowUserProfile] = useState(false);
     const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
     const [isShowEndSession, setisShowEndSession] = useState(false);
+    const [isMobileNav, setisMobileNav] = useState(false);
     const toggleUserProfile = () => {
         setisShowUserProfile(!isShowUserProfile)
     }
     const toggleShowEndSession = () => {
-        setisShowEndSession(!isShowEndSession)
+        setisShowEndSession(!isShowEndSession);
     }
     const toggleSwitchUser = () => {
         setisShowSwitchUser(!isShowSwitchUser)
     }
+<<<<<<< HEAD
     const clearCart = () => {
+=======
+    const toggleMobileNav = () => {
+        setisMobileNav(!isMobileNav)
+        props.toggleShowMobLeftNav();
+    }
+    const clearCart=()=>
+    {
+>>>>>>> devPraveen
         removeCheckOutList();
         dispatch(product());
     }
     return (<React.Fragment>
         <div className="header">
             <div className="row">
-                <button id="mobileNavToggle">
+                <button id="mobileNavToggle" onClick={()=>toggleMobileNav()} className={isMobileNav===true?"opened":""}>
                     <img src="" alt="" />
                 </button>
                 <img src={Oliver_Type} alt="" />
@@ -47,11 +57,19 @@ const HeadereBar = (props) => {
                 <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                     <img src={avatar} alt="" />
                 </button>
+<<<<<<< HEAD
                 <button id="mobileOptionsButton">
                     <img src={Ellipsis_Icon_DarkBlue} alt="" onClick={() => props.toggleOptionPage()} />
                 </button>
                 <button id="mobileAppsButton">
                     <img src={Oliver_Icon_BaseBlue} alt="" onClick={() => props.toggleAppLauncher()} />
+=======
+                <button id="mobileOptionsButton" onClick={()=>props.toggleOptionPage()} className={props.isShow==true?"filter":""}>
+                    <img src={Ellipsis_Icon_DarkBlue} alt=""/>
+                </button>
+                <button id="mobileAppsButton" onClick={()=>props.toggleAppLauncher()}>
+                    <img src={Oliver_Icon_BaseBlue} alt=""/>
+>>>>>>> devPraveen
                 </button>
             </div>
         </div>

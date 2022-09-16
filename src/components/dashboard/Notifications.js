@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, {useState, useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
 
 import NotificationsSounds from '../../images/svg/NotificationsSounds.svg';
@@ -8,19 +8,19 @@ import Changelog_Icon from '../../images/svg/Changelog-Icon.svg';
 import Info_Icon from '../../images/svg/Info-Icon.svg';
 import Error_Icon from '../../images/svg/Error-Icon.svg';
 const Notifications = (props) => {
+    const [isSoundNotification, setisSoundNotification] = useState(false);
+    const toggleiSoundNotification = () => {
+        setisSoundNotification(!isSoundNotification)
+    }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "notifications-wrapper") {
             props.toggleNotifications();
         }
-        else {
-            e.stopPropagation();
-        }
-        console.log(e.target.className)
     }
     return (
         <div id="notificationsWrapper" className={props.isShow===true? "notifications-wrapper":"notifications-wrapper hidden"} onClick={(e)=>outerClick(e)}>
         <div id="notificationsContent" className="notifications">
-            <div id="soundNotificationsWrapper" className="sound-notifications-wrapper hidden">
+            <div id="soundNotificationsWrapper" className={isSoundNotification===true?"sound-notifications-wrapper":"sound-notifications-wrapper hidden"}>
                 <div className="sound-notifications">
                     <div className="header">
                         <img src={VolumeIcon} alt="" />
@@ -52,10 +52,10 @@ const Notifications = (props) => {
             <div className="header">
                 <p>Notifications</p>
                 <div className="dropdown-options"></div>
-                <button id="notiSoundOptions">
+                <button id="notiSoundOptions" onClick={()=>toggleiSoundNotification()}>
                     <img src={NotificationsSounds} alt="" />
                 </button>
-                <button id="mobileNotiExit">
+                <button id="mobileNotiExit" onClick={()=>props.toggleNotifications()}>
                     <img src={X_Icon_DarkBlue} alt="" />
                 </button>
             </div>

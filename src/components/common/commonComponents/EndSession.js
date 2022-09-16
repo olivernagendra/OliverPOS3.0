@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import AngledBracket_Left_Blue from '../../../images/svg/AngledBracket-Left-Blue.svg';
 import { useNavigate } from 'react-router-dom';
 const EndSession = (props) => {
     const navigate = useNavigate();
@@ -22,8 +23,8 @@ const EndSession = (props) => {
             </button>
         </div>
         <div className="subwindow-body">
-            <button className="close-subwindow mobile-close-subwindow">
-                <img src="../Assets/Images/SVG/AngledBracket-Left-Blue.svg" alt="" />
+            <button className="close-subwindow mobile-close-subwindow" onClick={()=>props.toggleShowEndSession()}> 
+                <img src={AngledBracket_Left_Blue} alt="" />
                 Back
             </button>
             <div className="auto-margin-top"></div>

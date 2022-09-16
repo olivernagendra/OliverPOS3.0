@@ -353,7 +353,12 @@ code {
   {
 	z-index: 9;
   }
+<<<<<<< HEAD
 
   .error{
 	color: red !important;
   }
+=======
+  .error
+  {color:red;}
+>>>>>>> devPraveen

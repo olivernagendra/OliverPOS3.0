@@ -22,7 +22,7 @@ import {CustomerSaveSlice} from '../components/customer/CustomerSlice'
 import {checkStockSlice} from '../components/checkout/checkoutSlice';
 
 import {userSlice} from '../components/common/commonAPIs/userSlice';
-import { getRatesSlice,isMultipleTaxSupportSlice } from '../components/common/commonAPIs/taxSlice';
+import { getRatesSlice,isMultipleTaxSupportSlice, getTaxRateListSlice,selectedTaxListSlice,updateTaxRateListSlice} from '../components/common/commonAPIs/taxSlice';
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -59,7 +59,10 @@ export const store = configureStore({
     userList:userSlice.reducer,
     getRates:getRatesSlice.reducer,
     isMultipleTaxSupport:isMultipleTaxSupportSlice.reducer,
-    GetOpenRegister:GetOpenRegisterSlice.reducer
+    GetOpenRegister:GetOpenRegisterSlice.reducer,
+    GetTaxRateList:getTaxRateListSlice.reducer,
+    updateTaxRateList:updateTaxRateListSlice.reducer,
+    selectedTaxList:selectedTaxListSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>
