@@ -8,22 +8,27 @@ import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import STATUSES from "../../constants/apiStatus";
 import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
-import AddCashPopup from './AddCashPopup'
+import AddRemoveCashPopup from './AddRemoveCashPopup'
 function Cashmanagement() {
   const dispatch = useDispatch();
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
   const [cashPopUpOpen, setcashPopUpOpen] = useState(false)
+  const [popupstatus, setpopupstatus] = useState('')
+  const [addremoveCash, setaddremoveCash] = useState(true)
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
 
-  const HundleCashPopup = ()=>{
+  const HundleCashPopup = (status) => {
     setcashPopUpOpen(true)
+    setpopupstatus(status)
   }
-  const HundlePOpupClose=()=>{
+  const HundlePOpupClose = () => {
     setcashPopUpOpen(false)
+
   }
+
 
 
   const getCashDrawerPaymentDetail = (OrderId, index) => {
@@ -51,16 +56,20 @@ function Cashmanagement() {
     }
   }
 
-  const { statuscashpopup, datacashpopup, errorcashpopup, is_successcashpopup } = useSelector((state) => state.addRemoveCashmanagement)
-   console.log("datacashpopup",datacashpopup)
+ 
+  
+  
+
 
 
 
   let useCancelled = false;
   useEffect(() => {
+    console.log("useEfffect")
     if (useCancelled == false) {
       dispatch(cashRecords({ "registerId": registerId, "pageSize": "1000", "pageNumber": "1" }));
     }
+   
     return () => {
       useCancelled = true;
     }
@@ -154,7 +163,7 @@ function Cashmanagement() {
                 <p className="style1"> {CashDrawerPaymentDetail && !CashDrawerPaymentDetail.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
                 <div className="row">
                   <p className="style2">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  <p className="style3 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status.toLowerCase() ==="open" ?"OPEN":"CLOSE" }</p>
+                  <p className="style3 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status.toLowerCase() === "open" ? "OPEN" : "CLOSE"}</p>
                 </div>
                 <p className="style4">User: {CashDrawerPaymentDetail && CashDrawerPaymentDetail.SalePersonName}</p>
               </button>
@@ -169,11 +178,12 @@ function Cashmanagement() {
 
                           <button className="no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
                             <div className="row">
-                              <p className="style1"> {order.RegisterName}</p>
-                              <p className="style2">  {!order.ClosedTime ? "OPEN" : "CLOSED " + order.ClosedTime}</p>
+                              <p className="style1">{order.RegisterName}</p>
+
+                              <p className="style2">{!order.ClosedTime ? " OPEN " : "  CLOSED  " + order.ClosedTime}  </p>
                             </div>
                             <div className="row">
-                              <p className="style2">User: {order.SalePersonName}</p>
+                              <p className="style2">User:   {order.SalePersonName}</p>
                               <p className="style2">{order.OpenTime}</p>
                             </div>
                           </button>
@@ -187,8 +197,8 @@ function Cashmanagement() {
             </>
           }
         </div>
-        {cashPopUpOpen == true?   
-        <AddCashPopup HundlePOpupClose={HundlePOpupClose} />:""}
+        {cashPopUpOpen == true ?
+          <AddRemoveCashPopup popupstatus={popupstatus} drawerBalance={_balance} HundlePOpupClose={HundlePOpupClose} /> : ""}
         <div className="cm-detailed-view">
           <div className="detailed-header">
             <p>Transaction History</p>
@@ -196,10 +206,10 @@ function Cashmanagement() {
               <div className="inner-group">
                 <div className="row">
                   <p className="style1">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status.toLowerCase() ==="open" ?"OPEN":"CLOSE" }</p>
+                  <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status.toLowerCase() === "open" ? "OPEN" : "CLOSE"}</p>
                 </div>
-                <p className="style3">{Status&&Status.toLowerCase() === "Open"
-                  ? _openDateTime : _openDateTime } </p>
+                <p className="style3">{Status && Status.toLowerCase() === "Open"
+                  ? _openDateTime : _openDateTime} </p>
               </div>
               <div className="inner-group">
                 <p className="style1">Cash Drawer Ending Balance</p>
@@ -213,10 +223,10 @@ function Cashmanagement() {
 
           </div>
           <div className="detailed-footer">
-            <button>Remove Cash</button>
-            <button onClick={HundleCashPopup}  >Add Cash  </button>
+            <button onClick={() => HundleCashPopup('remove')}> Remove Cash</button>
+            <button onClick={() => HundleCashPopup('add')}  >Add Cash  </button>
           </div>
-          
+
         </div>
       </div>
     </>

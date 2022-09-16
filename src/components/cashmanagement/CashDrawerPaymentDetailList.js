@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import STATUSES from "../../constants/apiStatus";
 import moment from 'moment';
 import Config from '../../Config'
 
 const CashDrawerPaymentDetailList = () => {
     const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
+    var paymentList = [];
+    if (statusgetdetail == STATUSES.IDLE && is_successgetdetail) {
     var CashDrawerPaymentDetail = getdetail && getdetail.content
     var _paymentList = CashDrawerPaymentDetail && CashDrawerPaymentDetail.CashRegisterlog ? CashDrawerPaymentDetail.CashRegisterlog : [];
-    var paymentList = [];
+ 
     if (_paymentList && _paymentList.length > 0) {
         paymentList = [..._paymentList].reverse()
 
+     }
+
     }
-
-
 
     var userName = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.SalePersonName : '';
     var openingNote = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.OpeningNotes : '';
@@ -80,7 +83,7 @@ const CashDrawerPaymentDetailList = () => {
                                     <b>Expected Balance:</b> {item.Expected}
                                 </p>
                                 <p className="style2">
-                                    <b>Actual Balance:</b> 300.00
+                                    <b>Actual Balance:</b> {item.RemainingBalance}
                                 </p>
                             </div>
                         </div>

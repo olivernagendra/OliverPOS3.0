@@ -156,7 +156,7 @@ const AdvancedSearch = (props) => {
                 || (item.Contact && item.Contact.toString().toLowerCase().includes(value.toLowerCase()))
                 || (item.Email && item.Email.toString().toLowerCase().includes(value.toLowerCase()))
             ))
-            console.log("---filteredCustomer---" + JSON.stringify(_filteredCustomer));
+          //  console.log("---filteredCustomer---" + JSON.stringify(_filteredCustomer));
             setfilteredCustomer(_filteredCustomer);
         }
         // if(respGroup && respGroup.data && respGroup.data.content)
