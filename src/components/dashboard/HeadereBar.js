@@ -30,23 +30,18 @@ const HeadereBar = (props) => {
     const toggleSwitchUser = () => {
         setisShowSwitchUser(!isShowSwitchUser)
     }
-<<<<<<< HEAD
-    const clearCart = () => {
-=======
     const toggleMobileNav = () => {
         setisMobileNav(!isMobileNav)
         props.toggleShowMobLeftNav();
     }
-    const clearCart=()=>
-    {
->>>>>>> devPraveen
+    const clearCart = () => {
         removeCheckOutList();
         dispatch(product());
     }
     return (<React.Fragment>
         <div className="header">
             <div className="row">
-                <button id="mobileNavToggle" onClick={()=>toggleMobileNav()} className={isMobileNav===true?"opened":""}>
+                <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""}>
                     <img src="" alt="" />
                 </button>
                 <img src={Oliver_Type} alt="" />
@@ -57,22 +52,14 @@ const HeadereBar = (props) => {
                 <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                     <img src={avatar} alt="" />
                 </button>
-<<<<<<< HEAD
-                <button id="mobileOptionsButton">
-                    <img src={Ellipsis_Icon_DarkBlue} alt="" onClick={() => props.toggleOptionPage()} />
+                <button id="mobileOptionsButton" onClick={() => props.toggleOptionPage()} className={props.isShow == true ? "filter" : ""}>
+                    <img src={Ellipsis_Icon_DarkBlue} alt="" />
                 </button>
-                <button id="mobileAppsButton">
-                    <img src={Oliver_Icon_BaseBlue} alt="" onClick={() => props.toggleAppLauncher()} />
-=======
-                <button id="mobileOptionsButton" onClick={()=>props.toggleOptionPage()} className={props.isShow==true?"filter":""}>
-                    <img src={Ellipsis_Icon_DarkBlue} alt=""/>
-                </button>
-                <button id="mobileAppsButton" onClick={()=>props.toggleAppLauncher()}>
-                    <img src={Oliver_Icon_BaseBlue} alt=""/>
->>>>>>> devPraveen
+                <button id="mobileAppsButton" onClick={() => props.toggleAppLauncher()}>
+                    <img src={Oliver_Icon_BaseBlue} alt="" />
                 </button>
             </div>
-        </div>
+        </div >
         <div id="pageOptions" className={props.isShow ? "page-options-wrapper" : "page-options-wrapper hidden"}>
             <div className="page-options">
                 <p>Options Menu</p>
@@ -105,7 +92,7 @@ const HeadereBar = (props) => {
         <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
         <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
         <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
-    </React.Fragment>)
+    </React.Fragment >)
 }
 
 export default HeadereBar 

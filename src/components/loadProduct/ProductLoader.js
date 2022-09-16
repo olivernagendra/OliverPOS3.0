@@ -22,7 +22,7 @@ const CustomerLoader = () => {
         CustomerArray && CustomerArray.length > 0 && CustomerArray.map((item) => {
             add(item).then(
                 (key) => {
-                    console.log("ID Generated: ", key);
+                    // console.log("ID Generated: ", key);
                     //   let newState = Object.assign({}, state);
                     //   newState.id = key;
                     //   setState(newState);
