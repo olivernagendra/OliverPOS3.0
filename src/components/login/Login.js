@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
@@ -13,6 +13,7 @@ import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import $ from 'jquery'
 function Login() {
     var auth2 = ''
     const bridgDomain = "https://hub.oliverpos.com";
@@ -21,12 +22,8 @@ function Login() {
     const [userEmail, setName] = useState("")
 
     const [password, setPassword] = useState("")
+    const [loginError, setLoginError] = useState();
 
-    // const [fieldErr, setFieldErr] = useState("")
-
-    // const [usernamedErr, setUsernamedErr] = useState("")
-    // const [wentWrongErr, setWentWrongErr] = useState("")
-    // const [passwordErr, setPasswordErr] = useState("")
 
     //It will clear all local storage items
     const clearLocalStorages = () => {
@@ -40,9 +37,6 @@ function Login() {
     if (status == STATUSES.IDLE && is_success) {
         navigate('/site')
     }
-    if (status == STATUSES.ERROR) {
-        console.log(error)
-    }
 
 
 
@@ -53,23 +47,13 @@ function Login() {
         }
     }
 
-    const [userRequest, setUserRequest] = useState({
-        setFieldErr: '',
-        setUsernamedErr: '',
-        setWentWrongErr: '',
-        setPasswordErr: '',
-    });
+
 
 
     const handleSubmit = (e) => {
         clearLocalStorages();
         if (userEmail && password) {
-            setUserRequest({
-                setFieldErr: '',
-                setUsernamedErr: '',
-                setWentWrongErr: '',
-                setPasswordErr: '',
-            });
+            setLoginError('');
             // if (this.state.check == false) {  //$('#remember').attr('checked')              
 
             //     cookies.set('user', '');
@@ -82,49 +66,31 @@ function Login() {
 
         } else {
             if (!userEmail && !password) {
-                setUserRequest({
-                    setFieldErr: 'Email and Password is required',
-                    setUsernamedErr: '',
-                    setWentWrongErr: '',
-                    setPasswordErr: '',
-                });
-                // $('#username').focus();
+                setLoginError('Email and Password is required');
+                $('#username').focus();
             } else if (!userEmail) {
-                setUserRequest({
-                    setFieldErr: '',
-                    setUsernamedErr: 'Email is required',
-                    setWentWrongErr: '',
-                    setPasswordErr: '',
-                });
-                //  $('#username').focus();
+                setLoginError('Email is required');
+                $('#username').focus();
             } else {
-                setUserRequest({
-                    setFieldErr: '',
-                    setUsernamedErr: '',
-                    setWentWrongErr: '',
-                    setPasswordErr: 'Password is required',
-                });
-
-                // $('#password').focus();
+                setLoginError('Password is required');
+                $('#password').focus();
             }
         }
         e.preventDefault();
     }
 
-    const { setFieldErr, setUsernamedErr, setWentWrongErr, setPasswordErr } = userRequest;
-
-    var vlidationError = setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : setWentWrongErr != '' ? setWentWrongErr : "";
-    // console.log("vlidationError", vlidationError)
-
-
     const handleUserLogin = () => {
         dispatch(userLogin({ "email": userEmail, "password": password }))
 
     }
-
-    if (status == STATUSES.error) {
-        console.log(error)
-    }
+    // const SetErrro = () => useMemo(() => {
+    //     //if (status == STATUSES.ERROR) {
+    //     setLoginError(error)
+    //     // }
+    // })
+    // if (status == STATUSES.ERROR) {
+    //     SetErrro()
+    // }
     if (status == STATUSES.IDLE && is_success) {
         var loginRes = data && data.content;
         if (loginRes && loginRes.subscriptions !== undefined && loginRes.subscriptions.length > 0) {
@@ -431,7 +397,7 @@ function Login() {
     // if (status == STATUSES.LOADING) {
     //     return <div> Loading... </div>
     // }
-
+    var _error = loginError != "" ? loginError : error !== "" ? error : "";
     return (
         <React.Fragment>{status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
             <div className="login-wrapper">
@@ -440,10 +406,9 @@ function Login() {
                 <img src={imglogo} />
                 <p >Sign in to your Oliver POS Account</p>
                 {/* {error !== "" && <div className="danger">{error} </div>} */}
-                {vlidationError != "" &&
-                    <div className="danger">
-
-                        {setWentWrongErr !== '' ? setWentWrongErr : setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : ""}
+                {(_error !== "") &&
+                    <div className="error">
+                        {_error}
                     </div>}
                 <form className="login-form">
                     <label htmlFor="email">Email</label>
