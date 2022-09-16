@@ -80,7 +80,14 @@ const PinPad = React.memo(props => {
                 if (props.doAction) {
                     props.doAction()
                 } else {
-                    navigate('/productloader')
+                    if(props.toggleSwitchUser && props.switchUser==true)
+                    {
+                        props.toggleSwitchUser();
+                    }
+                    else
+                    {
+                        navigate('/productloader')
+                    }
                 }
             }
         }

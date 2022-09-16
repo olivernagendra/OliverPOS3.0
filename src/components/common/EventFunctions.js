@@ -22,3 +22,9 @@ export const AddItemType = (arr, n) => {
     });
     return newArry
 }
+export const AddAttribute = (arr, _key,value) => {
+    const newArry = arr.map((item) => {
+        return { ...item, [_key]: value };
+    });
+    return newArry
+}

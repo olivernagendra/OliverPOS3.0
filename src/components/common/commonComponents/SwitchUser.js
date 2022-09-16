@@ -19,7 +19,7 @@ const SwitchUser = (props) => {
             </button>
         </div>
         <div className="subwindow-body">
-            <button className="close-subwindow mobile-close-subwindow">
+            <button className="close-subwindow mobile-close-subwindow" onClick={()=>props.toggleSwitchUser()}>
                 <img src={AngledBracket_Left_Blue} alt="" />
                 Back
             </button>
@@ -35,7 +35,7 @@ const SwitchUser = (props) => {
             </p>
             <div className="divider"></div>
             <p className="style2">Enter Your User ID</p>
-           { props.isShow===true? <PinPad switchUser={true}></PinPad>:null}
+           { props.isShow===true? <PinPad switchUser={true} toggleSwitchUser={props.toggleSwitchUser}></PinPad>:null}
             {/* <div className="pinpad">
                 <div className="pin-entries">
                     <div className="pin-entry"></div>

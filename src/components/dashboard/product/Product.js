@@ -1022,10 +1022,10 @@ const Product = (props) => {
                     <LeftNavBar></LeftNavBar>
                     <div className="header">
                         <div className="mobile-buttons">
-                            <button id="mobileExitProductButton">
+                            <button id="mobileExitProductButton" onClick={() => props.closePopUp()}>
                                 <img src={X_Icon_DarkBlue} alt="" />
                             </button>
-                            <button id="mobileAppsButton">
+                            <button id="mobileAppsButton" onClick={()=>props.toggleAppLauncher()}>
                                 <img src={Oliver_Icon_BaseBlue} alt="" />
                             </button>
                         </div>
@@ -1191,7 +1191,7 @@ const Product = (props) => {
                                     <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
                                 </div>
 
-                                <button id="addProductDiscountMobile">
+                                <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
                                     <img src={Coin_Blue} alt="" />
                                     Add Discount
                                 </button>
