@@ -92,73 +92,75 @@ const Register = () => {
     // }
     return (
         <React.Fragment>
-            {respRegister.status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}
-            <div className="choose-wrapper">
-                <div className="choose-header">
-                    <button id="backButton" onClick={() => window.location = "/location"} >
-                        <img src={AngledBracket_Left_Blue} alt="" />
-                        {LocalizedLanguage.back}  
-                    </button>
-                    <p>{get_userName() + " - " + get_locName()}</p>
-                </div>
-                <div className="choose-body-default">
-                    <p>{LocalizedLanguage.registerdevice}</p>
-                    <div className="divider"></div>
-                    <div className="button-container">
-                        <p>{LocalizedLanguage.register}</p>
+            {respRegister.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+            {respRegister.status !== STATUSES.LOADING &&
+                <div className="choose-wrapper">
+                    <div className="choose-header">
+                        <button id="backButton" onClick={() => window.location = "/location"} >
+                            <img src={AngledBracket_Left_Blue} alt="" />
+                            {LocalizedLanguage.back}
+                        </button>
+                        <p>{get_userName() + " - " + get_locName()}</p>
+                    </div>
+                    <div className="choose-body-default">
+                        <p>{LocalizedLanguage.registerdevice}</p>
                         <div className="divider"></div>
-                        <div className="button-group col">
-                            {
-                                registers.map((item, index) => {
-                                    var inr = true;
-                                    {
-                                        firebase_registers && firebase_registers.length > 0 && firebase_registers.map((firebaseItem, indx) => {
-                                            if (inr == true) {
-                                                if (firebaseItem.RegisterId == item.id && firebaseItem.Status !== "available") {
-                                                    inr = false
+                        <div className="button-container">
+                            <p>{LocalizedLanguage.register}</p>
+                            <div className="divider"></div>
+                            <div className="button-group col">
+                                {
+                                    registers.map((item, index) => {
+                                        var inr = true;
+                                        {
+                                            firebase_registers && firebase_registers.length > 0 && firebase_registers.map((firebaseItem, indx) => {
+                                                if (inr == true) {
+                                                    if (firebaseItem.RegisterId == item.id && firebaseItem.Status !== "available") {
+                                                        inr = false
+                                                    }
                                                 }
-                                            }
-                                        })
-                                    }
-                                    return <button key={index} className={inr == true ? "option" : "option assigned"} onClick={() => handleSubmit(item, inr == true ? false : true)}>
-                                        <div className="img-container background-blue">
-                                            <img src={Register_Icon_White} alt="" className="register-icon" />
+                                            })
+                                        }
+                                        return <button key={index} className={inr == true ? "option" : "option assigned"} onClick={() => handleSubmit(item, inr == true ? false : true)}>
+                                            <div className="img-container background-blue">
+                                                <img src={Register_Icon_White} alt="" className="register-icon" />
+                                            </div>
+                                            <div className="col">
+                                                <p className="style1">{item.name}</p>
+                                                <p className="style2">{inr == true ? <>{LocalizedLanguage.available}</> : <> {<>{LocalizedLanguage.assigned}</>} </>}</p>
+                                            </div>
+                                            {inr === true ?
+                                                <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
+                                                    <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
+                                                : <React.Fragment>
+                                                    <img src={AngledBracket_Right_Grey} alt="" />
+                                                    <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
+                                        </button>
+
+                                    })}
+
+                            </div>
+                            <p>Kiosks</p>
+                            <div className="divider"></div>
+                            <div className="button-group">
+                                {self_registers.map((item, index) => {
+                                    return <button key={index} className="option" onClick={() => handleSubmit(item)}>
+                                        <div className="img-container background-violet">
+                                            <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
                                         </div>
                                         <div className="col">
                                             <p className="style1">{item.name}</p>
-                                            <p className="style2">{inr == true ? <>{LocalizedLanguage.available}</> : <> {<>{LocalizedLanguage.assigned}</>} </> }</p>
+                                            <p className="style2">{LocalizedLanguage.available}</p>
                                         </div>
-                                        {inr === true ?
-                                            <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
-                                                <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
-                                            : <React.Fragment>
-                                                <img src={AngledBracket_Right_Grey} alt="" />
-                                                <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
+                                        <img src={AngledBracket_Right_Grey} alt="" />
+                                        <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
                                     </button>
-
                                 })}
-
-                        </div>
-                        <p>Kiosks</p>
-                        <div className="divider"></div>
-                        <div className="button-group">
-                            {self_registers.map((item, index) => {
-                                return <button key={index} className="option" onClick={() => handleSubmit(item)}>
-                                    <div className="img-container background-violet">
-                                        <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
-                                    </div>
-                                    <div className="col">
-                                        <p className="style1">{item.name}</p>
-                                        <p className="style2">{LocalizedLanguage.available}</p>
-                                    </div>
-                                    <img src={AngledBracket_Right_Grey} alt="" />
-                                    <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
-                                </button>
-                            })}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
             <div className="subwindow-wrapper hidden">
                 <div className="subwindow takeover-register">
                     <div className="subwindow-header">

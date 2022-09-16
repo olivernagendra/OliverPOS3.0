@@ -13,6 +13,7 @@ import { productLoader } from './loadProductSlice';
 import { useNavigate } from 'react-router-dom';
 import { useIndexedDB } from 'react-indexed-db';
 import moment from 'moment';
+import LoaderOnboarding from '../common/commonComponents/LoaderOnboarding';
 //import LoaderOnboarding from '../onboarding/components/LoaderOnboarding'
 const CustomerLoader = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
@@ -486,11 +487,12 @@ const ProductLoader = () => {
     }
 
 
-
+    var isDemoUser = false;
     //  this.getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);
     return <div>
-        <h1>Product Loading...</h1>
-        <h2> {loadingProducts} ( {loadPerc})% </h2>;
+        {/* <h1>Product Loading...</h1>
+        <h2> {loadingProducts} ( {loadPerc})% </h2>; */}
+        <LoaderOnboarding isDemoUser={isDemoUser} statusCompleted={loadPerc}></LoaderOnboarding>
         ;
     </div>
 }
