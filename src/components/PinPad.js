@@ -11,11 +11,11 @@ import STATUSES from "../constants/apiStatus";
 import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
 import moment from 'moment';
 import LocalizedLanguage from "../settings/LocalizedLanguage";
-
+import $ from "jquery";
 
 const PinPad = React.memo(props => {
     // console.log("props",props)
-    const inputElement = useRef();
+    const inputElement = useRef(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [totalSize, setTotalSize] = useState(0)
@@ -28,7 +28,7 @@ const PinPad = React.memo(props => {
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-    
+
 
     useEffect(() => {
         // console.log("useEffect")
@@ -46,7 +46,7 @@ const PinPad = React.memo(props => {
 
     const pinSuccessful = () => {
         if (status === STATUSES.error) {
-          //  console.log(error)
+            //  console.log(error)
         }
 
         if (is_success === true) {
@@ -166,11 +166,11 @@ const PinPad = React.memo(props => {
 
         // $('#whichkey').focus()
         var _envType = localStorage.getItem('env_type');
-        if (_envType && _envType !== "") {
-            // $('#whichkey').attr('readonly', true);
-        } else {
-            //$('#whichkey').focus();
-        }
+        // if (_envType && _envType !== "") {
+        //     // $('#whichkey').attr('readonly', true);
+        // } else {
+        $('#whichkey').focus();
+        // }
     }
 
 
@@ -238,11 +238,12 @@ const PinPad = React.memo(props => {
 
     const focusInput = () => {
         inputElement.current.focus();
+        $('#whichkey').focus();
     };
 
 
     if (props.onClick == true) {
-       // console.log("outer click")
+        // console.log("outer click")
         focusInput()
     }
 
@@ -250,25 +251,28 @@ const PinPad = React.memo(props => {
     if (status === STATUSES.ERROR) {
         inputElement.current.focus();
         focusInput()
-         console.log(status)
+        console.log(status)
         // setTotalSize(0)
         // setTxtValue("")
         // addToScreen('c')
         isloading == true && setIsloading(false)
-        
+
     }
     return <React.Fragment>
-        {(status === STATUSES.ERROR && <div>{error}</div>)}
+
         <p>{LocalizedLanguage.enteryouruserid}</p>
 
-        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue" }} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
+        <input id="whichkey" ref={inputElement} autoFocus={true} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue" }} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
         <div className="pinpad">
+
             {hasPin !== "true" && <ShowCreatePin />}
             <div className="pin-entries">
                 <TrashPin />
             </div>
             <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" />
+
         </div>
+        {(status === STATUSES.ERROR && <p className="error border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" >{error} </p>)}
     </React.Fragment>
 })
 
