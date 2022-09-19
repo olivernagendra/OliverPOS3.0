@@ -10,6 +10,7 @@
     "idb": "^7.0.2",
     "jquery": "^3.6.1",
     "json-parse-better-errors": "^1.0.2",
+    "latest-version": "^7.0.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
     "nice-try": "^3.0.0",
