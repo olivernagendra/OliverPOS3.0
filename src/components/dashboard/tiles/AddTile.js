@@ -8,7 +8,7 @@ import { get_regId, get_UDid, get_userId } from "../../common/localSettings";
 import STATUSES from "../../../constants/apiStatus";
 // import { initDropDown } from "../../common/commonFunctions/tileFn";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
-
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
 function encodeHtml(txt) {
     //return $('<textarea />').html(txt).text();
 }
@@ -191,8 +191,9 @@ const AddTile = (props) => {
 
         } else {
             if (item.type) { //apply check to protect msg display if no item selected and click on save button
-                alert("alreadyExsist");
-
+                // alert("alreadyExsist");
+                var data ={title:"",msg:"Item already exist",is_success:true}
+                dispatch(popupMessage(data));
             }
         }
 
