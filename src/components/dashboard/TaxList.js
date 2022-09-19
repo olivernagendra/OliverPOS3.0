@@ -5,7 +5,7 @@ import { AddAttribute } from "../common/EventFunctions";
 import { product } from "./product/productSlice";
 import { addtoCartProduct } from "./product/productLogic";
 import { changeTaxRate } from "../common/TaxSetting";
-import { updateTaxRateList } from "../common/commonAPIs/taxSlice";
+import { updateTaxRateList,selectedTaxList } from "../common/commonAPIs/taxSlice";
 const TaxList = (props) => {
     const dispatch = useDispatch();
     const [selTax, setSelTax] = useState([]);
@@ -53,43 +53,43 @@ const TaxList = (props) => {
             if (localStorage.getItem('TAXT_RATE_LIST')) {
                 var apply_tax_is = JSON.parse(localStorage.getItem('TAXT_RATE_LIST'));
                 if (apply_tax_is.length > 0) {
-                    var result1 = apply_tax_is;
-                    var result2 = taxData;
-                    var props = ['TaxId', 'TaxName'];
-                    var result = result1.filter(function (o1) {
-                        // filter out (!) items in result2
-                        return !result2.some(function (o2) {
-                            return parseInt(o1.TaxId) === parseInt(o2.TaxId); // assumes unique id
-                        });
-                    }).map(function (o) {
-                        // use reduce to make objects with only the required properties
-                        // and map to apply this to the filtered array as a whole
-                        return props.reduce(function (newo, TaxName) {
-                            newo[TaxName] = o[TaxName];
-                            return newo;
-                        }, {});
-                    });
+                    // var result1 = apply_tax_is;
+                    // var result2 = taxData;
+                    // var props = ['TaxId', 'TaxName'];
+                    // var result = result1.filter(function (o1) {
+                    //     // filter out (!) items in result2
+                    //     return !result2.some(function (o2) {
+                    //         return parseInt(o1.TaxId) === parseInt(o2.TaxId); // assumes unique id
+                    //     });
+                    // }).map(function (o) {
+                    //     // use reduce to make objects with only the required properties
+                    //     // and map to apply this to the filtered array as a whole
+                    //     return props.reduce(function (newo, TaxName) {
+                    //         newo[TaxName] = o[TaxName];
+                    //         return newo;
+                    //     }, {});
+                    // });
                     taxData.map(checkTax => {
                         apply_tax_is.map(items => {
                             if (items.TaxId == checkTax.TaxId) {
                                 if (items) {
-                                    items['check_is'] = items.check_is;
+                                    items['check_is'] = checkTax.check_is;
                                 }
                             }
                         })
                     })
 
-                    if (result && result.length > 0) {
-                        result.map(checkTax => {
-                            apply_tax_is.map(items => {
-                                if (parseInt(items.TaxId) == parseInt(checkTax.TaxId)) {
-                                    if (items) {
-                                        items['check_is'] = false;
-                                    }
-                                }
-                            })
-                        })
-                    }
+                    // if (result && result.length > 0) {
+                    //     result.map(checkTax => {
+                    //         apply_tax_is.map(items => {
+                    //             if (parseInt(items.TaxId) == parseInt(checkTax.TaxId)) {
+                    //                 if (items) {
+                    //                     items['check_is'] = false;
+                    //                 }
+                    //             }
+                    //         })
+                    //     })
+                    // }
 
                     var updateTaxCarproduct = changeTaxRate(apply_tax_is, 2);
                     dispatch(updateTaxRateList(apply_tax_is));
@@ -103,6 +103,17 @@ const TaxList = (props) => {
                     // }
                 }
             }
+            else {
+                var defaultTax = localStorage.getItem('DEFAULT_TAX') && JSON.parse(localStorage.getItem('DEFAULT_TAX'));
+                if (defaultTax && defaultTax.length > 0) {
+                    var updateTaxCarproduct = changeTaxRate(defaultTax, 2);
+                    localStorage.setItem("SELECTED_TAX", JSON.stringify(defaultTax));
+    
+                    dispatch(updateTaxRateList(defaultTax));
+                    addtoCartProduct(updateTaxCarproduct);
+                    dispatch(product());
+                }
+            }
         } else {
             var defaultTax = localStorage.getItem('DEFAULT_TAX') && JSON.parse(localStorage.getItem('DEFAULT_TAX'));
             if (defaultTax && defaultTax.length > 0) {
@@ -113,17 +124,18 @@ const TaxList = (props) => {
                 addtoCartProduct(updateTaxCarproduct);
                 dispatch(product());
             } else {
-                // localStorage.removeItem("SELECTED_TAX");
-                // localStorage.removeItem('TAXT_RATE_LIST');
+                localStorage.removeItem("SELECTED_TAX");
+                localStorage.removeItem('TAXT_RATE_LIST');
                 var updateTaxCarproduct = changeTaxRate(null, 2);
-
-
                 dispatch(updateTaxRateList(null));
                 addtoCartProduct(updateTaxCarproduct);
                 dispatch(product());
             }
         }
-
+        dispatch(selectedTaxList(taxData));
+        setTimeout(() => {
+            getSelectedTaxList();
+        }, 100);
         // this.props.dispatch(taxRateAction.selectedTaxList(taxData))
         //setTax_items([]);
     }

@@ -11,6 +11,7 @@ import { checkStock } from "../../checkout/checkoutSlice";
 import { typeOfTax } from "../../common/TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
+import {popupMessage} from "../../common/commonAPIs/messageSlice";
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -147,7 +148,10 @@ const CartList = (props) => {
             sessionStorage.removeItem("CUSTOMER_ID");
         }
         if (ListItem.length == 0 || productCount == 0) {
-            alert("Please add at least one product in cart !");
+            // alert("Please add at least one product in cart !");
+            // dispatch(popupMessage({data:{title:"",msg:"Please add at least one product in cart !"},is_success:true}));
+            var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
+            dispatch(popupMessage(data));
             setIsLoading(false)
         } else {
             setUpdateProductStatus(true);
@@ -268,7 +272,7 @@ const CartList = (props) => {
             })
         }
         if (blank_quntity.length > 0) {
-            msg = 'messageCartProductNotAvailable';
+            msg = 'Stock is not sufficient for below products, please remove them from cart! ';
             msg += blank_quntity.map(name => {
                 return (
                     name + ", "
@@ -279,7 +283,10 @@ const CartList = (props) => {
             msg = "messageCartNoProduct";
         }
         //show message popup here
-        alert(msg);
+
+        var data ={title:"",msg:msg,is_success:true}
+            dispatch(popupMessage(data));
+        //alert(msg);
         setIsLoading(false)
     }
     const calculateCart = () => {
