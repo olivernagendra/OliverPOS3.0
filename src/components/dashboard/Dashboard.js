@@ -33,6 +33,8 @@ import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
 import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
 import TaxList from "./TaxList";
+import MsgPopup from "../common/commonComponents/MsgPopup";
+import {popupMessage} from "../common/commonAPIs/messageSlice";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -59,7 +61,9 @@ const Home = () => {
     const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
     const [isSelectDiscountBtn, setisSelectDiscountBtn] = useState(false);
     const [isShowTaxList, setisShowTaxList] = useState(false);
-
+    const [isShowMsg, setisShowMsg] = useState(false);
+    const [msgTitle, setmsgTitle] = useState('');
+    const [msgBody, setmsgBody] = useState('');
 
 
     const dispatch = useDispatch();
@@ -203,6 +207,9 @@ const Home = () => {
     }
     const toggleSelectDiscountBtn = () => {
         setisSelectDiscountBtn(!isSelectDiscountBtn)
+    }
+    const toggleMsgPopup = () => {
+        setisShowMsg(!isShowMsg)
     }
     const toggleTaxList = () => {
 
@@ -360,6 +367,17 @@ const Home = () => {
             getTax();
         }
     }, [respupdateTaxRateList]);
+
+    const [respopupMessage] = useSelector((state) => [state.popupMessage])
+    useEffect(() => {
+        if (respopupMessage && respopupMessage.status == STATUSES.IDLE && respopupMessage.is_success) {
+            toggleMsgPopup(true);
+            setmsgBody(respopupMessage.data.msg);
+            setmsgTitle(respopupMessage.data.title);
+        }
+    }, [respopupMessage]);
+
+
     useEffect(() => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
@@ -404,7 +422,7 @@ const Home = () => {
             <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList>
             <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
-            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} addNote={addNote}></OrderNote>
+            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             <AdvancedSearch toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
@@ -412,6 +430,7 @@ const Home = () => {
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
+            <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
             {/* iframe subview */}
             {/* create customer */}
             {/* cart discount */}
