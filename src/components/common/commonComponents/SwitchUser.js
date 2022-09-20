@@ -34,7 +34,7 @@ const SwitchUser = (props) => {
                     the user currently logged in.
                 </p>
                 <div className="divider"></div>
-                <p className="style2">Enter Your User ID</p>
+                {/* <p className="style2">Enter Your User ID</p> */}
                 {props.isShow === true ? <PinPad switchUser={true} toggleSwitchUser={props.toggleSwitchUser}></PinPad> : null}
                 {/* <div className="pinpad">
                 <div className="pin-entries">
