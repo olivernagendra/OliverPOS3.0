@@ -4,7 +4,7 @@ import AngledBracket_Left_White from '../../assets/images/svg/AngledBracket-Left
 import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg'
 import Closed_Sign_White from '../../assets/images/svg/Closed-Sign-White.svg'
 import PinPad from "../pinPage/PinPad"
-import { get_locName, get_regName, get_userName } from "../common/localSettings"
+import { get_locName, get_regName, get_userName, getShopName } from "../common/localSettings"
 
 import { useNavigate } from 'react-router-dom';
 
@@ -122,7 +122,7 @@ const OpenRegister = () => {
             <div className="auto-margin-top"></div>
             <img src={Closed_Sign_White} alt="" />
             <div className="col">
-                <p className="style1">{get_userName()}</p>
+                <p className="style1">{getShopName()}</p>
                 <div className="divider"></div>
                 <p className="style2">{get_regName()}</p>
                 <p className="style3">{get_locName()}</p>

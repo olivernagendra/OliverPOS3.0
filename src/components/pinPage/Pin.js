@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from 'react-redux';
-import { get_locName, get_regName } from '../common/localSettings'
+import { get_locName, get_regName, getShopName } from '../common/localSettings'
 import imgOpenReg from '../../images/svg/OpenSign.svg'
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -259,7 +259,7 @@ const Pin = () => {
         <header>
             <img src={imgOpenReg} alt="" />
             <div className="col">
-                <p className="style1">{get_locName()}</p>
+                <p className="style1">{getShopName()}</p>
                 <div className="divider"></div>
                 <p className="style2">{get_regName()}</p>
                 <p className="style3">{get_locName()}</p>
