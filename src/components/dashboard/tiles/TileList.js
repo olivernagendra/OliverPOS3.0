@@ -25,28 +25,17 @@ const TileList = (props) => {
     const [isLoading, setIsLoading] = useState(false)
     const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
     const { status, data, error, is_success } = useSelector((state) => state.tile)
-    const clearRemoveBtn = () => {
-        const boxes = document.querySelectorAll('.remove-cover');
-        boxes.forEach(box => {
-            box.classList.add('hide');
-        });
-        const tileBtns = document.querySelectorAll('.remove-state');
-        tileBtns.forEach(btn => {
-            console.log("this click for remove the remove tile button---" + btn.classList)
-            btn.classList.remove('remove-state');
-        });
-    }
-    const outerClick = (e) => {
-        {
-            //console.log("----"+e.target.classList)
-            if(!e.target.classList.contains("remove-state") && !e.target.classList.contains("remove-cover"))
-            {
-                clearRemoveBtn(); 
-            }
-            //if( doDelete==false)
-            //clearRemoveBtn();
-        }
-    }
+    // const clearRemoveBtn = () => {
+    //     const boxes = document.querySelectorAll('.remove-cover');
+    //     boxes.forEach(box => {
+    //         box.classList.add('hide');
+    //     });
+    //     const tileBtns = document.querySelectorAll('.remove-state');
+    //     tileBtns.forEach(btn => {
+    //         console.log("this click for remove the remove tile button---" + btn.classList)
+    //         btn.classList.remove('remove-state');
+    //     });
+    // }
     const delete_tile = (id) => {
         var param = { "favid": id };
         setIsLoading(true);
@@ -55,7 +44,7 @@ const TileList = (props) => {
     const callback = useCallback(e => {
         console.log('Long pressed!');
 
-        clearRemoveBtn();
+        props.clearDeleteTileBtn(e);
         if ((e.target.tagName == "IMG" || e.target.tagName == "DIV" || e.target.tagName == "P") && e.target.parentNode && !e.target.parentNode.classList.contains("remove-state")) {
             if (e.target.parentNode.classList.contains('product') || e.target.parentNode.classList.contains('category') || e.target.parentNode.classList.contains('attribute')) {
                 e.target.parentNode.classList.add("remove-state");
@@ -615,7 +604,7 @@ const TileList = (props) => {
         }
     }, [resdeletTile]);
     return (
-        <div className="products" onClick={(e) => outerClick(e)}>
+        <div className="products">
             {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
                 <div className="category-row">
                     {showCategorySelection()}

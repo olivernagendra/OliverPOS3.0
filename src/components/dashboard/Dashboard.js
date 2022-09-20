@@ -221,6 +221,18 @@ const Home = () => {
         //     alert('This "Feature" is not included in your plan! ;In order to upgrade please go to the Oliver HUB')
         // }
     }
+    const clearDeleteTileBtn = (e) => {
+        if (!e.target.classList.contains("remove-state") && !e.target.classList.contains("remove-cover")) {
+            const tile_remove_cover = document.querySelectorAll('.remove-cover');
+            tile_remove_cover && tile_remove_cover.forEach(cvr => {
+                cvr.classList.add('hide');
+            });
+            const tile_remove_state = document.querySelectorAll('.remove-state');
+            tile_remove_state && tile_remove_state.forEach(st => {
+                st.classList.remove('remove-state');
+            });
+        }
+    }
     const getTax = (multiple_tax_support, get_tax_rates) => {
         if (multiple_tax_support && multiple_tax_support == true) {
             var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
@@ -353,7 +365,7 @@ const Home = () => {
 
 
     // It is refreshing the tile list from server when a new tile is added
-    const [resAddTile,resdeletTile] = useSelector((state) => [state.addTile,state.deletTile])
+    const [resAddTile, resdeletTile] = useSelector((state) => [state.addTile, state.deletTile])
     useEffect(() => {
         if (resAddTile && resAddTile.status == STATUSES.IDLE && resAddTile.is_success) {
             getFavourites && getFavourites();
@@ -361,7 +373,7 @@ const Home = () => {
         if (resdeletTile && resdeletTile.status == STATUSES.IDLE && resdeletTile.is_success) {
             getFavourites && getFavourites();
         }
-    }, [resAddTile,resdeletTile]);
+    }, [resAddTile, resdeletTile]);
 
     const [resProduct, respupdateTaxRateList] = useSelector((state) => [state.product, state.updateTaxRateList])
     useEffect(() => {
@@ -393,7 +405,7 @@ const Home = () => {
     return (
         <React.Fragment>
             <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product>
-            <div className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
+            <div onClick={(e) => clearDeleteTileBtn(e)} className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
                 {/* left nav bar */}
                 {/* top header */}
                 {/* prodct list/item list */}
@@ -405,7 +417,7 @@ const Home = () => {
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
-                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle}></TileList>
+                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
                 <CartList listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 
 
