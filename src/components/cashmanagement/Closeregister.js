@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetails, closeRegister } from './CashmanagementSlice'
-import AngledBracket_left from '../../images/svg/AngledBracket-Left-BaseBlue.svg'
-import OpenSign from '../../images/svg/OpenSign.svg'
-import PinPad from '../PinPad'
+import AngledBracket_left from '../../assets/images/svg/AngledBracket-Left-BaseBlue.svg'
+import OpenSign from '../../assets/images/svg/OpenSign.svg'
+import PinPad from '../pinPage/PinPad'
 import moment from 'moment';
 import Closeregistertwo from "./Closeregistertwo";
 const Closeregister = () => {
@@ -125,11 +125,11 @@ const Closeregister = () => {
         }
     }
 
-    
+
     // -----received data fro Api  
     var diffrenttoggleShow = false
     const { statuscloseRegister, closeRegisterdetail, errorcloseRegister, is_successcloseRegister } = useSelector((state) => state.cashmanagementCloseRegister)
-    if(is_successcloseRegister === true){
+    if (is_successcloseRegister === true) {
         diffrenttoggleShow = true
     }
     var closeregisterPaymentDetail = closeRegisterdetail && closeRegisterdetail.content
@@ -174,7 +174,7 @@ const Closeregister = () => {
                     </div> : null}
 
 
-                    {toggle == true  && diffrenttoggleShow !== true ?  <div className="step2">
+                    {toggle == true && diffrenttoggleShow !== true ? <div className="step2">
                         <p className="style1">Close Register</p>
                         <div className="divider" />
                         <p className="style2">
@@ -210,11 +210,11 @@ const Closeregister = () => {
                             }
                         </div>
                         <button id="saveCount" onClick={saveCount}  >Save Count</button>
-                    </div>:null}
+                    </div> : null}
 
-                 {diffrenttoggleShow !== false ? <div className="step3  ">
+                    {diffrenttoggleShow !== false ? <div className="step3  ">
                         <Closeregistertwo closeregisterPaymentDetail={closeregisterPaymentDetail} />
-                    </div>:null }  
+                    </div> : null}
 
 
 
