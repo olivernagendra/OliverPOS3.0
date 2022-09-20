@@ -24,6 +24,7 @@ import Customercreate from './components/customer/Customercreate';
 import CustomerView from './components/customer/CustomerView';
 import Checkout from './components/checkout/Checkout';
 import ActivityView from './components/activity/ActivityView';
+
 initDB(DBConfig);
 function App() {
 
