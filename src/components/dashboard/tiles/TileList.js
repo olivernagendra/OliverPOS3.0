@@ -38,8 +38,13 @@ const TileList = (props) => {
     }
     const outerClick = (e) => {
         {
-            if( doDelete==false)
-            clearRemoveBtn();
+            //console.log("----"+e.target.classList)
+            if(!e.target.classList.contains("remove-state") && !e.target.classList.contains("remove-cover"))
+            {
+                clearRemoveBtn(); 
+            }
+            //if( doDelete==false)
+            //clearRemoveBtn();
         }
     }
     const delete_tile = (id) => {
