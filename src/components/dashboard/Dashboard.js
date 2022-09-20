@@ -34,7 +34,7 @@ import { getTaxAllProduct } from "../common/TaxSetting";
 import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
 import TaxList from "./TaxList";
 import MsgPopup from "../common/commonComponents/MsgPopup";
-import {popupMessage} from "../common/commonAPIs/messageSlice";
+import { popupMessage } from "../common/commonAPIs/messageSlice";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -215,7 +215,7 @@ const Home = () => {
 
         // var subscriptionClientDetail = localStorage.getItem('clientDetail') ? JSON.parse(localStorage.getItem('clientDetail')) : '';
         // if (subscriptionClientDetail && subscriptionClientDetail.subscription_detail && subscriptionClientDetail.subscription_detail.subscription_type !== "oliverpos-free") {
-            setisShowTaxList(!isShowTaxList)
+        setisShowTaxList(!isShowTaxList)
         // }
         // else {
         //     alert('This "Feature" is not included in your plan! ;In order to upgrade please go to the Oliver HUB')
@@ -363,7 +363,7 @@ const Home = () => {
         }
     }, [resAddTile,resdeletTile]);
 
-    const [resProduct,respupdateTaxRateList] = useSelector((state) => [state.product,state.updateTaxRateList])
+    const [resProduct, respupdateTaxRateList] = useSelector((state) => [state.product, state.updateTaxRateList])
     useEffect(() => {
         if (respupdateTaxRateList && respupdateTaxRateList.status == STATUSES.IDLE && respupdateTaxRateList.is_success) {
             getTax();

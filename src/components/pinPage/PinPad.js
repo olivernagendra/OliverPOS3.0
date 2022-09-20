@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from 'react-redux';
-import { chunkArray, get_locName, get_regName } from './common/localSettings'
+import { chunkArray, get_locName, get_regName } from '../common/localSettings'
 // import imgOpenReg from '../images/svg/OpenSign.svg'
-import imgBackSpace from '../images/svg/Backspace-BaseBlue.svg'
+import imgBackSpace from '../../assets/images/svg/Backspace-BaseBlue.svg'
 
-import { createPin, validatePin } from "./pinPage/pinSlice"
+import { createPin, validatePin } from "./pinSlice"
 import { useNavigate } from "react-router-dom";
-import { get_UDid } from "./common/localSettings";
-import STATUSES from "../constants/apiStatus";
-import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
+import { get_UDid } from "../common/localSettings";
+import STATUSES from "../../constants/apiStatus";
+//import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
 import moment from 'moment';
-import LocalizedLanguage from "../settings/LocalizedLanguage";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import $ from "jquery";
 
 const PinPad = React.memo(props => {
@@ -81,12 +81,10 @@ const PinPad = React.memo(props => {
                 if (props.doAction) {
                     props.doAction()
                 } else {
-                    if(props.toggleSwitchUser && props.switchUser==true)
-                    {
+                    if (props.toggleSwitchUser && props.switchUser == true) {
                         props.toggleSwitchUser();
                     }
-                    else
-                    {
+                    else {
                         navigate('/productloader')
                     }
                 }
@@ -267,7 +265,7 @@ const PinPad = React.memo(props => {
     }
     return <React.Fragment>
 
-        <p>{LocalizedLanguage.enteryouruserid}</p>
+        <p className="style1">{LocalizedLanguage.enteryouruserid}</p>
 
         <input id="whichkey" ref={inputElement} autoFocus={true} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue" }} onChange={handle} onKeyDown={handleBack} className="border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" autoComplete="off" />
         <div className="pinpad">

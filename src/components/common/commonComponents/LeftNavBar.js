@@ -70,7 +70,7 @@ const LeftNavBar = (props) => {
                     <p>Customers</p>
                     <div className="f-key">F2</div>
                 </button>
-                <button id="transactionsButton" className={location.pathname === "/transaction" ? "page-link selected" : "page-link"} disabled={location.pathname === "/transaction" ? true : false} onClick={() => navigateTo('/transaction')}>
+                <button id="transactionsButton" className={location.pathname === "/transactions" ? "page-link selected" : "page-link"} disabled={location.pathname === "/transactions" ? true : false} onClick={() => navigateTo('/transactions')}>
                     <div className="img-container">
                         <img src={Transactions_Icon} alt="" />
                     </div>

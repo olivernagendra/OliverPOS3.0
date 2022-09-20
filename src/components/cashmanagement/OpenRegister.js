@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux';
-import AngledBracket_Left_White from '../images/svg/AngledBracket-Left-White.svg'
-import LogOut_Icon_White from '../images/svg/LogOut-Icon-White.svg'
-import Closed_Sign_White from '../images/svg/Closed-Sign-White.svg'
-import PinPad from "./PinPad"
-import { get_locName, get_regName, get_userName } from "./common/localSettings"
+import AngledBracket_Left_White from '../../assets/images/svg/AngledBracket-Left-White.svg'
+import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg'
+import Closed_Sign_White from '../../assets/images/svg/Closed-Sign-White.svg'
+import PinPad from "../pinPage/PinPad"
+import { get_locName, get_regName, get_userName, getShopName } from "../common/localSettings"
 
 import { useNavigate } from 'react-router-dom';
 
-import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
+import { openRegister } from './CashmanagementSlice'
 import moment from 'moment';
-import STATUSES from "../constants/apiStatus";
-import { initOpenRegisterFn } from "./common/commonFunctions/openRegisterFn"
+import STATUSES from "../../constants/apiStatus";
+import { initOpenRegisterFn } from "../common/commonFunctions/openRegisterFn"
 
 const OpenRegister = () => {
     const navigate = useNavigate();
@@ -122,7 +122,7 @@ const OpenRegister = () => {
             <div className="auto-margin-top"></div>
             <img src={Closed_Sign_White} alt="" />
             <div className="col">
-                <p className="style1">{get_userName()}</p>
+                <p className="style1">{getShopName()}</p>
                 <div className="divider"></div>
                 <p className="style2">{get_regName()}</p>
                 <p className="style3">{get_locName()}</p>
