@@ -353,13 +353,15 @@ const Home = () => {
 
 
     // It is refreshing the tile list from server when a new tile is added
-    const [resAddTile] = useSelector((state) => [state.addTile])
+    const [resAddTile,resdeletTile] = useSelector((state) => [state.addTile,state.deletTile])
     useEffect(() => {
         if (resAddTile && resAddTile.status == STATUSES.IDLE && resAddTile.is_success) {
             getFavourites && getFavourites();
-            //toggleAddTitle();
         }
-    }, [resAddTile]);
+        if (resdeletTile && resdeletTile.status == STATUSES.IDLE && resdeletTile.is_success) {
+            getFavourites && getFavourites();
+        }
+    }, [resAddTile,resdeletTile]);
 
     const [resProduct,respupdateTaxRateList] = useSelector((state) => [state.product,state.updateTaxRateList])
     useEffect(() => {
@@ -370,10 +372,11 @@ const Home = () => {
 
     const [respopupMessage] = useSelector((state) => [state.popupMessage])
     useEffect(() => {
-        if (respopupMessage && respopupMessage.status == STATUSES.IDLE && respopupMessage.is_success) {
+        if (respopupMessage && respopupMessage.status == STATUSES.IDLE && respopupMessage.is_success && respopupMessage.data) {
             toggleMsgPopup(true);
             setmsgBody(respopupMessage.data.msg);
             setmsgTitle(respopupMessage.data.title);
+            dispatch(popupMessage(null));
         }
     }, [respopupMessage]);
 

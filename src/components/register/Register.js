@@ -16,11 +16,16 @@ import { toggleSubwindow } from "../common/EventFunctions";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
+    const [isShowTakeOver, setisShowTakeOver] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     var registers = [];
     var self_registers = [];
     var firebase_registers = [];
+
+    const toggleShowTakeOver = () => {
+        setisShowTakeOver(!isShowTakeOver)
+    }
 
     const [respRegister, respFirebaseRegisters] = useSelector((state) => [state.register, state.firebaseRegister])
 
@@ -68,7 +73,10 @@ const Register = () => {
             }
         }
         else
-            toggleSubwindow("takeover-register");
+        {
+            toggleShowTakeOver();
+        }
+            //toggleSubwindow("takeover-register");
     }
     const openRegister = () => {
         var result = false;
@@ -133,7 +141,7 @@ const Register = () => {
                                                 <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
                                                     <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
                                                 : <React.Fragment>
-                                                    <img src={AngledBracket_Right_Grey} alt="" />
+                                                    <img src={AngledBracket_Right_Grey} alt="" onClick={() => toggleShowTakeOver()}/>
                                                     <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
                                         </button>
 
@@ -161,11 +169,11 @@ const Register = () => {
                     </div>
                 </div>
             }
-            <div className="subwindow-wrapper hidden">
-                <div className="subwindow takeover-register">
+            <div className={isShowTakeOver ? "subwindow-wrapper" : "subwindow-wrapper hidden"}>
+                <div className={isShowTakeOver ? "subwindow takeover-register current" : "subwindow takeover-register"}>
                     <div className="subwindow-header">
                         <p>Take Over Register</p>
-                        <button className="close-subwindow" >
+                        <button className="close-subwindow" onClick={() => toggleShowTakeOver()}>
                             {/* onClick={() => toggleSubwindow()} */}
                             <img src={X_Icon_DarkBlue} alt="" />
                         </button>
@@ -178,7 +186,7 @@ const Register = () => {
                             This action will kick out the current user.
                         </p>
                         <button id="takeoverRegister" onClick={() => takeOver()}>Take Over</button>
-                        <button id="cancelTakeover" >Cancel</button>
+                        <button id="cancelTakeover" onClick={() => toggleShowTakeOver()}>Cancel</button>
                         {/* onClick={() => toggleSubwindow()} */}
                         <div className="auto-margin-bottom"></div>
                     </div>

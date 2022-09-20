@@ -1,40 +1,114 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import CircledPlus_Icon_Border from '../../../images/svg/CircledPlus-Icon-Border.svg';
 import STATUSES from "../../../constants/apiStatus";
 import { AddItemType } from "../../common/EventFunctions";
 import { useIndexedDB } from 'react-indexed-db';
-import { getTaxAllProduct } from '../../common/TaxSetting'
+import { getTaxAllProduct } from '../../common/TaxSetting';
+import { useLongPress } from 'use-long-press';
+import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import { deleteTile } from '../tiles/tileSlice';
+import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 // var AllProduct = [];
 // var ParentProductList = [];
 // var filtered = [];
 
 const TileList = (props) => {
     const { getAll } = useIndexedDB("products");
+    const dispatch = useDispatch();
     const [AllProduct, setAllProduct] = useState([]);
     const [filtered, setfiltered] = useState([]);
     const [ParentProductList, setParentProductList] = useState([]);
     const [favArrayList, setfavArrayList] = useState([]);
-    // const [categoryList, setcategoryList] = useState([]);
-    // const [attributeList, setattributeList] = useState([]);
     const [cat_breadcrumb, setCat_breadcrumb] = useState([]);
     const [sel_item, setSel_item] = useState([]);
+    const [isLoading, setIsLoading] = useState(false)
     const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
     const { status, data, error, is_success } = useSelector((state) => state.tile)
-    // var categoryList=[];
-    // var attributeList=[];
+    const clearRemoveBtn = () => {
+        const boxes = document.querySelectorAll('.remove-cover');
+        boxes.forEach(box => {
+            box.classList.add('hide');
+        });
+        const tileBtns = document.querySelectorAll('.remove-state');
+        tileBtns.forEach(btn => {
+            console.log("this click for remove the remove tile button---" + btn.classList)
+            btn.classList.remove('remove-state');
+        });
+    }
+    const outerClick = (e) => {
+        {
+            if( doDelete==false)
+            clearRemoveBtn();
+        }
+    }
+    const delete_tile = (id) => {
+        var param = { "favid": id };
+        setIsLoading(true);
+        dispatch(deleteTile(param));
+    }
+    const callback = useCallback(e => {
+        console.log('Long pressed!');
 
-    // var favArrayList = [];
-    // const dispatch = useDispatch();
+        clearRemoveBtn();
+        if ((e.target.tagName == "IMG" || e.target.tagName == "DIV" || e.target.tagName == "P") && e.target.parentNode && !e.target.parentNode.classList.contains("remove-state")) {
+            if (e.target.parentNode.classList.contains('product') || e.target.parentNode.classList.contains('category') || e.target.parentNode.classList.contains('attribute')) {
+                e.target.parentNode.classList.add("remove-state");
+                e.target.parentNode.lastChild.classList.remove('hide');
+                console.log(e.target.parentNode.lastChild);
+            }
+        }
+        else if (e.target.classList.contains('product') || e.target.classList.contains('category') || e.target.classList.contains('attribute')) {
+            e.target.classList.add("remove-state");
+            e.target.lastChild.classList.remove('hide');
+        }
+        //e.stopPropagation();
+    }, []);
+
+    let clickHoldTimer = null;
+    var doDelete = false;
+    const onStart = (event) => {
+        console.log('Press started' + event.target.classList)
+        clickHoldTimer = setTimeout(() => {
+            if (event.target.classList && !event.target.classList.contains("remove-cover")) {
+                doDelete = false;
+            }
+            //Action to be performed after holding down mouse
+        }, 1000); //Change 1000 to number of milliseconds required for mouse hold
+    }
+    const onFinish = () => {
+        console.log('Long press finished')
+        doDelete = true;
+        clearTimeout(clickHoldTimer);
+    }
 
 
-    // const getSubAttribute = (item, id) => {
+    const bind = useLongPress(true ? callback : null, {
+        onStart: event => onStart(event),
+        onFinish: event => onFinish(event),
+        onCancel: event => console.log('Press cancelled'),
+        onMove: event => console.log('Detected mouse or touch movement'),
+        // filterEvents: event => true, // All events can potentially trigger long press
+        threshold: 1000,
+        // captureEvent: false,
+        // cancelOnMovement: false,
+        // detect: 'both',
+    });
 
-
-    // }
-    // const getSubCategory = (item, id) => {
-
-    // }
+    // const bind = useLongPress((e) => {
+    //     clearRemoveBtn();
+    //     if ((e.target.tagName == "IMG" || e.target.tagName == "DIV" || e.target.tagName == "P") && e.target.parentNode && !e.target.parentNode.classList.contains("remove-state")) {
+    //         if (e.target.parentNode.classList.contains('product') || e.target.parentNode.classList.contains('category') || e.target.parentNode.classList.contains('attribute')) {
+    //             e.target.parentNode.classList.add("remove-state");
+    //             e.target.parentNode.lastChild.classList.remove('hide');
+    //             console.log(e.target.parentNode.lastChild);
+    //         }
+    //     }
+    //     else if (e.target.classList.contains('product') || e.target.classList.contains('category') || e.target.classList.contains('attribute')) {
+    //         e.target.classList.add("remove-state");
+    //         e.target.lastChild.classList.remove('hide');
+    //     }
+    // });
     const filterProductForAttribute = (item) => {
         var subAtt = [];
         if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) {
@@ -224,7 +298,7 @@ const TileList = (props) => {
 
             var _categoryList = [];
             if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
-                 _categoryList = respCategory.data.content;
+                _categoryList = respCategory.data.content;
                 // setcategoryList(_categoryList)
             }
 
@@ -336,6 +410,8 @@ const TileList = (props) => {
 
     }
     const filterProductByTile = (type, item, parent) => {
+        if (doDelete === true)
+            return;
         if (type !== "product")
             fillCategorySelection(item)
         //this.setState({ pageNumber: 0 })
@@ -393,7 +469,7 @@ const TileList = (props) => {
 
         setfavArrayList(_favArrayList);
     }
-  
+
     useEffect(() => {
         getAll().then((rows) => {
             var allProdcuts = getTaxAllProduct(rows)
@@ -526,9 +602,15 @@ const TileList = (props) => {
         // this.props.tileFilterData(null, "product", null);
 
     }
-
+    // It is refreshing the tile list from server when a new tile is added
+    const [resdeletTile] = useSelector((state) => [state.deletTile])
+    useEffect(() => {
+        if (isLoading===true && resdeletTile && resdeletTile.status == STATUSES.IDLE && (resdeletTile.is_success===true || resdeletTile.is_success===false)) {
+            setIsLoading(false);
+        }
+    }, [resdeletTile]);
     return (
-        <div className="products">
+        <div className="products" onClick={(e) => outerClick(e)}>
             {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
                 <div className="category-row">
                     {showCategorySelection()}
@@ -539,7 +621,7 @@ const TileList = (props) => {
                 favArrayList && favArrayList.map((item, index) => {
                     switch (item.type) {
                         case "product":
-                            return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} >
+                            return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()}>
                                 <div className="body">
                                     <img src={item.Image} alt="" />
                                 </div>
@@ -548,20 +630,24 @@ const TileList = (props) => {
                                         {item.Title}
                                     </p>
                                 </div>
+                                <div class="remove-cover hide"><div class="remove-button" onClick={()=>delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+
                             </button>
                         case "attribute":
                         case "sub-attribute":
-                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} >
+                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()}>
                                 <p>
                                     {item.attribute_slug}
                                 </p>
+                                <div class="remove-cover hide"><div class="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                             </button>
                         case "category":
                         case "sub-category":
-                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)}>
+                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()}>
                                 <p>
                                     {item.name ? item.name : item.Value}
                                 </p>
+                                <div class="remove-cover hide"><div class="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                             </button>
                         default:
                             return ''
@@ -600,10 +686,10 @@ const TileList = (props) => {
             <button className="category background-violet">
                 <p>Clothing</p>
             </button> */}
-            <button className="add-tile" onClick={()=>props.toggleAddTitle()}>
+            <button className="add-tile" onClick={() => props.toggleAddTitle()}>
                 <img src={CircledPlus_Icon_Border} alt="" />
                 Add Tile
-            </button>
+            </button>{isLoading===true?<LoadingModal></LoadingModal>:null}
         </div>)
 }
 

@@ -347,6 +347,7 @@ const CartList = (props) => {
         })
 
         //total count of the prodcuts in the cart
+        setTotalItems(0)
         if (props.listItem && props.listItem.length > 0) {
             var qty = 0;
             props.listItem.map(item => {
@@ -424,8 +425,6 @@ const CartList = (props) => {
                 }
                 setUpdateProductStatus(true);
             }
-
-
         }
     }, [resCheckStock]);
     return (

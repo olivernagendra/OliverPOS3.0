@@ -99,7 +99,7 @@ const AddTile = (props) => {
             }
             //   var fPList=  recursivelyFindKeyValue('',e.target.value,product_List,0)
             getAll().then((rows) => {
-                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value));
+                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value) && a.ParentId===0);
                 if (fPList && fPList.length > 0) {
                     fPList = AddItemType(fPList, "product");
                     // _filteredData.concat(fPList);
