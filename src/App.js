@@ -52,7 +52,7 @@ function App() {
         <Route path="/openregister" element={authenticateComponent(<OpenRegister />)} />
         <Route path="/closeregister" element={authenticateComponent(<Closeregister />)} />
         <Route path="*" element={authenticateComponent(<NoPage />)} />
-        <Route path="/customer" element={authenticateComponent(<CustomerView />)} />
+        <Route path="/customers" element={authenticateComponent(<CustomerView />)} />
         <Route path="/checkout" element={authenticateComponent(<Checkout />)} />
         <Route path='/transactions' element={authenticateComponent(<ActivityView />)} />
       </Routes>
