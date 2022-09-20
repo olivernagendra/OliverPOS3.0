@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from 'react-redux';
-import { get_locName, get_regName } from '../common/localSettings'
+import { get_locName, get_regName, getShopName } from '../common/localSettings'
 import imgOpenReg from '../../images/svg/OpenSign.svg'
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,10 +9,10 @@ import { GetOpenRegister } from '../cashmanagement/CashmanagementSlice'
 // import {createPin, validatePin} from "./pinSlice"
 // import { useNavigate } from "react-router-dom";
 // import { get_UDid } from "../common/localSettings"; 
- import STATUSES from "../../constants/apiStatus";
+import STATUSES from "../../constants/apiStatus";
 // import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
-import PinPad from "../PinPad";
+import PinPad from "./PinPad";
 import { get_UDid } from "../common/localSettings";
 const Pin = () => {
     const dispatch = useDispatch();
@@ -21,49 +21,49 @@ const Pin = () => {
     const [onClick, setOnClick] = useState(false)
     const register_Id = localStorage.getItem('register');
 
-    
+
     let useCancelled = false;
     useEffect(() => {
-      if (useCancelled == false) {
-       
-        fetchData()
-      }
-      return () => {
-        useCancelled = true;
-      }
+        if (useCancelled == false) {
+
+            fetchData()
+        }
+        return () => {
+            useCancelled = true;
+        }
     }, []);
 
 
 
-const fetchData = ()=>{
-    if (UID && register_Id) {
-        // this.props.dispatch(favouriteListActions.getAll(UID, register_Id));
-        var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-        var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
-        if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
-            dispatch(GetOpenRegister(register_Id));
-        }
-        else {
-            localStorage.setItem("IsCashDrawerOpen", "false");
+    const fetchData = () => {
+        if (UID && register_Id) {
+            // this.props.dispatch(favouriteListActions.getAll(UID, register_Id));
+            var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+            var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
+            if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
+                dispatch(GetOpenRegister(register_Id));
+            }
+            else {
+                localStorage.setItem("IsCashDrawerOpen", "false");
+            }
         }
     }
-}
 
 
-   
+
 
     const { status, dataone, error, is_success } = useSelector((state) => state.GetOpenRegister)
-   console.log("status", status, "dataone", dataone, "error", error, "is_success", is_success)
+    console.log("status", status, "dataone", dataone, "error", error, "is_success", is_success)
 
     if (status === STATUSES.IDLE && is_success) {
         if (dataone && dataone.content && dataone.content !== undefined) {
-            if(dataone.content && dataone.content !=='' && dataone.content !==0){
-                localStorage.setItem("IsCashDrawerOpen","true");
-                localStorage.setItem("Cash_Management_ID",dataone.content.Id);                  
-             }else{
-                 localStorage.setItem("IsCashDrawerOpen","false");
-                 localStorage.removeItem("Cash_Management_ID");
-             }  
+            if (dataone.content && dataone.content !== '' && dataone.content !== 0) {
+                localStorage.setItem("IsCashDrawerOpen", "true");
+                localStorage.setItem("Cash_Management_ID", dataone.content.Id);
+            } else {
+                localStorage.setItem("IsCashDrawerOpen", "false");
+                localStorage.removeItem("Cash_Management_ID");
+            }
 
         }
     }
@@ -250,16 +250,16 @@ const fetchData = ()=>{
     //             //event.preventDefault();
     //         }
     //     }
-    const hundleTrue = ()=>{
-console.log("outer click")
+    const hundleTrue = () => {
+        console.log("outer click")
         setOnClick(true)
     }
 
     return <div className="idle-register-wrapper" onClick={hundleTrue}>
         <header>
-            <img src={imgOpenReg} alt="" /> 
+            <img src={imgOpenReg} alt="" />
             <div className="col">
-                <p className="style1">{get_locName()}</p>
+                <p className="style1">{getShopName()}</p>
                 <div className="divider"></div>
                 <p className="style2">{get_regName()}</p>
                 <p className="style3">{get_locName()}</p>
