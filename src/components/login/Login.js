@@ -13,6 +13,7 @@ import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { useIndexedDB } from 'react-indexed-db';
 import $ from 'jquery'
 function Login() {
     var auth2 = ''
@@ -24,11 +25,27 @@ function Login() {
     const [password, setPassword] = useState("")
     const [loginError, setLoginError] = useState();
 
+    //Clear index db-----------------------------
+    var { clear } = useIndexedDB('products');
+    clear().then(() => {
+        console.log('All Clear products!');
+    });
+    var { clear } = useIndexedDB('customers');
+    clear().then(() => {
+        console.log('All Clear customers!');
+    });
+    var { clear } = useIndexedDB('modifiers');
+    clear().then(() => {
+        console.log('All Clear modifiers!');
+    });
+    //-------------------------------------------
 
     //It will clear all local storage items
     const clearLocalStorages = () => {
         localStorage.clear();
+
     }
+
 
 
     const dispatch = useDispatch();
