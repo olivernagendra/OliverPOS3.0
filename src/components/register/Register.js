@@ -72,17 +72,17 @@ const Register = () => {
                 navigate('/pin');
             }
         }
-        else
-        {
+        else {
             toggleShowTakeOver();
         }
-            //toggleSubwindow("takeover-register");
+        //toggleSubwindow("takeover-register");
     }
     const openRegister = () => {
         var result = false;
+        var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
         var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
         var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+        if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
             result = true;
         }
         return result;
@@ -104,7 +104,7 @@ const Register = () => {
             {respRegister.status !== STATUSES.LOADING &&
                 <div className="choose-wrapper">
                     <div className="choose-header">
-                        <button id="backButton" onClick={() =>  navigate('/location')} >
+                        <button id="backButton" onClick={() => navigate('/location')} >
                             <img src={AngledBracket_Left_Blue} alt="" />
                             {LocalizedLanguage.back}
                         </button>
@@ -141,7 +141,7 @@ const Register = () => {
                                                 <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
                                                     <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
                                                 : <React.Fragment>
-                                                    <img src={AngledBracket_Right_Grey} alt="" onClick={() => toggleShowTakeOver()}/>
+                                                    <img src={AngledBracket_Right_Grey} alt="" onClick={() => toggleShowTakeOver()} />
                                                     <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
                                         </button>
 

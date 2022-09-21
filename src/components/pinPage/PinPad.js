@@ -30,11 +30,12 @@ const PinPad = React.memo(props => {
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-
+    var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
 
     useEffect(() => {
         // console.log("useEffect")
-        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+        if (isDrawerOpen == "false"
+            && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
             navigate('/openregister')
         }
         if (isloading == true) {
@@ -77,7 +78,7 @@ const PinPad = React.memo(props => {
                 // window.location = '/';
 
             }
-            if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+            if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
                 navigate('/openregister')
             } else {
                 if (props.doAction) {
