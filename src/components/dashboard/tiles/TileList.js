@@ -624,7 +624,7 @@ const TileList = (props) => {
                                         {item.Title}
                                     </p>
                                 </div>
-                                <div class="remove-cover hide"><div class="remove-button" onClick={()=>delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                <div className="remove-cover hide"><div className="remove-button" onClick={()=>delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
 
                             </button>
                         case "attribute":
@@ -633,7 +633,7 @@ const TileList = (props) => {
                                 <p>
                                     {item.attribute_slug}
                                 </p>
-                                <div class="remove-cover hide"><div class="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                <div className="remove-cover hide"><div className="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                             </button>
                         case "category":
                         case "sub-category":
@@ -641,7 +641,7 @@ const TileList = (props) => {
                                 <p>
                                     {item.name ? item.name : item.Value}
                                 </p>
-                                <div class="remove-cover hide"><div class="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                <div className="remove-cover hide"><div className="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                             </button>
                         default:
                             return ''

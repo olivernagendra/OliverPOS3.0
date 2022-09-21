@@ -232,7 +232,7 @@ const TaxList = (props) => {
                         <p>Province</p>
                         <p>Select</p>
                     </div>
-                    <div class="options-container">
+                    <div className="options-container">
                     {tax_items && tax_items.map((item, index) => {
                         return (<div className="option-row" key={item.TaxId}>
                             <p> {item.TaxName}</p>
@@ -253,7 +253,7 @@ const TaxList = (props) => {
                     })
                     }
                     </div>
-                    <div class="footer" onClick={()=>onSubmit()}>
+                    <div className="footer" onClick={()=>onSubmit()}>
 						<button id="saveTax">Save & Update</button>
 					</div>
                 </div>

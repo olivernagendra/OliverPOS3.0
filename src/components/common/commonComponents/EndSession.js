@@ -14,7 +14,7 @@ const EndSession = (props) => {
         console.log(e.target.className)
     }
     return (
-        <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={(e)=>outerClick(e)}>
+        <div className={props.isShow===true? "subwindow-wrapper":"subwindow-wrapper hidden"} onClick={(e)=>outerClick(e)} style={{zIndex:9}}>
         <div className={props.isShow===true?"subwindow end-session current":"subwindow end-session"}>
         <div className="subwindow-header">
             <p>End Session</p>
