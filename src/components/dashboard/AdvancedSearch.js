@@ -59,7 +59,8 @@ const AdvancedSearch = (props) => {
         productDataSearch(item1)
     }
     const SetFilter = (ftype) => {
-        toggleDDNSearch();
+        setisShowDDNSearch(false)
+        // toggleDDNSearch();
         setFilterType(ftype);
         productDataSearch(serachString)
     }
