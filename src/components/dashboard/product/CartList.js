@@ -11,7 +11,7 @@ import { checkStock } from "../../checkout/checkoutSlice";
 import { typeOfTax } from "../../common/TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
-import {popupMessage} from "../../common/commonAPIs/messageSlice";
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -116,14 +116,14 @@ const CartList = (props) => {
         }
         // const { dispatch } = this.props;
         // const { addcust, taxRate } = this.state;
-        var addcust =null
+        var addcust = null
         var AdCusDetail = localStorage.getItem('AdCusDetail');
         if (AdCusDetail != null) {
-            addcust= JSON.parse(AdCusDetail);
-        } 
+            addcust = JSON.parse(AdCusDetail);
+        }
 
-       
-       // var taxRate = [];
+
+        // var taxRate = [];
         const CheckoutList = {
             ListItem: ListItem,
             customerDetail: addcust,
@@ -150,7 +150,7 @@ const CartList = (props) => {
         if (ListItem.length == 0 || productCount == 0) {
             // alert("Please add at least one product in cart !");
             // dispatch(popupMessage({data:{title:"",msg:"Please add at least one product in cart !"},is_success:true}));
-            var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
+            var data = { title: "", msg: "Please add at least one product in cart !", is_success: true }
             dispatch(popupMessage(data));
             setIsLoading(false)
         } else {
@@ -284,8 +284,8 @@ const CartList = (props) => {
         }
         //show message popup here
 
-        var data ={title:"",msg:msg,is_success:true}
-            dispatch(popupMessage(data));
+        var data = { title: "", msg: msg, is_success: true }
+        dispatch(popupMessage(data));
         //alert(msg);
         setIsLoading(false)
     }
@@ -355,11 +355,10 @@ const CartList = (props) => {
                     qty += item.quantity;
                 }
             })
-            if (qty !== 0)
-            {
+            if (qty !== 0) {
                 setTotalItems(qty)
             }
-                
+
         }
 
         _seprateDiscountAmount = _subtotalPrice - _subtotalDiscount;
@@ -429,17 +428,17 @@ const CartList = (props) => {
     }, [resCheckStock]);
     return (
         <React.Fragment>
-       {isLoading?<LoadingModal></LoadingModal>:null}
-        <div className={isShowMobileCartList==true? "cart open":"cart"}>
-            <div className="mobile-header">
-                <p>Cart</p>
-                <button id="exitCart" onClick={()=>toggleMobileCartList()}>
-                    <img src={X_Icon_DarkBlue} alt="" />
-                </button>
-            </div>
-            <div className="body">
-                <img src={EmptyCart} alt="" />
-                {/* <div className="cart-item">
+            {isLoading ? <LoadingModal></LoadingModal> : null}
+            <div className={isShowMobileCartList == true ? "cart open" : "cart"}>
+                <div className="mobile-header">
+                    <p>Cart</p>
+                    <button id="exitCart" onClick={() => toggleMobileCartList()}>
+                        <img src={X_Icon_DarkBlue} alt="" />
+                    </button>
+                </div>
+                <div className="body">
+                    <img src={EmptyCart} alt="" />
+                    {/* <div className="cart-item">
                     <div className="main-row">
                         <p className="quantity">2</p>
                         <p className="content-style">Face Mask</p>
@@ -458,25 +457,25 @@ const CartList = (props) => {
                         </button>
                     </div>
                 </div> */}
-                {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
+                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
 
-                    return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
-                        <div className="main-row" >
-                            <p className="quantity">{a.quantity && a.quantity}</p>
-                            <p className="content-style">{a.Title && a.Title}</p>
-                            <p className="price">{a.Price && a.Price}</p>
-                            <button className="remove-cart-item" onClick={() => deleteItem(a)}>
-                                <img src={CircledX_Grey} alt="" />
-                            </button>
-                        </div>
-                        <div className="secondary-col">
-                            {/* <p>Medium</p>
+                        return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
+                            <div className="main-row" >
+                                <p className="quantity">{a.quantity && a.quantity}</p>
+                                <p className="content-style">{a.Title && a.Title}</p>
+                                <p className="price">{a.Price && a.Price}</p>
+                                <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                    <img src={CircledX_Grey} alt="" />
+                                </button>
+                            </div>
+                            <div className="secondary-col">
+                                {/* <p>Medium</p>
                             <p>Navy</p> */}
+                            </div>
                         </div>
-                    </div>
 
-                })}
-                {/* <div className="cart-item">
+                    })}
+                    {/* <div className="cart-item">
                     <div className="main-row">
                         <p className="quantity">10</p>
                         <p className="content-style">Snapback Baseball Hat with Logo</p>
@@ -566,33 +565,33 @@ const CartList = (props) => {
                         </p>
                     </div>
                 </div> */}
-            </div>
-            <div className="footer">
-                <div className="totals">
-                    <div className="row">
-                        <p>Subtotal</p>
-                        <p><b>${subTotal}</b></p>
+                </div>
+                <div className="footer">
+                    <div className="totals">
+                        <div className="row">
+                            <p>Subtotal</p>
+                            <p><b>${subTotal}</b></p>
+                        </div>
+                        {discount && discount > 0 ?
+                            <div className="row">
+                                <p>Cart Discount - { }</p>
+                                <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
+                                <p><b>-${discount}</b></p>
+                            </div> : null}
+                        <div className="row">
+                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes</button>
+                            <p>(%)</p>
+                            <p><b>${taxes}</b></p>
+                        </div>
                     </div>
-                    {discount && discount>0 ?
-                    <div className="row">
-                        <p>Cart Discount - 25%</p>
-                        <button id="editCartDiscount" onClick={()=>props.toggleEditCartDiscount()}>edit</button>
-                        <p><b>-${discount}</b></p>
-                    </div>:null}
-                    <div className="row">
-                        <button id="taxesButton" onClick={()=>props.toggleTaxList()}>Taxes</button>
-                        <p>(%)</p>
-                        <p><b>${taxes}</b></p>
+                    <div className="checkout-container">
+                        <button onClick={() => doCheckout()}>Checkout - ${total}</button>
                     </div>
                 </div>
-                <div className="checkout-container">
-                    <button onClick={() => doCheckout()}>Checkout - ${total}</button>
-                </div>
             </div>
-        </div>
-        <div className="mobile-homepage-footer">
-				<button id="openMobileCart" onClick={()=>toggleMobileCartList()}>View Cart {totalItems!=0?("("+totalItems+")"):""} - ${total}</button>
-			</div>
+            <div className="mobile-homepage-footer">
+                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""} - ${total}</button>
+            </div>
         </React.Fragment>)
 }
 
