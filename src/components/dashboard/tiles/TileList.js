@@ -604,7 +604,7 @@ const TileList = (props) => {
         }
     }, [resdeletTile]);
     return (
-        <div className="products">
+        <div className="products" onContextMenu={(e)=> e.preventDefault()}>
             {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
                 <div className="category-row">
                     {showCategorySelection()}

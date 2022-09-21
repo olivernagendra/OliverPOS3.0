@@ -266,7 +266,7 @@ const Pin = () => {
                 <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
             </div>
         </header>
-        <main>{<PinPad onClick={onClick}></PinPad>} <button id="closeRegister2">{LocalizedLanguage.closeRegister}</button></main>
+        <main>{<PinPad onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>
     </div>
 }
 

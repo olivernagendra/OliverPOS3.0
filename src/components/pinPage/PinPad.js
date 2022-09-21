@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { chunkArray, get_locName, get_regName } from '../common/localSettings'
 // import imgOpenReg from '../images/svg/OpenSign.svg'
 import imgBackSpace from '../../assets/images/svg/Backspace-BaseBlue.svg'
+import Backspace_White from '../../assets/images/svg/Backspace-White.svg'
+
 
 import { createPin, validatePin } from "./pinSlice"
 import { useNavigate } from "react-router-dom";
@@ -108,7 +110,7 @@ const PinPad = React.memo(props => {
                         <button key={"input" + i} type="button" id={props.id}
                             onClick={() => { addToScreen(nm) }}
                             className={nm === 'c' ? "backspace" : ""}>
-                            {nm === 'c' ? <img src={imgBackSpace} /> : nm}
+                            {nm === 'c' ? <img src={Backspace_White} /> : nm}
                         </button>
                     )
                 })

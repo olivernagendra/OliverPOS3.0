@@ -104,7 +104,7 @@ const Register = () => {
             {respRegister.status !== STATUSES.LOADING &&
                 <div className="choose-wrapper">
                     <div className="choose-header">
-                        <button id="backButton" onClick={() => window.location = "/location"} >
+                        <button id="backButton" onClick={() =>  navigate('/location')} >
                             <img src={AngledBracket_Left_Blue} alt="" />
                             {LocalizedLanguage.back}
                         </button>
