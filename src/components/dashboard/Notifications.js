@@ -8,6 +8,7 @@ import Changelog_Icon from '../../images/svg/Changelog-Icon.svg';
 import Info_Icon from '../../images/svg/Info-Icon.svg';
 import Error_Icon from '../../images/svg/Error-Icon.svg';
 import ActiveUser from '../../settings/ActiveUser';
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const Notifications = (props) => {
     const [isSoundNotification, setisSoundNotification] = useState(false);
     const [notificationList, setNotificationList] = useState([]);
@@ -167,7 +168,7 @@ const Notifications = (props) => {
                     </div>
                 </div>
                 <div className="header">
-                    <p>Notifications</p>
+                    <p>{LocalizedLanguage.notification}</p>
                     <div className="dropdown-options"></div>
                     <button id="notiSoundOptions" onClick={() => toggleiSoundNotification()}>
                         <img src={NotificationsSounds} alt="" />

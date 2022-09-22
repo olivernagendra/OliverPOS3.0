@@ -11,7 +11,9 @@ import { checkStock } from "../../checkout/checkoutSlice";
 import { typeOfTax } from "../../common/TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
-import {popupMessage} from "../../common/commonAPIs/messageSlice";
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
+import { get_customerName } from "../../common/localSettings";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -36,6 +38,18 @@ const CartList = (props) => {
     const deleteItem = (item) => {
         if (item) {
             deleteProduct(item);
+            //deleting the product note for the product
+            var products = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+            if(products.length>0)
+            {
+               var notes= products.filter(a=>a.hasOwnProperty("pid") && !a.hasOwnProperty("product_id") && ( !a.hasOwnProperty("Price") || a.Price==null) && a.pid===item.product_id);
+                if(notes && notes.length>0)
+                {
+                    notes.map(n=>{
+                        deleteProduct(n);
+                    })
+                }
+            }
             dispatch(product());
         }
     }
@@ -116,14 +130,14 @@ const CartList = (props) => {
         }
         // const { dispatch } = this.props;
         // const { addcust, taxRate } = this.state;
-        var addcust =null
+        var addcust = null
         var AdCusDetail = localStorage.getItem('AdCusDetail');
         if (AdCusDetail != null) {
-            addcust= JSON.parse(AdCusDetail);
-        } 
+            addcust = JSON.parse(AdCusDetail);
+        }
 
-       
-       // var taxRate = [];
+
+        // var taxRate = [];
         const CheckoutList = {
             ListItem: ListItem,
             customerDetail: addcust,
@@ -150,7 +164,7 @@ const CartList = (props) => {
         if (ListItem.length == 0 || productCount == 0) {
             // alert("Please add at least one product in cart !");
             // dispatch(popupMessage({data:{title:"",msg:"Please add at least one product in cart !"},is_success:true}));
-            var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
+            var data = { title: "", msg: LocalizedLanguage.messageCartNoProduct, is_success: true }
             dispatch(popupMessage(data));
             setIsLoading(false)
         } else {
@@ -238,15 +252,24 @@ const CartList = (props) => {
             var _item = [];
             if (checkout_list && checkout_list.ListItem) {
                 checkout_list.ListItem.map(item => {
-                    _item.push({ Message: "", ProductId: item.product_id, Quantity: item.quantity, Message: "", success: true, psummary: item.psummary });
+                    if (item.hasOwnProperty("product_id"))
+                        _item.push({ Message: "", ProductId: item.product_id, Quantity: item.quantity, Message: "", success: true, psummary: item.psummary });
                 });
             }
+            dispatch(checkStock(_item));
             //  dispatch(success( _item ));
-            return _item;
+            //return _item;
         } else {
             var demoUser = localStorage.getItem("demoUser") ? localStorage.getItem("demoUser") : false;
             if (demoUser == false) {
-                dispatch(checkStock(list_item));
+                var _item = [];
+                if (list_item) {
+                    list_item.map(item => {
+                        if (item.hasOwnProperty("product_id"))
+                            _item.push(item);
+                    });
+                }
+                dispatch(checkStock(_item));
             }
         }
 
@@ -284,8 +307,8 @@ const CartList = (props) => {
         }
         //show message popup here
 
-        var data ={title:"",msg:msg,is_success:true}
-            dispatch(popupMessage(data));
+        var data = { title: "", msg: msg, is_success: true }
+        dispatch(popupMessage(data));
         //alert(msg);
         setIsLoading(false)
     }
@@ -355,11 +378,10 @@ const CartList = (props) => {
                     qty += item.quantity;
                 }
             })
-            if (qty !== 0)
-            {
+            if (qty !== 0) {
                 setTotalItems(qty)
             }
-                
+
         }
 
         _seprateDiscountAmount = _subtotalPrice - _subtotalDiscount;
@@ -427,19 +449,51 @@ const CartList = (props) => {
             }
         }
     }, [resCheckStock]);
+
+
+    const RemoveCustomer = () => {
+        localStorage.removeItem('AdCusDetail');
+        sessionStorage.removeItem("CUSTOMER_ID");
+        var list = localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null;
+        if (list != null) {
+            var _wc_amount_redeemed = list._wc_amount_redeemed ? parseFloat(list._wc_amount_redeemed) : 0
+            const CheckoutList = {
+                ListItem: list.ListItem,
+                customerDetail: null,
+                totalPrice: parseFloat(list.totalPrice) + _wc_amount_redeemed,
+                discountCalculated: parseFloat(list.discountCalculated) - _wc_amount_redeemed,
+                tax: list.tax,
+                subTotal: list.subTotal,
+                TaxId: list.TaxId,
+                showTaxStaus: list.showTaxStaus,
+                TaxRate: list.TaxRate,
+                order_id: list.order_id,
+                oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+                order_date: list.order_date,
+                order_id: list.order_id,
+                status: list.status,
+                _wc_points_redeemed: 0,
+                _wc_amount_redeemed: 0,
+                _wc_points_logged_redemption: 0
+            }
+            localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+        }
+        dispatch(product());
+    }
+    
     return (
         <React.Fragment>
-       {isLoading?<LoadingModal></LoadingModal>:null}
-        <div className={isShowMobileCartList==true? "cart open":"cart"}>
-            <div className="mobile-header">
-                <p>Cart</p>
-                <button id="exitCart" onClick={()=>toggleMobileCartList()}>
-                    <img src={X_Icon_DarkBlue} alt="" />
-                </button>
-            </div>
-            <div className="body">
-                <img src={EmptyCart} alt="" />
-                {/* <div className="cart-item">
+            {isLoading ? <LoadingModal></LoadingModal> : null}
+            <div className={isShowMobileCartList == true ? "cart open" : "cart"}>
+                <div className="mobile-header">
+                    <p>Cart</p>
+                    <button id="exitCart" onClick={() => toggleMobileCartList()}>
+                        <img src={X_Icon_DarkBlue} alt="" />
+                    </button>
+                </div>
+                <div className="body">
+                    <img src={EmptyCart} alt="" />
+                    {/* <div className="cart-item">
                     <div className="main-row">
                         <p className="quantity">2</p>
                         <p className="content-style">Face Mask</p>
@@ -458,25 +512,97 @@ const CartList = (props) => {
                         </button>
                     </div>
                 </div> */}
-                {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
-
-                    return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
-                        <div className="main-row" >
-                            <p className="quantity">{a.quantity && a.quantity}</p>
-                            <p className="content-style">{a.Title && a.Title}</p>
-                            <p className="price">{a.Price && a.Price}</p>
-                            <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                    {get_customerName() != null && <div className="cart-item">
+                        <div className="main-row aligned">
+                            <div className="tag customer">Customer</div>
+                            <div className="content-style">{get_customerName().Name}</div>
+                            <button className="remove-cart-item" onClick={() => RemoveCustomer()}>
                                 <img src={CircledX_Grey} alt="" />
                             </button>
                         </div>
-                        <div className="secondary-col">
-                            {/* <p>Medium</p>
-                            <p>Navy</p> */}
-                        </div>
-                    </div>
+                    </div>}
+                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
+                        var item_type = "";
+                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) {item_type = "note";}
+                        else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
+                        else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
 
-                })}
-                {/* <div className="cart-item">
+                        switch (item_type) {
+                            case "product":
+                                return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
+                                    <div className="main-row" >
+                                        <p className="quantity">{a.quantity && a.quantity}</p>
+                                        <p className="content-style">{a.Title && a.Title}</p>
+                                        <p className="price">{a.Price && a.Price}</p>
+                                        <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                            <img src={CircledX_Grey} alt="" />
+                                        </button>
+                                    </div>
+                                    <div className="secondary-col">
+                                        {/* <p>Medium</p>
+            <p>Navy</p> */}
+                                    </div>
+                                </div>
+                            case "note":
+                                return <div className="cart-item">
+                                    <div className="main-row aligned">
+                                        <div className="tag cart-note">Note</div>
+                                        <p className="content-style line-capped">
+                                            {a.Title && a.Title}
+                                        </p>
+                                    </div>
+                                </div>
+                            case "custom_fee":
+                                return <div className="cart-item">
+                                    <div className="main-row aligned">
+                                        <div className="tag custom-fee">Custom Fee</div>
+                                        <div className="content-style">{a.Title && a.Title}</div>
+                                        <div className="price">{a.Price && a.Price}</div>
+                                        <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                            <img src={CircledX_Grey} alt="" />
+                                        </button>
+                                    </div>
+                                </div>
+                            // case "customer":
+                            //     return <div className="cart-item">
+                            //         <div className="main-row aligned">
+                            //             <div className="tag customer">Customer</div>
+                            //             <div className="content-style">{get_customerName().Name}</div>
+                            //             <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                            //                 <img src={CircledX_Grey} alt="" />
+                            //             </button>
+                            //         </div>
+                            //     </div>
+                            case "group":
+                                return <div className="cart-item">
+                                    <div className="main-row aligned">
+                                        <div className="tag group">Group</div>
+                                        <p className="content-style">Table 1</p>
+                                        <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                            <img src={CircledX_Grey} alt="" />
+                                        </button>
+                                    </div>
+                                </div>
+                            default:
+                                return null;
+                        }
+                        // return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
+                        //     <div className="main-row" >
+                        //         <p className="quantity">{a.quantity && a.quantity}</p>
+                        //         <p className="content-style">{a.Title && a.Title}</p>
+                        //         <p className="price">{a.Price && a.Price}</p>
+                        //         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                        //             <img src={CircledX_Grey} alt="" />
+                        //         </button>
+                        //     </div>
+                        //     <div className="secondary-col">
+                        //         {/* <p>Medium</p>
+                        //     <p>Navy</p> */}
+                        //     </div>
+                        // </div>
+
+                    })}
+                    {/* <div className="cart-item">
                     <div className="main-row">
                         <p className="quantity">10</p>
                         <p className="content-style">Snapback Baseball Hat with Logo</p>
@@ -566,33 +692,33 @@ const CartList = (props) => {
                         </p>
                     </div>
                 </div> */}
-            </div>
-            <div className="footer">
-                <div className="totals">
-                    <div className="row">
-                        <p>Subtotal</p>
-                        <p><b>${subTotal}</b></p>
+                </div>
+                <div className="footer">
+                    <div className="totals">
+                        <div className="row">
+                            <p>{LocalizedLanguage.printSubtotal}</p>
+                            <p><b>${subTotal}</b></p>
+                        </div>
+                        {discount && discount > 0 ?
+                            <div className="row">
+                                <p>Cart Discount - {}%</p>
+                                <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
+                                <p><b>-${discount}</b></p>
+                            </div> : null}
+                        <div className="row">
+                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes</button>
+                            <p>(%)</p>
+                            <p><b>${taxes}</b></p>
+                        </div>
                     </div>
-                    {discount && discount>0 ?
-                    <div className="row">
-                        <p>Cart Discount - 25%</p>
-                        <button id="editCartDiscount" onClick={()=>props.toggleEditCartDiscount()}>edit</button>
-                        <p><b>-${discount}</b></p>
-                    </div>:null}
-                    <div className="row">
-                        <button id="taxesButton" onClick={()=>props.toggleTaxList()}>Taxes</button>
-                        <p>(%)</p>
-                        <p><b>${taxes}</b></p>
+                    <div className="checkout-container">
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout} - ${total}</button>
                     </div>
                 </div>
-                <div className="checkout-container">
-                    <button onClick={() => doCheckout()}>Checkout - ${total}</button>
-                </div>
             </div>
-        </div>
-        <div className="mobile-homepage-footer">
-				<button id="openMobileCart" onClick={()=>toggleMobileCartList()}>View Cart {totalItems!=0?("("+totalItems+")"):""} - ${total}</button>
-			</div>
+            <div className="mobile-homepage-footer">
+                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""} - ${total}</button>
+            </div>
         </React.Fragment>)
 }
 

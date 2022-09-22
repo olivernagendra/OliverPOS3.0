@@ -185,7 +185,7 @@ const TaxList = (props) => {
                     </div>
                     {selTax && selTax.map(m => {
                         return (
-                            <div className="row">
+                            <div className="row" key={m.TaxId}>
                                 <p>{m.TaxName}</p>
                                 <label>
                                     <input type="radio" id={m.TaxName} name="tax-type" value={m.TaxName} />

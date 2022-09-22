@@ -945,15 +945,16 @@ const Product = (props) => {
             if (_product) {
                 // _product = props.selProduct;
                 _product.quantity = productQty;
-                if (note != "") {
-                    var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false });
-                    console.log("----product note---" + note);
-                }
+                
                 var result = addSimpleProducttoCart(_product);
                 if (result === 'outofstock') {
                     toggleOutOfStock();
                 }
                 else {
+                    if (note != "") {
+                        var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false,"pid":_product.hasOwnProperty("product_id")?_product.product_id:_product.WPID,"vid":_product.variation_id });
+                        console.log("----product note---" + note);
+                    }
                     setTimeout(() => {
                         dispatch(product());
                     }, 100);

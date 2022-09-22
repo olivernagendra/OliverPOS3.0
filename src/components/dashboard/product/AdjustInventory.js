@@ -1,7 +1,11 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, {useState, useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import Pencil_Blue from '../../../images/svg/Pencil-Blue.svg';
 const AdjustInventory = (props) => {
+    const [isEditInventory, setisEditInventory] = useState(false);
+    const toggleEditInventory = () => {
+        setisEditInventory(!isEditInventory)
+    }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleAdjustInventory();
@@ -20,8 +24,8 @@ const AdjustInventory = (props) => {
                     <div className="auto-margin-top"></div>
                     <p>Current Warehouse</p>
                     <label htmlFor="productStock">Currently in Stock:</label>
-                    <input type="number" id="productStock" value="23" disabled />
-                    <button id="editStockButton">
+                    <input type="number" id="productStock" value="23" disabled={isEditInventory==true?false:true} />
+                    <button id="editStockButton" onClick={()=>toggleEditInventory()}>
                         <img src={Pencil_Blue} alt="" />
                         Click to edit
                     </button>

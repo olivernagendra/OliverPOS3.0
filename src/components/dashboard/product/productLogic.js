@@ -76,6 +76,9 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             TaxStatus: product ? product.TaxStatus : "",
             TaxClass: product ? product.TaxClass : '',
         }
+        if (product.hasOwnProperty("pid")) {
+            data["pid"] = product.pid;
+        }
         var qty = 0;
         cartproductlist.map(item => {
             if (product.WPID == item.product_id) {
@@ -101,7 +104,7 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             stockUpdateQuantity(cartlist, data, product)
             if ((!localStorage.getItem("APPLY_DEFAULT_TAX")) || localStorage.getItem("APPLY_DEFAULT_TAX") == null) {
                 // setTimeout(() => {
-                    addtoCartProduct(cartlist);
+                addtoCartProduct(cartlist);
                 // }, 400);
             } else {
                 addtoCartProduct(cartlist);
@@ -364,7 +367,9 @@ export const addtoCartProduct = (cartproductlist) => {
             addons_meta_data: item.addons_meta_data ? item.addons_meta_data : "",
             psummary: item.psummary ? item.psummary : ''
         }
-
+        if (item.hasOwnProperty("pid")) {
+            _newITem["pid"] = item.pid;
+        }
         // set Price for productX from productX localstorage.
         var prodXData = localStorage.getItem("PRODUCTX_DATA") ? JSON.parse(localStorage.getItem("PRODUCTX_DATA")) : 0
         // cartproductlist && cartproductlist.map(pro => {

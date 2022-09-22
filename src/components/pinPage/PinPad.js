@@ -7,7 +7,7 @@ import Backspace_White from '../../assets/images/svg/Backspace-White.svg'
 
 
 import { createPin, validatePin } from "./pinSlice"
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { get_UDid } from "../common/localSettings";
 import STATUSES from "../../constants/apiStatus";
 //import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
@@ -18,6 +18,7 @@ import $ from "jquery";
 const PinPad = React.memo(props => {
     // console.log("props",props)
     const inputElement = useRef(null);
+    const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [totalSize, setTotalSize] = useState(0)
@@ -110,7 +111,7 @@ const PinPad = React.memo(props => {
                         <button key={"input" + i} type="button" id={props.id}
                             onClick={() => { addToScreen(nm) }}
                             className={nm === 'c' ? "backspace" : ""}>
-                            {nm === 'c' ? <img src={Backspace_White} /> : nm}
+                            {nm === 'c' ? (location.pathname === "/home"?<img src={imgBackSpace} />:<img src={Backspace_White} />) : nm}
                         </button>
                     )
                 })

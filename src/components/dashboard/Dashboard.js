@@ -27,6 +27,7 @@ import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
 import { product } from "./product/productSlice";
 import { userList } from "../common/commonAPIs/userSlice";
+import { discount } from "../common/commonAPIs/discountSlice";
 import { getRates, isMultipleTaxSupport, getTaxRateList } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
@@ -96,7 +97,7 @@ const Home = () => {
         dispatch(getRates());
         dispatch(isMultipleTaxSupport());
         dispatch(getTaxRateList());
-
+        dispatch(discount());
         getFavourites();
         var locationId = localStorage.getItem('Location')
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -160,18 +161,22 @@ const Home = () => {
     //     setisShowSwitchUser(!isShowSwitchUser)
     // }
     const toggleOrderNote = () => {
+        setisShowOptionPage(false)
         setisShowOrderNote(!isShowOrderNote)
     }
     const toggleCartDiscount = () => {
+        setisShowOptionPage(false)
         setisShowCartDiscount(!isShowCartDiscount)
     }
     const toggleEditCartDiscount = () => {
+        setisShowOptionPage(false)
         setisSelectDiscountBtn(true);
         setisShowCartDiscount(!isShowCartDiscount)
 
     }
     const toggleNotifications = () => {
         setisShowNotifications(!isShowNotifications)
+        
     }
 
     const toggleAdvancedSearch = () => {
@@ -358,12 +363,7 @@ const Home = () => {
             }
         }
     }
-    const addNote = (e) => {
-        console.log("----order note-----" + e);
-        toggleOrderNote()
-    }
-
-
+    
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile, resdeletTile] = useSelector((state) => [state.addTile, state.deletTile])
     useEffect(() => {
@@ -391,7 +391,6 @@ const Home = () => {
             dispatch(popupMessage(null));
         }
     }, [respopupMessage]);
-
 
     useEffect(() => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
