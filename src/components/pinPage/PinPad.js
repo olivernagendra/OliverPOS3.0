@@ -24,7 +24,7 @@ const PinPad = React.memo(props => {
     const [txtValue, setTxtValue] = useState("")
     const [isloading, setIsloading] = useState(false)
     const { status, data, error, is_success } = useSelector((state) => state.pin)
-    // console.log("status", status, "data", data, "error", error, "is_success", is_success)
+    console.log("status", status, "data", data, "error", error, "is_success", is_success)
     var hasPin = localStorage.getItem('hasPin')
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
@@ -34,15 +34,23 @@ const PinPad = React.memo(props => {
 
     useEffect(() => {
         // console.log("useEffect")
+        focusInput()
         if (isDrawerOpen == "false"
             && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
             navigate('/openregister')
         }
         if (isloading == true) {
-            pinSuccessful()
+            if (is_success === true) {
+                setIsloading(false)
+                pinSuccessful()
+            }
+        } else if (is_success === true && (!props.switchUser || props.switchUser == false)) {
+            if (!localStorage.getItem("user")) {
+                pinSuccessful()
+            }
+
         }
 
-        focusInput()
     }, [data])
 
 
@@ -50,13 +58,15 @@ const PinPad = React.memo(props => {
     const pinSuccessful = () => {
         if (status === STATUSES.error) {
             //  console.log(error)
+            inputElement.current.focus();
+            focusInput()
         }
-
+        console.log("iss success", is_success)
         if (is_success === true) {
             //   console.log("iss success",is_success)
             //  openRegisterhundle()
         }
-
+        console.log("toggleSwithUser", props.toggleSwitchUser)
         if (status === STATUSES.IDLE && is_success) {
 
             localStorage.setItem('user', JSON.stringify(data.content));
@@ -205,7 +215,7 @@ const PinPad = React.memo(props => {
                         console.log(typeof (enteredPin), enteredPin, txtValue,);
                         if (hasPin !== 'false') {
                             dispatch(validatePin({ "pin": enteredPin, "userid": userID, "UDID": get_UDid('UDID') }));
-
+                            setIsloading(true)
                         } else {
                             dispatch(createPin({ "pin": enteredPin, "id": userID }));
                         }
@@ -245,11 +255,14 @@ const PinPad = React.memo(props => {
     }
 
     const focusInput = () => {
-        inputElement.current.focus();
-        $('#whichkey').focus();
+        if ($('#whichkey') && inputElement !== null) {
+            //inputElement && inputElement !== null && inputElement.current.focus();
+            $('#whichkey').focus();
+        }
+
     };
 
-
+    focusInput()
     if (props.onClick == true) {
         // console.log("outer click")
         focusInput()
@@ -266,6 +279,7 @@ const PinPad = React.memo(props => {
         isloading == true && setIsloading(false)
 
     }
+    status === STATUSES.ERROR && focusInput()
     return <React.Fragment>
 
         <p className="style1">{LocalizedLanguage.enteryouruserid}</p>
