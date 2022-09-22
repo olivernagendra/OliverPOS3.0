@@ -14,12 +14,14 @@ import { toggleSubwindow } from "../common/EventFunctions";
 import { getTaxAllProduct } from '../common/TaxSetting'
 import { addSimpleProducttoCart } from "./product/productLogic";
 import { product } from "./product/productSlice";
+
+import { productQuantityInWarehouse } from "./slices/productQuantityInWarehouseSlice";
 // const AdvancedSearch = (props) => {
 //     const [respGroup] = useSelector((state) => [state.group])
 
 
 const AdvancedSearch = (props) => {
-   
+
     const dispatch = useDispatch();
     const [respGroup] = useSelector((state) => [state.group])
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
@@ -51,8 +53,7 @@ const AdvancedSearch = (props) => {
             setProduct_List(allProdcuts ? allProdcuts : []);
         });
     }
-    const handleSearch=(event)=>
-    {
+    const handleSearch = (event) => {
         console.log("event" + event.target.value)
         var item1 = event.target.value;
         setSerachString(item1)
@@ -106,17 +107,15 @@ const AdvancedSearch = (props) => {
     }
 
     const productDataSearch = (item1) => {
-       
+
         setfiltered([]);
         if (item1 == '') {
             if (filterType === "product" || filterType === "customer" || filterType === "all") {
-                if(filterType==="product")
-                {
+                if (filterType === "product") {
                     setProduct_List(allProductList);
                     setfilteredCustomer([]);
                 }
-                else if(filterType==="customer")
-                {
+                else if (filterType === "customer") {
                     setfilteredCustomer(allCustomerList);
                     setProduct_List([]);
                 }
@@ -126,12 +125,11 @@ const AdvancedSearch = (props) => {
         var _filtered = [];
         var value = item1;
         if (filterType === "product" || filterType === "all") {
-            if(filterType==="product")
-            {
+            if (filterType === "product") {
                 setfilteredCustomer([]);
                 setfiltered([]);
             }
-            
+
             // Search in Products
             var serchFromAll = product_List.filter((item) => (
                 (item.Title && item.Title.toLowerCase().includes(value.toLowerCase()))
@@ -157,14 +155,12 @@ const AdvancedSearch = (props) => {
                 parentProduct = parentProduct ? parentProduct : []
                 _filtered = [...new Set([..._filtered, ...parentProduct])];
 
-                if(_filtered && _filtered.length>10)
-                {_filtered = _filtered.slice(0, 10);}
+                if (_filtered && _filtered.length > 10) { _filtered = _filtered.slice(0, 10); }
             }
         }
         if (filterType === "customer" || filterType === "all") {
-            if(filterType==="customer")
-            {
-                _filtered=[];
+            if (filterType === "customer") {
+                _filtered = [];
                 setProduct_List([]);
                 setfiltered([]);
             }
@@ -185,43 +181,43 @@ const AdvancedSearch = (props) => {
         //         //console.log("---_filteredGroup---" + JSON.stringify(_filteredGroup));
         //         setfilteredGroup(_filteredGroup)
         // }
-    //     if (filterType === "product" || filterType === "all") {
-    //     // Search by Attributes
-    //     parentProductList && parentProductList.map((item) => {
-    //         item.ProductAttributes && item.ProductAttributes.map(attri => {
-    //             if (String(attri.Slug).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1 ||
-    //                 String(attri.Name).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-    //                 _filtered.push(item)
-    //             }
-    //         })
-    //     })
-    //     // Search by Categories
-    //     parentProductList && parentProductList.map((item) => {
-    //         item.Categories && item.Categories !== undefined && item.Categories.split(",").map(category => {
-    //             if (String(category).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-    //                 if (_filtered.indexOf(item) === -1) {
-    //                     _filtered.push(item)
-    //                 }
-    //             }
-    //         })
-    //     })
-    //     // Search by Sub Attributes
-    //     parentProductList && parentProductList.map((item) => {
-    //         item.ProductAttributes && item.ProductAttributes.map(proAtt => {
-    //             var dataSplitArycomma = proAtt.Option.split(',');
-    //             dataSplitArycomma && dataSplitArycomma !== undefined && dataSplitArycomma.map(opt => {
-    //                 if (String(opt).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-    //                     if (_filtered.indexOf(item) === -1) {
-    //                         _filtered.push(item)
-    //                     }
-    //                 }
-    //             })
-    //         })
-    //     })
-    //     _filtered = _filtered.filter(item => {
-    //         return (item.ParentId === 0)
-    //     })
-    // }
+        //     if (filterType === "product" || filterType === "all") {
+        //     // Search by Attributes
+        //     parentProductList && parentProductList.map((item) => {
+        //         item.ProductAttributes && item.ProductAttributes.map(attri => {
+        //             if (String(attri.Slug).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1 ||
+        //                 String(attri.Name).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+        //                 _filtered.push(item)
+        //             }
+        //         })
+        //     })
+        //     // Search by Categories
+        //     parentProductList && parentProductList.map((item) => {
+        //         item.Categories && item.Categories !== undefined && item.Categories.split(",").map(category => {
+        //             if (String(category).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+        //                 if (_filtered.indexOf(item) === -1) {
+        //                     _filtered.push(item)
+        //                 }
+        //             }
+        //         })
+        //     })
+        //     // Search by Sub Attributes
+        //     parentProductList && parentProductList.map((item) => {
+        //         item.ProductAttributes && item.ProductAttributes.map(proAtt => {
+        //             var dataSplitArycomma = proAtt.Option.split(',');
+        //             dataSplitArycomma && dataSplitArycomma !== undefined && dataSplitArycomma.map(opt => {
+        //                 if (String(opt).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
+        //                     if (_filtered.indexOf(item) === -1) {
+        //                         _filtered.push(item)
+        //                     }
+        //                 }
+        //             })
+        //         })
+        //     })
+        //     _filtered = _filtered.filter(item => {
+        //         return (item.ParentId === 0)
+        //     })
+        // }
 
         //}
         // _filtered = [...new Map(_filtered.map(item =>
@@ -229,14 +225,13 @@ const AdvancedSearch = (props) => {
         // console.log("----filtered---" + JSON.stringify(_filtered.length));
         //if(_filtered && _filtered.length>0)
 
-       
+
         console.log("----filtered--->>" + JSON.stringify(_filtered.length));
-        if(_filtered && _filtered.length>0)
-       {
-        _filtered = AddItemType(_filtered, "product");
-       }
-   
-      
+        if (_filtered && _filtered.length > 0) {
+            _filtered = AddItemType(_filtered, "product");
+        }
+
+
         setProduct_List(_filtered);
         setfiltered(_filtered);
     }
@@ -253,13 +248,20 @@ const AdvancedSearch = (props) => {
             props.toggleAdvancedSearch();
         }
     }
+    // careated by : 
+    // description
+    // update by: Nagendra Suryawanshi
+    //updated description: call api to get warehouse quantity of the product
     const viewProduct = (item) => {
+        if (item.ManagingStock == true) {
+            dispatch(productQuantityInWarehouse(item.WPID)); //call to get product warehouse quantity
+        }
         props.openPopUp(item);
         props.toggleAdvancedSearch();
         // toggleSubwindow();
     }
-    const addCustomerToSale=(cutomer_data)=> {
-        var data =cutomer_data;
+    const addCustomerToSale = (cutomer_data) => {
+        var data = cutomer_data;
         localStorage.setItem('AdCusDetail', JSON.stringify(data))
         var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
         if (list != null) {
@@ -301,7 +303,7 @@ const AdvancedSearch = (props) => {
             <div className="left-col">
                 <p>Search by</p>
                 <div className="radio-group">
-                    <div id="mobileSearchModToggle" className={isShowDDNSearch===true? "dropdown-input open":"dropdown-input"} onClick={()=>toggleDDNSearch()}>
+                    <div id="mobileSearchModToggle" className={isShowDDNSearch === true ? "dropdown-input open" : "dropdown-input"} onClick={() => toggleDDNSearch()}>
                         <p><b>Search for:</b> All Results</p>
                         <img src={down_angled_bracket} alt="" />
                     </div>
@@ -432,7 +434,7 @@ const AdvancedSearch = (props) => {
                                         <img src={Transactions_Icon_White} alt="" />
                                         Transactions
                                     </button>
-                                    <button className="search-add-to-sale" onClick={()=>addCustomerToSale(item)}>
+                                    <button className="search-add-to-sale" onClick={() => addCustomerToSale(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>

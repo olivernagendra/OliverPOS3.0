@@ -1025,7 +1025,7 @@ const Product = (props) => {
                             <button id="mobileExitProductButton" onClick={() => props.closePopUp()}>
                                 <img src={X_Icon_DarkBlue} alt="" />
                             </button>
-                            <button id="mobileAppsButton" onClick={()=>props.toggleAppLauncher()}>
+                            <button id="mobileAppsButton" onClick={() => props.toggleAppLauncher()}>
                                 <img src={Oliver_Icon_BaseBlue} alt="" />
                             </button>
                         </div>
@@ -1292,7 +1292,10 @@ const Product = (props) => {
                     <div id="navCover" className="nav-cover"></div>
                 </div>
                 <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
-                <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
+                <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
+                    productStockQuantity={variationStockQunatity}
+                    product={_product}
+                ></AdjustInventory>
                 <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
                 <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
