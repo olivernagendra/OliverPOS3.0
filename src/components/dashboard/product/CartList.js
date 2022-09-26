@@ -12,11 +12,8 @@ import { typeOfTax } from "../../common/TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
-<<<<<<< HEAD
 import { get_customerName } from "../../common/localSettings";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
-=======
->>>>>>> devNagendra
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -43,12 +40,10 @@ const CartList = (props) => {
             deleteProduct(item);
             //deleting the product note for the product
             var products = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
-            if(products.length>0)
-            {
-               var notes= products.filter(a=>a.hasOwnProperty("pid") && !a.hasOwnProperty("product_id") && ( !a.hasOwnProperty("Price") || a.Price==null) && a.pid===item.product_id);
-                if(notes && notes.length>0)
-                {
-                    notes.map(n=>{
+            if (products.length > 0) {
+                var notes = products.filter(a => a.hasOwnProperty("pid") && !a.hasOwnProperty("product_id") && (!a.hasOwnProperty("Price") || a.Price == null) && a.pid === item.product_id);
+                if (notes && notes.length > 0) {
+                    notes.map(n => {
                         deleteProduct(n);
                     })
                 }
@@ -167,11 +162,7 @@ const CartList = (props) => {
         if (ListItem.length == 0 || productCount == 0) {
             // alert("Please add at least one product in cart !");
             // dispatch(popupMessage({data:{title:"",msg:"Please add at least one product in cart !"},is_success:true}));
-<<<<<<< HEAD
             var data = { title: "", msg: LocalizedLanguage.messageCartNoProduct, is_success: true }
-=======
-            var data = { title: "", msg: "Please add at least one product in cart !", is_success: true }
->>>>>>> devNagendra
             dispatch(popupMessage(data));
             setIsLoading(false)
         } else {
@@ -487,7 +478,7 @@ const CartList = (props) => {
         }
         dispatch(product());
     }
-    
+
     return (
         <React.Fragment>
             {isLoading ? <LoadingModal></LoadingModal> : null}
@@ -519,7 +510,6 @@ const CartList = (props) => {
                         </button>
                     </div>
                 </div> */}
-<<<<<<< HEAD
                     {get_customerName() != null && <div className="cart-item">
                         <div className="main-row aligned">
                             <div className="tag customer">Customer</div>
@@ -531,7 +521,7 @@ const CartList = (props) => {
                     </div>}
                     {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
                         var item_type = "";
-                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) {item_type = "note";}
+                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) { item_type = "note"; }
                         else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
                         else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
 
@@ -609,25 +599,6 @@ const CartList = (props) => {
                         //     </div>
                         // </div>
 
-=======
-                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
-
-                        return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
-                            <div className="main-row" >
-                                <p className="quantity">{a.quantity && a.quantity}</p>
-                                <p className="content-style">{a.Title && a.Title}</p>
-                                <p className="price">{a.Price && a.Price}</p>
-                                <button className="remove-cart-item" onClick={() => deleteItem(a)}>
-                                    <img src={CircledX_Grey} alt="" />
-                                </button>
-                            </div>
-                            <div className="secondary-col">
-                                {/* <p>Medium</p>
-                            <p>Navy</p> */}
-                            </div>
-                        </div>
-
->>>>>>> devNagendra
                     })}
                     {/* <div className="cart-item">
                     <div className="main-row">
@@ -723,20 +694,12 @@ const CartList = (props) => {
                 <div className="footer">
                     <div className="totals">
                         <div className="row">
-<<<<<<< HEAD
                             <p>{LocalizedLanguage.printSubtotal}</p>
-=======
-                            <p>Subtotal</p>
->>>>>>> devNagendra
                             <p><b>${subTotal}</b></p>
                         </div>
                         {discount && discount > 0 ?
                             <div className="row">
-<<<<<<< HEAD
-                                <p>Cart Discount - {}%</p>
-=======
-                                <p>Cart Discount - { }</p>
->>>>>>> devNagendra
+                                <p>Cart Discount - { }%</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
                                 <p><b>-${discount}</b></p>
                             </div> : null}
@@ -747,11 +710,7 @@ const CartList = (props) => {
                         </div>
                     </div>
                     <div className="checkout-container">
-<<<<<<< HEAD
                         <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout} - ${total}</button>
-=======
-                        <button onClick={() => doCheckout()}>Checkout - ${total}</button>
->>>>>>> devNagendra
                     </div>
                 </div>
             </div>

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, {useState, useEffect, useLayoutEffect } from "react";
-=======
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
->>>>>>> devNagendra
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import Pencil_Blue from '../../../images/svg/Pencil-Blue.svg';
 import { useDispatch, useSelector } from "react-redux";
@@ -10,12 +6,6 @@ import { updateInventory } from '../slices/inventorySlice'
 import { useIndexedDB } from "react-indexed-db";
 
 const AdjustInventory = (props) => {
-<<<<<<< HEAD
-    const [isEditInventory, setisEditInventory] = useState(false);
-    const toggleEditInventory = () => {
-        setisEditInventory(!isEditInventory)
-    }
-=======
     const inputInventory = useRef(null)
     const [inventory, setInventory] = useState(props.productStockQuantity)
     const [isAllowUpdate, setIsAllowUpdate] = useState(false);
@@ -25,7 +15,6 @@ const AdjustInventory = (props) => {
     //console.log("inventoryUpdate", inventoryUpdate)
     const dispatch = useDispatch()
     //console.log("prodcutInWarehouse", inventoryGet)
->>>>>>> devNagendra
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleAdjustInventory();
@@ -113,15 +102,9 @@ const AdjustInventory = (props) => {
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
                     <p>Current Warehouse</p>
-<<<<<<< HEAD
-                    <label htmlFor="productStock">Currently in Stock:</label>
-                    <input type="number" id="productStock" value="23" disabled={isEditInventory==true?false:true} />
-                    <button id="editStockButton" onClick={()=>toggleEditInventory()}>
-=======
                     <label htmlFor="productStock">Currently {isOutOfStock == true ? "out of" : "in"} Stock:</label>
                     <input type="number" id="productStock" ref={inputInventory} value={inventory} disabled={isAllowUpdate == true ? false : true} onChange={(e) => handleInventoryChange(e)} />
                     <button id="editStockButton" onClick={() => allowUpdate()}>
->>>>>>> devNagendra
                         <img src={Pencil_Blue} alt="" />
                         Click to edit
                     </button>
