@@ -47,7 +47,12 @@ const LeftNavBar = (props) => {
     }
 
 
-
+    var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+    var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
+    var isAllowCashDrawer = false;
+    if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
+        isAllowCashDrawer = true;
+    }
     return (
         <React.Fragment>
 
@@ -77,13 +82,17 @@ const LeftNavBar = (props) => {
                     <p>Transactions</p>
                     <div className="f-key">F3</div>
                 </button>
-                <button id="cashManagementButton" className={location.pathname === "/cashdrawer" ? "page-link selected" : "page-link"} disabled={location.pathname === "/cashdrawer" ? true : false} onClick={() => navigateTo('/cashdrawer')}>
-                    <div className="img-container">
-                        <img src={CashManagement_Icon} alt="" />
-                    </div>
-                    <p>Cash Management</p>
-                    <div className="f-key">F4</div>
-                </button>
+                {
+                    <button id="cashManagementButton" className={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? "page-link selected" : "page-link"} disabled={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? true : false}
+                        onClick={() => isAllowCashDrawer == true ? navigateTo('/cashdrawer') : ""}>
+                        <div className="img-container">
+                            <img src={CashManagement_Icon} alt="" />
+                        </div>
+                        <p>Cash Management</p>
+                        <div className="f-key">F4</div>
+                    </button>
+                }
+
                 <button id="linkLauncherButton" className={isShowLinkLauncher === true ? "launcher filter" : "launcher"} onClick={() => toggleLinkLauncher()}>
                     <div className="img-container">
                         <img src={LinkLauncher_Icon} alt="" />

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
+import { useNavigate } from 'react-router-dom';
 
 const CustomerView = () => {
   const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
@@ -9,7 +10,7 @@ const CustomerView = () => {
   const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
 
   const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
-
+  const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
     setisShowLinkLauncher(false)
@@ -21,6 +22,9 @@ const CustomerView = () => {
 
   const toggleiFrameWindow = () => {
     setisShowiFrameWindow(!isShowiFrameWindow)
+  }
+  if (!localStorage.getItem('user')) {
+    navigate('/pin')
   }
   return (
     <div className="customer-view-wrapper">

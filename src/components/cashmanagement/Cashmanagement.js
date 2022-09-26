@@ -8,15 +8,19 @@ import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import STATUSES from "../../constants/apiStatus";
 import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
+import { useNavigate } from "react-router-dom";
 function Cashmanagement() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
 
-
+  if (!localStorage.getItem('user')) {
+    navigate('/pin')
+  }
   const getCashDrawerPaymentDetail = (OrderId, index) => {
     dispatch(getDetails(OrderId));
   }

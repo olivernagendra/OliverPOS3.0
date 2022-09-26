@@ -296,7 +296,14 @@ const AdvancedSearch = (props) => {
             props.toggleAdvancedSearch();
         }
     }
+    // careated by : 
+    // description
+    // update by: Nagendra Suryawanshi
+    //updated description: call api to get warehouse quantity of the product
     const viewProduct = (item) => {
+        if (item.ManagingStock == true) {
+            dispatch(getInventory(item.WPID)); //call to get product warehouse quantity
+        }
         props.openPopUp(item);
         props.toggleAdvancedSearch();
         // toggleSubwindow();

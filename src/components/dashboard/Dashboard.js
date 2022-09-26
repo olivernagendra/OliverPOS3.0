@@ -36,6 +36,7 @@ import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
 import TaxList from "./TaxList";
 import MsgPopup from "../common/commonComponents/MsgPopup";
 import { popupMessage } from "../common/commonAPIs/messageSlice";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -65,7 +66,7 @@ const Home = () => {
     const [isShowMsg, setisShowMsg] = useState(false);
     const [msgTitle, setmsgTitle] = useState('');
     const [msgBody, setmsgBody] = useState('');
-
+    const navigate = useNavigate()
 
     const dispatch = useDispatch();
     useEffect(() => {
@@ -77,6 +78,10 @@ const Home = () => {
         var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
         getTax(multiple_tax_support, get_tax_rates);
     }, []);
+
+    if (!localStorage.getItem('user')) {
+        navigate('/pin')
+    }
 
     const getFavourites = () => {
         var regId = localStorage.getItem('register');
