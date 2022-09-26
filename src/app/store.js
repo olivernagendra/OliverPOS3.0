@@ -23,7 +23,8 @@ import { checkStockSlice } from '../components/checkout/checkoutSlice';
 import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
 import { popupMessageSlice } from '../components/common/commonAPIs/messageSlice';
-import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/productQuantityInWarehouseSlice'
+//import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/inventorySlice'
+import inventoryReducer from '../components/dashboard/slices/inventorySlice'
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -65,7 +66,8 @@ export const store = configureStore({
     updateTaxRateList: updateTaxRateListSlice.reducer,
     selectedTaxList: selectedTaxListSlice.reducer,
     popupMessage: popupMessageSlice.reducer,
-    productQuantityInWarehouse: productQuantityInWarehouseSlice.reducer
+    //productQuantityInWarehouse: productQuantityInWarehouseSlice.reducer
+    inventories: inventoryReducer
   }
   ,
   middleware: getDefaultMiddleware =>

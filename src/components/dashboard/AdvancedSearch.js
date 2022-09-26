@@ -15,7 +15,8 @@ import { getTaxAllProduct } from '../common/TaxSetting'
 import { addSimpleProducttoCart } from "./product/productLogic";
 import { product } from "./product/productSlice";
 
-import { productQuantityInWarehouse } from "./slices/productQuantityInWarehouseSlice";
+// import { productQuantityInWarehouse } from "./slices/productQuantityInWarehouseSlice";
+import { getInventory } from "./slices/inventorySlice";
 // const AdvancedSearch = (props) => {
 //     const [respGroup] = useSelector((state) => [state.group])
 
@@ -254,7 +255,7 @@ const AdvancedSearch = (props) => {
     //updated description: call api to get warehouse quantity of the product
     const viewProduct = (item) => {
         if (item.ManagingStock == true) {
-            dispatch(productQuantityInWarehouse(item.WPID)); //call to get product warehouse quantity
+            dispatch(getInventory(item.WPID)); //call to get product warehouse quantity
         }
         props.openPopUp(item);
         props.toggleAdvancedSearch();
