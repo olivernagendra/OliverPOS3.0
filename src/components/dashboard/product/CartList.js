@@ -14,6 +14,7 @@ import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import { get_customerName } from "../../common/localSettings";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
+import { useIndexedDB } from 'react-indexed-db';
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -28,13 +29,52 @@ const CartList = (props) => {
     const [isLoading, setIsLoading] = useState(false)
     const [totalItems, setTotalItems] = useState(0)
     const [isShowMobileCartList, setisShowMobileCartList] = useState(false)
+    const [discountType, setDiscountType] = useState('');
+    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const toggleMobileCartList = () => {
         setisShowMobileCartList(!isShowMobileCartList)
     }
     useEffect(() => {
+        getDiscountAmount_Type();
         calculateCart();
+
     }, [props.listItem]);
 
+    const editPopUp = async (a) => {
+        if (a && (a.Type === "variation" || a.Type === "variable")) {
+            var _item = await getByID(a.product_id);
+            if (_item) {
+                if (_item && _item.ParentId != 0) {
+                    var _parent = await getByID(_item.ParentId);
+
+                    var allCombi = _item && _item.combination !== null && _item.combination !== undefined && _item.combination.split("~");
+                    allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                    
+                    _parent["selectedOptions"] = allCombi;
+
+                    props.updateVariationProduct(_item);
+                    props.openPopUp(_parent);
+                }
+                else {
+                    props.updateVariationProduct(_item);
+                    props.openPopUp(_item);
+                }
+
+            }
+        }
+        else {
+            props.updateVariationProduct(a);
+            props.openPopUp(a);
+        }
+    }
+    const getDiscountAmount_Type = () => {
+        if (localStorage.getItem("CART")) {
+            let cart = JSON.parse(localStorage.getItem("CART"));
+            let dtype = cart.discountType === "Percentage" ? '%' : "$";
+            let damount = cart.discount_amount;
+            setDiscountType(damount + "" + dtype);
+        }
+    }
     const deleteItem = (item) => {
         if (item) {
             deleteProduct(item);
@@ -527,7 +567,7 @@ const CartList = (props) => {
 
                         switch (item_type) {
                             case "product":
-                                return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
+                                return <div className="cart-item" onClick={() => editPopUp(a)} key={a.product_id ? a.product_id : a.Title}>
                                     <div className="main-row" >
                                         <p className="quantity">{a.quantity && a.quantity}</p>
                                         <p className="content-style">{a.Title && a.Title}</p>
@@ -699,7 +739,7 @@ const CartList = (props) => {
                         </div>
                         {discount && discount > 0 ?
                             <div className="row">
-                                <p>Cart Discount - { }%</p>
+                                <p>Cart Discount - {discountType}</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
                                 <p><b>-${discount}</b></p>
                             </div> : null}

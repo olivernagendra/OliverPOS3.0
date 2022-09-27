@@ -150,6 +150,10 @@ const Home = () => {
         updateVariationProduct(null);
         var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
         var _product = getTaxAllProduct([_item])
+        if(item.hasOwnProperty ("selectedOptions"))
+        {
+            _product[0]["selectedOptions"]=item.selectedOptions;
+        }
         setSelProduct(_product[0]);
         setisShowPopups(true)
     }
@@ -422,7 +426,7 @@ const Home = () => {
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
-                <CartList listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
+                <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 
 
                 {/* top naviagtion bar */}

@@ -50,6 +50,7 @@ const Product = (props) => {
     const [productQty, setProductQty] = useState(1);
     const [note, setNote] = useState("");
     const [selVariations, setSelVariations] = useState([]);
+    const [selOptions, setSelOptions] = useState([]);
 
     const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
@@ -519,6 +520,11 @@ const Product = (props) => {
     //var selVariations = [];
     var _disableAttribute = [];
     const optionClick = async (option, attribute, AttrIndex) => {
+        //    if(selOptions && selOptions.length>0)
+        //    {
+        //     setSelOptions([]);
+
+        //    }
         _disableAttribute = []
         var _selVariations = selVariations;
         var _item = _selVariations.findIndex((element) => {
@@ -945,14 +951,14 @@ const Product = (props) => {
             if (_product) {
                 // _product = props.selProduct;
                 _product.quantity = productQty;
-                
+
                 var result = addSimpleProducttoCart(_product);
                 if (result === 'outofstock') {
                     toggleOutOfStock();
                 }
                 else {
                     if (note != "") {
-                        var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false,"pid":_product.hasOwnProperty("product_id")?_product.product_id:_product.WPID,"vid":_product.variation_id });
+                        var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false, "pid": _product.hasOwnProperty("product_id") ? _product.product_id : _product.WPID, "vid": _product.variation_id });
                         console.log("----product note---" + note);
                     }
                     setTimeout(() => {
@@ -977,12 +983,17 @@ const Product = (props) => {
     }, [props.selProduct && props.selProduct.quantity]);
 
 
-
+    const clearSelection = () => { 
+        setSelVariations([]);
+    }
     useEffect(() => {
         if (props.isShowPopups == true) {
             setSelVariations([]);
             getModifiers();
             getRecomProducts();
+            if (props.selProduct && props.selProduct.hasOwnProperty("selectedOptions")) {
+                setSelOptions(props.selProduct.selectedOptions)
+            }
         }
     }, [props.isShowPopups, props.selProduct]);
 
@@ -1045,7 +1056,7 @@ const Product = (props) => {
                             </div> :
                             <div className="row">
                                 <p>Select Variations</p>
-                                <button id="clearModsButton">Clear Selection</button>
+                                <button id="clearModsButton" onClick={()=>clearSelection()}>Clear Selection</button>
                             </div>}
                         {
 
@@ -1057,7 +1068,19 @@ const Product = (props) => {
                                             <div className="radio-group">
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
-                                                        allVariations.push(a.replace(/\//g, "-").toLowerCase())
+                                                        let _item = a.replace(/\//g, "-").toLowerCase();
+                                                        allVariations.push(_item);
+                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                        //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
+                                                        //console.log("a, attribute, s--------"+selVal)
+                                                        // if(selOptions && selOptions.length>0)
+                                                        // {
+                                                        //     var selVal = selOptions.includes(_item);
+                                                        //     console.log("a, attribute, s--------"+a, attribute, i);
+                                                        //     return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                        // }
+                                                        // else
+                                                        // allVariations.push(_item);
                                                         return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
@@ -1292,7 +1315,7 @@ const Product = (props) => {
 
                     <div id="navCover" className="nav-cover"></div>
                 </div>
-                <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
+                <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount} selecteditem={props.selProduct}></ProductDiscount>
                 <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
                     productStockQuantity={variationStockQunatity}
                     product={_product}

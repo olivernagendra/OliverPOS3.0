@@ -9,6 +9,8 @@ import STATUSES from "../../constants/apiStatus";
 import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
 import { useNavigate } from "react-router-dom";
+import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
+import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg';
 function Cashmanagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -133,36 +135,52 @@ function Cashmanagement() {
     <>
       <div className="cash-management-wrapper">
         <LeftNavBar></LeftNavBar>
-        <div className="cm-header">
+
+        <div class="mobile-cm-header">
           <button id="mobileNavToggle">
             <img src="" alt="" />
           </button>
           <p>Cash Management</p>
+          <button id="mobileAppsButton">
+            <img src={Oliver_Icon_BaseBlue} alt="" />
+          </button>
         </div>
-        <div className="cm-register-view">
-          {((!allCashRecords) || allCashRecords.length == 0) ? <>
-            {/* <div>loading...</div> */}
-            <LoadingSmallModal></LoadingSmallModal>
-          </> :
-            <>
-              <button className="no-transform">
-                <p className="style1"> {CashDrawerPaymentDetail && !CashDrawerPaymentDetail.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
-                <div className="row">
-                  <p className="style2">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  {/* <p className="style3 green">OPEN</p> */}
-                </div>
-                <p className="style4">User: {CashDrawerPaymentDetail && CashDrawerPaymentDetail.SalePersonName}</p>
-              </button>
-              <div className="prev-registers">
+
+        {/* <div className="cm-header">
+          <button id="mobileNavToggle">
+            <img src="" alt="" />
+          </button>
+          <p>Cash Management</p>
+        </div> */}
+        <div class="cm-list">
+          <div class="cm-list-header">
+            <p class="desktop">Cash Management</p>
+            <p class="mobile">Transaction History</p>
+          </div>
+          <div className="cm-list-body">
+            {((!allCashRecords) || allCashRecords.length == 0) ? <>
+              {/* <div>loading...</div> */}
+              <LoadingSmallModal></LoadingSmallModal>
+            </> :
+              <>
+                <button className="current-register no-transform selected">
+                  <p className="style1"> {CashDrawerPaymentDetail && !CashDrawerPaymentDetail.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
+                  <div className="text-row">
+                    <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
+                    <p class="open">OPEN</p>
+                    {/* <p className="smobile-fake-button">OPEN</p> */}
+                  </div>
+                  <p className="style2">User: {CashDrawerPaymentDetail && CashDrawerPaymentDetail.SalePersonName}</p>
+                  <div class="mobile-fake-button">OPEN</div>
+                </button>
+                {/* <div className="prev-registers"> */}
 
                 {
                   orders && ordersDate && ordersDate.map((getDate, index) => {
-                    return (<> <div className="category">   {current_date == getDate ? 'Today' : getDate} </div>
+                    return (<React.Fragment> <div className="date"><p>{current_date == getDate ? 'Today' : getDate} </p></div>
                       {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
                         return (
-
-
-                          <button className="no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
+                          <button className="other-register no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
                             <div className="row">
                               <p className="style1"> {order.RegisterName}</p>
                               <p className="style2">  {!order.ClosedTime ? "OPEN" : "Closed " + order.ClosedTime}</p>
@@ -176,36 +194,44 @@ function Cashmanagement() {
                       })
                       }
 
-                    </>)
+                    </React.Fragment>)
                   })}
-              </div>
-            </>
-          }
+                {/* </div> */}
+              </>
+            }
+          </div>
+
         </div>
-        <div className="cm-detailed-view">
-          <div className="detailed-header">
+        <div className="cm-detailed">
+          <div class="detailed-header-mobile">
+            <div id="mobileDetailedExit">
+              <img src={AngledBracket_Left_Blue} alt="" />
+              Go Back
+            </div>
+          </div>
+          <div className="cm-detailed-header">
             <p>Transaction History</p>
-            <div className="outer-group">
-              <div className="inner-group">
-                <div className="row">
-                  <p className="style1">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
+            <div className="row">
+              <div className="col">
+                <div className="text-row">
+                  <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
+                  <p className="open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
                 </div>
-                <p className="style3">{Status === "Open"
+                <p className="style1">{Status === "Open"
                   ? _openDateTime : _openDateTime + " to " + _closeDateTime} </p>
               </div>
-              <div className="inner-group">
-                <p className="style1">Cash Drawer Ending Balance</p>
-                <p className="style4">{_balance}</p>
+              <div className="col">
+                <p className="style1 mobile-difference">Cash Drawer Ending Balance</p>
+                <p className="style2">{_balance}</p>
               </div>
               <button>Print History</button>
             </div>
           </div>
-          <div className="detailed-body">
+          <div className="cm-detailed-body">
             <CashDrawerPaymentDetailList />
 
           </div>
-          <div className="detailed-footer">
+          <div className="cm-detailed-footer">
             <button>Remove Cash</button>
             <button>Add Cash</button>
           </div>
