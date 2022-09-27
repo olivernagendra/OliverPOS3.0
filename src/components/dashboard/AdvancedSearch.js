@@ -14,7 +14,7 @@ import { AddItemType } from "../common/EventFunctions";
 import { getTaxAllProduct } from '../common/TaxSetting'
 import { addSimpleProducttoCart } from "./product/productLogic";
 import { product } from "./product/productSlice";
-import getInventory from "./product/AdjustInventory";
+import { getInventory } from "./slices/inventorySlice";
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
     const { getAll } = useIndexedDB("products");
