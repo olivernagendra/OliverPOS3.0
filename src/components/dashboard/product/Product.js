@@ -1308,8 +1308,11 @@ const Product = (props) => {
                                         <p className="mobile-only">Currently in stock:</p>
                                         <p className="quantity">{variationStockQunatity}</p>
                                     </div>
-                                    <p className="desktop-only">In Stock</p>
-                                    <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+
+                                    {isOutOfStock == false && <p className="desktop-only">In Stock</p>}
+                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&  //no need update stock when unlimited
+                                        <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+                                    }
                                 </div>
 
                                 <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
@@ -1319,22 +1322,28 @@ const Product = (props) => {
                             </div>
                         </div>
                         <div className="col">
-                            <p className="title">Description</p>
-                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.Description }}>
+                            {_product && _product.ShortDescription && <p className="title">Description</p>}
+                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.ShortDescription }}>
 
                             </p>
-                            <p className="title">Additional Fields</p>
+                            {_product && _product.ProductAttributes && _product.ProductAttributes.length > 0 &&
+                                <p className="title">Additional Fields</p>}
                             <p className="para">
-                                Material: 100% Cotton <br />
-                                Origin: Made in Canada
+
+                                {_product && _product.ProductAttributes && _product.ProductAttributes.map((item, index) => {
+                                    if (item && item.Option) {
+                                        return <div key={index}>{item.Name + " : " + item.Option}</div>
+                                    }
+                                })
+                                }
                             </p>
-                            <p className="title">Custom Fields</p>
+                            {/* {_product.ShortDescription && <p className="title">Custom Fields</p>}
                             <p className="para">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean erat sem, facilisis vel tincidunt nec, posuere ac ante.
-                            </p>
-                            <p className="title">SKU #</p>
+                                {_product.ShortDescription}
+                            </p> */}
+                            {_product && _product.Sku && _product.Sku !== "" && <p className="title">SKU #</p>}
                             <p className="para">{_product && _product.Sku}</p>
-                            <p className="title">Barcode ID #</p>
+                            {_product && _product.Barcode && _product.Barcode !== "" && <p className="title">Barcode ID #</p>}
                             <p className="para">{_product && _product.Barcode}</p>
                         </div>
                     </div>
