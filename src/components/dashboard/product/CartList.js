@@ -21,7 +21,6 @@ const CartList = (props) => {
     const [subTotal, setSubTotal] = useState(0.00);
     const [taxes, setTaxes] = useState(0.00);
     const [discount, setDiscount] = useState(0.00);
-    const [cartDiscount, setCartDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
     const [taxRate, setTaxRate] = useState(0.00);
     const [checkoutData, setCheckoutData] = useState(0.00);
@@ -433,7 +432,6 @@ const CartList = (props) => {
         setSubTotal(RoundAmount(_subtotal));
         setTotal(RoundAmount(_total));
         setDiscount(_totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0);
-        setCartDiscount(_cartDiscountAmount);
         setTaxes(RoundAmount(_taxAmount));
         //    this.setState({
         //         subTotal: RoundAmount(_subtotal),
@@ -569,11 +567,11 @@ const CartList = (props) => {
 
                         switch (item_type) {
                             case "product":
-                                return <div className="cart-item"  key={a.product_id ? a.product_id : a.Title}>
+                                return <div className="cart-item" onClick={() => editPopUp(a,index)} key={a.product_id ? a.product_id : a.Title}>
                                     <div className="main-row" >
-                                        <p className="quantity" onClick={() => editPopUp(a,index)}>{a.quantity && a.quantity}</p>
-                                        <p className="content-style" onClick={() => editPopUp(a,index)}>{a.Title && a.Title}</p>
-                                        <p className="price" onClick={() => editPopUp(a,index)}>{ (a.Price- (a.product_discount_amount *a.quantity).toFixed(2))}</p>
+                                        <p className="quantity">{a.quantity && a.quantity}</p>
+                                        <p className="content-style">{a.Title && a.Title}</p>
+                                        <p className="price">{a.Price && a.Price}</p>
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
                                             <img src={CircledX_Grey} alt="" />
                                         </button>
@@ -745,11 +743,11 @@ const CartList = (props) => {
                             <p>{LocalizedLanguage.printSubtotal}</p>
                             <p><b>${subTotal}</b></p>
                         </div>
-                        {_cartDiscountAmount && _cartDiscountAmount > 0 ?
+                        {discount && discount > 0 ?
                             <div className="row">
                                 <p>Cart Discount - {discountType}</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
-                                <p><b>-${_cartDiscountAmount}</b></p>
+                                <p><b>-${discount}</b></p>
                             </div> : null}
                         <div className="row">
                             <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes</button>
