@@ -50,7 +50,7 @@ const AdvancedSearch = (props) => {
             var allProdcuts = getTaxAllProduct(rows);
             allProdcuts = allProdcuts.filter(a => a.ParentId == 0);
             let _allp = allProdcuts;
-            if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
+           // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
             setAllProductList(_allp);
             setFilteredProductList(_allp ? _allp : []);
             setSerachCount(_allp.length);
@@ -68,7 +68,7 @@ const AdvancedSearch = (props) => {
     const GetCustomerFromIDB = () => {
         useIndexedDB("customers").getAll().then((rows) => {
             let _allc = rows;
-            if (_allc && _allc.length > 10) { _allc = _allc.slice(0, 10); }
+            //if (_allc && _allc.length > 10) { _allc = _allc.slice(0, 10); }
             setAllCustomerList(_allc);
             setSerachCount(_allc.length + allProductList.length + filteredGroup.length);
         });
