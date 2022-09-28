@@ -17,7 +17,9 @@ const AdjustInventory = (props) => {
     //console.log("prodcutInWarehouse", inventoryGet)
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleAdjustInventory();
+            console.log("AdjustInventory")
+
+            props.toggleAdjustInventory(false);
         }
     }
 
@@ -28,35 +30,41 @@ const AdjustInventory = (props) => {
         currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
 
     }
+    let useCancelled = false;
     useEffect(() => {
-        if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
-            setInventory(currentWareHouseDetail.Quantity)
-        }
+        if (useCancelled == false) {
+            if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
+                setInventory(currentWareHouseDetail.Quantity)
+            }
+            //dispatch(updateInventory(null));
+            //update index DB........................
+            if (inventoryStatus && inventoryStatus.inventoryUpdate && inventoryStatus.inventoryUpdate.is_success == true) {
+                if (props.product && props.product.WPID) {
+                    var prodcut = ""
+                    getByID(props.product.WPID).then(prodcut => {
+                        //prodcut = prd;
+                        prodcut.StockQuantity = inventory;
+                        update(prodcut).then(
+                            () => {
+                                console.log("stock Updated", props.product.WPID, inventory)
+                                // setTimeout(() => {
+                                props.toggleAdjustInventory();
+                                // }, 100);
+                            },
+                            error => {
+                                console.log(error);
+                            }
+                        );
+                    });
 
-        //update index DB........................
-        if (inventoryStatus && inventoryStatus.inventoryUpdate && inventoryStatus.inventoryUpdate.is_success == true) {
-            if (props.product && props.product.WPID) {
-                var prodcut = ""
-                getByID(props.product.WPID).then(prodcut => {
-                    //prodcut = prd;
-                    prodcut.StockQuantity = inventory;
-                    update({ WPID: props.product.WPID, prodcut }).then(
-                        () => {
-                            console.log("stock Updated", props.product.WPID, inventory)
-                            //setTimeout(() => {
-                            props.toggleAdjustInventory();
-                            //}, 100);
-                        },
-                        error => {
-                            console.log(error);
-                        }
-                    );
-                });
+
+                }
 
 
             }
-
-
+            return () => {
+                useCancelled = true;
+            }
         }
     }, [inventoryStatus])
     //function for call api request to upddate inventory into warehouse. 

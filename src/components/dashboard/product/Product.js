@@ -72,9 +72,13 @@ const Product = (props) => {
             setisProductDiscount(!isProductDiscount)
         }
     }
-    const toggleAdjustInventory = () => {
-        setisAdjustInventory(!isAdjustInventory)
+
+    const toggleAdjustInventory = (istoggle) => {
+        console.log("istoggle", istoggle)
+        console.log("isAdjustInventory", isAdjustInventory)
+        setisAdjustInventory(istoggle ? istoggle : !isAdjustInventory)
     }
+
     const toggleNoVariationSelected = () => {
         setisNoVariationSelected(!isNoVariationSelected)
     }
@@ -1048,6 +1052,8 @@ const Product = (props) => {
         toggleProductNote();
     }
     useEffect(() => {
+        console.log("useEffect")
+        toggleAdjustInventory(isAdjustInventory)
         props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
     }, [props.selProduct && props.selProduct.quantity]);
 
