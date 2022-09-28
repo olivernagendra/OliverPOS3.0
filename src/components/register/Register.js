@@ -108,7 +108,8 @@ const Register = () => {
                             <img src={AngledBracket_Left_Blue} alt="" />
                             {LocalizedLanguage.back}
                         </button>
-                        <p>{get_userName() + " - " + get_locName()}</p>
+                        <p>{get_locName()}</p>
+                        {/* get_userName() + " - " +  */}
                     </div>
                     <div className="choose-body-default">
                         <p>{LocalizedLanguage.registerdevice}</p>
