@@ -59,7 +59,11 @@ const CartDiscount = (props) => {
 
     const clearDiscount = () => {
         setIsDiscountBtnEnable(true);
-        setDiscountAmount("");
+        const ListItem = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+        setDiscountAmount("")
+        localStorage.removeItem("CART")
+        addtoCartProduct(ListItem);
+        dispatch(product());
     }
     const FeeAmount = (val) => {
         setFeeAmount(val);

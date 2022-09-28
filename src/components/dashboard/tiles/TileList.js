@@ -9,6 +9,7 @@ import { useLongPress } from 'use-long-press';
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import { deleteTile } from '../tiles/tileSlice';
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
+import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
 // var AllProduct = [];
 // var ParentProductList = [];
 // var filtered = [];
@@ -599,12 +600,12 @@ const TileList = (props) => {
     // It is refreshing the tile list from server when a new tile is added
     const [resdeletTile] = useSelector((state) => [state.deletTile])
     useEffect(() => {
-        if (isLoading===true && resdeletTile && resdeletTile.status == STATUSES.IDLE && (resdeletTile.is_success===true || resdeletTile.is_success===false)) {
+        if (isLoading === true && resdeletTile && resdeletTile.status == STATUSES.IDLE && (resdeletTile.is_success === true || resdeletTile.is_success === false)) {
             setIsLoading(false);
         }
     }, [resdeletTile]);
     return (
-        <div className="products" onContextMenu={(e)=> e.preventDefault()}>
+        <div className="products" onContextMenu={(e) => e.preventDefault()}>
             {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
                 <div className="category-row">
                     {showCategorySelection()}
@@ -617,14 +618,17 @@ const TileList = (props) => {
                         case "product":
                             return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()}>
                                 <div className="body">
-                                    <img src={item.Image} alt="" />
+                                    {item.Image != null ?
+                                        <img src={item.Image} alt="" /> :
+                                        <img src={NoImageAvailable} alt="" />
+                                    }
                                 </div>
                                 <div className="footer">
                                     <p>
                                         {item.Title}
                                     </p>
                                 </div>
-                                <div className="remove-cover hide"><div className="remove-button" onClick={()=>delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
 
                             </button>
                         case "attribute":
@@ -633,7 +637,7 @@ const TileList = (props) => {
                                 <p>
                                     {item.attribute_slug}
                                 </p>
-                                <div className="remove-cover hide"><div className="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                             </button>
                         case "category":
                         case "sub-category":
@@ -641,7 +645,7 @@ const TileList = (props) => {
                                 <p>
                                     {item.name ? item.name : item.Value}
                                 </p>
-                                <div className="remove-cover hide"><div className="remove-button" onClick={()=>delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                             </button>
                         default:
                             return ''
@@ -652,7 +656,11 @@ const TileList = (props) => {
                 filtered && filtered.map((item, index) => {
                     return <button className="product" key={index} onClick={() => props.openPopUp(item)} >
                         <div className="body">
-                            <img src={item.ProductImage} alt="" />
+                        {item.Image != null ?
+                                        <img src={item.ProductImage} alt="" /> :
+                                        <img src={NoImageAvailable} alt="" />
+                                    }
+                            {/* <img src={item.ProductImage} alt="" /> */}
                         </div>
                         <div className="footer">
                             <p>
@@ -683,7 +691,7 @@ const TileList = (props) => {
             <button className="add-tile" onClick={() => props.toggleAddTitle()}>
                 <img src={CircledPlus_Icon_Border} alt="" />
                 Add Tile
-            </button>{isLoading===true?<LoadingModal></LoadingModal>:null}
+            </button>{isLoading === true ? <LoadingModal></LoadingModal> : null}
         </div>)
 }
 

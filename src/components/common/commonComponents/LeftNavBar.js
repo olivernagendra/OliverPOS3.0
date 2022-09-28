@@ -76,9 +76,8 @@ const LeftNavBar = (props) => {
     }
     return (
         <React.Fragment>
-
             <div className={isShowLeftMenu == true || (props.isShowMobLeftNav && props.isShowMobLeftNav === true) ? "navbar open" : "navbar"} >
-                <div className="header-row">
+                <div className="header-row" onClick={()=>navigate('/home')}>
                     <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
                     <img src={Oliver_Type} alt="" className="oliver-text" />
                 </div>

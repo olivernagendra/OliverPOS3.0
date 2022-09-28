@@ -22,8 +22,10 @@ const AddTile = (props) => {
     // const [parentProductList, setParentProductList] = useState([])
     const [product_List, setProduct_List] = useState([])
     const [filterList, setfilterList] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
+    const [isLoading, setIsLoading] = useState(false);
+    const [tileList, settileList] = useState([]);
+    const [respAttribute, respCategory,respTile] = useSelector((state) => [state.attribute, state.category,state.tile])
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -37,6 +39,10 @@ const AddTile = (props) => {
         if (respCategory.is_success === true && respCategory.data && respCategory.data.content != null) {
             var _categoryList = respCategory.data.content;
             setcategoryList(_categoryList)
+        }
+        if (respTile.is_success === true && respTile.data && respTile.data.content != null) {
+            var _tileList = respTile.data.content;
+            settileList(_tileList)
         }
     }
     // It is refreshing the tile list from server when a new tile is added
@@ -132,7 +138,7 @@ const AddTile = (props) => {
     const addToFavourite = (item, pos) => {
         // console.log(JSON.stringify(item));
         // return;
-        var favList = data && data.content;
+        var favList = tileList;
         var type = item.type;
         var id = '';
         var slug = '';
@@ -190,7 +196,7 @@ const AddTile = (props) => {
             submitChanges(id, type, slug)
 
         } else {
-            if (item.type) { //apply check to protect msg display if no item selected and click on save button
+            if (isExist==true) { //apply check to protect msg display if no item selected and click on save button
                 // alert("alreadyExsist");
                 var data ={title:"",msg:"Item already exist",is_success:true}
                 dispatch(popupMessage(data));
