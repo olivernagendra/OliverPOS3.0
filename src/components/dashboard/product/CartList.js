@@ -567,11 +567,11 @@ const CartList = (props) => {
 
                         switch (item_type) {
                             case "product":
-                                return <div className="cart-item" onClick={() => editPopUp(a,index)} key={a.product_id ? a.product_id : a.Title}>
+                                return <div className="cart-item"  key={a.product_id ? a.product_id : a.Title}>
                                     <div className="main-row" >
-                                        <p className="quantity">{a.quantity && a.quantity}</p>
-                                        <p className="content-style">{a.Title && a.Title}</p>
-                                        <p className="price">{a.Price && a.Price}</p>
+                                        <p className="quantity" onClick={() => editPopUp(a,index)}>{a.quantity && a.quantity}</p>
+                                        <p className="content-style" onClick={() => editPopUp(a,index)}>{a.Title && a.Title}</p>
+                                        <p className="price" onClick={() => editPopUp(a,index)}>{a.Price && a.Price}</p>
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
                                             <img src={CircledX_Grey} alt="" />
                                         </button>
