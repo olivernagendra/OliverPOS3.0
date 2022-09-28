@@ -21,6 +21,7 @@ const CartList = (props) => {
     const [subTotal, setSubTotal] = useState(0.00);
     const [taxes, setTaxes] = useState(0.00);
     const [discount, setDiscount] = useState(0.00);
+    const [cartDiscount, setCartDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
     const [taxRate, setTaxRate] = useState(0.00);
     const [checkoutData, setCheckoutData] = useState(0.00);
@@ -40,7 +41,7 @@ const CartList = (props) => {
 
     }, [props.listItem]);
 
-    const editPopUp = async (a) => {
+    const editPopUp = async (a,index) => {
         if (a && (a.Type === "variation" || a.Type === "variable")) {
             var _item = await getByID(a.product_id);
             if (_item) {
@@ -53,11 +54,11 @@ const CartList = (props) => {
                     _parent["selectedOptions"] = allCombi;
 
                     props.updateVariationProduct(_item);
-                    props.openPopUp(_parent);
+                    props.openPopUp(_parent,index);
                 }
                 else {
                     props.updateVariationProduct(_item);
-                    props.openPopUp(_item);
+                    props.openPopUp(_item,index);
                 }
 
             }
@@ -432,6 +433,7 @@ const CartList = (props) => {
         setSubTotal(RoundAmount(_subtotal));
         setTotal(RoundAmount(_total));
         setDiscount(_totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0);
+        setCartDiscount(_cartDiscountAmount);
         setTaxes(RoundAmount(_taxAmount));
         //    this.setState({
         //         subTotal: RoundAmount(_subtotal),
@@ -559,7 +561,7 @@ const CartList = (props) => {
                             </button>
                         </div>
                     </div>}
-                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
+                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map((a,index) => {
                         var item_type = "";
                         if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) { item_type = "note"; }
                         else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
@@ -567,11 +569,11 @@ const CartList = (props) => {
 
                         switch (item_type) {
                             case "product":
-                                return <div className="cart-item" onClick={() => editPopUp(a)} key={a.product_id ? a.product_id : a.Title}>
+                                return <div className="cart-item"  key={a.product_id ? a.product_id : a.Title}>
                                     <div className="main-row" >
-                                        <p className="quantity">{a.quantity && a.quantity}</p>
-                                        <p className="content-style">{a.Title && a.Title}</p>
-                                        <p className="price">{a.Price && a.Price}</p>
+                                        <p className="quantity" onClick={() => editPopUp(a,index)}>{a.quantity && a.quantity}</p>
+                                        <p className="content-style" onClick={() => editPopUp(a,index)}>{a.Title && a.Title}</p>
+                                        <p className="price" onClick={() => editPopUp(a,index)}>{ (a.Price- (a.product_discount_amount *a.quantity).toFixed(2))}</p>
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
                                             <img src={CircledX_Grey} alt="" />
                                         </button>
@@ -588,6 +590,12 @@ const CartList = (props) => {
                                         <p className="content-style line-capped">
                                             {a.Title && a.Title}
                                         </p>
+                                        {
+                                            !a.hasOwnProperty("pid") &&
+                                            <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                            <img src={CircledX_Grey} alt="" />
+                                        </button>
+                                        }
                                     </div>
                                 </div>
                             case "custom_fee":
@@ -737,11 +745,11 @@ const CartList = (props) => {
                             <p>{LocalizedLanguage.printSubtotal}</p>
                             <p><b>${subTotal}</b></p>
                         </div>
-                        {discount && discount > 0 ?
+                        {_cartDiscountAmount && _cartDiscountAmount > 0 ?
                             <div className="row">
                                 <p>Cart Discount - {discountType}</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
-                                <p><b>-${discount}</b></p>
+                                <p><b>-${_cartDiscountAmount}</b></p>
                             </div> : null}
                         <div className="row">
                             <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes</button>

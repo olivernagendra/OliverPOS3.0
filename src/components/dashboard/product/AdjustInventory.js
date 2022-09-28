@@ -11,7 +11,7 @@ const AdjustInventory = (props) => {
     const [isAllowUpdate, setIsAllowUpdate] = useState(false);
     const [inventoryStatus] = useSelector((state) => [state.inventories])
     const { update, getByID } = useIndexedDB("products");
-    console.log("inventoryStatus", inventoryStatus)
+    //console.log("inventoryStatus", inventoryStatus)
     //console.log("inventoryUpdate", inventoryUpdate)
     const dispatch = useDispatch()
     //console.log("prodcutInWarehouse", inventoryGet)
@@ -88,7 +88,7 @@ const AdjustInventory = (props) => {
     // if (updateInventory) {
     //     console.log("updateInventory", updateInventory)
     // }
-    console.log("isAllowUpdate", isAllowUpdate)
+    //console.log("isAllowUpdate", isAllowUpdate)
     var isOutOfStock = currentWareHouseDetail.Quantity > 0 ? false : true;
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>

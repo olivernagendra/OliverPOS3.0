@@ -30,8 +30,9 @@ import { addSimpleProducttoCart } from './productLogic';
 import { getTaxAllProduct } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
-
-
+import CommonModuleJS from "../../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -51,7 +52,7 @@ const Product = (props) => {
     const [note, setNote] = useState("");
     const [selVariations, setSelVariations] = useState([]);
     const [selOptions, setSelOptions] = useState([]);
-
+    const [isEdit, setIsEdit] = useState(false);
     const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
@@ -61,7 +62,15 @@ const Product = (props) => {
         setisProductNote(!isProductNote)
     }
     const toggleProductDiscount = () => {
-        setisProductDiscount(!isProductDiscount)
+        if (CommonModuleJS.permissionsForDiscount() == false) {
+
+            var data = { title: "", msg: LocalizedLanguage.discountPermissionerror, is_success: true }
+            dispatch(popupMessage(data));
+            //alert(LocalizedLanguage.discountPermissionerror);
+        }
+        else {
+            setisProductDiscount(!isProductDiscount)
+        }
     }
     const toggleAdjustInventory = () => {
         setisAdjustInventory(!isAdjustInventory)
@@ -517,9 +526,47 @@ const Product = (props) => {
             });
         }
     }
+
+    // const saveSelectedOption = () => {
+    //     //console.log("selOptions--" + JSON.stringify(selVariations.length))
+    //     if (selVariations.length == 0)
+    //     {
+    //         console.log("----_selVariations save" + JSON.stringify(_selVariationsEdit))
+    //         setTimeout(() => {
+    //         setSelVariations(_selVariationsEdit);
+    //         }, 100);
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     console.log("----_selVariations save" + JSON.stringify(_selVariationsEdit))
+    //     setSelVariations(_selVariationsEdit);
+    // }, []);
+
+    var _selVariationsEdit = [];
+    const setSelectedOption = (option, attribute, AttrIndex) => {
+        // _disableAttribute = []
+        _selVariationsEdit = selVariations;
+        var _item = _selVariationsEdit.findIndex((element) => {
+            return element.Name === attribute.Name;
+        })
+        if (_item == -1) {
+            _selVariationsEdit.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+        }
+        _selVariationsEdit = _selVariationsEdit.map(obj => {
+            if (obj.Name === attribute.Name) {
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
+            }
+            return obj;
+        });
+        console.log("----_selVariations" + JSON.stringify(_selVariationsEdit))
+        if (checkLength() == false)
+            setSelVariations(_selVariationsEdit);
+    }
     //var selVariations = [];
     var _disableAttribute = [];
     const optionClick = async (option, attribute, AttrIndex) => {
+        setIsEdit(false);
         //    if(selOptions && selOptions.length>0)
         //    {
         //     setSelOptions([]);
@@ -619,106 +666,106 @@ const Product = (props) => {
     var selectedOptions = [];
     var variationfound = {};
     var Variations = [];
-    const optionClick1 = (option, attribute, AttrIndex) => {
+    // const optionClick1 = (option, attribute, AttrIndex) => {
 
-        getAllProducts().then((rows) => {
-            var data = rows.filter(a => a.ParentId === props.selProduct.WPID);
-            Variations = getTaxAllProduct(data)
+    //     getAllProducts().then((rows) => {
+    //         var data = rows.filter(a => a.ParentId === props.selProduct.WPID);
+    //         Variations = getTaxAllProduct(data)
 
 
 
-            //var filterTerms = this.state.filterTerms;
-            var optExist = false;
-            filterTerms && filterTerms.map(opItem => {
-                if (opItem.attribute === attribute) {
-                    opItem.attribute = attribute;
-                    opItem.option = option;
-                    optExist = true
-                }
-            })
-            if (optExist == false) {
-                filterTerms.push({
-                    attribute: attribute,
-                    option: option,
-                    index: AttrIndex
-                })
-                // this.state.filterTerms = filterTerms
-                // this.setState({ filterTerms: filterTerms })
-            }
-            // this.setState({ filterTerms: filterTerms })
-            // if (this.clickTimeout !== null) {
-            //     clearTimeout(this.clickTimeout)
-            //     this.clickTimeout = null
-            // } else {
-            //     this.clickTimeout = setTimeout(() => {
-            //         clearTimeout(this.clickTimeout)
-            //         this.clickTimeout = null
-            //     }, 300);
-            //this.setState({
-            selectedAttribute = attribute;
-            //});
-            if (props.selProduct.ProductAttributes && props.selProduct.ProductAttributes.length > 1) {
-                var filteredAttribute = Variations.filter(item => {
-                    var optionRes = option.replace(/\s/g, '-').toLowerCase();
-                    optionRes = optionRes.replace(/\//g, "-").toLowerCase();
-                    var isExist = false;
-                    item && item.combination !== null && item.combination !== undefined && item.combination.split("~").map(combination => {
-                        if (combination.replace(/\s/g, '-').replace(/\//g, "-").toLowerCase() === optionRes || combination == "**")
-                            isExist = true;
-                    })
-                    return isExist;
-                })
-                filteredAttributeArray = filteredAttribute;
-            }
-            setSelectedOption(option, attribute, AttrIndex);
-            // var attributeLenght = this.getAttributeLenght();
-            searchvariationProduct(option);
-            //}
-        });
-    }
+    //         //var filterTerms = this.state.filterTerms;
+    //         var optExist = false;
+    //         filterTerms && filterTerms.map(opItem => {
+    //             if (opItem.attribute === attribute) {
+    //                 opItem.attribute = attribute;
+    //                 opItem.option = option;
+    //                 optExist = true
+    //             }
+    //         })
+    //         if (optExist == false) {
+    //             filterTerms.push({
+    //                 attribute: attribute,
+    //                 option: option,
+    //                 index: AttrIndex
+    //             })
+    //             // this.state.filterTerms = filterTerms
+    //             // this.setState({ filterTerms: filterTerms })
+    //         }
+    //         // this.setState({ filterTerms: filterTerms })
+    //         // if (this.clickTimeout !== null) {
+    //         //     clearTimeout(this.clickTimeout)
+    //         //     this.clickTimeout = null
+    //         // } else {
+    //         //     this.clickTimeout = setTimeout(() => {
+    //         //         clearTimeout(this.clickTimeout)
+    //         //         this.clickTimeout = null
+    //         //     }, 300);
+    //         //this.setState({
+    //         selectedAttribute = attribute;
+    //         //});
+    //         if (props.selProduct.ProductAttributes && props.selProduct.ProductAttributes.length > 1) {
+    //             var filteredAttribute = Variations.filter(item => {
+    //                 var optionRes = option.replace(/\s/g, '-').toLowerCase();
+    //                 optionRes = optionRes.replace(/\//g, "-").toLowerCase();
+    //                 var isExist = false;
+    //                 item && item.combination !== null && item.combination !== undefined && item.combination.split("~").map(combination => {
+    //                     if (combination.replace(/\s/g, '-').replace(/\//g, "-").toLowerCase() === optionRes || combination == "**")
+    //                         isExist = true;
+    //                 })
+    //                 return isExist;
+    //             })
+    //             filteredAttributeArray = filteredAttribute;
+    //         }
+    //         setSelectedOption(option, attribute, AttrIndex);
+    //         // var attributeLenght = this.getAttributeLenght();
+    //         searchvariationProduct(option);
+    //         //}
+    //     });
+    // }
 
-    const setSelectedOption = (option, attribute, AttrIndex) => {
-        //Find Attribute Code----------------------------------------------
-        var attribute_list = [];
-        if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) { attribute_list = respAttribute.data.content; }
+    // const setSelectedOption = (option, attribute, AttrIndex) => {
+    //     //Find Attribute Code----------------------------------------------
+    //     var attribute_list = [];
+    //     if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) { attribute_list = respAttribute.data.content; }
 
-        //var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
-        var sub_attribute;
+    //     //var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
+    //     var sub_attribute;
 
-        var found = null;
-        if (attribute_list !== null && attribute_list !== undefined) {
-            found = attribute_list.find(function (element) {
-                return element.Code.toLowerCase() == attribute.Name.toLowerCase()
-            })
-        }
-        if (found !== null && found !== undefined) {
-            sub_attribute = found.SubAttributes && found.SubAttributes.find(function (element) {
-                return element.Value.toLowerCase() == option.toLowerCase()
-            })
-        }
-        var newOption = sub_attribute ? sub_attribute.Code : option;
-        selectedOptionCode = newOption;
-        //this.setState({ selectedOptionCode: newOption })
-        //---------Array of selected options-----------------------------
-        var arrAttr = selectedOptionCode ? selectedOptionCode : [];
-        var isAttributeExist = false;
-        arrAttr && Array.isArray(arrAttr) == true && arrAttr.length > 0 && arrAttr.map(item => {
-            if (item.attribute.toLowerCase() == attribute.Name.toLowerCase()) {
-                item.option = option;
-                isAttributeExist = true;
-            }
-        })
-        if (isAttributeExist == false)
-            Array.isArray(arrAttr) == true && arrAttr.push({ attribute: attribute, option: selectedOptionCode, index: AttrIndex });
-        //Remove Dumplecate attribute------------
-        arrAttr = Array.isArray(arrAttr) == true && arrAttr.filter((val, id, array) => {
-            return array.indexOf(val) == id;
-        });
-        selectedOptions = arrAttr;
+    //     var found = null;
+    //     if (attribute_list !== null && attribute_list !== undefined) {
+    //         found = attribute_list.find(function (element) {
+    //             return element.Code.toLowerCase() == attribute.Name.toLowerCase()
+    //         })
+    //     }
+    //     if (found !== null && found !== undefined) {
+    //         sub_attribute = found.SubAttributes && found.SubAttributes.find(function (element) {
+    //             return element.Value.toLowerCase() == option.toLowerCase()
+    //         })
+    //     }
+    //     var newOption = sub_attribute ? sub_attribute.Code : option;
+    //     selectedOptionCode = newOption;
+    //     //this.setState({ selectedOptionCode: newOption })
+    //     //---------Array of selected options-----------------------------
+    //     var arrAttr = selectedOptionCode ? selectedOptionCode : [];
+    //     var isAttributeExist = false;
+    //     arrAttr && Array.isArray(arrAttr) == true && arrAttr.length > 0 && arrAttr.map(item => {
+    //         if (item.attribute.toLowerCase() == attribute.Name.toLowerCase()) {
+    //             item.option = option;
+    //             isAttributeExist = true;
+    //         }
+    //     })
+    //     if (isAttributeExist == false)
+    //         Array.isArray(arrAttr) == true && arrAttr.push({ attribute: attribute, option: selectedOptionCode, index: AttrIndex });
+    //     //Remove Dumplecate attribute------------
+    //     arrAttr = Array.isArray(arrAttr) == true && arrAttr.filter((val, id, array) => {
+    //         return array.indexOf(val) == id;
+    //     });
+    //     selectedOptions = arrAttr;
 
-        console.log("----selectedOptions---" + JSON.stringify(selectedOptions));
-        //-------------------------------------------------------
-    }
+    //     console.log("----selectedOptions---" + JSON.stringify(selectedOptions));
+    //     //-------------------------------------------------------
+    // }
 
     const combo = (c) => {
         var r = [];
@@ -952,6 +999,28 @@ const Product = (props) => {
                 // _product = props.selProduct;
                 _product.quantity = productQty;
 
+                //---- Replace exsiting product if different variation or proudct is selected
+                // if (props.selProduct && props.selProduct.hasOwnProperty("selectedIndex")) {
+                //     _product['selectedIndex']=props.selProduct.selectedIndex;
+                //     var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+                //     if (cartlist.length > 0) {
+                //         cartlist.map((item, index) => {
+                //             if (typeof _product !== 'undefined' && _product !== null) {
+                //                 var _index = -1;
+                //                 if (_product['selectedIndex'] >= 0) {
+                //                     _index = parseInt(_product.selectedIndex)
+                //                 }
+                //                 if (_index > -1 && _product.selectedIndex == index && item.product_id != _product.WPID) {
+                //                     cartlist[index] = _product;
+                //                     localStorage.setItem("CARD_PRODUCT_LIST",JSON.stringify(cartlist) );
+                //                 }
+                //             }
+                //         })
+                //     }
+                // }
+
+                //----
+
                 var result = addSimpleProducttoCart(_product);
                 if (result === 'outofstock') {
                     toggleOutOfStock();
@@ -983,7 +1052,7 @@ const Product = (props) => {
     }, [props.selProduct && props.selProduct.quantity]);
 
 
-    const clearSelection = () => { 
+    const clearSelection = () => {
         setSelVariations([]);
     }
     useEffect(() => {
@@ -991,11 +1060,19 @@ const Product = (props) => {
             setSelVariations([]);
             getModifiers();
             getRecomProducts();
-            if (props.selProduct && props.selProduct.hasOwnProperty("selectedOptions")) {
-                setSelOptions(props.selProduct.selectedOptions)
-            }
+
         }
     }, [props.isShowPopups, props.selProduct]);
+
+    useEffect(() => {
+        if (props.isShowPopups == true) {
+            if (props.selProduct && props.selProduct.hasOwnProperty("selectedOptions") && props.selProduct.selectedOptions.length > 0) {
+                setSelOptions(props.selProduct.selectedOptions)
+                setIsEdit(true);
+            }
+        }
+    }, [selOptions, props.isShowPopups]);
+
 
     //   end
     var _DistictAttribute = [];
@@ -1056,7 +1133,7 @@ const Product = (props) => {
                             </div> :
                             <div className="row">
                                 <p>Select Variations</p>
-                                <button id="clearModsButton" onClick={()=>clearSelection()}>Clear Selection</button>
+                                <button id="clearModsButton" onClick={() => clearSelection()}>Clear Selection</button>
                             </div>}
                         {
 
@@ -1072,6 +1149,26 @@ const Product = (props) => {
                                                         allVariations.push(_item);
                                                         // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
                                                         //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
+                                                        if (isEdit === true) {
+                                                            var selVal = selOptions ? selOptions.includes(_item) : false;
+                                                            if (selVal === true) {
+                                                                setSelectedOption(a, attribute, i)
+                                                            }
+                                                            return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
+
+                                                            // if (_DistictAttribute.length === (index + 1) && attribute.Option.split(',').length === (i + 1)) {
+                                                            //     console.log("_DistictAttribute length--->"+_DistictAttribute.length,index+1+"----"+attribute.Option.split(',').length,i+1)
+                                                            //     saveSelectedOption();
+                                                            // }
+                                                        }
+                                                        else {
+                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle === _item) : false;
+                                                            // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                            return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                        }
+
+                                                        // console.log("_DistictAttribute length--->"+_DistictAttribute.length,index)
+                                                        //     console.log("attribute length--->"+attribute.Option.split(',').length,i)
                                                         //console.log("a, attribute, s--------"+selVal)
                                                         // if(selOptions && selOptions.length>0)
                                                         // {
@@ -1081,7 +1178,7 @@ const Product = (props) => {
                                                         // }
                                                         // else
                                                         // allVariations.push(_item);
-                                                        return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
                                             </div></React.Fragment>

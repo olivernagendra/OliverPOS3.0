@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import Oliver_Icon_Color from '../../../images/svg/Oliver-Icon-Color.svg';
 import Oliver_Type from '../../../images/svg/Oliver-Type.svg';
 import Register_Icon from '../../../images/svg/Register-Icon.svg';
@@ -17,8 +18,12 @@ import AppLauncher from "./AppLauncher";
 import LinkLauncher from "./LinkLauncher";
 import IframeWindow from "../../dashboard/IframeWindow";
 import { isMobile } from "react-device-detect";
+import CommonModuleJS from "../../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
+import { popupMessage } from "../commonAPIs/messageSlice";
 const LeftNavBar = (props) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const location = useLocation();
     const [isShowLeftMenu, setisShowLeftMenu] = useState(false);
     const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
@@ -53,6 +58,22 @@ const LeftNavBar = (props) => {
     if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
         isAllowCashDrawer = true;
     }
+
+    const notInCurrentPlan = () => {
+        var msg = "";
+        var title = "";
+        if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement != true) {
+            title = LocalizedLanguage.notInCurrentPlan;
+            msg = LocalizedLanguage.toUpdateCurrentPlan;
+        }
+        else if (selectedRegister && selectedRegister.EnableCashManagement == false) {
+            title = "This feature is disabled from Admin side";
+            msg = "To enable your plan, go to Oliver Hub";
+        }
+
+        var data = { title: title, msg: msg, is_success: true }
+        dispatch(popupMessage(data));
+    }
     return (
         <React.Fragment>
 
@@ -82,9 +103,18 @@ const LeftNavBar = (props) => {
                     <p>Transactions</p>
                     <div className="f-key">F3</div>
                 </button>
-                {
+                {client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true ?
                     <button id="cashManagementButton" className={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? "page-link selected" : "page-link"} disabled={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? true : false}
                         onClick={() => isAllowCashDrawer == true ? navigateTo('/cashdrawer') : ""}>
+                        <div className="img-container">
+                            <img src={CashManagement_Icon} alt="" />
+                        </div>
+                        <p>Cash Management</p>
+                        <div className="f-key">F4</div>
+                    </button>
+                    :
+                    <button id="cashManagementButton" className={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? "page-link selected" : "page-link"} disabled={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? true : false}
+                        onClick={() => notInCurrentPlan()}>
                         <div className="img-container">
                             <img src={CashManagement_Icon} alt="" />
                         </div>

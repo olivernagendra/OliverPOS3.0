@@ -15,6 +15,8 @@ import { getTaxAllProduct } from '../common/TaxSetting'
 import { addSimpleProducttoCart } from "./product/productLogic";
 import { product } from "./product/productSlice";
 import { getInventory } from "./slices/inventorySlice";
+import CommonModuleJS from "../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
     const { getAll } = useIndexedDB("products");
@@ -285,28 +287,40 @@ const AdvancedSearch = (props) => {
         setFilteredGroup(_filteredGroup);
         setSerachCount(scount);
     }
-
+    // updated on 27sep2022: check permission for product x
     const addToCart = (item) => {
-        var result = addSimpleProducttoCart(item);
-        if (result === 'outofstock') {
-            props.toggleOutOfStock();
+        let type = item.Type;
+        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            alert(LocalizedLanguage.productxOutOfStock);
         }
         else {
-            dispatch(product());
-            props.toggleAdvancedSearch();
+            var result = addSimpleProducttoCart(item);
+            if (result === 'outofstock') {
+                props.toggleOutOfStock();
+            }
+            else {
+                dispatch(product());
+                props.toggleAdvancedSearch();
+            }
         }
     }
     // careated by : 
     // description
     // update by: Nagendra Suryawanshi
-    //updated description: call api to get warehouse quantity of the product
+    // updated description: call api to get warehouse quantity of the product
+    // updated on 27sep2022: check permission for product x
     const viewProduct = (item) => {
-        if (item.ManagingStock == true) {
-            dispatch(getInventory(item.WPID)); //call to get product warehouse quantity
+        let type = item.Type;
+        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            alert(LocalizedLanguage.productxOutOfStock);
         }
-        props.openPopUp(item);
-        props.toggleAdvancedSearch();
-        // toggleSubwindow();
+        else {
+            if (item.ManagingStock == true) {
+                dispatch(getInventory(item.WPID)); //call to get product warehouse quantity
+            }
+            props.openPopUp(item);
+            props.toggleAdvancedSearch();
+        }
     }
     const addCustomerToSale = (cutomer_data) => {
         var data = cutomer_data;

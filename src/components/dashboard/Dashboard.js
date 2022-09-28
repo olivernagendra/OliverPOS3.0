@@ -37,6 +37,8 @@ import TaxList from "./TaxList";
 import MsgPopup from "../common/commonComponents/MsgPopup";
 import { popupMessage } from "../common/commonAPIs/messageSlice";
 import { useNavigate } from "react-router-dom";
+import CommonModuleJS from "../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -146,16 +148,25 @@ const Home = () => {
         setSelProduct(_product[0]);
         setisShowPopups(true)
     }
-    const openPopUp = async (item) => {
-        updateVariationProduct(null);
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
-        var _product = getTaxAllProduct([_item])
-        if(item.hasOwnProperty ("selectedOptions"))
-        {
-            _product[0]["selectedOptions"]=item.selectedOptions;
+    const openPopUp = async (item,index=null) => {
+
+        let type = item.Type;
+        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            //alert(LocalizedLanguage.productxOutOfStock);
+            var data ={title:"",msg:LocalizedLanguage.productxOutOfStock,is_success:true}
+            dispatch(popupMessage(data));
         }
-        setSelProduct(_product[0]);
-        setisShowPopups(true)
+        else {
+            updateVariationProduct(null);
+            var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+            var _product = getTaxAllProduct([_item])
+            if (item.hasOwnProperty("selectedOptions")) {
+                _product[0]["selectedOptions"] = item.selectedOptions;
+                _product[0]["selectedIndex"]=index;
+            }
+            setSelProduct(_product[0]);
+            setisShowPopups(true);
+        }
     }
     const closePopUp = () => {
         setisShowPopups(false);
@@ -174,8 +185,15 @@ const Home = () => {
         setisShowOrderNote(!isShowOrderNote)
     }
     const toggleCartDiscount = () => {
+        // if (CommonModuleJS.permissionsForDiscount() == false) {
+        //     alert(LocalizedLanguage.discountPermissionerror);
+        // }
+        // else
+        // {
         setisShowOptionPage(false)
         setisShowCartDiscount(!isShowCartDiscount)
+        //}
+
     }
     const toggleEditCartDiscount = () => {
         setisShowOptionPage(false)
@@ -185,7 +203,7 @@ const Home = () => {
     }
     const toggleNotifications = () => {
         setisShowNotifications(!isShowNotifications)
-        
+
     }
 
     const toggleAdvancedSearch = () => {
@@ -372,7 +390,7 @@ const Home = () => {
             }
         }
     }
-    
+
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile, resdeletTile] = useSelector((state) => [state.addTile, state.deletTile])
     useEffect(() => {
