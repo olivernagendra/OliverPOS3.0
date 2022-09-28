@@ -466,7 +466,7 @@ const Home = () => {
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <AdvancedSearch toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch>
             <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}

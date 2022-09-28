@@ -1359,7 +1359,10 @@ const Product = (props) => {
                             {recommProducts && recommProducts.length > 0 && recommProducts.map(a => {
                                 return <button onClick={() => props.openPopUp(a)} key={a.WPID}>
                                     <div className="img-container">
-                                        <img src={a && a.ProductImage} alt="" className="height-fit" />
+                                    {a && a.ProductImage != null ?
+                                        <img src={a && a.ProductImage} alt="" className="height-fit" />:
+                                        <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
+                                    }
                                     </div>
                                     <div className="prod-name">
                                         <p>{a && a.Title}</p>

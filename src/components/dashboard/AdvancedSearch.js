@@ -34,7 +34,7 @@ const AdvancedSearch = (props) => {
     const [serachCount, setSerachCount] = useState(0);
     const [isShowDDNSearch, setisShowDDNSearch] = useState(false)
     const [searchHistory, setSearchHistory] = useState([])
-
+    const [allowGroup, setAllowGroup] = useState(false)
     const [respGroup] = useSelector((state) => [state.group])
 
     const limitArrayByNum = (arr, num) => {
@@ -50,7 +50,7 @@ const AdvancedSearch = (props) => {
             var allProdcuts = getTaxAllProduct(rows);
             allProdcuts = allProdcuts.filter(a => a.ParentId == 0);
             let _allp = allProdcuts;
-           // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
+            // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
             setAllProductList(_allp);
             setFilteredProductList(_allp ? _allp : []);
             setSerachCount(_allp.length);
@@ -80,6 +80,13 @@ const AdvancedSearch = (props) => {
             getProductFromIDB()
             GetCustomerFromIDB()
             Search_History('');
+            var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
+            if (user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined" && user.group_sales === true) {
+                setAllowGroup(true);
+            }
+            else {
+                setAllowGroup(false);
+            }
         }
         return () => {
             useCancelled = true;
@@ -209,13 +216,15 @@ const AdvancedSearch = (props) => {
                     setFilteredCustomer(_allc);
                     _count += _allc.length;
 
-                    let _allg = [];
-                    if (respGroup && respGroup.data && respGroup.data.content) {
-                        // _allg = respGroup.data.content;
-                        // if (_allg && _allg.length > 10) { _allg = _allg.slice(0, 10); }
-                        _allg = limitArrayByNum(respGroup.data.content, 10);
-                        setFilteredGroup(_allg);
-                        _count += _allg.length;
+                    if (allowGroup === true) {
+                        let _allg = [];
+                        if (respGroup && respGroup.data && respGroup.data.content) {
+                            // _allg = respGroup.data.content;
+                            // if (_allg && _allg.length > 10) { _allg = _allg.slice(0, 10); }
+                            _allg = limitArrayByNum(respGroup.data.content, 10);
+                            setFilteredGroup(_allg);
+                            _count += _allg.length;
+                        }
                     }
                     setSerachCount(_count);
                 }
@@ -269,7 +278,7 @@ const AdvancedSearch = (props) => {
             //setFilteredCustomer(_filteredCustomer);
             scount += _filteredCustomer.length;
         }
-        if (filterType === "group" || filterType === "all") {
+        if ((filterType === "group" || filterType === "all") && allowGroup === true) {
             //if (respGroup && respGroup.data && respGroup.data.content) {
             _filteredGroup = allGroupList.filter((item) => (
                 (item.Label && item.Label.toLowerCase().includes(value.toLowerCase()))))
@@ -393,13 +402,14 @@ const AdvancedSearch = (props) => {
                         </div>
                         <p>Customers</p>
                     </label>
-                    <label onClick={() => SetFilter('group')}>
-                        <input type="radio" id="groups" name="search_modifier" value="groups" defaultChecked={filterType === 'group' ? true : false} />
-                        <div className="custom-radio" >
-                            <img src={BlueDot} alt="" />
-                        </div>
-                        <p>Groups</p>
-                    </label>
+                    {allowGroup === true ?
+                        <label onClick={() => SetFilter('group')}>
+                            <input type="radio" id="groups" name="search_modifier" value="groups" defaultChecked={filterType === 'group' ? true : false} />
+                            <div className="custom-radio" >
+                                <img src={BlueDot} alt="" />
+                            </div>
+                            <p>Groups</p>
+                        </label> : null}
                 </div>
                 <p>Recent Searches</p>
                 <div className="recent-searches">
