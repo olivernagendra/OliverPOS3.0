@@ -148,12 +148,12 @@ const Home = () => {
         setSelProduct(_product[0]);
         setisShowPopups(true)
     }
-    const openPopUp = async (item,index=null) => {
+    const openPopUp = async (item, index = null) => {
 
         let type = item.Type;
         if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
             //alert(LocalizedLanguage.productxOutOfStock);
-            var data ={title:"",msg:LocalizedLanguage.productxOutOfStock,is_success:true}
+            var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
             dispatch(popupMessage(data));
         }
         else {
@@ -162,7 +162,7 @@ const Home = () => {
             var _product = getTaxAllProduct([_item])
             if (item.hasOwnProperty("selectedOptions")) {
                 _product[0]["selectedOptions"] = item.selectedOptions;
-                _product[0]["selectedIndex"]=index;
+                _product[0]["selectedIndex"] = index;
             }
             setSelProduct(_product[0]);
             setisShowPopups(true);
