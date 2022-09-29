@@ -33,6 +33,7 @@ import { product } from "./productSlice";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
+import { getInventory } from "../slices/inventorySlice";
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -53,11 +54,22 @@ const Product = (props) => {
     const [selVariations, setSelVariations] = useState([]);
     const [selOptions, setSelOptions] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
+
+    const [variationStockQunatity, setVariationStockQunatity] = useState(0)
     const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
     // });
+    const [inventoryStatus] = useSelector((state) => [state.inventories])
+
+    useEffect(() => {
+        var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+        setVariationStockQunatity(_product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
+            (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0'
+        ) : 0)
+    }, []);
+
     const toggleProductNote = () => {
         setisProductNote(!isProductNote)
     }
@@ -76,7 +88,7 @@ const Product = (props) => {
     const toggleAdjustInventory = (istoggle) => {
         console.log("istoggle", istoggle)
         console.log("isAdjustInventory", isAdjustInventory)
-        setisAdjustInventory(istoggle ? istoggle : !isAdjustInventory)
+        setisAdjustInventory(istoggle == null || istoggle == "undefined" ? !isAdjustInventory : istoggle)
     }
 
     const toggleNoVariationSelected = () => {
@@ -542,10 +554,7 @@ const Product = (props) => {
     //     }
     // }
 
-    // useEffect(() => {
-    //     console.log("----_selVariations save" + JSON.stringify(_selVariationsEdit))
-    //     setSelVariations(_selVariationsEdit);
-    // }, []);
+
 
     var _selVariationsEdit = [];
     const setSelectedOption = (option, attribute, AttrIndex) => {
@@ -612,9 +621,12 @@ const Product = (props) => {
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                        dispatch(getInventory(filteredAttribute[0].WPID)); //call to get product warehouse quantity
+
                     }
                     else {
                         props.updateVariationProduct && props.updateVariationProduct(null);
+                        // dispatch(getInventory(null)); //call to get product warehouse quantity
                     }
                     console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
@@ -1051,9 +1063,16 @@ const Product = (props) => {
         setNote(note);
         toggleProductNote();
     }
+    var itemQauntity = 0;
+    //=props.selProduct.quantity;
+
+
     useEffect(() => {
         console.log("useEffect")
-        toggleAdjustInventory(isAdjustInventory)
+        //toggleAdjustInventory(isAdjustInventory)
+        setisAdjustInventory(false)
+
+
         props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
     }, [props.selProduct && props.selProduct.quantity]);
 
@@ -1100,16 +1119,44 @@ const Product = (props) => {
     setTimeout(() => {
         initProuctFn();
     }, 1000);
-    var variationStockQunatity = 0;
+    //var variationStockQunatity = 0;
 
     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
-    if (_product) {
-        variationStockQunatity =
-            (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
-                (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0';
+    // if (_product) {
+    //     setVariationStockQunatity(
+    //         (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
+    //             (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0'
+    //     )
+    // }
 
+    const fatchUpdateInventory = async () => {
+        var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+        // getByID(_product.WPID).then((prodcut) => {
+        //     itemQauntity = prodcut && prodcut.StockQuantity
+        //     console.log("itemQauntity", itemQauntity)
+        //     variationStockQunatity = itemQauntity;
+        // });
+
+        var prodcut = await getProductByID(_product.WPID).then((row) => {
+            return row;
+        });
+        if (prodcut) {
+            itemQauntity = prodcut && prodcut.StockQuantity
+            console.log("itemQauntity", itemQauntity)
+            setVariationStockQunatity(itemQauntity);
+        }
     }
-
+    var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
+    var CurrentWarehouseId = localStorage.getItem("WarehouseId");
+    var currentWareHouseDetail = "";
+    if (warehouseDetail && warehouseDetail.length > 0) {
+        currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+    }
+    useEffect(() => {
+        if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
+            setVariationStockQunatity(currentWareHouseDetail.Quantity)
+        }
+    }, [])
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
             <React.Fragment>
@@ -1359,10 +1406,10 @@ const Product = (props) => {
                             {recommProducts && recommProducts.length > 0 && recommProducts.map(a => {
                                 return <button onClick={() => props.openPopUp(a)} key={a.WPID}>
                                     <div className="img-container">
-                                    {a && a.ProductImage != null ?
-                                        <img src={a && a.ProductImage} alt="" className="height-fit" />:
-                                        <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
-                                    }
+                                        {a && a.ProductImage != null ?
+                                            <img src={a && a.ProductImage} alt="" className="height-fit" /> :
+                                            <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
+                                        }
                                     </div>
                                     <div className="prod-name">
                                         <p>{a && a.Title}</p>
@@ -1434,6 +1481,7 @@ const Product = (props) => {
                 <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
                     productStockQuantity={variationStockQunatity}
                     product={_product}
+                    fatchUpdateInventory={fatchUpdateInventory}
                 ></AdjustInventory>
                 <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>

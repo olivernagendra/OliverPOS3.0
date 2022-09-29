@@ -46,10 +46,14 @@ const AdjustInventory = (props) => {
                         prodcut.StockQuantity = inventory;
                         update(prodcut).then(
                             () => {
-                                console.log("stock Updated", props.product.WPID, inventory)
-                                // setTimeout(() => {
-                                props.toggleAdjustInventory();
-                                // }, 100);
+
+                                console.log("stock Updated", prodcut)
+                                setTimeout(() => {
+                                    props.fatchUpdateInventory()
+                                    props.toggleAdjustInventory(false); //close inventory popup
+                                    dispatch(updateInventory(null));
+
+                                }, 100);
                             },
                             error => {
                                 console.log(error);
