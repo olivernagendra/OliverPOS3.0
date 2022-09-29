@@ -201,7 +201,8 @@ const CartDiscount = (props) => {
                             </div>
                         </label>
                     </div>
-                    <div className={props.isSelectDiscountBtn == false ? "custom-fee unhide" : "custom-fee hide"}>
+                    {props.isSelectDiscountBtn == false ?
+                    <div className="custom-fee">
                         <label htmlFor="customFeeLabel">{LocalizedLanguage.customFeelabel}</label>
                         <input type="text" id="customFeeLabel" placeholder="Name your custom fee" value={add_title} onChange={(e) => AddTitle(e.target.value)} />
                         <input type="number" id="customFeeAmount" placeholder="0.00" value={feeAmount} onChange={(e) => FeeAmount(e.target.value)} />
@@ -210,8 +211,8 @@ const CartDiscount = (props) => {
                             <button onClick={() => AddFee(true)}>With Tax</button>
                             <button onClick={() => AddFee(false)}>Without Tax</button>
                         </div>
-                    </div>
-                    <div className={props.isSelectDiscountBtn == true ? "cart-discount unhide" : "cart-discount hide"} >
+                    </div>:
+                    <div className="cart-discount">
                         <div className="main">
                             <label htmlFor="discountAmount">Discount feeAmount:</label>
                             <input type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onChange={(e) => setDiscountAmount(e.target.value)} disabled={isDiscountBtnEnable == true ? false : true} />
@@ -232,7 +233,7 @@ const CartDiscount = (props) => {
                                 <p>{LocalizedLanguage.discountClr}</p>
                             </button>
                         </div>
-                    </div>
+                    </div>}
                     <div className="auto-margin-bottom"></div>
                 </div>
             </div>

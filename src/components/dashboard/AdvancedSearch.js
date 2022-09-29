@@ -309,6 +309,7 @@ const AdvancedSearch = (props) => {
             }
             else {
                 dispatch(product());
+                setSerachString('');
                 props.toggleAdvancedSearch();
             }
         }
@@ -328,6 +329,7 @@ const AdvancedSearch = (props) => {
                 dispatch(getInventory(item.WPID)); //call to get product warehouse quantity
             }
             props.openPopUp(item);
+            setSerachString('');
             props.toggleAdvancedSearch();
         }
     }
@@ -357,18 +359,24 @@ const AdvancedSearch = (props) => {
             localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
         }
         dispatch(product());
+        setSerachString('');
         props.toggleAdvancedSearch();
     }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            setSerachString('');
             props.toggleAdvancedSearch();
         }
     }
-
+    const closePopUp=()=>
+    {
+        setSerachString('');
+        props.toggleAdvancedSearch();
+    }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
-            <button className="close-subwindow" onClick={() => props.toggleAdvancedSearch()}>
+            <button className="close-subwindow" onClick={() =>closePopUp() }>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
             <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} />
@@ -486,7 +494,7 @@ const AdvancedSearch = (props) => {
                                         <img src={ViewIcon} alt="" />
                                         View
                                     </button>
-                                    <button className="search-add-to-sale" onClick={() => addToCart(item)}>
+                                    <button className="search-add-to-sale" onClick={() => item.Type!="simple"? viewProduct(item):addToCart(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>

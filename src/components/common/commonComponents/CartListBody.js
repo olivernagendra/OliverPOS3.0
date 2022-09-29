@@ -170,9 +170,10 @@ const CartListBody = (props) => {
         <div className="body">
             <img src={EmptyCart} alt="" />
             {listItem && listItem.length > 0 && listItem.map(a => {
+                var notes =  listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
                 var item_type = "";
                 if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) {
-                    item_type = "note";
+                    item_type = "no_note";
                 }
                 else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
                 else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
@@ -184,10 +185,11 @@ const CartListBody = (props) => {
                             <p className="content-style">{a.Title && a.Title}</p>
                             <p className="price">{a.Price && a.Price}</p>
                         </div>
-                        {/* <div className="secondary-col">
-                            <p>Medium</p>
-                            <p>Navy</p>
-                        </div> */}
+                        <div className="secondary-col">
+                        {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
+                            {/* <p>Medium</p>
+                            <p>Navy</p> */}
+                        </div>
                     </div>
                     case "note":
                         return <div className="cart-item">

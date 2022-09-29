@@ -361,6 +361,11 @@ code {
   {
 	opacity: .5;
   }
+  .subwindow-wrapper > .subwindow.discount-fee > .subwindow-body > .cart-discount
+  {
+	display: flex;
+  }
+  
 /* @media (orientation: portrait), (max-width: 1193px) {}
 @media (max-width: 375px) {}
 @media (orientation: portrait) and (min-width: 960px) {}
