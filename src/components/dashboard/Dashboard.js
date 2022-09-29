@@ -39,6 +39,7 @@ import { popupMessage } from "../common/commonAPIs/messageSlice";
 import { useNavigate } from "react-router-dom";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import { callProductXWindow } from "../../settings/CommonFunctionProductX";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -141,14 +142,14 @@ const Home = () => {
     // return   
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
-    const editPopUp = async (item) => {
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+    // const editPopUp = async (item) => {
+    //     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
 
-        // setSelProduct(_item)
-        var _product = getTaxAllProduct([_item])
-        setSelProduct(_product[0]);
-        setisShowPopups(true)
-    }
+    //     // setSelProduct(_item)
+    //     var _product = getTaxAllProduct([_item])
+    //     setSelProduct(_product[0]);
+    //     setisShowPopups(true)
+    // }
     // useEffect(() => {
     //     toggleiFrameWindow();
     // }, [productxLink]);
@@ -173,8 +174,18 @@ const Home = () => {
             dispatch(popupMessage(data));
         }
         else
-        if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null) {
+        if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
             console.log("product x---"+item.ParamLink)
+
+        //  var windowCloseEv = callProductXWindow(item);
+        //     window.addEventListener('message', function (e) {
+        //         var data = e && e.data;
+        //         if (typeof data == 'string' && data !== "") {
+        //             console.log(data);
+        //             //compositeSwitchCases(JSON.parse(data))
+        //         }
+        //     })
+        //+"?wopen='childwindow"
             setProductxItem(item);
             toggleiFrameWindow();
             //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
@@ -183,8 +194,13 @@ const Home = () => {
             updateVariationProduct(null);
             var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
             var _product = getTaxAllProduct([_item])
+            _product[0]["quantity"]=item.quantity;
             if (item.hasOwnProperty("selectedOptions")) {
                 _product[0]["selectedOptions"] = item.selectedOptions;
+               
+            }
+            if(index!=null)
+            {
                 _product[0]["selectedIndex"]=index;
             }
             setSelProduct(_product[0]);
@@ -468,7 +484,7 @@ const Home = () => {
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow product={productxItem} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
-                <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
+                <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} /*editPopUp={editPopUp}*/ toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 
 
                 {/* top naviagtion bar */}

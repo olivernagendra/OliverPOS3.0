@@ -27,12 +27,14 @@ import AdjustInventory from "./AdjustInventory";
 import NoVariationSelected from "./NoVariationSelected";
 import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
 import { addSimpleProducttoCart, updateProductNote } from './productLogic';
-import { getTaxAllProduct } from "../../common/TaxSetting";
+import { getTaxAllProduct,getSettingCase,cartPriceWithTax } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
+import { NumericFormat } from 'react-number-format';
+import { RoundAmount } from "../../common/TaxSetting";
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -53,6 +55,8 @@ const Product = (props) => {
     const [selVariations, setSelVariations] = useState([]);
     const [selOptions, setSelOptions] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
+    const [customFeeModifiers, setCustomFeeModifiers] = useState([]);
+
     const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
@@ -449,6 +453,7 @@ const Product = (props) => {
                 setSelectedModifiers(update_data)
             }
         }
+        console.log("---selectedModifiers----"+JSON.stringify(selectedModifiers))
     }
     const submitChanges = () => {
         // this.setState({ SaveSelectedModifiers: selectedModifiers });
@@ -493,8 +498,11 @@ const Product = (props) => {
                     _data.push({ Title: m.title + (_summary != null & _summary != "" ? "(" + _summary + ")" : ""), Price: _sum, old_price: _sum, isTaxable: m.TaxOption, TaxStatus: (m.TaxOption == true ? "taxable" : "none"), TaxClass: '', quantity: 1 });
             }
         })
-        // if (_data && _data.length > 0)
-        //     this.setState({ CustomFee_Modifiers: _data });
+        if (_data && _data.length > 0)
+            {
+                setCustomFeeModifiers(_data)
+            }
+            //this.setState({ CustomFee_Modifiers: _data });
         console.log("----modifier as custom fee----" + JSON.stringify(_data));
     }
     const getRecomProducts = () => {
@@ -1138,6 +1146,11 @@ const Product = (props) => {
                         }
                         console.log("----product note---" + note);
                     }
+                    if(customFeeModifiers && customFeeModifiers.length>0)
+                    {
+                        //cartItemList= cartItemList.concat(this.state.CustomFee_Modifiers);
+                    }
+
                     setTimeout(() => {
                         dispatch(product());
                     }, 100);
@@ -1212,12 +1225,17 @@ const Product = (props) => {
     var variationStockQunatity = 0;
 
     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    var product_price =0;
+    var after_discount_total_price=0;
     if (_product) {
         variationStockQunatity =
             (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
                 (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0';
 
-    }
+        var after_discount_total_price = _product && _product.product_discount_amount ? 
+        _product.product_discount_amount * (_product.discount_type !="Number"? _product.quantity?_product.quantity:productQty:1 ) : 0;
+        product_price = getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? _product && cartPriceWithTax(_product.old_price, getSettingCase(), _product.TaxClass) : getSettingCase() == 6 ? _product && _product.old_price : _product && _product.old_price;
+            }
 
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
@@ -1235,7 +1253,7 @@ const Product = (props) => {
                         </div>
                         <div className="main">
                             <p className="route">{"Clothing > T-Shirts"}</p>
-                            <p className="prod-name">{props.selProduct && props.selProduct.Title}</p>
+                            <p className="prod-name">{_product && _product.Title}</p>
                             <button id="desktopExitProductButton" onClick={() => props.closePopUp()}>
                                 <img src={X_Icon_DarkBlue} alt="" />
                             </button>
@@ -1303,7 +1321,7 @@ const Product = (props) => {
                                 : <div className='noAttribute'></div>}
                         {productModifiers && productModifiers.length > 0 ? <div className="row">
                             <p>Select Modifier</p>
-                        </div> : null}
+                        </div> : null} <div onChange={onChangeValue}>
                         {
                             productModifiers && productModifiers.map(mod => {
                                 var gpid = (mod.Title).replace(/ /g, "_");
@@ -1405,7 +1423,7 @@ const Product = (props) => {
                                         break;
                                 }
                             })
-                        }
+                        }</div>
                     </div>
                     <div className="detailed-product">
                         <div className="row">
@@ -1523,7 +1541,8 @@ const Product = (props) => {
                             </div>
                             <button id="addProductToCart" onClick={() => addToCart()}>
                                 <img src={CircledPlus_White} alt="" />
-                                Add to Cart
+                                Add to Cart - $
+                                <NumericFormat value={_product && RoundAmount(((product_price * productQty) - after_discount_total_price) + (_product.excl_tax ? _product.excl_tax : 0))} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                             </button>
                         </div>
                     </div>

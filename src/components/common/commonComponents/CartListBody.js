@@ -3,6 +3,7 @@ import EmptyCart from '../../../images/svg/EmptyCart.svg';
 import { RoundAmount } from "../TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { useSelector } from 'react-redux';
+import { NumericFormat } from 'react-number-format';
 const CartListBody = (props) => {
     // const [subTotal, setSubTotal] = useState(0.00);
     // const [taxes, setTaxes] = useState(0.00);
@@ -183,7 +184,13 @@ const CartListBody = (props) => {
                         <div className="main-row" >
                             <p className="quantity">{a.quantity && a.quantity}</p>
                             <p className="content-style">{a.Title && a.Title}</p>
-                            <p className="price">{a.Price && a.Price}</p>
+                            <p className="price">
+                                        <NumericFormat className={a.product_discount_amount !=0?"strike-through":""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            </p>
+                                            {a.product_discount_amount !=0 &&<p className="price" >
+                                              <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            </p>}
+                            {/* <p className="price">{<NumericFormat  value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</p> */}
                         </div>
                         <div className="secondary-col">
                         {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
