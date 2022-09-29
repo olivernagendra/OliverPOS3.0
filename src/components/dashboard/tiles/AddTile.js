@@ -24,6 +24,7 @@ const AddTile = (props) => {
     const [filterList, setfilterList] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [tileList, settileList] = useState([]);
+    const [serachString, setSerachString] = useState('');
     const [respAttribute, respCategory,respTile] = useSelector((state) => [state.attribute, state.category,state.tile])
 
     const dispatch = useDispatch();
@@ -50,6 +51,7 @@ const AddTile = (props) => {
     useEffect(() => {
         if (isLoading===true && resAddTile && resAddTile.status == STATUSES.IDLE && (resAddTile.is_success===true || resAddTile.is_success===false)) {
             setIsLoading(false);
+            setSerachString('');
             props.toggleAddTitle();
         }
     }, [resAddTile]);
@@ -87,10 +89,13 @@ const AddTile = (props) => {
     };
 
     const filterProduct = (e) => {
+        
         console.log(e.target.value)
         var value = e.target.value.trim().toLowerCase();
+        setSerachString(value);
         var _filteredData = [];
         if (value != "") {
+            
             var fCList = recursivelyFindKeyValue('', value, categoryList, 0);
             var fAList = recursivelyFindKeyValue('', value, attributeList, 0);
             if (fCList && fCList.length > 0) {
@@ -225,8 +230,14 @@ const AddTile = (props) => {
 
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            setSerachString('');
             props.toggleAddTitle();
         }
+    }
+    const closePopUp=()=>
+    {
+        setSerachString('');
+        props.toggleAddTitle();
     }
     return (
     <React.Fragment>
@@ -235,7 +246,7 @@ const AddTile = (props) => {
         <div className={props.isShow === true ? "subwindow add-tile current" : "subwindow add-tile"}>
             <div className="subwindow-header">
                 <p>Add Tile</p>
-                <button className="close-subwindow" onClick={() => props.toggleAddTitle()}>
+                <button className="close-subwindow" onClick={() =>closePopUp() }>
                     <img src={X_Icon_DarkBlue} alt="" />
                 </button>
             </div>
@@ -246,7 +257,7 @@ const AddTile = (props) => {
                     <input type="search" id="product_search_field_pro" className=""  name="search" onChange={() => filterProduct()}
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
-                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" onChange={filterProduct} />
+                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} />
                 <ul>
                     {filterList && filterList.length > 0 && filterList.map(item => {
                         switch (item.type) {

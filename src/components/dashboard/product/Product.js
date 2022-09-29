@@ -26,7 +26,7 @@ import ProductDiscount from "./ProductDiscount";
 import AdjustInventory from "./AdjustInventory";
 import NoVariationSelected from "./NoVariationSelected";
 import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
-import { addSimpleProducttoCart } from './productLogic';
+import { addSimpleProducttoCart, updateProductNote } from './productLogic';
 import { getTaxAllProduct } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
@@ -572,9 +572,83 @@ const Product = (props) => {
             }
             return obj;
         });
-        console.log("----_selVariations" + JSON.stringify(_selVariationsEdit))
-        if (checkLength() == false)
-            setSelVariations(_selVariationsEdit);
+
+        if (checkLength() == false) {
+            if (
+                JSON.stringify(selVariations) != JSON.stringify(_selVariationsEdit)) {
+                console.log("----_selVariations" + JSON.stringify(_selVariationsEdit))
+                setSelVariations(_selVariationsEdit);
+            }
+        }
+    }
+    const doVariationSearch = () => {
+        if (props && props.selProduct) {
+            var _product = props.selProduct;
+            var _attribute = [];
+            var ProductAttribute = [];
+
+            if (_product && _product.ProductAttributes !== null) {
+                ProductAttribute = _product.ProductAttributes;
+                _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
+            }
+            getAllProducts().then((rows) => {
+                var data = rows.filter(a => a.ParentId === _product.WPID);
+                var allProdcuts = getTaxAllProduct(data)
+                if (allProdcuts && allProdcuts.length > 0) {
+                    var filteredAttribute = allProdcuts.filter(item => {
+                        var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                        return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                    })
+                    if (filteredAttribute && filteredAttribute.length == 1) {
+                        props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                    }
+                    else {
+                        props.updateVariationProduct && props.updateVariationProduct(null);
+                    }
+                    console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
+
+                    allProdcuts.filter(item => {
+                        var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+
+                        if (aa == true) {
+                            allCombi = allCombi.map(a => {
+                                var _att = a.replace(/\//g, "-").toLowerCase();
+                                const index = _disableAttribute.findIndex(item => item === _att)
+                                if (index === -1) {
+                                    _disableAttribute.push(_att);
+                                }
+                                return _att;
+                            });
+                        }
+                        // if (attribute && attribute.Option) {
+                        //     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
+                        //         var _att = a.replace(/\//g, "-").toLowerCase();
+                        //         const index = _disableAttribute.findIndex(item => item === _att)
+                        //         if (index === -1) {
+                        //             _disableAttribute.push(_att);
+                        //         }
+                        //     })
+                        // }
+
+                        var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        // if (result === true) {
+                        //     console.log("--att p count--->> ", allCombi.join(','));
+                        // }
+                        return result;
+                    })
+                    // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
+                    //     console.log("-------combi----" + a.combination);
+                    // })
+                    // console.log("--allVariatiooo--- ", JSON.stringify(_disableAttribute));
+                    // console.log("--allVariations--- ", JSON.stringify(allVariations));
+
+                }
+
+            });
+        }
     }
     //var selVariations = [];
     var _disableAttribute = [];
@@ -601,6 +675,8 @@ const Product = (props) => {
         });
         setSelVariations(_selVariations);
         console.log("-----if exists----" + JSON.stringify(_selVariations))
+        // doVariationSearch();
+        // return;
         if (props && props.selProduct) {
             var _product = props.selProduct;
             var _attribute = [];
@@ -661,12 +737,11 @@ const Product = (props) => {
                         // }
                         return result;
                     })
-                    filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
-                        console.log("-------combi----" + a.combination);
-                    })
-                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute1.length));
-                    console.log("--allVariatiooo--- ", JSON.stringify(_disableAttribute));
-                    console.log("--allVariations--- ", JSON.stringify(allVariations));
+                    // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
+                    //     console.log("-------combi----" + a.combination);
+                    // })
+                    console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
+                    // console.log("--allVariations--- ", JSON.stringify(allVariations));
 
                 }
 
@@ -1016,8 +1091,12 @@ const Product = (props) => {
                 _product.quantity = productQty;
 
                 //---- Replace exsiting product if different variation or proudct is selected
+                if (props.selProduct && props.selProduct.hasOwnProperty("selectedIndex")) {
+                    _product['selectedIndex'] = props.selProduct.selectedIndex;
+                }
                 // if (props.selProduct && props.selProduct.hasOwnProperty("selectedIndex")) {
-                //     _product['selectedIndex']=props.selProduct.selectedIndex;
+                //     _product['selectedIndex'] = props.selProduct.selectedIndex;
+                //     _product['product_id'] = props.selProduct.WPID;
                 //     var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
                 //     if (cartlist.length > 0) {
                 //         cartlist.map((item, index) => {
@@ -1028,10 +1107,32 @@ const Product = (props) => {
                 //                 }
                 //                 if (_index > -1 && _product.selectedIndex == index && item.product_id != _product.WPID) {
                 //                     cartlist[index] = _product;
-                //                     localStorage.setItem("CARD_PRODUCT_LIST",JSON.stringify(cartlist) );
+                //                     //cartlist.splice(index,1);
+                //                     localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartlist));
                 //                 }
                 //             }
                 //         })
+
+                //     }
+                //     // setTimeout(() => {
+                //     //     dispatch(product());
+                //     // }, 100);
+                // }
+                // else
+                // {
+                //     var result = addSimpleProducttoCart(_product);
+                //     if (result === 'outofstock') {
+                //         toggleOutOfStock();
+                //     }
+                //     else {
+                //         if (note != "") {
+                //             var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false, "pid": _product.hasOwnProperty("product_id") ? _product.product_id : _product.WPID, "vid": _product.variation_id });
+                //             console.log("----product note---" + note);
+                //         }
+                //         setTimeout(() => {
+                //             dispatch(product());
+                //         }, 100);
+
                 //     }
                 // }
 
@@ -1041,16 +1142,22 @@ const Product = (props) => {
                 if (result === 'outofstock') {
                     toggleOutOfStock();
                 }
-                else {
-                    if (note != "") {
-                        var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false, "pid": _product.hasOwnProperty("product_id") ? _product.product_id : _product.WPID, "vid": _product.variation_id });
-                        console.log("----product note---" + note);
+                if (note != "" && result !== 'outofstock') {
+                    var pid = _product.hasOwnProperty("product_id") ? _product.product_id : _product.WPID;
+                    // if(_product.Type!="simple")
+                    // {
+                    //     pid=_product.ParentId;
+                    // }
+                    var noteData = { "Title": note, "IsTicket": false, "pid": pid, "vid": _product.variation_id };
+                    if (!updateProductNote(noteData)) {
+                        var result = addSimpleProducttoCart(noteData);
                     }
-                    setTimeout(() => {
-                        dispatch(product());
-                    }, 100);
-
+                    console.log("----product note---" + note);
                 }
+                setTimeout(() => {
+                    dispatch(product());
+                }, 100);
+
 
             }
         }
@@ -1075,6 +1182,16 @@ const Product = (props) => {
 
         props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
     }, [props.selProduct && props.selProduct.quantity]);
+    // useEffect(() => {
+    //     props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+    // }, [props.selProduct && props.selProduct.quantity]);
+
+    useEffect(() => {
+        if (props.selProduct && props.selProduct.quantity) {
+            setProductQty(props.selProduct.quantity);
+        }
+        //props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+    }, [props.selProduct]);
 
 
     const clearSelection = () => {
@@ -1094,6 +1211,7 @@ const Product = (props) => {
             if (props.selProduct && props.selProduct.hasOwnProperty("selectedOptions") && props.selProduct.selectedOptions.length > 0) {
                 setSelOptions(props.selProduct.selectedOptions)
                 setIsEdit(true);
+                doVariationSearch();
             }
         }
     }, [selOptions, props.isShowPopups]);

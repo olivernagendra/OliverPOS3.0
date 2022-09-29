@@ -1,6 +1,7 @@
 import { get_UDid } from "../../common/localSettings";
 import moment from 'moment';
 import { getTaxCartProduct, getInclusiveTax, getExclusiveTax, typeOfTax } from "../../common/TaxSetting";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 function percentWiseDiscount(price, discount) {
     var discountAmount = (price * discount) / 100.00;
     return discountAmount;
@@ -22,7 +23,21 @@ function stockUpdateQuantity(cardData, data, product) {
         localStorage.setItem("CART_QTY", quantity);
     }
 }
-
+export const updateProductNote = (note) => {
+    var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+    var isExist =false;
+    if (cartlist && cartlist.length > 0) {
+        cartlist.map(findId => {
+            if(findId.hasOwnProperty("pid") && findId.pid===note.pid)
+            {
+                findId.Title=note.Title;
+                isExist=true;
+            }
+        });
+        localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartlist));
+    }
+    return isExist;
+}
 export const addSimpleProducttoCart = (product, ticketFields = null) => {
     //const { dispatch, checkout_list, cartproductlist } = this.props;
     var cartproductlist = [];
@@ -120,7 +135,16 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             else { product_is_exist = true; }
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {
-            cartlist.push(data);
+            //Added this code to replace the product at the existing position in the case of edit
+            if (product.hasOwnProperty("selectedIndex")) {
+                cartlist[product.selectedIndex] = data;
+            }
+            else
+            {
+                cartlist.push(data);
+            }
+         
+            //cartlist.push(data);
             //Android Call----------------------------
             var totalPrice = 0.0;
             cartlist && cartlist.map(item => {
@@ -184,7 +208,15 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             return 'outofstock';
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {
-            cartlist.push(data);
+            //Added this code to replace the product at the existing position in the case of edit
+            if (product.hasOwnProperty("selectedIndex")) {
+                cartlist[product.selectedIndex] = data;
+            }
+            else
+            {
+                cartlist.push(data);
+            }
+            // cartlist.push(data);
             //Android Call----------------------------
             var totalPrice = 0.0;
             cartlist && cartlist.map(item => {
@@ -538,6 +570,7 @@ export const addtoCartProduct = (cartproductlist) => {
                     if (cart.discountType == 'Percentage') {
                         if (discount > 100) {
                             localStorage.removeItem("CART")
+                            console.log(LocalizedLanguage.discountMoreThenMsg)
                             //$('#no_discount').modal('show')
                         } else {
                             var incl_tax = 0
@@ -566,6 +599,7 @@ export const addtoCartProduct = (cartproductlist) => {
                         var new_discount = NumberWiseDiscount((totalPrice - totalCartProductDiscount), discount);
                         if (new_discount > 100) {
                             localStorage.removeItem("CART")
+                            console.log(LocalizedLanguage.discountMoreThenMsg)
                             // $('#no_discount').modal('show')
                         } else {
                             discount_amount_is = percentWiseDiscount(price, new_discount);
@@ -674,7 +708,8 @@ export const singleProductDiscount = (isProductX = false, productxQty = null, qt
                     if (discount > 100) {
                         localStorage.removeItem("PRODUCT")
                         localStorage.removeItem("SINGLE_PRODUCT")
-                        alert('more than 100% discount not applicable');
+                        // alert('more than 100% discount not applicable');
+                        console.log(LocalizedLanguage.discountMoreThenMsg)
                         //$('#no_discount').modal('show')
                     } else {
 
@@ -720,7 +755,7 @@ export const singleProductDiscount = (isProductX = false, productxQty = null, qt
                         localStorage.removeItem("PRODUCT")
                         localStorage.removeItem("SINGLE_PRODUCT")
                         //$('#no_discount').modal('show')
-                        alert('more than total price discount not applicable');
+                        console.log(LocalizedLanguage.discountMoreThenMsg)
                     } else {
                         discount_amount_is = percentWiseDiscount(price * qty, discount_percent)
                         afterDiscount = price * qty - discount_amount_is;

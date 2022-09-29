@@ -68,6 +68,7 @@ const Home = () => {
     const [isShowMsg, setisShowMsg] = useState(false);
     const [msgTitle, setmsgTitle] = useState('');
     const [msgBody, setmsgBody] = useState('');
+    const [productxItem, setProductxItem] = useState('');
     const navigate = useNavigate()
 
     const dispatch = useDispatch();
@@ -148,25 +149,47 @@ const Home = () => {
         setSelProduct(_product[0]);
         setisShowPopups(true)
     }
+    // useEffect(() => {
+    //     toggleiFrameWindow();
+    // }, [productxLink]);
     const openPopUp = async (item, index = null) => {
 
         let type = item.Type;
-        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
-            //alert(LocalizedLanguage.productxOutOfStock);
-            var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
-            dispatch(popupMessage(data));
+
+        var taglist = item.Tags ? item.Tags !== "" ? item.Tags.split(",") : null : null;
+        if (taglist && (taglist !== null && taglist.includes('oliver_produt_x') == true) &&
+            (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal()
+                == true) && item !== null && item.ParamLink !== "" && item.ParamLink
+            !== "False" && item.ParamLink !== null) {
+            console.log("product x with tag--" + item.ParamLink)
+            setProductxItem(item);
+            //toggleiFrameWindow();
+            //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
         }
-        else {
-            updateVariationProduct(null);
-            var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
-            var _product = getTaxAllProduct([_item])
-            if (item.hasOwnProperty("selectedOptions")) {
-                _product[0]["selectedOptions"] = item.selectedOptions;
-                _product[0]["selectedIndex"] = index;
+        else
+            if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+                //alert(LocalizedLanguage.productxOutOfStock);
+                var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
+                dispatch(popupMessage(data));
             }
-            setSelProduct(_product[0]);
-            setisShowPopups(true);
-        }
+            else
+                if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null) {
+                    console.log("product x---" + item.ParamLink)
+                    setProductxItem(item);
+                    toggleiFrameWindow();
+                    //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
+                }
+                else {
+                    updateVariationProduct(null);
+                    var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+                    var _product = getTaxAllProduct([_item])
+                    if (item.hasOwnProperty("selectedOptions")) {
+                        _product[0]["selectedOptions"] = item.selectedOptions;
+                        _product[0]["selectedIndex"] = index;
+                    }
+                    setSelProduct(_product[0]);
+                    setisShowPopups(true);
+                }
     }
     const closePopUp = () => {
         setisShowPopups(false);
@@ -430,7 +453,8 @@ const Home = () => {
 
     return (
         <React.Fragment>
-            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product>
+            {isShowPopups === true ?
+                <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product> : null}
             <div onClick={(e) => clearDeleteTileBtn(e)} className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
                 {/* left nav bar */}
                 {/* top header */}
@@ -442,7 +466,7 @@ const Home = () => {
                     toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
-                <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
+                <IframeWindow product={productxItem} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
                 <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 

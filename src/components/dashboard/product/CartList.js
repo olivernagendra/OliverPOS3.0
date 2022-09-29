@@ -40,7 +40,7 @@ const CartList = (props) => {
 
     }, [props.listItem]);
 
-    const editPopUp = async (a,index) => {
+    const editPopUp = async (a, index) => {
         if (a && (a.Type === "variation" || a.Type === "variable")) {
             var _item = await getByID(a.product_id);
             if (_item) {
@@ -49,15 +49,15 @@ const CartList = (props) => {
 
                     var allCombi = _item && _item.combination !== null && _item.combination !== undefined && _item.combination.split("~");
                     allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
-                    
+
                     _parent["selectedOptions"] = allCombi;
 
                     props.updateVariationProduct(_item);
-                    props.openPopUp(_parent,index);
+                    props.openPopUp(_parent, index);
                 }
                 else {
                     props.updateVariationProduct(_item);
-                    props.openPopUp(_item,index);
+                    props.openPopUp(_item, index);
                 }
 
             }
@@ -559,26 +559,28 @@ const CartList = (props) => {
                             </button>
                         </div>
                     </div>}
-                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map((a,index) => {
+                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map((a, index) => {
+                        
+                        var notes =  props.listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
+                        
                         var item_type = "";
-                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) { item_type = "note"; }
+                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) { item_type = "no_note"; }
                         else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
                         else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
 
                         switch (item_type) {
                             case "product":
-                                return <div className="cart-item"  key={a.product_id ? a.product_id : a.Title}>
+                                return <div className="cart-item" key={a.product_id ? a.product_id : a.Title}>
                                     <div className="main-row" >
-                                        <p className="quantity" onClick={() => editPopUp(a,index)}>{a.quantity && a.quantity}</p>
-                                        <p className="content-style" onClick={() => editPopUp(a,index)}>{a.Title && a.Title}</p>
-                                        <p className="price" onClick={() => editPopUp(a,index)}>{a.Price && a.Price}</p>
+                                        <p className="quantity" onClick={() => editPopUp(a, index)}>{a.quantity && a.quantity}</p>
+                                        <p className="content-style" onClick={() => editPopUp(a, index)}>{a.Title && a.Title}</p>
+                                        <p className="price" onClick={() => editPopUp(a, index)}>{a.Price && a.Price}</p>
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
                                             <img src={CircledX_Grey} alt="" />
                                         </button>
                                     </div>
-                                    <div className="secondary-col">
-                                        {/* <p>Medium</p>
-            <p>Navy</p> */}
+                                    <div className="secondary-col" onClick={() => editPopUp(a, index)}>
+                                        {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
                                     </div>
                                 </div>
                             case "note":
@@ -591,8 +593,8 @@ const CartList = (props) => {
                                         {
                                             !a.hasOwnProperty("pid") &&
                                             <button className="remove-cart-item" onClick={() => deleteItem(a)}>
-                                            <img src={CircledX_Grey} alt="" />
-                                        </button>
+                                                <img src={CircledX_Grey} alt="" />
+                                            </button>
                                         }
                                     </div>
                                 </div>
