@@ -42,7 +42,7 @@ const CreateCustomer = (props) => {
 
     let useCancelled = false;
     useEffect(() => {
-        console.log("useeffect work")
+        //console.log("useeffect work")
         if (useCancelled == false) {
             GetCustomerFromIDB()
             dispatch(customergetPage({ "uid": UID, "pageSize": Config.key.CUSTOMER_PAGE_SIZE, "pageNumber": "0" }));

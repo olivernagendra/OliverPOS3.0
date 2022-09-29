@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import avatar from '../../images/svg/avatar.svg';
 import Oliver_Type from '../../images/svg/Oliver-Type.svg';
@@ -20,64 +20,68 @@ const HeadereBar = (props) => {
     const [isShowUserProfile, setisShowUserProfile] = useState(false);
     const [isShowSwitchUser, setisShowSwitchUser] = useState(false);
     const [isShowEndSession, setisShowEndSession] = useState(false);
+    const [isMobileNav, setisMobileNav] = useState(false);
     const toggleUserProfile = () => {
         setisShowUserProfile(!isShowUserProfile)
     }
     const toggleShowEndSession = () => {
-        setisShowEndSession(!isShowEndSession)
+        setisShowEndSession(!isShowEndSession);
     }
     const toggleSwitchUser = () => {
         setisShowSwitchUser(!isShowSwitchUser)
     }
-    const clearCart=()=>
-    {
+    const toggleMobileNav = () => {
+        setisMobileNav(!isMobileNav)
+        props.toggleShowMobLeftNav();
+    }
+    const clearCart = () => {
         removeCheckOutList();
         dispatch(product());
     }
     return (<React.Fragment>
         <div className="header">
             <div className="row">
-                <button id="mobileNavToggle">
+                <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""}>
                     <img src="" alt="" />
                 </button>
                 <img src={Oliver_Type} alt="" />
-                <button id="searchButton" onClick={()=>props.toggleAdvancedSearch()}>
+                <button id="searchButton" onClick={() => props.toggleAdvancedSearch()}>
                     <img src={Search_Icon_Blue} alt="" />
                     Search Console
                 </button>
-                <button id="userInfoButton" onClick={()=>toggleUserProfile()}>
+                <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                     <img src={avatar} alt="" />
                 </button>
-                <button id="mobileOptionsButton">
-                    <img src={Ellipsis_Icon_DarkBlue} alt="" onClick={()=>props.toggleOptionPage()}/>
+                <button id="mobileOptionsButton" onClick={() => props.toggleOptionPage()} className={props.isShow == true ? "filter" : ""}>
+                    <img src={Ellipsis_Icon_DarkBlue} alt="" />
                 </button>
-                <button id="mobileAppsButton">
-                    <img src={Oliver_Icon_BaseBlue} alt="" onClick={()=>props.toggleAppLauncher()}  />
+                <button id="mobileAppsButton" onClick={() => props.toggleAppLauncher()}>
+                    <img src={Oliver_Icon_BaseBlue} alt="" />
                 </button>
             </div>
-        </div>
-        <div id="pageOptions" className={props.isShow? "page-options-wrapper":"page-options-wrapper hidden"}>
+        </div >
+        <div id="pageOptions" className={props.isShow ? "page-options-wrapper" : "page-options-wrapper hidden"}>
             <div className="page-options">
-                <p>Options Menu</p> 
-                <button id="notificationsButton" onClick={()=>props.toggleNotifications()}>
+                <p>Options Menu</p>
+                <button id="notificationsButton" onClick={() => props.toggleNotifications()}>
                     <div className="img-container">
                         <img src={Notifications_Icon} alt="" />
                     </div>
                     <p>Notifications</p>
                 </button>
-                <button id="customFeeDiscountButton" onClick={()=>props.toggleCartDiscount()}>
+                <button id="customFeeDiscountButton" onClick={() => props.toggleCartDiscount()}>
                     <div className="img-container">
                         <img src={Add_Discount_Icon} alt="" />
                     </div>
                     <p>Custom Fee / Cart Discount</p>
                 </button>
-                <button id="addNoteButton" onClick={()=>props.toggleOrderNote()}>
+                <button id="addNoteButton" onClick={() => props.toggleOrderNote()}>
                     <div className="img-container">
                         <img src={AddNote_Icon} alt="" />
                     </div>
                     <p>Add Note</p>
                 </button>
-                <button id="clearCartButton" onClick={()=>clearCart()}>
+                <button id="clearCartButton" onClick={() => clearCart()}>
                     <div className="img-container">
                         <img src={ClearCart_Icon} alt="" />
                     </div>
@@ -86,9 +90,9 @@ const HeadereBar = (props) => {
             </div>
         </div>
         <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
-            <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
-            <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
-        </React.Fragment>)
+        <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
+        <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
+    </React.Fragment >)
 }
 
 export default HeadereBar 

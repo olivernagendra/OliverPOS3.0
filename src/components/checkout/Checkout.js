@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import Header from "./Header";
 import CartListBody from "../common/commonComponents/CartListBody";
+import { RoundAmount } from "../common/TaxSetting";
+import { popupMessage } from "../common/commonAPIs/messageSlice";
 const Checkout = () => {
     const [subTotal, setSubTotal] = useState(0.00);
     const [taxes, setTaxes] = useState(0.00);
@@ -19,14 +21,16 @@ const Checkout = () => {
     const navigate = useNavigate();
 
     const setValues = (st, tx, dis, tt) => {
-        setSubTotal(st);
-        setTaxes(tx);
-        setDiscount(dis);
-        setTotal(tt);
+        setSubTotal(RoundAmount(st));
+        setTaxes(RoundAmount(tx));
+        setDiscount(RoundAmount(dis));
+        setTotal(RoundAmount(tt));
     }
     const addCustomer=()=>
     {
-        alert('add customer to order');
+        var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
+        dispatch(popupMessage(data));
+        //alert('add customer to order');
     }
 
     return <div className="checkout-wrapper">

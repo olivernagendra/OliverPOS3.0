@@ -56,7 +56,7 @@ const Header = (props) => {
         toggleOrderNote()
     }
     const goBack = () => {
-        navigate('/dashboard');
+        navigate('/home');
     }
     return (<React.Fragment>
         <div className="header">
@@ -67,18 +67,18 @@ const Header = (props) => {
             <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                 <img src={avatar} alt="" />
             </button>
-            <button id="mobileOptionsButton" onClick={()=>toggleOptionPage()} className={isShowOptionPage?"filter":""}>
+            <button id="mobileOptionsButton" onClick={() => toggleOptionPage()} className={isShowOptionPage ? "filter" : ""}>
                 <img src={Ellipsis_Icon_DarkBlue} alt="" />
             </button>
             <button id="mobileAppsButton">
-                <img src={Oliver_Icon_BaseBlue} alt="" onClick={()=>toggleAppLauncher()}  />
+                <img src={Oliver_Icon_BaseBlue} alt="" onClick={() => toggleAppLauncher()} />
             </button>
         </div>
-        
-        <div id="pageOptions" className={isShowOptionPage? "page-options-wrapper":"page-options-wrapper hidden"}>
+
+        <div id="pageOptions" className={isShowOptionPage ? "page-options-wrapper" : "page-options-wrapper hidden"}>
             <div className="page-options">
                 <p>Options Menu</p>
-                <button id="parkSaleButton"  onClick={() => toggleParkSale()}>
+                <button id="parkSaleButton" onClick={() => toggleParkSale()}>
                     <div className="img-container">
                         <img src={Clock} alt="" />
                     </div>

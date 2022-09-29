@@ -8,7 +8,7 @@ import { get_regId, get_UDid, get_userId } from "../../common/localSettings";
 import STATUSES from "../../../constants/apiStatus";
 // import { initDropDown } from "../../common/commonFunctions/tileFn";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
-
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
 function encodeHtml(txt) {
     //return $('<textarea />').html(txt).text();
 }
@@ -22,8 +22,11 @@ const AddTile = (props) => {
     // const [parentProductList, setParentProductList] = useState([])
     const [product_List, setProduct_List] = useState([])
     const [filterList, setfilterList] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
+    const [isLoading, setIsLoading] = useState(false);
+    const [tileList, settileList] = useState([]);
+    const [serachString, setSerachString] = useState('');
+    const [respAttribute, respCategory,respTile] = useSelector((state) => [state.attribute, state.category,state.tile])
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -38,12 +41,17 @@ const AddTile = (props) => {
             var _categoryList = respCategory.data.content;
             setcategoryList(_categoryList)
         }
+        if (respTile.is_success === true && respTile.data && respTile.data.content != null) {
+            var _tileList = respTile.data.content;
+            settileList(_tileList)
+        }
     }
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
         if (isLoading===true && resAddTile && resAddTile.status == STATUSES.IDLE && (resAddTile.is_success===true || resAddTile.is_success===false)) {
             setIsLoading(false);
+            setSerachString('');
             props.toggleAddTitle();
         }
     }, [resAddTile]);
@@ -81,10 +89,13 @@ const AddTile = (props) => {
     };
 
     const filterProduct = (e) => {
+        
         console.log(e.target.value)
         var value = e.target.value.trim().toLowerCase();
+        setSerachString(value);
         var _filteredData = [];
         if (value != "") {
+            
             var fCList = recursivelyFindKeyValue('', value, categoryList, 0);
             var fAList = recursivelyFindKeyValue('', value, attributeList, 0);
             if (fCList && fCList.length > 0) {
@@ -99,7 +110,7 @@ const AddTile = (props) => {
             }
             //   var fPList=  recursivelyFindKeyValue('',e.target.value,product_List,0)
             getAll().then((rows) => {
-                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value));
+                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value) && a.ParentId===0);
                 if (fPList && fPList.length > 0) {
                     fPList = AddItemType(fPList, "product");
                     // _filteredData.concat(fPList);
@@ -132,7 +143,7 @@ const AddTile = (props) => {
     const addToFavourite = (item, pos) => {
         // console.log(JSON.stringify(item));
         // return;
-        var favList = data && data.content;
+        var favList = tileList;
         var type = item.type;
         var id = '';
         var slug = '';
@@ -190,9 +201,10 @@ const AddTile = (props) => {
             submitChanges(id, type, slug)
 
         } else {
-            if (item.type) { //apply check to protect msg display if no item selected and click on save button
-                alert("alreadyExsist");
-
+            if (isExist==true) { //apply check to protect msg display if no item selected and click on save button
+                // alert("alreadyExsist");
+                var data ={title:"",msg:"Item already exist",is_success:true}
+                dispatch(popupMessage(data));
             }
         }
 
@@ -218,8 +230,14 @@ const AddTile = (props) => {
 
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            setSerachString('');
             props.toggleAddTitle();
         }
+    }
+    const closePopUp=()=>
+    {
+        setSerachString('');
+        props.toggleAddTitle();
     }
     return (
     <React.Fragment>
@@ -228,7 +246,7 @@ const AddTile = (props) => {
         <div className={props.isShow === true ? "subwindow add-tile current" : "subwindow add-tile"}>
             <div className="subwindow-header">
                 <p>Add Tile</p>
-                <button className="close-subwindow" onClick={() => props.toggleAddTitle()}>
+                <button className="close-subwindow" onClick={() =>closePopUp() }>
                     <img src={X_Icon_DarkBlue} alt="" />
                 </button>
             </div>
@@ -239,7 +257,7 @@ const AddTile = (props) => {
                     <input type="search" id="product_search_field_pro" className=""  name="search" onChange={() => filterProduct()}
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
-                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" onChange={filterProduct} />
+                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} />
                 <ul>
                     {filterList && filterList.length > 0 && filterList.map(item => {
                         switch (item.type) {

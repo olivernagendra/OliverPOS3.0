@@ -422,16 +422,16 @@ export const  initHomeFn=()=>{
         }
         document.querySelector(".navbar").classList.remove("open");
     }
-    let holdDownTimer,
-	hasFired = false,
-	currentProductButton = null, //For touch screen
-	touchMoved = false;
+    // let holdDownTimer,
+	// hasFired = false,
+	// currentProductButton = null, //For touch screen
+	// touchMoved = false;
 
 //Handles Product section buttons for touch devices
 //For each button there is a regular touch and then a touch and hold to be able to delete buttons
 
-// document.querySelectorAll(".products > button").forEach((button) => {
-// 	//Touch start
+//  document.querySelectorAll(".products > button").forEach((button) => {
+// // 	//Touch start
 // 	button.addEventListener("touchstart", (e) => {
 // 		touchMoved = false;
 // 		currentProductButton = e.currentTarget;
@@ -446,7 +446,7 @@ export const  initHomeFn=()=>{
 // 			}
 // 		}, 1000);
 // 	});
-// 	//Touch up
+// // 	//Touch up
 // 	button.addEventListener("touchend", (e) => {
 // 		clearTimeout(holdDownTimer);
 // 		if (!hasFired && !touchMoved) {

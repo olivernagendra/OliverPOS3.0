@@ -1,12 +1,40 @@
 import React, { useState,useEffect, useLayoutEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import { product } from "../../dashboard/product/productSlice";
+import { addtoCartProduct } from "../../dashboard/product/productLogic";
 const OrderNote = (props) => {
     const [note,setNote]=useState('');
+    const dispatch = useDispatch();
     const handleNote = () => {
-        if(note!="" && props && props.addNote)
+        if(note!="")
         {
-            props.addNote(note);
+            var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];//this.state.cartproductlist;
+            cartlist = cartlist == null ? [] : cartlist;
+            cartlist.push({ "Title": note })
+            addtoCartProduct(cartlist);
+            dispatch(product());
+            var list = localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null;
+            if (list != null) {
+                const CheckoutList = {
+                    ListItem: cartlist,
+                    customerDetail: list.customerDetail,
+                    totalPrice: list.totalPrice,
+                    discountCalculated: list.discountCalculated,
+                    tax: list.tax,
+                    subTotal: list.subTotal,
+                    TaxId: list.TaxId,
+                    order_id: list.order_id !== 0 ? list.order_id : 0,
+                    showTaxStaus: list.showTaxStaus,
+                    _wc_points_redeemed: list._wc_points_redeemed,
+                    _wc_amount_redeemed: list._wc_amount_redeemed,
+                    _wc_points_logged_redemption: list._wc_points_logged_redemption
+                }
+                localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+            }
             setNote('');
+           
+            props.toggleOrderNote();
         }
     }
 

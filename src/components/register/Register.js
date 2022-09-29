@@ -16,11 +16,16 @@ import { toggleSubwindow } from "../common/EventFunctions";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
+    const [isShowTakeOver, setisShowTakeOver] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     var registers = [];
     var self_registers = [];
     var firebase_registers = [];
+
+    const toggleShowTakeOver = () => {
+        setisShowTakeOver(!isShowTakeOver)
+    }
 
     const [respRegister, respFirebaseRegisters] = useSelector((state) => [state.register, state.firebaseRegister])
 
@@ -67,14 +72,17 @@ const Register = () => {
                 navigate('/pin');
             }
         }
-        else
-            toggleSubwindow("takeover-register");
+        else {
+            toggleShowTakeOver();
+        }
+        //toggleSubwindow("takeover-register");
     }
     const openRegister = () => {
         var result = false;
+        var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
         var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
         var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+        if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
             result = true;
         }
         return result;
@@ -92,78 +100,80 @@ const Register = () => {
     // }
     return (
         <React.Fragment>
-            {respRegister.status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}
-            <div className="choose-wrapper">
-                <div className="choose-header">
-                    <button id="backButton" onClick={() => window.location = "/location"} >
-                        <img src={AngledBracket_Left_Blue} alt="" />
-                        {LocalizedLanguage.back}  
-                    </button>
-                    <p>{get_userName() + " - " + get_locName()}</p>
-                </div>
-                <div className="choose-body-default">
-                    <p>{LocalizedLanguage.registerdevice}</p>
-                    <div className="divider"></div>
-                    <div className="button-container">
-                        <p>{LocalizedLanguage.register}</p>
+            {respRegister.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+            {respRegister.status !== STATUSES.LOADING &&
+                <div className="choose-wrapper">
+                    <div className="choose-header">
+                        <button id="backButton" onClick={() => navigate('/location')} >
+                            <img src={AngledBracket_Left_Blue} alt="" />
+                            {LocalizedLanguage.back}
+                        </button>
+                        <p>{get_userName() + " - " + get_locName()}</p>
+                    </div>
+                    <div className="choose-body-default">
+                        <p>{LocalizedLanguage.registerdevice}</p>
                         <div className="divider"></div>
-                        <div className="button-group col">
-                            {
-                                registers.map((item, index) => {
-                                    var inr = true;
-                                    {
-                                        firebase_registers && firebase_registers.length > 0 && firebase_registers.map((firebaseItem, indx) => {
-                                            if (inr == true) {
-                                                if (firebaseItem.RegisterId == item.id && firebaseItem.Status !== "available") {
-                                                    inr = false
+                        <div className="button-container">
+                            <p>{LocalizedLanguage.register}</p>
+                            <div className="divider"></div>
+                            <div className="button-group col">
+                                {
+                                    registers.map((item, index) => {
+                                        var inr = true;
+                                        {
+                                            firebase_registers && firebase_registers.length > 0 && firebase_registers.map((firebaseItem, indx) => {
+                                                if (inr == true) {
+                                                    if (firebaseItem.RegisterId == item.id && firebaseItem.Status !== "available") {
+                                                        inr = false
+                                                    }
                                                 }
-                                            }
-                                        })
-                                    }
-                                    return <button key={index} className={inr == true ? "option" : "option assigned"} onClick={() => handleSubmit(item, inr == true ? false : true)}>
-                                        <div className="img-container background-blue">
-                                            <img src={Register_Icon_White} alt="" className="register-icon" />
+                                            })
+                                        }
+                                        return <button key={index} className={inr == true ? "option" : "option assigned"} onClick={() => handleSubmit(item, inr == true ? false : true)}>
+                                            <div className="img-container background-blue">
+                                                <img src={Register_Icon_White} alt="" className="register-icon" />
+                                            </div>
+                                            <div className="col">
+                                                <p className="style1">{item.name}</p>
+                                                <p className="style2">{inr == true ? <>{LocalizedLanguage.available}</> : <> {<>{LocalizedLanguage.assigned}</>} </>}</p>
+                                            </div>
+                                            {inr === true ?
+                                                <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
+                                                    <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
+                                                : <React.Fragment>
+                                                    <img src={AngledBracket_Right_Grey} alt="" onClick={() => toggleShowTakeOver()} />
+                                                    <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
+                                        </button>
+
+                                    })}
+
+                            </div>
+                            <p>Kiosks</p>
+                            <div className="divider"></div>
+                            <div className="button-group">
+                                {self_registers.map((item, index) => {
+                                    return <button key={index} className="option" onClick={() => handleSubmit(item)}>
+                                        <div className="img-container background-violet">
+                                            <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
                                         </div>
                                         <div className="col">
                                             <p className="style1">{item.name}</p>
-                                            <p className="style2">{inr == true ? <>{LocalizedLanguage.available}</> : <> {<>{LocalizedLanguage.assigned}</>} </> }</p>
+                                            <p className="style2">{LocalizedLanguage.available}</p>
                                         </div>
-                                        {inr === true ?
-                                            <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
-                                                <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
-                                            : <React.Fragment>
-                                                <img src={AngledBracket_Right_Grey} alt="" />
-                                                <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
+                                        <img src={AngledBracket_Right_Grey} alt="" />
+                                        <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
                                     </button>
-
                                 })}
-
-                        </div>
-                        <p>Kiosks</p>
-                        <div className="divider"></div>
-                        <div className="button-group">
-                            {self_registers.map((item, index) => {
-                                return <button key={index} className="option" onClick={() => handleSubmit(item)}>
-                                    <div className="img-container background-violet">
-                                        <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
-                                    </div>
-                                    <div className="col">
-                                        <p className="style1">{item.name}</p>
-                                        <p className="style2">{LocalizedLanguage.available}</p>
-                                    </div>
-                                    <img src={AngledBracket_Right_Grey} alt="" />
-                                    <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
-                                </button>
-                            })}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="subwindow-wrapper hidden">
-                <div className="subwindow takeover-register">
+            }
+            <div className={isShowTakeOver ? "subwindow-wrapper" : "subwindow-wrapper hidden"}>
+                <div className={isShowTakeOver ? "subwindow takeover-register current" : "subwindow takeover-register"}>
                     <div className="subwindow-header">
                         <p>Take Over Register</p>
-                        <button className="close-subwindow" >
+                        <button className="close-subwindow" onClick={() => toggleShowTakeOver()}>
                             {/* onClick={() => toggleSubwindow()} */}
                             <img src={X_Icon_DarkBlue} alt="" />
                         </button>
@@ -176,7 +186,7 @@ const Register = () => {
                             This action will kick out the current user.
                         </p>
                         <button id="takeoverRegister" onClick={() => takeOver()}>Take Over</button>
-                        <button id="cancelTakeover" >Cancel</button>
+                        <button id="cancelTakeover" onClick={() => toggleShowTakeOver()}>Cancel</button>
                         {/* onClick={() => toggleSubwindow()} */}
                         <div className="auto-margin-bottom"></div>
                     </div>

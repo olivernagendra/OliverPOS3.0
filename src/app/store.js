@@ -18,11 +18,14 @@ import { CustomergetPageSlice } from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
-import {CustomerSaveSlice} from '../components/customer/CustomerSlice'
-import {checkStockSlice} from '../components/checkout/checkoutSlice';
-
-import {userSlice} from '../components/common/commonAPIs/userSlice';
-import { getRatesSlice,isMultipleTaxSupportSlice } from '../components/common/commonAPIs/taxSlice';
+import { CustomerSaveSlice } from '../components/customer/CustomerSlice'
+import { checkStockSlice } from '../components/checkout/checkoutSlice';
+import { userSlice } from '../components/common/commonAPIs/userSlice';
+import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
+import { discountSlice } from '../components/common/commonAPIs/discountSlice';
+import { popupMessageSlice } from '../components/common/commonAPIs/messageSlice';
+//import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/inventorySlice'
+import inventoryReducer from '../components/dashboard/slices/inventorySlice'
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -54,12 +57,19 @@ export const store = configureStore({
     customer: customerSlice.reducer,
     customergetPage: CustomergetPageSlice.reducer,
     product: productSlice.reducer,
-    customersave:CustomerSaveSlice.reducer,
-    checkStock:checkStockSlice.reducer,
-    userList:userSlice.reducer,
-    getRates:getRatesSlice.reducer,
-    isMultipleTaxSupport:isMultipleTaxSupportSlice.reducer,
-    GetOpenRegister:GetOpenRegisterSlice.reducer,
+
+    customersave: CustomerSaveSlice.reducer,
+    checkStock: checkStockSlice.reducer,
+    userList: userSlice.reducer,
+    getRates: getRatesSlice.reducer,
+    isMultipleTaxSupport: isMultipleTaxSupportSlice.reducer,
+    GetOpenRegister: GetOpenRegisterSlice.reducer,
+    GetTaxRateList: getTaxRateListSlice.reducer,
+    updateTaxRateList: updateTaxRateListSlice.reducer,
+    selectedTaxList: selectedTaxListSlice.reducer,
+    popupMessage: popupMessageSlice.reducer,
+    discountList: discountSlice.reducer,
+    inventories: inventoryReducer,
     addRemoveCashmanagement:addRemoveCashSlice.reducer
   }
   ,

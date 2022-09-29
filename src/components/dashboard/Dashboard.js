@@ -27,11 +27,18 @@ import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
 import { product } from "./product/productSlice";
 import { userList } from "../common/commonAPIs/userSlice";
-import { getRates, isMultipleTaxSupport } from "../common/commonAPIs/taxSlice";
+import { discount } from "../common/commonAPIs/discountSlice";
+import { getRates, isMultipleTaxSupport, getTaxRateList } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
 import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
+import TaxList from "./TaxList";
+import MsgPopup from "../common/commonComponents/MsgPopup";
+import { popupMessage } from "../common/commonAPIs/messageSlice";
+import { useNavigate } from "react-router-dom";
+import CommonModuleJS from "../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -56,6 +63,14 @@ const Home = () => {
     const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
     const [variationProduct, setVariationProduct] = useState(null);
     const [searchSringCreate, setsearchSringCreate] = useState('')
+    const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
+    const [isSelectDiscountBtn, setisSelectDiscountBtn] = useState(false);
+    const [isShowTaxList, setisShowTaxList] = useState(false);
+    const [isShowMsg, setisShowMsg] = useState(false);
+    const [msgTitle, setmsgTitle] = useState('');
+    const [msgBody, setmsgBody] = useState('');
+    const [productxItem, setProductxItem] = useState('');
+    const navigate = useNavigate()
 
     const dispatch = useDispatch();
     useEffect(() => {
@@ -67,6 +82,10 @@ const Home = () => {
         var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
         getTax(multiple_tax_support, get_tax_rates);
     }, []);
+
+    if (!localStorage.getItem('user')) {
+        navigate('/pin')
+    }
 
     const getFavourites = () => {
         var regId = localStorage.getItem('register');
@@ -86,6 +105,8 @@ const Home = () => {
         dispatch(userList());
         dispatch(getRates());
         dispatch(isMultipleTaxSupport());
+        dispatch(getTaxRateList());
+        dispatch(discount());
         getFavourites();
         var locationId = localStorage.getItem('Location')
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -129,12 +150,47 @@ const Home = () => {
         setSelProduct(_product[0]);
         setisShowPopups(true)
     }
-    const openPopUp = async (item) => {
-        updateVariationProduct(null);
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
-        var _product = getTaxAllProduct([_item])
-        setSelProduct(_product[0]);
-        setisShowPopups(true)
+    // useEffect(() => {
+    //     toggleiFrameWindow();
+    // }, [productxLink]);
+    const openPopUp = async (item,index=null) => {
+
+        let type = item.Type;
+
+        var taglist = item.Tags ? item.Tags !== "" ? item.Tags.split(",") : null : null;
+        if (taglist && (taglist !== null && taglist.includes('oliver_produt_x') == true) &&
+            (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal()
+                == true) && item !== null && item.ParamLink !== "" && item.ParamLink
+            !== "False" && item.ParamLink !== null) {
+                console.log("product x with tag--"+item.ParamLink)
+                setProductxItem(item);
+                //toggleiFrameWindow();
+                //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
+       }
+        else
+        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            //alert(LocalizedLanguage.productxOutOfStock);
+            var data ={title:"",msg:LocalizedLanguage.productxOutOfStock,is_success:true}
+            dispatch(popupMessage(data));
+        }
+        else
+        if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null) {
+            console.log("product x---"+item.ParamLink)
+            setProductxItem(item);
+            toggleiFrameWindow();
+            //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
+        }
+        else {
+            updateVariationProduct(null);
+            var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+            var _product = getTaxAllProduct([_item])
+            if (item.hasOwnProperty("selectedOptions")) {
+                _product[0]["selectedOptions"] = item.selectedOptions;
+                _product[0]["selectedIndex"]=index;
+            }
+            setSelProduct(_product[0]);
+            setisShowPopups(true);
+        }
     }
     const closePopUp = () => {
         setisShowPopups(false);
@@ -149,13 +205,29 @@ const Home = () => {
     //     setisShowSwitchUser(!isShowSwitchUser)
     // }
     const toggleOrderNote = () => {
+        setisShowOptionPage(false)
         setisShowOrderNote(!isShowOrderNote)
     }
     const toggleCartDiscount = () => {
+        // if (CommonModuleJS.permissionsForDiscount() == false) {
+        //     alert(LocalizedLanguage.discountPermissionerror);
+        // }
+        // else
+        // {
+        setisShowOptionPage(false)
         setisShowCartDiscount(!isShowCartDiscount)
+        //}
+
+    }
+    const toggleEditCartDiscount = () => {
+        setisShowOptionPage(false)
+        setisSelectDiscountBtn(true);
+        setisShowCartDiscount(!isShowCartDiscount)
+
     }
     const toggleNotifications = () => {
         setisShowNotifications(!isShowNotifications)
+
     }
 
     const toggleAdvancedSearch = () => {
@@ -194,6 +266,37 @@ const Home = () => {
 
 
 
+    const toggleShowMobLeftNav = () => {
+        setisShowMobLeftNav(!isShowMobLeftNav)
+    }
+    const toggleSelectDiscountBtn = () => {
+        setisSelectDiscountBtn(!isSelectDiscountBtn)
+    }
+    const toggleMsgPopup = () => {
+        setisShowMsg(!isShowMsg)
+    }
+    const toggleTaxList = () => {
+
+        // var subscriptionClientDetail = localStorage.getItem('clientDetail') ? JSON.parse(localStorage.getItem('clientDetail')) : '';
+        // if (subscriptionClientDetail && subscriptionClientDetail.subscription_detail && subscriptionClientDetail.subscription_detail.subscription_type !== "oliverpos-free") {
+        setisShowTaxList(!isShowTaxList)
+        // }
+        // else {
+        //     alert('This "Feature" is not included in your plan! ;In order to upgrade please go to the Oliver HUB')
+        // }
+    }
+    const clearDeleteTileBtn = (e) => {
+        if (!e.target.classList.contains("remove-state") && !e.target.classList.contains("remove-cover")) {
+            const tile_remove_cover = document.querySelectorAll('.remove-cover');
+            tile_remove_cover && tile_remove_cover.forEach(cvr => {
+                cvr.classList.add('hide');
+            });
+            const tile_remove_state = document.querySelectorAll('.remove-state');
+            tile_remove_state && tile_remove_state.forEach(st => {
+                st.classList.remove('remove-state');
+            });
+        }
+    }
     const getTax = (multiple_tax_support, get_tax_rates) => {
         if (multiple_tax_support && multiple_tax_support == true) {
             var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
@@ -319,22 +422,35 @@ const Home = () => {
             }
         }
     }
-    const addNote = (e) => {
-        console.log("----order note-----" + e);
-        toggleOrderNote()
-    }
-
 
     // It is refreshing the tile list from server when a new tile is added
-    const [resAddTile] = useSelector((state) => [state.addTile])
+    const [resAddTile, resdeletTile] = useSelector((state) => [state.addTile, state.deletTile])
     useEffect(() => {
         if (resAddTile && resAddTile.status == STATUSES.IDLE && resAddTile.is_success) {
             getFavourites && getFavourites();
-            //toggleAddTitle();
         }
-    }, [resAddTile]);
+        if (resdeletTile && resdeletTile.status == STATUSES.IDLE && resdeletTile.is_success) {
+            getFavourites && getFavourites();
+        }
+    }, [resAddTile, resdeletTile]);
 
-    const [resProduct] = useSelector((state) => [state.product])
+    const [resProduct, respupdateTaxRateList] = useSelector((state) => [state.product, state.updateTaxRateList])
+    useEffect(() => {
+        if (respupdateTaxRateList && respupdateTaxRateList.status == STATUSES.IDLE && respupdateTaxRateList.is_success) {
+            getTax();
+        }
+    }, [respupdateTaxRateList]);
+
+    const [respopupMessage] = useSelector((state) => [state.popupMessage])
+    useEffect(() => {
+        if (respopupMessage && respopupMessage.status == STATUSES.IDLE && respopupMessage.is_success && respopupMessage.data) {
+            toggleMsgPopup(true);
+            setmsgBody(respopupMessage.data.msg);
+            setmsgTitle(respopupMessage.data.title);
+            dispatch(popupMessage(null));
+        }
+    }, [respopupMessage]);
+
     useEffect(() => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
@@ -347,22 +463,23 @@ const Home = () => {
 
     return (
         <React.Fragment>
-            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups}></Product>
-            <div className="homepage-wrapper" style={{ display: isShowPopups == false ? "grid" : "none" }}>
+            {isShowPopups===true?
+            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product>:null}
+            <div onClick={(e) => clearDeleteTileBtn(e)} className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
                 {/* left nav bar */}
                 {/* top header */}
                 {/* prodct list/item list */}
                 {/* cart list */}
-                <LeftNavBar toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
-                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher} toggleAdvancedSearch={toggleAdvancedSearch} toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+                <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher}
+                    toggleAdvancedSearch={toggleAdvancedSearch} toggleShowMobLeftNav={toggleShowMobLeftNav}
+                    toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
-                <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
-                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle}></TileList>
-                <CartList listItem={listItem} editPopUp={editPopUp}></CartList>
-                <div className="mobile-homepage-footer">
-                    <button id="openMobileCart">View Cart (2) - $24.99</button>
-                </div>
+                <IframeWindow product={productxItem} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
+                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
+                <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
+
 
                 {/* top naviagtion bar */}
                 {/* app launcher */}
@@ -377,17 +494,19 @@ const Home = () => {
             </div>
             {/* <div className="subwindow-wrapper"> */}
 
-
-            <CartDiscount isShow={isShowCartDiscount} toggleCartDiscount={toggleCartDiscount}></CartDiscount>
+            <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList>
+            <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
-            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} addNote={addNote}></OrderNote>
+            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
+            <AdvancedSearch toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch>
+            {/* <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
             <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
+            <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
             {/* iframe subview */}
             {/* create customer */}
             {/* cart discount */}
@@ -399,7 +518,7 @@ const Home = () => {
             {/* swtich  user */}
             {/* end session */}
 
-            <div className="subwindow tax-rate-small">
+            {/* <div className="subwindow tax-rate-small">
                 <div className="subwindow-header">
                     <p>Select Tax Rate</p>
                     <button>Edit</button>
@@ -422,7 +541,7 @@ const Home = () => {
                         </div>
                     </label>
                 </div>
-            </div>
+            </div> */}
             {/* </div> */}
         </React.Fragment>)
     // }

@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { getDetails, closeRegister } from './CashmanagementSlice'
-import AngledBracket_left from '../../images/svg/AngledBracket-Left-BaseBlue.svg'
-import OpenSign from '../../images/svg/OpenSign.svg'
-import PinPad from '../PinPad'
+import AngledBracket_left from '../../assets/images/svg/AngledBracket-Left-BaseBlue.svg'
+import AngledBracket_Left_White from '../../assets/images/svg/AngledBracket-Left-White.svg'
+import OpenSign from '../../assets/images/svg/OpenSign.svg'
+import PinPad from '../pinPage/PinPad'
 import moment from 'moment';
 import { get_locName, get_regName, get_userName } from "../common/localSettings"
 import Closeregistertwo from "./Closeregistertwo";
+import { get_locName, get_regName, get_userName, getShopName } from "../common/localSettings"
+import { useNavigate } from 'react-router-dom';
 const Closeregister = () => {
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
     const [enteredCashAmount, setCashAmount] = useState('')
     const [enteredCardAmount, setCardAmount] = useState('')
     const [enteredOthersAmount, setOtherPayment] = useState('')
@@ -155,13 +158,12 @@ const Closeregister = () => {
     const doAction = () => {
         settoggle(true)
     }
-
-
     return (
         <>
             <div className="close-register-wrapper">
-                <button id="cancelButton">
-                    <img src={AngledBracket_left} alt="" />
+                <button id="cancelButton" onClick={() => navigate("/pin")}>
+                    <img src={AngledBracket_Left_White} alt="" />
+                    {/* <img src={AngledBracket_left} alt="" /> */}
                     Cancel
                 </button>
                 <header>

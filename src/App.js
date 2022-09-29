@@ -3,12 +3,10 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link,
 } from 'react-router-dom';
 // import logo from './logo.svg';
 // import { Counter } from './features/counter/Counter';
 import './App.css';
-//import { PrivateRoute } from './components/common/PrivateRoute';
 import Login from './components/login/Login'
 import Site from './components/site/Site'
 import Location from './components/location/Location'
@@ -20,40 +18,45 @@ import Cashmanagement from './components/cashmanagement/Cashmanagement';
 import { initDB } from "react-indexed-db";
 import { DBConfig } from "./DBConfig";
 import Dashboard from './components/dashboard/Dashboard';
-import OpenRegister from './components/OpenRegister';
+import OpenRegister from './components/cashmanagement/OpenRegister';
 import Closeregister from './components/cashmanagement/Closeregister';
 import Customercreate from './components/customer/Customercreate';
+import CustomerView from './components/customer/Customerview';
 import Checkout from './components/checkout/Checkout';
+import ActivityView from './components/activity/ActivityView';
 initDB(DBConfig);
 function App() {
 
-  // const customerData = [
-  //   { WPID: "111-11-1111", name: "Pranav", age: 10, email: "pranav@company.com" },
-  //   { WPID: "222-22-2222", name: "nagendra", age: 24, email: "nagendra@home.org" }
-  // ];
-  // { WPID: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
-  //   { WPID: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" }
-  //indexDatabase("2323223", customerData);
-  return (<Router>
+  const authenticateComponent = (component) => {
+    let isAuth = JSON.parse(localStorage.getItem('clientDetail'));
+    if (!isAuth || isAuth !== null) {
+      return component
+    } else {
+      return <Login />
+    }
+  }
+  return (
+    <Router>
 
-    <Routes>
+      <Routes>
 
-      <Route path="/" element={<Login />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/site" element={<Site />} />
-      <Route path="/location" element={<Location />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/pin" element={<Pin />} />
-      <Route path="/productloader" element={<ProductLoader />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/cashdrawer" element={<Cashmanagement />} />
-      <Route path="/openregister" element={<OpenRegister />} />
-      <Route path="/closeregister" element={<Closeregister />} />
-      <Route path="*" element={<NoPage />} />
-      <Route path="/customer" element={<Customercreate />} />
-      <Route path="/checkout" element={<Checkout />} />
-    </Routes>
-  </Router>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/site" element={authenticateComponent(<Site />)} />
+        <Route path="/location" element={authenticateComponent(<Location />)} />
+        <Route path="/register" element={authenticateComponent(<Register />)} />
+        <Route path="/pin" element={authenticateComponent(<Pin />)} />
+        <Route path="/productloader" element={authenticateComponent(<ProductLoader />)} />
+        <Route path="/home" element={authenticateComponent(<Dashboard />)} />
+        <Route path="/cashdrawer" element={authenticateComponent(<Cashmanagement />)} />
+        <Route path="/openregister" element={authenticateComponent(<OpenRegister />)} />
+        <Route path="/closeregister" element={authenticateComponent(<Closeregister />)} />
+        <Route path="*" element={authenticateComponent(<NoPage />)} />
+        <Route path="/customer" element={authenticateComponent(<CustomerView />)} />
+        <Route path="/checkout" element={authenticateComponent(<Checkout />)} />
+        <Route path='/transactions' element={authenticateComponent(<ActivityView />)} />
+      </Routes>
+    </Router>
 
   );
 }

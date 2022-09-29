@@ -1,42 +1,55 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from 'react-redux';
-import { chunkArray, get_locName, get_regName } from './common/localSettings'
+import { chunkArray, get_locName, get_regName } from '../common/localSettings'
 // import imgOpenReg from '../images/svg/OpenSign.svg'
-import imgBackSpace from '../images/svg/Backspace-BaseBlue.svg'
+import imgBackSpace from '../../assets/images/svg/Backspace-BaseBlue.svg'
+import Backspace_White from '../../assets/images/svg/Backspace-White.svg'
 
-import { createPin, validatePin } from "./pinPage/pinSlice"
-import { useNavigate } from "react-router-dom";
-import { get_UDid } from "./common/localSettings";
-import STATUSES from "../constants/apiStatus";
-import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
+
+import { createPin, validatePin } from "./pinSlice"
+import { useNavigate,useLocation } from "react-router-dom";
+import { get_UDid } from "../common/localSettings";
+import STATUSES from "../../constants/apiStatus";
+//import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
 import moment from 'moment';
-import LocalizedLanguage from "../settings/LocalizedLanguage";
-
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import $ from "jquery";
 
 const PinPad = React.memo(props => {
     // console.log("props",props)
-    const inputElement = useRef();
+    const inputElement = useRef(null);
+    const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [totalSize, setTotalSize] = useState(0)
     const [txtValue, setTxtValue] = useState("")
     const [isloading, setIsloading] = useState(false)
     const { status, data, error, is_success } = useSelector((state) => state.pin)
-    // console.log("status", status, "data", data, "error", error, "is_success", is_success)
+    console.log("status", status, "data", data, "error", error, "is_success", is_success)
     var hasPin = localStorage.getItem('hasPin')
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-    
+    var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
 
     useEffect(() => {
-         //console.log("useEffect")
-        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+        // console.log("useEffect")
+        focusInput()
+        if (isDrawerOpen == "false"
+            && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
             navigate('/openregister')
         }
         if (isloading == true) {
-            pinSuccessful()
+            if (is_success === true) {
+                setIsloading(false)
+                pinSuccessful()
+            }
+        } else if (is_success === true && (!props.switchUser || props.switchUser == false)) {
+            if (!localStorage.getItem("user")) {
+                pinSuccessful()
+            }
+
         }
 
        focusInput()
@@ -47,14 +60,16 @@ const PinPad = React.memo(props => {
     const pinSuccessful = () => {
        // console.log("pinSuccessful")
         if (status === STATUSES.error) {
-          //  console.log(error)
+            //  console.log(error)
+            inputElement.current.focus();
+            focusInput()
         }
-
+        console.log("iss success", is_success)
         if (is_success === true) {
             //   console.log("iss success",is_success)
             //  openRegisterhundle()
         }
-
+        console.log("toggleSwithUser", props.toggleSwitchUser)
         if (status === STATUSES.IDLE && is_success) {
 
             localStorage.setItem('user', JSON.stringify(data.content));
@@ -76,13 +91,18 @@ const PinPad = React.memo(props => {
                 // window.location = '/';
 
             }
-            if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+            if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
                 navigate('/openregister')
             } else {
                 if (props.doAction) {
                     props.doAction()
                 } else {
-                    navigate('/productloader')
+                    if (props.toggleSwitchUser && props.switchUser == true) {
+                        props.toggleSwitchUser();
+                    }
+                    else {
+                        navigate('/productloader')
+                    }
                 }
             }
         }
@@ -104,7 +124,7 @@ const PinPad = React.memo(props => {
                         <button key={"input" + i} type="button" id={props.id}
                             onClick={() => { addToScreen(nm) }}
                             className={nm === 'c' ? "backspace" : ""}>
-                            {nm === 'c' ? <img src={imgBackSpace} /> : nm}
+                            {nm === 'c' ? (location.pathname === "/home"?<img src={imgBackSpace} />:<img src={Backspace_White} />) : nm}
                         </button>
                     )
                 })
@@ -167,11 +187,11 @@ const PinPad = React.memo(props => {
 
         // $('#whichkey').focus()
         var _envType = localStorage.getItem('env_type');
-        if (_envType && _envType !== "") {
-            // $('#whichkey').attr('readonly', true);
-        } else {
-            //$('#whichkey').focus();
-        }
+        // if (_envType && _envType !== "") {
+        //     // $('#whichkey').attr('readonly', true);
+        // } else {
+        $('#whichkey').focus();
+        // }
     }
 
 
@@ -196,6 +216,7 @@ const PinPad = React.memo(props => {
                         console.log(typeof (enteredPin), enteredPin, txtValue,);
                         if (hasPin !== 'false') {
                             dispatch(validatePin({ "pin": enteredPin, "userid": userID, "UDID": get_UDid('UDID') }));
+                            setIsloading(true)
                         } else {
                             dispatch(createPin({ "pin": enteredPin, "id": userID }));
                         }
@@ -235,11 +256,16 @@ const PinPad = React.memo(props => {
     }
 
     const focusInput = () => {
-        inputElement.current.focus();
+        if ($('#whichkey') && inputElement !== null) {
+            //inputElement && inputElement !== null && inputElement.current.focus();
+            $('#whichkey').focus();
+        }
+
     };
 
-
+    focusInput()
     if (props.onClick == true) {
+        // console.log("outer click")
         focusInput()
     }
 
@@ -247,6 +273,7 @@ const PinPad = React.memo(props => {
     if (status === STATUSES.ERROR) {
     document.getElementById("whichkey").value='';
         focusInput()
+        console.log(status)
         // setTotalSize(0)
         // setTxtValue("")
         // addToScreen('c')
@@ -258,12 +285,15 @@ const PinPad = React.memo(props => {
 
         <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue" }} onChange={handle} onKeyDown={handleBack}  autoComplete="off" />
         <div className="pinpad">
+
             {hasPin !== "true" && <ShowCreatePin />}
             <div className="pin-entries">
                 <TrashPin />
             </div>
             <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" />
+
         </div>
+        {(status === STATUSES.ERROR && <p className="error border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" >{error} </p>)}
     </React.Fragment>
 })
 

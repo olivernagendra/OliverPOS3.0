@@ -13,15 +13,16 @@ import { productLoader } from './loadProductSlice';
 import { useNavigate } from 'react-router-dom';
 import { useIndexedDB } from 'react-indexed-db';
 import moment from 'moment';
+import LoaderOnboarding from '../common/commonComponents/LoaderOnboarding';
 //import LoaderOnboarding from '../onboarding/components/LoaderOnboarding'
-const CustomerLoader =()=>{ 
+const CustomerLoader = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
-   
+
     const UpdateCustomerInIndexDB = (udid, CustomerArray) => {
         CustomerArray && CustomerArray.length > 0 && CustomerArray.map((item) => {
             add(item).then(
                 (key) => {
-                    console.log("ID Generated: ", key);
+                    // console.log("ID Generated: ", key);
                     //   let newState = Object.assign({}, state);
                     //   newState.id = key;
                     //   setState(newState);
@@ -33,7 +34,7 @@ const CustomerLoader =()=>{
             )
         })
     }
-    const getCustomerList = (pn,  pl, trc) => {
+    const getCustomerList = (pn, pl, trc) => {
         var udid = get_UDid(localStorage.getItem("UDID"));
         var pageNumber = pn;
         var PageSize = Config.key.CUSTOMER_PAGE_SIZE;
@@ -54,7 +55,7 @@ const CustomerLoader =()=>{
         if (isDemoUser == true) {
             requestOptions.headers['demoauth'] = localStorage.getItem('DemoGuid') && localStorage.getItem('DemoGuid')
         }
-        if (TotalRecord == 0 ) {
+        if (TotalRecord == 0) {
             UpdateCustomerInIndexDB(udid, CustomerArray);
         }
         // call firstTime------------------
@@ -68,12 +69,12 @@ const CustomerLoader =()=>{
                 TotalRecord = data.content.Records.length;
                 CustomerArray = [...new Set([...CustomerArray, ...data.content.Records])];
                 //check dataExist into indexdb-------------------------
-                if (isDemoUser == false && (TotalRecord >= PageSize) ) {
+                if (isDemoUser == false && (TotalRecord >= PageSize)) {
                     pageNumber++;
                     getCustomerList(pageNumber, CustomerArray, TotalRecord);
                 }
                 else {
-                    console.log("--------------all customer records are done-----------"+CustomerArray.length);
+                    console.log("--------------all customer records are done-----------" + CustomerArray.length);
                     UpdateCustomerInIndexDB(udid, CustomerArray);
 
                 }
@@ -82,10 +83,9 @@ const CustomerLoader =()=>{
                 console.error('Console.save: No data ' + error + " " + JSON.stringify(error));
             })
     }
-    getCustomerList(1,  [], 0);
+    getCustomerList(1, [], 0);
 }
-const ModifierLoader=()=>
-{
+const ModifierLoader = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
     const UpdateModifierInIndexDB = (udid, ModifierArray) => {
         ModifierArray && ModifierArray.length > 0 && ModifierArray.map((item) => {
@@ -103,8 +103,7 @@ const ModifierLoader=()=>
             )
         })
     }
-    const getModiferList=(pn,  pl, trc)=>
-    {
+    const getModiferList = (pn, pl, trc) => {
         var time = moment().toDate().getTime();
         var offset = moment().toDate().getTimezoneOffset();
         var udid = get_UDid(localStorage.getItem("UDID"));
@@ -127,7 +126,7 @@ const ModifierLoader=()=>
         if (isDemoUser == true) {
             requestOptions.headers['demoauth'] = localStorage.getItem('DemoGuid') && localStorage.getItem('DemoGuid')
         }
-        if (TotalRecord == 0 ) {
+        if (TotalRecord == 0) {
             UpdateModifierInIndexDB(udid, ModifierArray);
         }
         // call firstTime------------------
@@ -141,12 +140,12 @@ const ModifierLoader=()=>
                 TotalRecord = data.content.Records.length;
                 ModifierArray = [...new Set([...ModifierArray, ...data.content.Records])];
                 //check dataExist into indexdb-------------------------
-                if (isDemoUser == false && (TotalRecord >= PageSize) ) {
+                if (isDemoUser == false && (TotalRecord >= PageSize)) {
                     pageNumber++;
                     getModiferList(pageNumber, ModifierArray, TotalRecord);
                 }
                 else {
-                    console.log("--------------all modifiers records are done-----------"+ModifierArray.length);
+                    console.log("--------------all modifiers records are done-----------" + ModifierArray.length);
                     UpdateModifierInIndexDB(udid, ModifierArray);
 
                 }
@@ -156,15 +155,15 @@ const ModifierLoader=()=>
             })
         ///ProductModifier/Records?pageSize=${pageSize}&pageNumber=${pageNumber}&time=${time}&offset=${offset}`
     }
-    getModiferList(1,  [], 0);
+    getModiferList(1, [], 0);
 }
 const ProductLoader = () => {
-   
+
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
     const navigate = useNavigate();
     const dispatch = useDispatch()
-     const [loadingProducts, setLoadingProducts] = useState(0)
+    const [loadingProducts, setLoadingProducts] = useState(0)
     const [loadPerc, setLoadPerc] = useState(0)
     const [productLoading, setProductLoading] = useState(false)
 
@@ -205,7 +204,7 @@ const ProductLoader = () => {
         //redirectToURL()
         // navigate('/loginpin');
         //}
-        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/dashboard';
+        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
 
         var udid = get_UDid(localStorage.getItem("UDID"));
 
@@ -271,7 +270,7 @@ const ProductLoader = () => {
 
                     // UpdateIndexDB(udid, ProductArray, RedirectUrl);
                     setTimeout(() => {
-                        navigate('/dashboard');
+                        navigate('/home');
                     }, 100);
 
                 }
@@ -284,9 +283,9 @@ const ProductLoader = () => {
                     localStorage.setItem("ReloadCount", (parseInt(reloadCount) + 1));
                     setTimeout(function () {
                         navigate('/'); //Reload to get product
-                        // navigate( '/dashboard')
+                        // navigate( '/home')
                     }, 1000)
-                    // navigate('/dashboard')
+                    // navigate('/home')
                 }
             })
     }
@@ -357,7 +356,7 @@ const ProductLoader = () => {
     //         })
     // }
     // const UpdateModifierInIndexDB = (udid, ProductArray) => {
-        
+
     //     const dbPromise = openDB('POSDB', 1, {
     //         upgrade(db) {
     //             db.createObjectStore(udid);
@@ -382,7 +381,7 @@ const ProductLoader = () => {
     //         [item['WPId'], item])).values()];
     //     idbKeyval.set('ModifierList', arrayUniqueByKey);
 
-        
+
     //     //------------------------------------------
 
 
@@ -484,15 +483,16 @@ const ProductLoader = () => {
         dispatch(productCount(udid));
         dispatch(receiptSetting());
         dispatch(taxSetting());
-     
+
     }
 
 
-
+    var isDemoUser = false;
     //  this.getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);
     return <div>
-        <h1>Product Loading...</h1>
-        <h2> {loadingProducts} ( {loadPerc})% </h2>;
+        {/* <h1>Product Loading...</h1>
+        <h2> {loadingProducts} ( {loadPerc})% </h2>; */}
+        <LoaderOnboarding isDemoUser={isDemoUser} statusCompleted={loadPerc}></LoaderOnboarding>
         ;
     </div>
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
@@ -13,6 +13,8 @@ import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { useIndexedDB } from 'react-indexed-db';
+import $ from 'jquery'
 function Login() {
     var auth2 = ''
     const bridgDomain = "https://hub.oliverpos.com";
@@ -21,29 +23,38 @@ function Login() {
     const [userEmail, setName] = useState("")
 
     const [password, setPassword] = useState("")
+    const [loginError, setLoginError] = useState();
 
-    // const [fieldErr, setFieldErr] = useState("")
-
-    // const [usernamedErr, setUsernamedErr] = useState("")
-    // const [wentWrongErr, setWentWrongErr] = useState("")
-    // const [passwordErr, setPasswordErr] = useState("")
+    //Clear index db-----------------------------
+    var { clear } = useIndexedDB('products');
+    clear().then(() => {
+        console.log('All Clear products!');
+    });
+    var { clear } = useIndexedDB('customers');
+    clear().then(() => {
+        console.log('All Clear customers!');
+    });
+    var { clear } = useIndexedDB('modifiers');
+    clear().then(() => {
+        console.log('All Clear modifiers!');
+    });
+    //-------------------------------------------
 
     //It will clear all local storage items
     const clearLocalStorages = () => {
         localStorage.clear();
+
     }
+
 
 
     const dispatch = useDispatch();
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
-
-    if (status == STATUSES.ERROR) {
-        console.log(error)
-    }
     if (status == STATUSES.IDLE && is_success) {
         navigate('/site')
     }
+
 
 
     const handleKey = (e) => {
@@ -53,23 +64,13 @@ function Login() {
         }
     }
 
-    const [userRequest, setUserRequest] = useState({
-        setFieldErr: '',
-        setUsernamedErr: '',
-        setWentWrongErr: '',
-        setPasswordErr: '',
-    });
+
 
 
     const handleSubmit = (e) => {
         clearLocalStorages();
         if (userEmail && password) {
-            setUserRequest({
-                setFieldErr: '',
-                setUsernamedErr: '',
-                setWentWrongErr: '',
-                setPasswordErr: '',
-            });
+            setLoginError('');
             // if (this.state.check == false) {  //$('#remember').attr('checked')              
 
             //     cookies.set('user', '');
@@ -82,49 +83,31 @@ function Login() {
 
         } else {
             if (!userEmail && !password) {
-                setUserRequest({
-                    setFieldErr: 'Email and Password is required',
-                    setUsernamedErr: '',
-                    setWentWrongErr: '',
-                    setPasswordErr: '',
-                });
-                // $('#username').focus();
+                setLoginError('Email and Password is required');
+                $('#username').focus();
             } else if (!userEmail) {
-                setUserRequest({
-                    setFieldErr: '',
-                    setUsernamedErr: 'Email is required',
-                    setWentWrongErr: '',
-                    setPasswordErr: '',
-                });
-                //  $('#username').focus();
+                setLoginError('Email is required');
+                $('#username').focus();
             } else {
-                setUserRequest({
-                    setFieldErr: '',
-                    setUsernamedErr: '',
-                    setWentWrongErr: '',
-                    setPasswordErr: 'Password is required',
-                });
-
-                // $('#password').focus();
+                setLoginError('Password is required');
+                $('#password').focus();
             }
         }
         e.preventDefault();
     }
 
-    const { setFieldErr, setUsernamedErr, setWentWrongErr, setPasswordErr } = userRequest;
-
-    var vlidationError = setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : setWentWrongErr != '' ? setWentWrongErr : "";
-    // console.log("vlidationError", vlidationError)
-
-
     const handleUserLogin = () => {
         dispatch(userLogin({ "email": userEmail, "password": password }))
 
     }
-
-    if (status == STATUSES.error) {
-        console.log(error)
-    }
+    // const SetErrro = () => useMemo(() => {
+    //     //if (status == STATUSES.ERROR) {
+    //     setLoginError(error)
+    //     // }
+    // })
+    // if (status == STATUSES.ERROR) {
+    //     SetErrro()
+    // }
     if (status == STATUSES.IDLE && is_success) {
         var loginRes = data && data.content;
         if (loginRes && loginRes.subscriptions !== undefined && loginRes.subscriptions.length > 0) {
@@ -431,53 +414,52 @@ function Login() {
     // if (status == STATUSES.LOADING) {
     //     return <div> Loading... </div>
     // }
-
+    var _error = loginError != "" ? loginError : error !== "" ? error : "";
     return (
-    <React.Fragment>{status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}
-    <div className="login-wrapper">
-        <div className="auto-margin-top"></div>
-        {/* counter: {counter} */}
-        <img src={imglogo} />
-        <p >Sign in to your Oliver POS Account</p>
-        {/* {error !== "" && <div className="danger">{error} </div>} */}
-        {vlidationError != "" &&
-            <div className="danger">
-
-                {setWentWrongErr !== '' ? setWentWrongErr : setFieldErr !== '' ? setFieldErr : setUsernamedErr !== "" ? setUsernamedErr : setPasswordErr !== '' ? setPasswordErr : ""}
-            </div>}
-        <form className="login-form">
-            <label htmlFor="email">Email</label>
-            <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
-            <div className="row">
-                <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
-                <label className="custom-checkbox-wrapper">
-                    <input type="checkbox" />
-                    <div className="custom-checkbox">
-                        <img src={Checkmark} alt="" />
+        <React.Fragment>{status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+            <div className="login-wrapper">
+                <div className="auto-margin-top"></div>
+                {/* counter: {counter} */}
+                <img src={imglogo} />
+                <p >Sign in to your Oliver POS Account</p>
+                {/* {error !== "" && <div className="danger">{error} </div>} */}
+                {(_error !== "") &&
+                    <div className="error">
+                        {_error}
+                    </div>}
+                <form className="login-form">
+                    <label htmlFor="email">Email</label>
+                    <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
+                    <label htmlFor="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
+                    <div className="row">
+                        <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
+                        <label className="custom-checkbox-wrapper">
+                            <input type="checkbox" />
+                            <div className="custom-checkbox">
+                                <img src={Checkmark} alt="" />
+                            </div>
+                            Remember Me?
+                        </label>
                     </div>
-                    Remember Me?
-                </label>
-            </div>
-            <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
-        </form>
-        <div className="or-row">
-            <div className="divider"></div>
-            <p>OR</p>
-            <div className="divider"></div>
-        </div>
-        <button id="googleButton" ref={googleLoginBtn} type="submit"   >
-            <div className="img-container">
-                <img src={imgGoogle} alt="" />
+                    <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
+                </form>
+                <div className="or-row">
+                    <div className="divider"></div>
+                    <p>OR</p>
+                    <div className="divider"></div>
+                </div>
+                <button id="googleButton" ref={googleLoginBtn} type="submit"   >
+                    <div className="img-container">
+                        <img src={imgGoogle} alt="" />
 
-            </div>
-            Sign in with Google
+                    </div>
+                    Sign in with Google
 
-        </button>
+                </button>
 
 
-        {/* <GoogleLogin
+                {/* <GoogleLogin
             clientId={Config.key.FACEBOOK_CLIENT_ID}
             buttonText=" Sign in with Google"
             onSuccess={responseGoogle}
@@ -486,41 +468,41 @@ function Login() {
         /> */}
 
 
-        <button id="facebookButton">
-            <div className="img-container">
-                <img src={imgFaceBook} alt="" />
-            </div>
-            <FacebookLogin cssClass="btn user_login_fb_on"
-                appId={Config.key.FACEBOOK_CLIENT_ID}
-                autoLoad={false}
-                fields="first_name, last_name,name,email"
-                scope="public_profile, email"
-                onClick={componentClicked}
-                callback={responseFacebook}
-                textButton="Sign in with Facebook"
+                <button id="facebookButton">
+                    <div className="img-container">
+                        <img src={imgFaceBook} alt="" />
+                    </div>
+                    <FacebookLogin cssClass="btn user_login_fb_on"
+                        appId={Config.key.FACEBOOK_CLIENT_ID}
+                        autoLoad={false}
+                        fields="first_name, last_name,name,email"
+                        scope="public_profile, email"
+                        onClick={componentClicked}
+                        callback={responseFacebook}
+                        textButton="Sign in with Facebook"
 
-            />
-
-
-        </button>
+                    />
 
 
-        {/* <button type="submit" id="appleid-signin" title="Log in using your Apple account"
-            data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
-            className="apple_login_btn">
-            <div className="img-container" >
-                <img src={imgApple} alt="" />
-            </div>
-            Sign in with Apple
-        </button> */}
+                </button>
 
-        <div className="row">
-            <p>Don't have an account?</p>
-            <a href="#" onClick={() => handleSignInClick()} >Sign up Now!</a>
-        </div>
-        <div className="auto-margin-bottom"></div>
 
-    </div></React.Fragment>
+                <button type="submit" id="appleid-signin" title="Log in using your Apple account"
+                    data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
+                    className="appleButton">
+                    <div className="img-container" >
+                        <img src={imgApple} alt="" />
+                    </div>
+                    Sign in with Apple
+                </button>
+
+                <div className="row">
+                    <p>Don't have an account?</p>
+                    <a href="#" onClick={() => handleSignInClick()} >Sign up Now!</a>
+                </div>
+                <div className="auto-margin-bottom"></div>
+
+            </div></React.Fragment>
     )
 };
 
