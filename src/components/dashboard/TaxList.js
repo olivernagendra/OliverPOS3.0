@@ -40,7 +40,7 @@ const TaxList = (props) => {
             ];
             setTax_items(tax_List);
         }
-        onSubmit();
+        //onSubmit();
     }
     const onSubmit = () => {
         var taxData = []
@@ -91,12 +91,12 @@ const TaxList = (props) => {
                     //     })
                     // }
 
-                    var updateTaxCarproduct = changeTaxRate(apply_tax_is, 2);
-                    dispatch(updateTaxRateList(apply_tax_is));
-                    var cartItems = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
-                    //dispatch(cartProductActions.addtoCartProduct(cartItems))
-                    addtoCartProduct(cartItems);
-                    dispatch(product());
+                    // var updateTaxCarproduct = changeTaxRate(apply_tax_is, 2);
+                    // dispatch(updateTaxRateList(apply_tax_is));
+                    // var cartItems = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+                    // //dispatch(cartProductActions.addtoCartProduct(cartItems))
+                    // addtoCartProduct(cartItems);
+                    // dispatch(product());
 
                     // if (isMobileOnly == true) {
                     //     this.props.openModal("view_cart");
@@ -104,38 +104,40 @@ const TaxList = (props) => {
                 }
             }
             else {
-                var defaultTax = localStorage.getItem('DEFAULT_TAX') && JSON.parse(localStorage.getItem('DEFAULT_TAX'));
-                if (defaultTax && defaultTax.length > 0) {
-                    var updateTaxCarproduct = changeTaxRate(defaultTax, 2);
-                    localStorage.setItem("SELECTED_TAX", JSON.stringify(defaultTax));
+                // var defaultTax = localStorage.getItem('DEFAULT_TAX') && JSON.parse(localStorage.getItem('DEFAULT_TAX'));
+                // if (defaultTax && defaultTax.length > 0) {
+                //     var updateTaxCarproduct = changeTaxRate(defaultTax, 2);
+                //     localStorage.setItem("SELECTED_TAX", JSON.stringify(defaultTax));
     
-                    dispatch(updateTaxRateList(defaultTax));
-                    addtoCartProduct(updateTaxCarproduct);
-                    dispatch(product());
-                }
+                //     dispatch(updateTaxRateList(defaultTax));
+                //     addtoCartProduct(updateTaxCarproduct);
+                //     dispatch(product());
+                // }
             }
         } else {
-            var defaultTax = localStorage.getItem('DEFAULT_TAX') && JSON.parse(localStorage.getItem('DEFAULT_TAX'));
-            if (defaultTax && defaultTax.length > 0) {
-                var updateTaxCarproduct = changeTaxRate(defaultTax, 2);
-                localStorage.setItem("SELECTED_TAX", JSON.stringify(defaultTax));
+            // var defaultTax = localStorage.getItem('DEFAULT_TAX') && JSON.parse(localStorage.getItem('DEFAULT_TAX'));
+            // if (defaultTax && defaultTax.length > 0) {
+            //     var updateTaxCarproduct = changeTaxRate(defaultTax, 2);
+            //     localStorage.setItem("SELECTED_TAX", JSON.stringify(defaultTax));
 
-                dispatch(updateTaxRateList(defaultTax));
-                addtoCartProduct(updateTaxCarproduct);
-                dispatch(product());
-            } else {
-                localStorage.removeItem("SELECTED_TAX");
-                localStorage.removeItem('TAXT_RATE_LIST');
-                var updateTaxCarproduct = changeTaxRate(null, 2);
-                dispatch(updateTaxRateList(null));
-                addtoCartProduct(updateTaxCarproduct);
-                dispatch(product());
-            }
+            //     dispatch(updateTaxRateList(defaultTax));
+            //     addtoCartProduct(updateTaxCarproduct);
+            //     dispatch(product());
+            // } else {
+            //     localStorage.removeItem("SELECTED_TAX");
+            //     localStorage.removeItem('TAXT_RATE_LIST');
+            //     var updateTaxCarproduct = changeTaxRate(null, 2);
+            //     dispatch(updateTaxRateList(null));
+            //     addtoCartProduct(updateTaxCarproduct);
+            //     dispatch(product());
+            // }
         }
         dispatch(selectedTaxList(taxData));
         setTimeout(() => {
             getSelectedTaxList();
         }, 100);
+        toggleShowTaxList();
+        props.toggleTaxList();
         // this.props.dispatch(taxRateAction.selectedTaxList(taxData))
         //setTax_items([]);
     }
@@ -183,7 +185,7 @@ const TaxList = (props) => {
                     </div>
                     {selTax && selTax.map(m => {
                         return (
-                            <div className="row">
+                            <div className="row" key={m.TaxId}>
                                 <p>{m.TaxName}</p>
                                 <label>
                                     <input type="radio" id={m.TaxName} name="tax-type" value={m.TaxName} />
@@ -230,6 +232,7 @@ const TaxList = (props) => {
                         <p>Province</p>
                         <p>Select</p>
                     </div>
+                    <div className="options-container">
                     {tax_items && tax_items.map((item, index) => {
                         return (<div className="option-row" key={item.TaxId}>
                             <p> {item.TaxName}</p>
@@ -245,9 +248,14 @@ const TaxList = (props) => {
                                     </div>
                                 </label>
                             </div>
+                            
                         </div>)
                     })
                     }
+                    </div>
+                    <div className="footer" onClick={()=>onSubmit()}>
+						<button id="saveTax">Save & Update</button>
+					</div>
                 </div>
             </div>
         </div>

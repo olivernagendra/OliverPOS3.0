@@ -3,6 +3,7 @@ import EmptyCart from '../../../images/svg/EmptyCart.svg';
 import { RoundAmount } from "../TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { useSelector } from 'react-redux';
+import { NumericFormat } from 'react-number-format';
 const CartListBody = (props) => {
     // const [subTotal, setSubTotal] = useState(0.00);
     // const [taxes, setTaxes] = useState(0.00);
@@ -101,7 +102,7 @@ const CartListBody = (props) => {
         //         cartDiscountAmount : _cartDiscountAmount
         //     })  
     }
-    const drawItems = (type, item) => {
+    const renderItems = (type, item) => {
         switch (type) {
             case 'product':
                 return (<div className="cart-item">
@@ -136,6 +137,14 @@ const CartListBody = (props) => {
                         <p className="content-style">Table 1</p>
                     </div>
                 </div>)
+            case 'custom_fee':
+                return (<div className="cart-item">
+                <div className="main-row aligned">
+                    <div className="tag custom-fee">Custom Fee</div>
+                    <div className="content-style">Shipping Fee</div>
+                    <div className="price">$20.00</div>
+                </div>
+            </div>)
             case 'product-detail':
                 return (<div className="cart-item">
                     <div className="main-row">
@@ -156,33 +165,95 @@ const CartListBody = (props) => {
                 </div>)
             default:
                 return null;
-                break;
         }
     }
     return (
         <div className="body">
             <img src={EmptyCart} alt="" />
             {listItem && listItem.length > 0 && listItem.map(a => {
-
-                return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/>
-                    <div className="main-row" >
-                        <p className="quantity">{a.quantity && a.quantity}</p>
-                        <p className="content-style">{a.Title && a.Title}</p>
-                        <p className="price">{a.Price && a.Price}</p>
+                var notes =  listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
+                var item_type = "";
+                if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) {
+                    item_type = "no_note";
+                }
+                else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
+                else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
+                switch (item_type) {
+                    case "product":
+                        return <div className="cart-item">
+                        <div className="main-row" >
+                            <p className="quantity">{a.quantity && a.quantity}</p>
+                            <p className="content-style">{a.Title && a.Title}</p>
+                            <p className="price">
+                                        <NumericFormat className={a.product_discount_amount !=0?"strike-through":""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            </p>
+                                            {a.product_discount_amount !=0 &&<p className="price" >
+                                              <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            </p>}
+                            {/* <p className="price">{<NumericFormat  value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</p> */}
+                        </div>
+                        <div className="secondary-col">
+                        {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
+                            {/* <p>Medium</p>
+                            <p>Navy</p> */}
+                        </div>
                     </div>
-                    {/* <div className="secondary-col">
-                        <p>Medium</p>
-                        <p>Navy</p>
-                    </div> */}
-                </div>
+                    case "note":
+                        return <div className="cart-item">
+                        <div className="main-row aligned">
+                            <div className="tag cart-note">Note</div>
+                            <p className="content-style line-capped">
+                            {a.Title && a.Title}
+                            </p>
+                        </div>
+                    </div>
+                    case "custom_fee":
+                        return <div className="cart-item">
+                            <div className="main-row aligned">
+                                <div className="tag custom-fee">Custom Fee</div>
+                                <div className="content-style">{a.Title && a.Title}</div>
+                                <div className="price">{a.Price && a.Price}</div>
+                            </div>
+                        </div>
+                    // case "customer":
+                    //     return <div className="cart-item">
+                    //         <div className="main-row aligned">
+                    //             <div className="tag customer">Customer</div>
+                    //             <div className="content-style">{get_customerName().Name}</div>
+                    //             <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                    //                 <img src={CircledX_Grey} alt="" />
+                    //             </button>
+                    //         </div>
+                    //     </div>
+                    case "group":
+                        return   <div className="cart-item">
+                        <div className="main-row aligned">
+                            <div className="tag group">Group</div>
+                            <p className="content-style">{a.Title && a.Title}</p>
+                        </div>
+                    </div>
+                    default:
+                        return null;
+                }
+                // return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/>
+                //     <div className="main-row" >
+                //         <p className="quantity">{a.quantity && a.quantity}</p>
+                //         <p className="content-style">{a.Title && a.Title}</p>
+                //         <p className="price">{a.Price && a.Price}</p>
+                //     </div>
+                //     {/* <div className="secondary-col">
+                //         <p>Medium</p>
+                //         <p>Navy</p>
+                //     </div> */}
+                // </div>
 
             })}
-            {/* {drawItems('product')}
-            {drawItems('customer')}
-            {drawItems('product')}
-            {drawItems('note')}
-            {drawItems('product')}
-            {drawItems('product-detail')} */}
+            {/* {renderItems('product')}
+            {renderItems('customer')}
+            {renderItems('product')}
+            {renderItems('note')}
+            {renderItems('product')}
+            {renderItems('product-detail')} */}
             {/* <div className="cart-item">
                 <div className="main-row">
                     <p className="quantity">2</p>

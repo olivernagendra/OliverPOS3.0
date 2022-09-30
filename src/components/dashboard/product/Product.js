@@ -26,12 +26,16 @@ import ProductDiscount from "./ProductDiscount";
 import AdjustInventory from "./AdjustInventory";
 import NoVariationSelected from "./NoVariationSelected";
 import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
-import { addSimpleProducttoCart } from './productLogic';
-import { getTaxAllProduct } from "../../common/TaxSetting";
+import { addSimpleProducttoCart, updateProductNote } from './productLogic';
+import { getTaxAllProduct, getSettingCase, cartPriceWithTax } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
-
-
+import CommonModuleJS from "../../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
+import { getInventory } from "../slices/inventorySlice";
+import { NumericFormat } from 'react-number-format';
+import { RoundAmount } from "../../common/TaxSetting";
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -50,21 +54,80 @@ const Product = (props) => {
     const [productQty, setProductQty] = useState(1);
     const [note, setNote] = useState("");
     const [selVariations, setSelVariations] = useState([]);
+    const [selOptions, setSelOptions] = useState([]);
+    const [isEdit, setIsEdit] = useState(false);
+    const [selectedVariationProduct, setSelectedVariationProduct] = useState(null)
+
+    const [variationStockQunatity, setVariationStockQunatity] = useState(0)
+    const [customFeeModifiers, setCustomFeeModifiers] = useState([]);
 
     const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
     // });
+    const [inventoryStatus] = useSelector((state) => [state.inventories])
+
+    // useEffect(() => {
+    //     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    //     setVariationStockQunatity(_product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
+    //         (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0'
+    //     ) : 0)
+    // }, [props.variationProduct]);
+    var itemQauntity = 0;
+    const fatchUpdateInventory = async () => {
+        var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+        // getByID(_product.WPID).then((prodcut) => {
+        //     itemQauntity = prodcut && prodcut.StockQuantity
+        //     console.log("itemQauntity", itemQauntity)
+        //     variationStockQunatity = itemQauntity;
+        // });
+
+        // var prodcut = await getProductByID(_product.WPID).then((row) => {
+        //     return row;
+        // });
+        // if (prodcut) {
+        //     itemQauntity = prodcut && prodcut.StockQuantity
+        //     console.log("itemQauntity", itemQauntity)
+        //     setVariationStockQunatity(itemQauntity);
+        // }
+    }
+
+    var currentWareHouseDetail = "";
+    useEffect(() => {
+
+        var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
+        var CurrentWarehouseId = localStorage.getItem("WarehouseId");
+
+        if (warehouseDetail && warehouseDetail.length > 0) {
+            currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+        }
+        if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
+            setVariationStockQunatity(currentWareHouseDetail.Quantity)
+            console.log("product Qty", currentWareHouseDetail.Quantity)
+        }
+    }, [inventoryStatus])
     const toggleProductNote = () => {
         setisProductNote(!isProductNote)
     }
     const toggleProductDiscount = () => {
-        setisProductDiscount(!isProductDiscount)
+        if (CommonModuleJS.permissionsForDiscount() == false) {
+
+            var data = { title: "", msg: LocalizedLanguage.discountPermissionerror, is_success: true }
+            dispatch(popupMessage(data));
+            //alert(LocalizedLanguage.discountPermissionerror);
+        }
+        else {
+            setisProductDiscount(!isProductDiscount)
+        }
     }
-    const toggleAdjustInventory = () => {
-        setisAdjustInventory(!isAdjustInventory)
+
+    const toggleAdjustInventory = (istoggle) => {
+        console.log("istoggle", istoggle)
+        console.log("isAdjustInventory", isAdjustInventory)
+        setisAdjustInventory(istoggle == null || istoggle == "undefined" ? !isAdjustInventory : istoggle)
     }
+
     const toggleNoVariationSelected = () => {
         setisNoVariationSelected(!isNoVariationSelected)
     }
@@ -281,7 +344,7 @@ const Product = (props) => {
             //this.setState({ ProductModifiers: all_modifiers, SelectedModifiers: modifiers });
 
             // console.log("---ModifierList d--"+JSON.stringify(d) )
-            console.log("---ModifierList modifiers--" + JSON.stringify(modifiers))
+            //console.log("---ModifierList modifiers--" + JSON.stringify(modifiers))
         });
         // showOverlay();
         // showModal("modifiers");
@@ -439,11 +502,12 @@ const Product = (props) => {
                 setSelectedModifiers(update_data)
             }
         }
+        //  console.log("---selectedModifiers----" + JSON.stringify(selectedModifiers))
     }
     const submitChanges = () => {
         // this.setState({ SaveSelectedModifiers: selectedModifiers });
         setSaveSelectedModifiers(selectedModifiers)
-        console.log("----selected modifier----" + JSON.stringify(selectedModifiers));
+        // console.log("----selected modifier----" + JSON.stringify(selectedModifiers));
         setTimeout(() => {
             addModifierAsCustomFee();
             // closeModifier();
@@ -453,7 +517,7 @@ const Product = (props) => {
 
         var tax_is = props.selProduct; //this.props.getVariationProductData && getVariatioModalProduct(this.props.single_product ? this.props.single_product : this.state.variationfound ? this.state.variationfound : this.props.getVariationProductData, this.state.variationDefaultQunatity);
         var product_price = props.selProduct.Price;//getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? tax_is && cartPriceWithTax(tax_is.old_price, getSettingCase(), tax_is.TaxClass) : getSettingCase() == 6 ? tax_is && tax_is.old_price : tax_is && tax_is.old_price;
-        console.log("---product_price---" + product_price);
+        // console.log("---product_price---" + product_price);
         var _data = [];
         saveSelectedModifiers && saveSelectedModifiers.map(m => {
             if (m.is_active == true) {
@@ -483,9 +547,11 @@ const Product = (props) => {
                     _data.push({ Title: m.title + (_summary != null & _summary != "" ? "(" + _summary + ")" : ""), Price: _sum, old_price: _sum, isTaxable: m.TaxOption, TaxStatus: (m.TaxOption == true ? "taxable" : "none"), TaxClass: '', quantity: 1 });
             }
         })
-        // if (_data && _data.length > 0)
-        //     this.setState({ CustomFee_Modifiers: _data });
-        console.log("----modifier as custom fee----" + JSON.stringify(_data));
+        if (_data && _data.length > 0) {
+            setCustomFeeModifiers(_data)
+        }
+        //this.setState({ CustomFee_Modifiers: _data });
+        //console.log("----modifier as custom fee----" + JSON.stringify(_data));
     }
     const getRecomProducts = () => {
         var ids = "";
@@ -516,25 +582,46 @@ const Product = (props) => {
             });
         }
     }
-    //var selVariations = [];
-    var _disableAttribute = [];
-    const optionClick = async (option, attribute, AttrIndex) => {
-        _disableAttribute = []
-        var _selVariations = selVariations;
-        var _item = _selVariations.findIndex((element) => {
+
+    // const saveSelectedOption = () => {
+    //     //console.log("selOptions--" + JSON.stringify(selVariations.length))
+    //     if (selVariations.length == 0)
+    //     {
+    //         console.log("----_selVariations save" + JSON.stringify(_selVariationsEdit))
+    //         setTimeout(() => {
+    //         setSelVariations(_selVariationsEdit);
+    //         }, 100);
+    //     }
+    // }
+
+
+
+    var _selVariationsEdit = [];
+    const setSelectedOption = (option, attribute, AttrIndex) => {
+        // _disableAttribute = []
+        _selVariationsEdit = selVariations;
+        var _item = _selVariationsEdit.findIndex((element) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+            _selVariationsEdit.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
         }
-        _selVariations = _selVariations.map(obj => {
+        _selVariationsEdit = _selVariationsEdit.map(obj => {
             if (obj.Name === attribute.Name) {
                 return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
             }
             return obj;
         });
-        setSelVariations(_selVariations);
-        console.log("-----if exists----" + JSON.stringify(_selVariations))
+
+        if (checkLength() == false) {
+            if (
+                JSON.stringify(selVariations) != JSON.stringify(_selVariationsEdit)) {
+                // console.log("----_selVariations" + JSON.stringify(_selVariationsEdit))
+                setSelVariations(_selVariationsEdit);
+            }
+        }
+    }
+    const doVariationSearch = () => {
         if (props && props.selProduct) {
             var _product = props.selProduct;
             var _attribute = [];
@@ -559,7 +646,105 @@ const Product = (props) => {
                     else {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                     }
-                    console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    //  console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
+
+                    allProdcuts.filter(item => {
+                        var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+
+                        if (aa == true) {
+                            allCombi = allCombi.map(a => {
+                                var _att = a.replace(/\//g, "-").toLowerCase();
+                                const index = _disableAttribute.findIndex(item => item === _att)
+                                if (index === -1) {
+                                    _disableAttribute.push(_att);
+                                }
+                                return _att;
+                            });
+                        }
+                        // if (attribute && attribute.Option) {
+                        //     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
+                        //         var _att = a.replace(/\//g, "-").toLowerCase();
+                        //         const index = _disableAttribute.findIndex(item => item === _att)
+                        //         if (index === -1) {
+                        //             _disableAttribute.push(_att);
+                        //         }
+                        //     })
+                        // }
+
+                        var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        // if (result === true) {
+                        //     console.log("--att p count--->> ", allCombi.join(','));
+                        // }
+                        return result;
+                    })
+                    // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
+                    //     console.log("-------combi----" + a.combination);
+                    // })
+                    // console.log("--allVariatiooo--- ", JSON.stringify(_disableAttribute));
+                    // console.log("--allVariations--- ", JSON.stringify(allVariations));
+
+                }
+
+            });
+        }
+    }
+    //var selVariations = [];
+    var _disableAttribute = [];
+    const optionClick = async (option, attribute, AttrIndex) => {
+        setIsEdit(false);
+        //    if(selOptions && selOptions.length>0)
+        //    {
+        //     setSelOptions([]);
+
+        //    }
+        _disableAttribute = []
+        var _selVariations = selVariations;
+        var _item = _selVariations.findIndex((element) => {
+            return element.Name === attribute.Name;
+        })
+        if (_item == -1) {
+            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+        }
+        _selVariations = _selVariations.map(obj => {
+            if (obj.Name === attribute.Name) {
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
+            }
+            return obj;
+        });
+        setSelVariations(_selVariations);
+        // console.log("-----if exists----" + JSON.stringify(_selVariations))
+        // doVariationSearch();
+        // return;
+        if (props && props.selProduct) {
+            var _product = props.selProduct;
+            var _attribute = [];
+            var ProductAttribute = [];
+
+            if (_product && _product.ProductAttributes !== null) {
+                ProductAttribute = _product.ProductAttributes;
+                _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
+            }
+            getAllProducts().then((rows) => {
+                var data = rows.filter(a => a.ParentId === _product.WPID);
+                var allProdcuts = getTaxAllProduct(data)
+                if (allProdcuts && allProdcuts.length > 0) {
+                    var filteredAttribute = allProdcuts.filter(item => {
+                        var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                        return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                    })
+                    if (filteredAttribute && filteredAttribute.length == 1) {
+                        props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                        dispatch(getInventory(filteredAttribute[0].WPID)); //call to get product warehouse quantity
+
+                    }
+                    else {
+                        props.updateVariationProduct && props.updateVariationProduct(null);
+                        // dispatch(getInventory(null)); //call to get product warehouse quantity
+                    }
+                    //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     var filteredAttribute1 = allProdcuts.filter(item => {
@@ -592,12 +777,11 @@ const Product = (props) => {
                         // }
                         return result;
                     })
-                    filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
-                        console.log("-------combi----" + a.combination);
-                    })
-                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute1.length));
-                    console.log("--allVariatiooo--- ", JSON.stringify(_disableAttribute));
-                    console.log("--allVariations--- ", JSON.stringify(allVariations));
+                    // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
+                    //     console.log("-------combi----" + a.combination);
+                    // })
+                    // console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
+                    // console.log("--allVariations--- ", JSON.stringify(allVariations));
 
                 }
 
@@ -613,106 +797,106 @@ const Product = (props) => {
     var selectedOptions = [];
     var variationfound = {};
     var Variations = [];
-    const optionClick1 = (option, attribute, AttrIndex) => {
+    // const optionClick1 = (option, attribute, AttrIndex) => {
 
-        getAllProducts().then((rows) => {
-            var data = rows.filter(a => a.ParentId === props.selProduct.WPID);
-            Variations = getTaxAllProduct(data)
+    //     getAllProducts().then((rows) => {
+    //         var data = rows.filter(a => a.ParentId === props.selProduct.WPID);
+    //         Variations = getTaxAllProduct(data)
 
 
 
-            //var filterTerms = this.state.filterTerms;
-            var optExist = false;
-            filterTerms && filterTerms.map(opItem => {
-                if (opItem.attribute === attribute) {
-                    opItem.attribute = attribute;
-                    opItem.option = option;
-                    optExist = true
-                }
-            })
-            if (optExist == false) {
-                filterTerms.push({
-                    attribute: attribute,
-                    option: option,
-                    index: AttrIndex
-                })
-                // this.state.filterTerms = filterTerms
-                // this.setState({ filterTerms: filterTerms })
-            }
-            // this.setState({ filterTerms: filterTerms })
-            // if (this.clickTimeout !== null) {
-            //     clearTimeout(this.clickTimeout)
-            //     this.clickTimeout = null
-            // } else {
-            //     this.clickTimeout = setTimeout(() => {
-            //         clearTimeout(this.clickTimeout)
-            //         this.clickTimeout = null
-            //     }, 300);
-            //this.setState({
-            selectedAttribute = attribute;
-            //});
-            if (props.selProduct.ProductAttributes && props.selProduct.ProductAttributes.length > 1) {
-                var filteredAttribute = Variations.filter(item => {
-                    var optionRes = option.replace(/\s/g, '-').toLowerCase();
-                    optionRes = optionRes.replace(/\//g, "-").toLowerCase();
-                    var isExist = false;
-                    item && item.combination !== null && item.combination !== undefined && item.combination.split("~").map(combination => {
-                        if (combination.replace(/\s/g, '-').replace(/\//g, "-").toLowerCase() === optionRes || combination == "**")
-                            isExist = true;
-                    })
-                    return isExist;
-                })
-                filteredAttributeArray = filteredAttribute;
-            }
-            setSelectedOption(option, attribute, AttrIndex);
-            // var attributeLenght = this.getAttributeLenght();
-            searchvariationProduct(option);
-            //}
-        });
-    }
+    //         //var filterTerms = this.state.filterTerms;
+    //         var optExist = false;
+    //         filterTerms && filterTerms.map(opItem => {
+    //             if (opItem.attribute === attribute) {
+    //                 opItem.attribute = attribute;
+    //                 opItem.option = option;
+    //                 optExist = true
+    //             }
+    //         })
+    //         if (optExist == false) {
+    //             filterTerms.push({
+    //                 attribute: attribute,
+    //                 option: option,
+    //                 index: AttrIndex
+    //             })
+    //             // this.state.filterTerms = filterTerms
+    //             // this.setState({ filterTerms: filterTerms })
+    //         }
+    //         // this.setState({ filterTerms: filterTerms })
+    //         // if (this.clickTimeout !== null) {
+    //         //     clearTimeout(this.clickTimeout)
+    //         //     this.clickTimeout = null
+    //         // } else {
+    //         //     this.clickTimeout = setTimeout(() => {
+    //         //         clearTimeout(this.clickTimeout)
+    //         //         this.clickTimeout = null
+    //         //     }, 300);
+    //         //this.setState({
+    //         selectedAttribute = attribute;
+    //         //});
+    //         if (props.selProduct.ProductAttributes && props.selProduct.ProductAttributes.length > 1) {
+    //             var filteredAttribute = Variations.filter(item => {
+    //                 var optionRes = option.replace(/\s/g, '-').toLowerCase();
+    //                 optionRes = optionRes.replace(/\//g, "-").toLowerCase();
+    //                 var isExist = false;
+    //                 item && item.combination !== null && item.combination !== undefined && item.combination.split("~").map(combination => {
+    //                     if (combination.replace(/\s/g, '-').replace(/\//g, "-").toLowerCase() === optionRes || combination == "**")
+    //                         isExist = true;
+    //                 })
+    //                 return isExist;
+    //             })
+    //             filteredAttributeArray = filteredAttribute;
+    //         }
+    //         setSelectedOption(option, attribute, AttrIndex);
+    //         // var attributeLenght = this.getAttributeLenght();
+    //         searchvariationProduct(option);
+    //         //}
+    //     });
+    // }
 
-    const setSelectedOption = (option, attribute, AttrIndex) => {
-        //Find Attribute Code----------------------------------------------
-        var attribute_list = [];
-        if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) { attribute_list = respAttribute.data.content; }
+    // const setSelectedOption = (option, attribute, AttrIndex) => {
+    //     //Find Attribute Code----------------------------------------------
+    //     var attribute_list = [];
+    //     if (respAttribute.is_success === true && respAttribute.data && respAttribute.data.content != null) { attribute_list = respAttribute.data.content; }
 
-        //var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
-        var sub_attribute;
+    //     //var attribute_list = localStorage.getItem("attributelist") && Array.isArray(JSON.parse(localStorage.getItem("attributelist"))) === true ? JSON.parse(localStorage.getItem("attributelist")) : null;
+    //     var sub_attribute;
 
-        var found = null;
-        if (attribute_list !== null && attribute_list !== undefined) {
-            found = attribute_list.find(function (element) {
-                return element.Code.toLowerCase() == attribute.Name.toLowerCase()
-            })
-        }
-        if (found !== null && found !== undefined) {
-            sub_attribute = found.SubAttributes && found.SubAttributes.find(function (element) {
-                return element.Value.toLowerCase() == option.toLowerCase()
-            })
-        }
-        var newOption = sub_attribute ? sub_attribute.Code : option;
-        selectedOptionCode = newOption;
-        //this.setState({ selectedOptionCode: newOption })
-        //---------Array of selected options-----------------------------
-        var arrAttr = selectedOptionCode ? selectedOptionCode : [];
-        var isAttributeExist = false;
-        arrAttr && Array.isArray(arrAttr) == true && arrAttr.length > 0 && arrAttr.map(item => {
-            if (item.attribute.toLowerCase() == attribute.Name.toLowerCase()) {
-                item.option = option;
-                isAttributeExist = true;
-            }
-        })
-        if (isAttributeExist == false)
-            Array.isArray(arrAttr) == true && arrAttr.push({ attribute: attribute, option: selectedOptionCode, index: AttrIndex });
-        //Remove Dumplecate attribute------------
-        arrAttr = Array.isArray(arrAttr) == true && arrAttr.filter((val, id, array) => {
-            return array.indexOf(val) == id;
-        });
-        selectedOptions = arrAttr;
+    //     var found = null;
+    //     if (attribute_list !== null && attribute_list !== undefined) {
+    //         found = attribute_list.find(function (element) {
+    //             return element.Code.toLowerCase() == attribute.Name.toLowerCase()
+    //         })
+    //     }
+    //     if (found !== null && found !== undefined) {
+    //         sub_attribute = found.SubAttributes && found.SubAttributes.find(function (element) {
+    //             return element.Value.toLowerCase() == option.toLowerCase()
+    //         })
+    //     }
+    //     var newOption = sub_attribute ? sub_attribute.Code : option;
+    //     selectedOptionCode = newOption;
+    //     //this.setState({ selectedOptionCode: newOption })
+    //     //---------Array of selected options-----------------------------
+    //     var arrAttr = selectedOptionCode ? selectedOptionCode : [];
+    //     var isAttributeExist = false;
+    //     arrAttr && Array.isArray(arrAttr) == true && arrAttr.length > 0 && arrAttr.map(item => {
+    //         if (item.attribute.toLowerCase() == attribute.Name.toLowerCase()) {
+    //             item.option = option;
+    //             isAttributeExist = true;
+    //         }
+    //     })
+    //     if (isAttributeExist == false)
+    //         Array.isArray(arrAttr) == true && arrAttr.push({ attribute: attribute, option: selectedOptionCode, index: AttrIndex });
+    //     //Remove Dumplecate attribute------------
+    //     arrAttr = Array.isArray(arrAttr) == true && arrAttr.filter((val, id, array) => {
+    //         return array.indexOf(val) == id;
+    //     });
+    //     selectedOptions = arrAttr;
 
-        console.log("----selectedOptions---" + JSON.stringify(selectedOptions));
-        //-------------------------------------------------------
-    }
+    //     console.log("----selectedOptions---" + JSON.stringify(selectedOptions));
+    //     //-------------------------------------------------------
+    // }
 
     const combo = (c) => {
         var r = [];
@@ -769,7 +953,7 @@ const Product = (props) => {
             filteredArr.push(sub_attribute ? sub_attribute.Code : itm.option);
         })
         var cominationArr = combo(filteredArr);
-        console.log("----cominationArr---" + JSON.stringify(cominationArr));
+        // console.log("----cominationArr---" + JSON.stringify(cominationArr));
         var variations = Variations;
         var getVariationProductData = props.selProduct
         var _fileterTerm = filterTerms ? filterTerms : "";
@@ -938,6 +1122,7 @@ const Product = (props) => {
         return result;
     }
     ///-------xxxxx-------
+    ///-------xxxxx-------
     const addToCart = () => {
         if (checkLength() === true) {
 
@@ -945,20 +1130,79 @@ const Product = (props) => {
             if (_product) {
                 // _product = props.selProduct;
                 _product.quantity = productQty;
-                if (note != "") {
-                    var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false });
-                    console.log("----product note---" + note);
+
+                //---- Replace exsiting product if different variation or proudct is selected
+                if (props.selProduct && props.selProduct.hasOwnProperty("selectedIndex")) {
+                    _product['selectedIndex'] = props.selProduct.selectedIndex;
                 }
+                // if (props.selProduct && props.selProduct.hasOwnProperty("selectedIndex")) {
+                //     _product['selectedIndex'] = props.selProduct.selectedIndex;
+                //     _product['product_id'] = props.selProduct.WPID;
+                //     var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+                //     if (cartlist.length > 0) {
+                //         cartlist.map((item, index) => {
+                //             if (typeof _product !== 'undefined' && _product !== null) {
+                //                 var _index = -1;
+                //                 if (_product['selectedIndex'] >= 0) {
+                //                     _index = parseInt(_product.selectedIndex)
+                //                 }
+                //                 if (_index > -1 && _product.selectedIndex == index && item.product_id != _product.WPID) {
+                //                     cartlist[index] = _product;
+                //                     //cartlist.splice(index,1);
+                //                     localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartlist));
+                //                 }
+                //             }
+                //         })
+
+                //     }
+                //     // setTimeout(() => {
+                //     //     dispatch(product());
+                //     // }, 100);
+                // }
+                // else
+                // {
+                //     var result = addSimpleProducttoCart(_product);
+                //     if (result === 'outofstock') {
+                //         toggleOutOfStock();
+                //     }
+                //     else {
+                //         if (note != "") {
+                //             var result = addSimpleProducttoCart({ "Title": note, "IsTicket": false, "pid": _product.hasOwnProperty("product_id") ? _product.product_id : _product.WPID, "vid": _product.variation_id });
+                //             console.log("----product note---" + note);
+                //         }
+                //         setTimeout(() => {
+                //             dispatch(product());
+                //         }, 100);
+
+                //     }
+                // }
+
+                //----
+
                 var result = addSimpleProducttoCart(_product);
                 if (result === 'outofstock') {
                     toggleOutOfStock();
                 }
-                else {
-                    setTimeout(() => {
-                        dispatch(product());
-                    }, 100);
-
+                if (note != "" && result !== 'outofstock') {
+                    var pid = _product.hasOwnProperty("product_id") ? _product.product_id : _product.WPID;
+                    // if(_product.Type!="simple")
+                    // {
+                    //     pid=_product.ParentId;
+                    // }
+                    var noteData = { "Title": note, "IsTicket": false, "pid": pid, "vid": _product.variation_id };
+                    if (!updateProductNote(noteData)) {
+                        var result = addSimpleProducttoCart(noteData);
+                    }
+                    console.log("----product note---" + note);
                 }
+                if (customFeeModifiers && customFeeModifiers.length > 0) {
+                    //cartItemList= cartItemList.concat(this.state.CustomFee_Modifiers);
+                }
+
+                setTimeout(() => {
+                    dispatch(product());
+                }, 100);
+
 
             }
         }
@@ -971,19 +1215,40 @@ const Product = (props) => {
         setNote(note);
         toggleProductNote();
     }
+    // useEffect(() => {
+    //     props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+    // }, [props.selProduct && props.selProduct.quantity]);
+
     useEffect(() => {
-        props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
-    }, [props.selProduct && props.selProduct.quantity]);
+        if (props.selProduct && props.selProduct.quantity) {
+            setProductQty(props.selProduct.quantity);
+        }
+        //props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+    }, [props.selProduct]);
 
 
-
+    const clearSelection = () => {
+        setSelVariations([]);
+    }
     useEffect(() => {
         if (props.isShowPopups == true) {
             setSelVariations([]);
             getModifiers();
             getRecomProducts();
+
         }
     }, [props.isShowPopups, props.selProduct]);
+
+    useEffect(() => {
+        if (props.isShowPopups == true) {
+            if (props.selProduct && props.selProduct.hasOwnProperty("selectedOptions") && props.selProduct.selectedOptions.length > 0) {
+                setSelOptions(props.selProduct.selectedOptions)
+                setIsEdit(true);
+                doVariationSearch();
+            }
+        }
+    }, [selOptions, props.isShowPopups]);
+
 
     //   end
     var _DistictAttribute = [];
@@ -1005,15 +1270,27 @@ const Product = (props) => {
     setTimeout(() => {
         initProuctFn();
     }, 1000);
-    var variationStockQunatity = 0;
 
     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    var product_price = 0;
+    var after_discount_total_price = 0;
     if (_product) {
-        variationStockQunatity =
-            (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
-                (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0';
 
+        var after_discount_total_price = _product && _product.product_discount_amount ?
+            _product.product_discount_amount * (_product.discount_type != "Number" ? _product.quantity ? _product.quantity : productQty : 1) : 0;
+        product_price = getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? _product && cartPriceWithTax(_product.old_price, getSettingCase(), _product.TaxClass) : getSettingCase() == 6 ? _product && _product.old_price : _product && _product.old_price;
     }
+
+
+    var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
+    var CurrentWarehouseId = localStorage.getItem("WarehouseId");
+
+    if (warehouseDetail && warehouseDetail.length > 0) {
+        currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+    }
+
+    var _currentStock = currentWareHouseDetail && currentWareHouseDetail !== "" ? currentWareHouseDetail.Quantity : variationStockQunatity;
+    console.log("Quantity", currentWareHouseDetail.Quantity, variationStockQunatity)
 
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
@@ -1025,13 +1302,13 @@ const Product = (props) => {
                             <button id="mobileExitProductButton" onClick={() => props.closePopUp()}>
                                 <img src={X_Icon_DarkBlue} alt="" />
                             </button>
-                            <button id="mobileAppsButton" onClick={()=>props.toggleAppLauncher()}>
+                            <button id="mobileAppsButton" onClick={() => props.toggleAppLauncher()}>
                                 <img src={Oliver_Icon_BaseBlue} alt="" />
                             </button>
                         </div>
                         <div className="main">
                             <p className="route">{"Clothing > T-Shirts"}</p>
-                            <p className="prod-name">{props.selProduct && props.selProduct.Title}</p>
+                            <p className="prod-name">{_product && _product.Title}</p>
                             <button id="desktopExitProductButton" onClick={() => props.closePopUp()}>
                                 <img src={X_Icon_DarkBlue} alt="" />
                             </button>
@@ -1044,7 +1321,7 @@ const Product = (props) => {
                             </div> :
                             <div className="row">
                                 <p>Select Variations</p>
-                                <button id="clearModsButton">Clear Selection</button>
+                                <button id="clearModsButton" onClick={() => clearSelection()}>Clear Selection</button>
                             </div>}
                         {
 
@@ -1056,8 +1333,40 @@ const Product = (props) => {
                                             <div className="radio-group">
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
-                                                        allVariations.push(a.replace(/\//g, "-").toLowerCase())
-                                                        return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                        let _item = a.replace(/\//g, "-").toLowerCase();
+                                                        allVariations.push(_item);
+                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                        //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
+                                                        if (isEdit === true) {
+                                                            var selVal = selOptions ? selOptions.includes(_item) : false;
+                                                            if (selVal === true) {
+                                                                setSelectedOption(a, attribute, i)
+                                                            }
+                                                            return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
+
+                                                            // if (_DistictAttribute.length === (index + 1) && attribute.Option.split(',').length === (i + 1)) {
+                                                            //     console.log("_DistictAttribute length--->"+_DistictAttribute.length,index+1+"----"+attribute.Option.split(',').length,i+1)
+                                                            //     saveSelectedOption();
+                                                            // }
+                                                        }
+                                                        else {
+                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle === _item) : false;
+                                                            // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                            return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                        }
+
+                                                        // console.log("_DistictAttribute length--->"+_DistictAttribute.length,index)
+                                                        //     console.log("attribute length--->"+attribute.Option.split(',').length,i)
+                                                        //console.log("a, attribute, s--------"+selVal)
+                                                        // if(selOptions && selOptions.length>0)
+                                                        // {
+                                                        //     var selVal = selOptions.includes(_item);
+                                                        //     console.log("a, attribute, s--------"+a, attribute, i);
+                                                        //     return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                        // }
+                                                        // else
+                                                        // allVariations.push(_item);
+                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
                                             </div></React.Fragment>
@@ -1067,109 +1376,109 @@ const Product = (props) => {
                                 : <div className='noAttribute'></div>}
                         {productModifiers && productModifiers.length > 0 ? <div className="row">
                             <p>Select Modifier</p>
-                        </div> : null}
-                        {
-                            productModifiers && productModifiers.map(mod => {
-                                var gpid = (mod.Title).replace(/ /g, "_");
-                                var gpname = (mod.Title).replace(/ /g, "_");
-                                switch (mod.Type) {
-                                    case Config.key_InputTypes.CheckBox:
-                                        return (
-                                            <React.Fragment>
-                                                <p>{mod.Title}</p>
-                                                <div className="radio-group">{
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
-                                                            return (
-                                                                <label>
-                                                                    <input type="checkbox" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
-                                                                    <div className="custom-radio">
-                                                                        <p>{efm.Name}</p>
-                                                                    </div>
-                                                                </label>)
-                                                        }))
-                                                    })
-                                                }</div></React.Fragment>
-                                        )
-                                        break;
-                                    case Config.key_InputTypes.NumberField:
-                                        return (
-                                            <React.Fragment>
-                                                <p className="labelTitle">{mod.Title}</p>
-                                                {
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
-                                                            return (<React.Fragment>
-                                                                <p className="label">{efm.Name}</p>
-                                                                <div className="row">
-                                                                    <div className="increment-input">
-                                                                        <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                            <svg width={16} height={2} viewBox="0 0 16 2">
-                                                                                <rect width={16} height={2} fill="var(--primary)" />
-                                                                            </svg>
+                        </div> : null} <div onChange={onChangeValue}>
+                            {
+                                productModifiers && productModifiers.map(mod => {
+                                    var gpid = (mod.Title).replace(/ /g, "_");
+                                    var gpname = (mod.Title).replace(/ /g, "_");
+                                    switch (mod.Type) {
+                                        case Config.key_InputTypes.CheckBox:
+                                            return (
+                                                <React.Fragment>
+                                                    <p>{mod.Title}</p>
+                                                    <div className="radio-group">{
+                                                        mod.modifierFields && mod.modifierFields.map(mf => {
+                                                            return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
+                                                                return (
+                                                                    <label>
+                                                                        <input type="checkbox" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                        <div className="custom-radio">
+                                                                            <p>{efm.Name}</p>
                                                                         </div>
-                                                                        <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                        <div className="increment" id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                            <svg className='checkout-increament-mr' width={16} height={16} viewBox="0 0 16 16" id="btn_svg_plus_popup" >
-                                                                                <path d="M16 7H9V0H7V7H0V9H7V16H9V9H16V7Z" fill="var(--primary)" />
-                                                                            </svg>
+                                                                    </label>)
+                                                            }))
+                                                        })
+                                                    }</div></React.Fragment>
+                                            )
+                                            break;
+                                        case Config.key_InputTypes.NumberField:
+                                            return (
+                                                <React.Fragment>
+                                                    <p className="labelTitle">{mod.Title}</p>
+                                                    {
+                                                        mod.modifierFields && mod.modifierFields.map(mf => {
+                                                            return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
+                                                                return (<React.Fragment>
+                                                                    <p className="label">{efm.Name}</p>
+                                                                    <div className="row">
+                                                                        <div className="increment-input">
+                                                                            <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                <svg width={16} height={2} viewBox="0 0 16 2">
+                                                                                    <rect width={16} height={2} fill="var(--primary)" />
+                                                                                </svg>
+                                                                            </div>
+                                                                            <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                            <div className="increment" id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                <svg className='checkout-increament-mr' width={16} height={16} viewBox="0 0 16 16" id="btn_svg_plus_popup" >
+                                                                                    <path d="M16 7H9V0H7V7H0V9H7V16H9V9H16V7Z" fill="var(--primary)" />
+                                                                                </svg>
+                                                                            </div>
                                                                         </div>
+                                                                        <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
                                                                     </div>
-                                                                    <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                </div>
-                                                            </React.Fragment>)
-                                                        }))
-                                                    })
-                                                }</React.Fragment>
-                                        )
-                                        break;
-                                    case Config.key_InputTypes.RadioButton:
-                                        return (
-                                            <React.Fragment>
-                                                <p >{mod.Title}</p>
-                                                <div className="radio-group">{
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
-                                                            return (
-                                                                <label htmlFor={id}>
-                                                                    <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
-                                                                    <div className="custom-radio">
-                                                                        <p>{efm.Name}</p>
+                                                                </React.Fragment>)
+                                                            }))
+                                                        })
+                                                    }</React.Fragment>
+                                            )
+                                            break;
+                                        case Config.key_InputTypes.RadioButton:
+                                            return (
+                                                <React.Fragment>
+                                                    <p >{mod.Title}</p>
+                                                    <div className="radio-group">{
+                                                        mod.modifierFields && mod.modifierFields.map(mf => {
+                                                            return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
+                                                                return (
+                                                                    <label htmlFor={id}>
+                                                                        <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                        <div className="custom-radio">
+                                                                            <p>{efm.Name}</p>
+                                                                        </div>
+                                                                    </label>)
+                                                            }))
+                                                        })
+                                                    }</div></React.Fragment>
+                                            )
+                                            break;
+                                        case Config.key_InputTypes.TextField:
+                                            return (
+                                                <React.Fragment>
+                                                    <p className="labelTitle">{mod.Title}</p>
+                                                    {
+                                                        mod.modifierFields && mod.modifierFields.map(mf => {
+                                                            return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                var id = (efm.Name).replace(/ /g, "_");
+                                                                return (<React.Fragment>
+                                                                    <p className="label">{efm.Name}</p>
+                                                                    <div className="row">
+                                                                        <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
+                                                                        <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
                                                                     </div>
-                                                                </label>)
-                                                        }))
-                                                    })
-                                                }</div></React.Fragment>
-                                        )
-                                        break;
-                                    case Config.key_InputTypes.TextField:
-                                        return (
-                                            <React.Fragment>
-                                                <p className="labelTitle">{mod.Title}</p>
-                                                {
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name).replace(/ /g, "_");
-                                                            return (<React.Fragment>
-                                                                <p className="label">{efm.Name}</p>
-                                                                <div className="row">
-                                                                    <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
-                                                                    <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                </div>
-                                                            </React.Fragment>)
-                                                        }))
-                                                    })
-                                                }</React.Fragment>
-                                        )
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            })
-                        }
+                                                                </React.Fragment>)
+                                                            }))
+                                                        })
+                                                    }</React.Fragment>
+                                            )
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                })
+                            }</div>
                     </div>
                     <div className="detailed-product">
                         <div className="row">
@@ -1187,8 +1496,11 @@ const Product = (props) => {
                                         <p className="mobile-only">Currently in stock:</p>
                                         <p className="quantity">{variationStockQunatity}</p>
                                     </div>
-                                    <p className="desktop-only">In Stock</p>
-                                    <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+
+                                    {isOutOfStock == false && <p className="desktop-only">In Stock</p>}
+                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&  //no need update stock when unlimited
+                                        <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+                                    }
                                 </div>
 
                                 <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
@@ -1198,22 +1510,28 @@ const Product = (props) => {
                             </div>
                         </div>
                         <div className="col">
-                            <p className="title">Description</p>
-                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.Description }}>
+                            {_product && _product.ShortDescription && <p className="title">Description</p>}
+                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.ShortDescription }}>
 
                             </p>
-                            <p className="title">Additional Fields</p>
+                            {_product && _product.ProductAttributes && _product.ProductAttributes.length > 0 &&
+                                <p className="title">Additional Fields</p>}
                             <p className="para">
-                                Material: 100% Cotton <br />
-                                Origin: Made in Canada
+
+                                {_product && _product.ProductAttributes && _product.ProductAttributes.map((item, index) => {
+                                    if (item && item.Option) {
+                                        return <div key={index}>{item.Name + " : " + item.Option}</div>
+                                    }
+                                })
+                                }
                             </p>
-                            <p className="title">Custom Fields</p>
+                            {/* {_product.ShortDescription && <p className="title">Custom Fields</p>}
                             <p className="para">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean erat sem, facilisis vel tincidunt nec, posuere ac ante.
-                            </p>
-                            <p className="title">SKU #</p>
+                                {_product.ShortDescription}
+                            </p> */}
+                            {_product && _product.Sku && _product.Sku !== "" && <p className="title">SKU #</p>}
                             <p className="para">{_product && _product.Sku}</p>
-                            <p className="title">Barcode ID #</p>
+                            {_product && _product.Barcode && _product.Barcode !== "" && <p className="title">Barcode ID #</p>}
                             <p className="para">{_product && _product.Barcode}</p>
                         </div>
                     </div>
@@ -1223,7 +1541,10 @@ const Product = (props) => {
                             {recommProducts && recommProducts.length > 0 && recommProducts.map(a => {
                                 return <button onClick={() => props.openPopUp(a)} key={a.WPID}>
                                     <div className="img-container">
-                                        <img src={a && a.ProductImage} alt="" className="height-fit" />
+                                        {a && a.ProductImage != null ?
+                                            <img src={a && a.ProductImage} alt="" className="height-fit" /> :
+                                            <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
+                                        }
                                     </div>
                                     <div className="prod-name">
                                         <p>{a && a.Title}</p>
@@ -1284,15 +1605,21 @@ const Product = (props) => {
                             </div>
                             <button id="addProductToCart" onClick={() => addToCart()}>
                                 <img src={CircledPlus_White} alt="" />
-                                Add to Cart
+                                Add to Cart - $
+                                <NumericFormat value={_product && RoundAmount(((product_price * productQty) - after_discount_total_price) + (_product.excl_tax ? _product.excl_tax : 0))} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                             </button>
                         </div>
                     </div>
 
                     <div id="navCover" className="nav-cover"></div>
                 </div>
-                <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount}></ProductDiscount>
-                <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}></AdjustInventory>
+                <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount} selecteditem={props.selProduct}></ProductDiscount>
+                <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
+                    productStockQuantity={_currentStock}
+                    product={_product}
+                    fatchUpdateInventory={fatchUpdateInventory}
+                    isAdjustInventory={isAdjustInventory}
+                ></AdjustInventory>
                 <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
                 <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>

@@ -1,5 +1,6 @@
 import React from "react";
 import OutOfStock from '../../../images/svg/OutOfStock.svg';
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 const MsgPopup_OutOfStock = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
@@ -17,7 +18,7 @@ const MsgPopup_OutOfStock = (props) => {
                         This product is out of stock, <br />
                         try <button id="outOfStockToAdjustInventory">adjusting the inventory.</button>
                     </p>
-                    <button id="closeOutOfStock" onClick={() => props.toggleOutOfStock()}>Go Back</button>
+                    <button id="closeOutOfStock" onClick={() => props.toggleOutOfStock()}>{LocalizedLanguage.goBack}</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
             </div></div>)

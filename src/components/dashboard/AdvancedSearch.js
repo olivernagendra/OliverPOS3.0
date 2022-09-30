@@ -10,76 +10,99 @@ import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
 
 import { useIndexedDB } from 'react-indexed-db';
 import { AddItemType } from "../common/EventFunctions";
-import { toggleSubwindow } from "../common/EventFunctions";
+// import { toggleSubwindow } from "../common/EventFunctions";
 import { getTaxAllProduct } from '../common/TaxSetting'
 import { addSimpleProducttoCart } from "./product/productLogic";
 import { product } from "./product/productSlice";
-// const AdvancedSearch = (props) => {
-//     const [respGroup] = useSelector((state) => [state.group])
-
-
+import { getInventory } from "./slices/inventorySlice";
+import CommonModuleJS from "../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const AdvancedSearch = (props) => {
-   
     const dispatch = useDispatch();
-    const [respGroup] = useSelector((state) => [state.group])
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
-    const [allProductList, setAllProductList] = useState([])
-    const [totalRecords, setTotalRecords] = useState(0)
-    const [parentProductList, setParentProductList] = useState([])
-    const [product_List, setProduct_List] = useState([])
+    const { getAll } = useIndexedDB("products");
 
-    const [filtered, setfiltered] = useState([]);
-    const [filteredCustomer, setfilteredCustomer] = useState([]);
-    const [filteredGroup, setfilteredGroup] = useState([]);
-    const [allCustomerList, setAllCustomerList] = useState([])
-    const [filterType, setFilterType] = useState('all')
-    const [serachString, setSerachString] = useState('')
+    const [allProductList, setAllProductList] = useState([]);
+    const [allCustomerList, setAllCustomerList] = useState([]);
+    const [allGroupList, setAllGroupList] = useState([]);
+
+    const [filteredProductList, setFilteredProductList] = useState([]);
+    const [filteredCustomer, setFilteredCustomer] = useState([]);
+    const [filteredGroup, setFilteredGroup] = useState([]);
+
+    const [filterType, setFilterType] = useState('all');
+    const [serachString, setSerachString] = useState('');
+    const [serachCount, setSerachCount] = useState(0);
     const [isShowDDNSearch, setisShowDDNSearch] = useState(false)
+    const [searchHistory, setSearchHistory] = useState([])
+    const [allowGroup, setAllowGroup] = useState(false)
+    const [respGroup] = useSelector((state) => [state.group])
 
+    const limitArrayByNum = (arr, num) => {
+        let _arr = arr;
+        if (_arr && _arr.length > 10) { _arr = _arr.slice(0, num); }
+        return _arr;
+    }
     const toggleDDNSearch = () => {
         setisShowDDNSearch(!isShowDDNSearch)
     }
     const getProductFromIDB = () => {
-        var allData = [];
         getAll().then((rows) => {
-            var allProdcuts = getTaxAllProduct(rows)
-            //console.log("allProdcuts", allProdcuts)
-            setAllProductList(allProdcuts)
-            setParentProductList(allProdcuts)
-            setTotalRecords(allProdcuts ? allProdcuts.length : 0);
-            //For temporary
-            setProduct_List(allProdcuts ? allProdcuts : []);
+            var allProdcuts = getTaxAllProduct(rows);
+            allProdcuts = allProdcuts.filter(a => a.ParentId == 0);
+            let _allp = allProdcuts;
+            // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
+            setAllProductList(_allp);
+            setFilteredProductList(_allp ? _allp : []);
+            setSerachCount(_allp.length);
+            setSerachCount(_allp.length + allCustomerList.length + filteredGroup.length);
         });
     }
-    const handleSearch=(event)=>
-    {
-        console.log("event" + event.target.value)
-        var item1 = event.target.value;
-        setSerachString(item1)
-        productDataSearch(item1)
+    const handleSearch = (event) => {
+        let value = event.target.value;
+        setSerachString(value)
     }
     const SetFilter = (ftype) => {
-        toggleDDNSearch();
+        setisShowDDNSearch(false)
         setFilterType(ftype);
-        productDataSearch(serachString)
     }
     const GetCustomerFromIDB = () => {
         useIndexedDB("customers").getAll().then((rows) => {
-            setAllCustomerList(rows);
+            let _allc = rows;
+            //if (_allc && _allc.length > 10) { _allc = _allc.slice(0, 10); }
+            setAllCustomerList(_allc);
+            setSerachCount(_allc.length + allProductList.length + filteredGroup.length);
         });
+
     }
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
             getProductFromIDB()
             GetCustomerFromIDB()
+            Search_History('');
+            var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
+            if (user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined" && user.group_sales === true) {
+                setAllowGroup(true);
+            }
+            else {
+                setAllowGroup(false);
+            }
         }
         return () => {
             useCancelled = true;
         }
-
-
     }, []);
+
+    useEffect(() => {
+        if (respGroup && respGroup.data && respGroup.data.content) {
+            if (respGroup.data.is_success == true) {
+                var _allg = respGroup.data.content;
+                // if (_allg && _allg.length > 10) { _allg = _allg.slice(0, 10); }
+                setAllGroupList(_allg);
+                setSerachCount(allProductList.length + allCustomerList.length + _allg.length);
+            }
+        }
+    }, [respGroup])
 
     var _SubCategory = [];
     const retrunItrateLoop = (found, filterCategoryCode) => {
@@ -104,35 +127,118 @@ const AdvancedSearch = (props) => {
         return filterCategoryCode
     }
 
-    const productDataSearch = (item1) => {
-       
-        setfiltered([]);
-        if (item1 == '') {
-            if (filterType === "product" || filterType === "customer" || filterType === "all") {
-                if(filterType==="product")
-                {
-                    setProduct_List(allProductList);
-                    setfilteredCustomer([]);
+    useEffect(() => {
+        productDataSearch(serachString);
+    }, [filterType]);
+
+    useEffect(() => {
+        productDataSearch(serachString);
+    }, [serachString]);
+
+
+    const Search_History = (e) => {
+        var sArray = [];
+        if (e != "" && e.target.value.trim() != "") {
+            let _sValue = e.target.value.trim();
+            if (localStorage.getItem("searchHistory")) {
+                sArray = JSON.parse(localStorage.getItem("searchHistory"));
+                let result = sArray.some(item => _sValue === item);
+                if (result == false) {
+                    if (sArray && sArray.length >= 10) {
+                        sArray.pop();
+                    }
+                    sArray = [_sValue].concat(sArray)
                 }
-                else if(filterType==="customer")
-                {
-                    setfilteredCustomer(allCustomerList);
-                    setProduct_List([]);
+            }
+            else {
+                let result = sArray.some(item => _sValue === item);
+                if (result == false) {
+                    sArray = [_sValue].concat(sArray);
+                }
+            }
+
+            setSearchHistory(sArray);
+            localStorage.setItem("searchHistory", JSON.stringify(sArray));
+        }
+        else {
+            if (localStorage.getItem("searchHistory")) {
+                sArray = JSON.parse(localStorage.getItem("searchHistory"));
+                setSearchHistory(sArray);
+            }
+        }
+        //setSearchHistory();
+    }
+    const productDataSearch = (item1) => {
+        if (item1 == '') {
+            if (filterType === "product" || filterType === "customer" || filterType === "group" || filterType === "all") {
+                if (filterType === "product") {
+
+                    let _allp = limitArrayByNum(allProductList, 10);
+                    // let _allp = allProductList;
+                    // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
+                    setFilteredProductList(_allp);
+                    setSerachCount(_allp.length);
+                    setFilteredCustomer([]);
+                    setFilteredGroup([]);
+                }
+                else if (filterType === "customer") {
+                    let _allc = limitArrayByNum(allCustomerList, 10);
+                    // let _allc = allCustomerList;
+                    // if (_allc && _allc.length > 10) { _allc = _allc.slice(0, 10); }
+                    setFilteredCustomer(_allc);
+                    setSerachCount(_allc.length);
+                    setFilteredProductList([]);
+                    setFilteredGroup([]);
+                }
+                else if (filterType === "group") {
+                    let _allg = [];
+                    if (respGroup && respGroup.data && respGroup.data.content) {
+                        _allg = limitArrayByNum(respGroup.data.content, 10);
+                        // _allg = respGroup.data.content;
+                        // if (_allg && _allg.length > 10) { _allg = _allg.slice(0, 10); }
+                        setFilteredGroup(_allg);
+                        setSerachCount(_allg.length);
+                        setFilteredProductList([]);
+                        setFilteredCustomer([]);
+                    }
+                }
+                else if (filterType === "all") {
+                    let _count = 0;
+                    // let _allp = allProductList;
+                    // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
+                    let _allp = limitArrayByNum(allProductList, 10);
+                    setFilteredProductList(_allp);
+                    _count += _allp.length;
+
+                    // let _allc = allCustomerList;
+                    // if (_allc && _allc.length > 10) { _allc = _allc.slice(0, 10); }
+                    let _allc = limitArrayByNum(allCustomerList, 10);
+                    setFilteredCustomer(_allc);
+                    _count += _allc.length;
+
+                    if (allowGroup === true) {
+                        let _allg = [];
+                        if (respGroup && respGroup.data && respGroup.data.content) {
+                            // _allg = respGroup.data.content;
+                            // if (_allg && _allg.length > 10) { _allg = _allg.slice(0, 10); }
+                            _allg = limitArrayByNum(respGroup.data.content, 10);
+                            setFilteredGroup(_allg);
+                            _count += _allg.length;
+                        }
+                    }
+                    setSerachCount(_count);
                 }
             }
             return;
         }
         var _filtered = [];
+        var _filteredCustomer = [];
+        var _filteredGroup = [];
         var value = item1;
+        var scount = 0;
         if (filterType === "product" || filterType === "all") {
-            if(filterType==="product")
-            {
-                setfilteredCustomer([]);
-                setfiltered([]);
-            }
-            
             // Search in Products
-            var serchFromAll = product_List.filter((item) => (
+            var serchFromAll = allProductList.filter((item) => (
                 (item.Title && item.Title.toLowerCase().includes(value.toLowerCase()))
                 || (item.Barcode && item.Barcode.toString().toLowerCase().includes(value.toLowerCase()))
                 || (item.Sku && item.Sku.toString().toLowerCase().includes(value.toLowerCase()))
@@ -141,7 +247,7 @@ const AdvancedSearch = (props) => {
             var parentArr = [];
             serchFromAll && serchFromAll.map(item => {
                 if (item.ParentId !== 0) {
-                    var parrentofChild = product_List.find(function (element) {
+                    var parrentofChild = allProductList.find(function (element) {
                         return (element.WPID === item.ParentId)
                     });
                     if (parrentofChild)
@@ -156,109 +262,83 @@ const AdvancedSearch = (props) => {
                 parentProduct = parentProduct ? parentProduct : []
                 _filtered = [...new Set([..._filtered, ...parentProduct])];
 
-                if(_filtered && _filtered.length>10)
-                {_filtered = _filtered.slice(0, 10);}
+                if (_filtered && _filtered.length > 10) { _filtered = _filtered.slice(0, 10); }
             }
+            scount += _filtered.length;
         }
         if (filterType === "customer" || filterType === "all") {
-            if(filterType==="customer")
-            {
-                _filtered=[];
-                setProduct_List([]);
-                setfiltered([]);
-            }
             // Search in Customer
-            var _filteredCustomer = allCustomerList.filter((item) => (
+            _filteredCustomer = allCustomerList.filter((item) => (
                 (item.FirstName && item.FirstName.toLowerCase().includes(value.toLowerCase()))
                 || (item.LastName && item.LastName.toString().toLowerCase().includes(value.toLowerCase()))
                 || (item.Contact && item.Contact.toString().toLowerCase().includes(value.toLowerCase()))
                 || (item.Email && item.Email.toString().toLowerCase().includes(value.toLowerCase()))
             ))
-            console.log("---filteredCustomer---" + JSON.stringify(_filteredCustomer));
-            setfilteredCustomer(_filteredCustomer);
+            if (_filteredCustomer && _filteredCustomer.length > 10) { _filteredCustomer = _filteredCustomer.slice(0, 10); }
+            //setFilteredCustomer(_filteredCustomer);
+            scount += _filteredCustomer.length;
         }
-        // if(respGroup && respGroup.data && respGroup.data.content)
-        // {
-        //     var _filteredGroup = respGroup.data.content.filter((item) => (
-        //         (item.Label && item.Label.toLowerCase().includes(value.toLowerCase()))))
-        //         //console.log("---_filteredGroup---" + JSON.stringify(_filteredGroup));
-        //         setfilteredGroup(_filteredGroup)
-        // }
-    //     if (filterType === "product" || filterType === "all") {
-    //     // Search by Attributes
-    //     parentProductList && parentProductList.map((item) => {
-    //         item.ProductAttributes && item.ProductAttributes.map(attri => {
-    //             if (String(attri.Slug).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1 ||
-    //                 String(attri.Name).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-    //                 _filtered.push(item)
-    //             }
-    //         })
-    //     })
-    //     // Search by Categories
-    //     parentProductList && parentProductList.map((item) => {
-    //         item.Categories && item.Categories !== undefined && item.Categories.split(",").map(category => {
-    //             if (String(category).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-    //                 if (_filtered.indexOf(item) === -1) {
-    //                     _filtered.push(item)
-    //                 }
-    //             }
-    //         })
-    //     })
-    //     // Search by Sub Attributes
-    //     parentProductList && parentProductList.map((item) => {
-    //         item.ProductAttributes && item.ProductAttributes.map(proAtt => {
-    //             var dataSplitArycomma = proAtt.Option.split(',');
-    //             dataSplitArycomma && dataSplitArycomma !== undefined && dataSplitArycomma.map(opt => {
-    //                 if (String(opt).toLowerCase().toString().indexOf(String(value).toLowerCase()) !== -1) {
-    //                     if (_filtered.indexOf(item) === -1) {
-    //                         _filtered.push(item)
-    //                     }
-    //                 }
-    //             })
-    //         })
-    //     })
-    //     _filtered = _filtered.filter(item => {
-    //         return (item.ParentId === 0)
-    //     })
-    // }
+        if ((filterType === "group" || filterType === "all") && allowGroup === true) {
+            //if (respGroup && respGroup.data && respGroup.data.content) {
+            _filteredGroup = allGroupList.filter((item) => (
+                (item.Label && item.Label.toLowerCase().includes(value.toLowerCase()))))
 
-        //}
-        // _filtered = [...new Map(_filtered.map(item =>
-        //     [item, item])).values()];
-        // console.log("----filtered---" + JSON.stringify(_filtered.length));
-        //if(_filtered && _filtered.length>0)
+            scount += _filteredGroup.length;
+            //}
+        }
 
-       
-        console.log("----filtered--->>" + JSON.stringify(_filtered.length));
-        if(_filtered && _filtered.length>0)
-       {
-        _filtered = AddItemType(_filtered, "product");
-       }
-   
-      
-        setProduct_List(_filtered);
-        setfiltered(_filtered);
+        if (_filtered && _filtered.length > 0) {
+            _filtered = AddItemType(_filtered, "product");
+        }
+
+        setFilteredCustomer(_filteredCustomer);
+        setFilteredProductList(_filtered);
+        setFilteredGroup(_filteredGroup);
+        setSerachCount(scount);
     }
-    // console.log(allProductList)
-    // console.log(totalRecords)
-    // console.log(parentProductList)
+    // updated on 27sep2022: check permission for product x
     const addToCart = (item) => {
-        var result = addSimpleProducttoCart(item);
-        if (result === 'outofstock') {
-            props.toggleOutOfStock();
+        let type = item.Type;
+        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            alert(LocalizedLanguage.productxOutOfStock);
         }
         else {
-            dispatch(product());
+            var result = addSimpleProducttoCart(item);
+            if (result === 'outofstock') {
+                props.toggleOutOfStock();
+            }
+            else {
+                dispatch(product());
+                setSerachString('');
+                props.toggleAdvancedSearch();
+            }
+        }
+    }
+    // careated by : 
+    // description
+    // update by: Nagendra Suryawanshi
+    // updated description: call api to get warehouse quantity of the product
+    // updated on 27sep2022: check permission for product x
+    const viewProduct = (item) => {
+        let type = item.Type;
+        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            alert(LocalizedLanguage.productxOutOfStock);
+        }
+        else {
+            if (item.ManagingStock == true) {
+                dispatch(getInventory(item.WPID)); //call to get product warehouse quantity
+            }
+            setTimeout(() => {
+                props.openPopUp(item);
+                props.fatchUpdateInventory()
+            }, 100);
+
+            setSerachString('');
             props.toggleAdvancedSearch();
         }
     }
-    const viewProduct = (item) => {
-        props.openPopUp(item);
-        props.toggleAdvancedSearch();
-        // toggleSubwindow();
-    }
-    const addCustomerToSale=(cutomer_data)=> {
-        var data =cutomer_data;
+    const addCustomerToSale = (cutomer_data) => {
+        var data = cutomer_data;
         localStorage.setItem('AdCusDetail', JSON.stringify(data))
         var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
         if (list != null) {
@@ -282,25 +362,33 @@ const AdvancedSearch = (props) => {
             }
             localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
         }
+        dispatch(product());
+        setSerachString('');
+        props.toggleAdvancedSearch();
     }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            setSerachString('');
             props.toggleAdvancedSearch();
         }
+    }
+    const closePopUp = () => {
+        setSerachString('');
+        props.toggleAdvancedSearch();
     }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
-            <button className="close-subwindow" onClick={() => props.toggleAdvancedSearch()}>
+            <button className="close-subwindow" onClick={() => closePopUp()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <input type="text" id="advancedSearchBar" placeholder="Start typing to search..." onChange={e => handleSearch(e)} />
+            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} />
         </div>
         <div className="subwindow-body">
             <div className="left-col">
                 <p>Search by</p>
                 <div className="radio-group">
-                    <div id="mobileSearchModToggle" className={isShowDDNSearch===true? "dropdown-input open":"dropdown-input"} onClick={()=>toggleDDNSearch()}>
+                    <div id="mobileSearchModToggle" className={isShowDDNSearch === true ? "dropdown-input open" : "dropdown-input"} onClick={() => toggleDDNSearch()}>
                         <p><b>Search for:</b> All Results</p>
                         <img src={down_angled_bracket} alt="" />
                     </div>
@@ -325,27 +413,31 @@ const AdvancedSearch = (props) => {
                         </div>
                         <p>Customers</p>
                     </label>
-                    <label onClick={() => SetFilter('group')}>
-                        <input type="radio" id="groups" name="search_modifier" value="groups" defaultChecked={filterType === 'group' ? true : false} />
-                        <div className="custom-radio" >
-                            <img src={BlueDot} alt="" />
-                        </div>
-                        <p>Groups</p>
-                    </label>
+                    {allowGroup === true ?
+                        <label onClick={() => SetFilter('group')}>
+                            <input type="radio" id="groups" name="search_modifier" value="groups" defaultChecked={filterType === 'group' ? true : false} />
+                            <div className="custom-radio" >
+                                <img src={BlueDot} alt="" />
+                            </div>
+                            <p>Groups</p>
+                        </label> : null}
                 </div>
                 <p>Recent Searches</p>
                 <div className="recent-searches">
-                    <a href="#">Sam Moss</a>
-                    <a href="#">Graphic T-Shirts</a>
-                    <a href="#">Hoodies</a>
-                    <a href="#">Freddy Mercury</a>
-                    <a href="#">Espresso Coffee</a>
-                    <a href="#">Shoes</a>
+                    {searchHistory && searchHistory.map(s => {
+                        return (<a href="#" onClick={() => setSerachString(s)}>{s}</a>)
+                    })}
+                    {/* <a href="#">Sam Moss</a>
+                        <a href="#">Graphic T-Shirts</a>
+                        <a href="#">Hoodies</a>
+                        <a href="#">Freddy Mercury</a>
+                        <a href="#">Espresso Coffee</a>
+                        <a href="#">Shoes</a> */}
                 </div>
             </div>
             <div className="right-col">
                 <div className="header">
-                    <p><b>Results</b> ({filtered.length} search results)</p>
+                    <p><b>Results</b> ({serachCount} search results)</p>
                 </div>
                 <div className="body">
                     <div className="no-results">
@@ -386,7 +478,7 @@ const AdvancedSearch = (props) => {
                     </div> */}
 
                     {
-                        product_List && product_List.map((item, index) => {
+                        filteredProductList && filteredProductList.map((item, index) => {
                             return <div className="search-result product" key={item.WPID}>
                                 <div className="col">
                                     {/* <p className="style1">Product</p>
@@ -405,7 +497,7 @@ const AdvancedSearch = (props) => {
                                         <img src={ViewIcon} alt="" />
                                         View
                                     </button>
-                                    <button className="search-add-to-sale" onClick={() => addToCart(item)}>
+                                    <button className="search-add-to-sale" onClick={() => item.Type != "simple" ? viewProduct(item) : addToCart(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>
@@ -415,7 +507,7 @@ const AdvancedSearch = (props) => {
                     }
                     {
                         filteredCustomer && filteredCustomer.map((item, index) => {
-                            return <div className="search-result customer" key={item.Email}>
+                            return <div className="search-result customer" key={item.Email + "_" + index}>
                                 <div className="col">
                                     <p className="style1">Customer</p>
                                     <p className="style2">{item.FirstName + " " + item.LastName}</p>
@@ -431,7 +523,7 @@ const AdvancedSearch = (props) => {
                                         <img src={Transactions_Icon_White} alt="" />
                                         Transactions
                                     </button>
-                                    <button className="search-add-to-sale" onClick={()=>addCustomerToSale(item)}>
+                                    <button className="search-add-to-sale" onClick={() => addCustomerToSale(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>

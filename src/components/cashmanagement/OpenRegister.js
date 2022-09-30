@@ -110,11 +110,11 @@ const OpenRegister = () => {
     }, []);
 
     return <React.Fragment><div className="open-register-wrapper">
-        <button id="cancel">
+        <button id="cancel" onClick={()=>navigate('/register')}>
             <img src={AngledBracket_Left_White} alt="" />
             Cancel
         </button>
-        <button id="logout" onClick={() => navigate('/')}>
+        <button id="logout" onClick={() => navigate('/')} className={toggle == true ?"hidden":""}>
             <img src={LogOut_Icon_White} alt="" />
             Log Out
         </button>

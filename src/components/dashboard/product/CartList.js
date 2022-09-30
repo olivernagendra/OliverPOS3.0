@@ -11,7 +11,11 @@ import { checkStock } from "../../checkout/checkoutSlice";
 import { typeOfTax } from "../../common/TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
-import {popupMessage} from "../../common/commonAPIs/messageSlice";
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
+import { get_customerName } from "../../common/localSettings";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
+import { useIndexedDB } from 'react-indexed-db';
+import { NumericFormat } from 'react-number-format'
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -26,16 +30,70 @@ const CartList = (props) => {
     const [isLoading, setIsLoading] = useState(false)
     const [totalItems, setTotalItems] = useState(0)
     const [isShowMobileCartList, setisShowMobileCartList] = useState(false)
+    const [discountType, setDiscountType] = useState('');
+    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const toggleMobileCartList = () => {
         setisShowMobileCartList(!isShowMobileCartList)
     }
     useEffect(() => {
+        getDiscountAmount_Type();
         calculateCart();
+
     }, [props.listItem]);
 
+    const editPopUp = async (a, index) => {
+        if (a && (a.Type === "variation" || a.Type === "variable")) {
+            var _item = await getByID(a.product_id);
+            _item["quantity"]=a.quantity;
+            if (_item) {
+                if (_item && _item.ParentId != 0) {
+                    var _parent = await getByID(_item.ParentId);
+
+                    var allCombi = _item && _item.combination !== null && _item.combination !== undefined && _item.combination.split("~");
+                    allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+
+                    _parent["selectedOptions"] = allCombi;
+                    _parent["quantity"]=a.quantity;
+                    props.updateVariationProduct(_item);
+                    props.openPopUp(_parent, index);
+                }
+                else {
+                    props.updateVariationProduct(_item);
+                    props.openPopUp(_item, index);
+                }
+
+            }
+        }
+        else {
+            props.updateVariationProduct(a);
+            props.openPopUp(a,index);
+        }
+    }
+    const getDiscountAmount_Type = () => {
+        if (localStorage.getItem("CART")) {
+            let cart = JSON.parse(localStorage.getItem("CART"));
+            let dtype = cart.discountType === "Percentage" ? '%' : "$";
+            let damount = cart.discount_amount;
+            setDiscountType(damount + "" + dtype);
+        }
+        else
+        {
+            setDiscountType('')
+        }
+    }
     const deleteItem = (item) => {
         if (item) {
             deleteProduct(item);
+            //deleting the product note for the product
+            var products = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+            if (products.length > 0) {
+                var notes = products.filter(a => a.hasOwnProperty("pid") && !a.hasOwnProperty("product_id") && (!a.hasOwnProperty("Price") || a.Price == null) && a.pid === item.product_id);
+                if (notes && notes.length > 0) {
+                    notes.map(n => {
+                        deleteProduct(n);
+                    })
+                }
+            }
             dispatch(product());
         }
     }
@@ -116,14 +174,14 @@ const CartList = (props) => {
         }
         // const { dispatch } = this.props;
         // const { addcust, taxRate } = this.state;
-        var addcust =null
+        var addcust = null
         var AdCusDetail = localStorage.getItem('AdCusDetail');
         if (AdCusDetail != null) {
-            addcust= JSON.parse(AdCusDetail);
-        } 
+            addcust = JSON.parse(AdCusDetail);
+        }
 
-       
-       // var taxRate = [];
+
+        // var taxRate = [];
         const CheckoutList = {
             ListItem: ListItem,
             customerDetail: addcust,
@@ -150,7 +208,7 @@ const CartList = (props) => {
         if (ListItem.length == 0 || productCount == 0) {
             // alert("Please add at least one product in cart !");
             // dispatch(popupMessage({data:{title:"",msg:"Please add at least one product in cart !"},is_success:true}));
-            var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
+            var data = { title: "", msg: LocalizedLanguage.messageCartNoProduct, is_success: true }
             dispatch(popupMessage(data));
             setIsLoading(false)
         } else {
@@ -238,15 +296,24 @@ const CartList = (props) => {
             var _item = [];
             if (checkout_list && checkout_list.ListItem) {
                 checkout_list.ListItem.map(item => {
-                    _item.push({ Message: "", ProductId: item.product_id, Quantity: item.quantity, Message: "", success: true, psummary: item.psummary });
+                    if (item.hasOwnProperty("product_id"))
+                        _item.push({ Message: "", ProductId: item.product_id, Quantity: item.quantity, Message: "", success: true, psummary: item.psummary });
                 });
             }
+            dispatch(checkStock(_item));
             //  dispatch(success( _item ));
-            return _item;
+            //return _item;
         } else {
             var demoUser = localStorage.getItem("demoUser") ? localStorage.getItem("demoUser") : false;
             if (demoUser == false) {
-                dispatch(checkStock(list_item));
+                var _item = [];
+                if (list_item) {
+                    list_item.map(item => {
+                        if (item.hasOwnProperty("product_id"))
+                            _item.push(item);
+                    });
+                }
+                dispatch(checkStock(_item));
             }
         }
 
@@ -284,8 +351,8 @@ const CartList = (props) => {
         }
         //show message popup here
 
-        var data ={title:"",msg:msg,is_success:true}
-            dispatch(popupMessage(data));
+        var data = { title: "", msg: msg, is_success: true }
+        dispatch(popupMessage(data));
         //alert(msg);
         setIsLoading(false)
     }
@@ -347,6 +414,7 @@ const CartList = (props) => {
         })
 
         //total count of the prodcuts in the cart
+        setTotalItems(0)
         if (props.listItem && props.listItem.length > 0) {
             var qty = 0;
             props.listItem.map(item => {
@@ -354,11 +422,10 @@ const CartList = (props) => {
                     qty += item.quantity;
                 }
             })
-            if (qty !== 0)
-            {
+            if (qty !== 0) {
                 setTotalItems(qty)
             }
-                
+
         }
 
         _seprateDiscountAmount = _subtotalPrice - _subtotalDiscount;
@@ -424,23 +491,53 @@ const CartList = (props) => {
                 }
                 setUpdateProductStatus(true);
             }
-
-
         }
     }, [resCheckStock]);
+
+
+    const RemoveCustomer = () => {
+        localStorage.removeItem('AdCusDetail');
+        sessionStorage.removeItem("CUSTOMER_ID");
+        var list = localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null;
+        if (list != null) {
+            var _wc_amount_redeemed = list._wc_amount_redeemed ? parseFloat(list._wc_amount_redeemed) : 0
+            const CheckoutList = {
+                ListItem: list.ListItem,
+                customerDetail: null,
+                totalPrice: parseFloat(list.totalPrice) + _wc_amount_redeemed,
+                discountCalculated: parseFloat(list.discountCalculated) - _wc_amount_redeemed,
+                tax: list.tax,
+                subTotal: list.subTotal,
+                TaxId: list.TaxId,
+                showTaxStaus: list.showTaxStaus,
+                TaxRate: list.TaxRate,
+                order_id: list.order_id,
+                oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+                order_date: list.order_date,
+                order_id: list.order_id,
+                status: list.status,
+                _wc_points_redeemed: 0,
+                _wc_amount_redeemed: 0,
+                _wc_points_logged_redemption: 0
+            }
+            localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+        }
+        dispatch(product());
+    }
+
     return (
         <React.Fragment>
-       {isLoading?<LoadingModal></LoadingModal>:null}
-        <div className={isShowMobileCartList==true? "cart open":"cart"}>
-            <div className="mobile-header">
-                <p>Cart</p>
-                <button id="exitCart" onClick={()=>toggleMobileCartList()}>
-                    <img src={X_Icon_DarkBlue} alt="" />
-                </button>
-            </div>
-            <div className="body">
-                <img src={EmptyCart} alt="" />
-                {/* <div className="cart-item">
+            {isLoading ? <LoadingModal></LoadingModal> : null}
+            <div className={isShowMobileCartList == true ? "cart open" : "cart"}>
+                <div className="mobile-header">
+                    <p>Cart</p>
+                    <button id="exitCart" onClick={() => toggleMobileCartList()}>
+                        <img src={X_Icon_DarkBlue} alt="" />
+                    </button>
+                </div>
+                <div className="body">
+                    <img src={EmptyCart} alt="" />
+                    {/* <div className="cart-item">
                     <div className="main-row">
                         <p className="quantity">2</p>
                         <p className="content-style">Face Mask</p>
@@ -459,25 +556,110 @@ const CartList = (props) => {
                         </button>
                     </div>
                 </div> */}
-                {props && props.listItem && props.listItem.length > 0 && props.listItem.map(a => {
-
-                    return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
-                        <div className="main-row" >
-                            <p className="quantity">{a.quantity && a.quantity}</p>
-                            <p className="content-style">{a.Title && a.Title}</p>
-                            <p className="price">{a.Price && a.Price}</p>
-                            <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                    {get_customerName() != null && <div className="cart-item">
+                        <div className="main-row aligned">
+                            <div className="tag customer">Customer</div>
+                            <div className="content-style">{get_customerName().Name}</div>
+                            <button className="remove-cart-item" onClick={() => RemoveCustomer()}>
                                 <img src={CircledX_Grey} alt="" />
                             </button>
                         </div>
-                        <div className="secondary-col">
-                            {/* <p>Medium</p>
-                            <p>Navy</p> */}
-                        </div>
-                    </div>
+                    </div>}
+                    {props && props.listItem && props.listItem.length > 0 && props.listItem.map((a, index) => {
+                        
+                        var notes =  props.listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
+                        
+                        var item_type = "";
+                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) { item_type = "no_note"; }
+                        else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
+                        else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
 
-                })}
-                {/* <div className="cart-item">
+                        switch (item_type) {
+                            case "product":
+                                return <div className="cart-item" key={a.product_id ? a.product_id : a.Title}>
+                                    <div className="main-row" >
+                                        <p className="quantity" onClick={() => editPopUp(a, index)}>{a.quantity && a.quantity}</p>
+                                        <p className="content-style" onClick={() => editPopUp(a, index)}>{a.Title && a.Title}</p>
+                                        <p className="price" onClick={() => editPopUp(a, index)}>
+                                        <NumericFormat className={a.product_discount_amount !=0?"strike-through":""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            </p>
+                                            {a.product_discount_amount !=0 &&<p className="price" onClick={() => editPopUp(a, index)}>
+                                              <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            </p>}
+                                        <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                            <img src={CircledX_Grey} alt="" />
+                                        </button>
+                                    </div>
+                                    <div className="secondary-col" onClick={() => editPopUp(a, index)}>
+                                        {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
+                                    </div>
+                                </div>
+                            case "note":
+                                return <div className="cart-item">
+                                    <div className="main-row aligned">
+                                        <div className="tag cart-note">Note</div>
+                                        <p className="content-style line-capped">
+                                            {a.Title && a.Title}
+                                        </p>
+                                        {
+                                            !a.hasOwnProperty("pid") &&
+                                            <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                                <img src={CircledX_Grey} alt="" />
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            case "custom_fee":
+                                return <div className="cart-item">
+                                    <div className="main-row aligned">
+                                        <div className="tag custom-fee">Custom Fee</div>
+                                        <div className="content-style">{a.Title && a.Title}</div>
+                                        <div className="price"><NumericFormat  value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></div>
+                                        <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                            <img src={CircledX_Grey} alt="" />
+                                        </button>
+                                    </div>
+                                </div>
+                            // case "customer":
+                            //     return <div className="cart-item">
+                            //         <div className="main-row aligned">
+                            //             <div className="tag customer">Customer</div>
+                            //             <div className="content-style">{get_customerName().Name}</div>
+                            //             <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                            //                 <img src={CircledX_Grey} alt="" />
+                            //             </button>
+                            //         </div>
+                            //     </div>
+                            case "group":
+                                return <div className="cart-item">
+                                    <div className="main-row aligned">
+                                        <div className="tag group">Group</div>
+                                        <p className="content-style">Table 1</p>
+                                        <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                                            <img src={CircledX_Grey} alt="" />
+                                        </button>
+                                    </div>
+                                </div>
+                            default:
+                                return null;
+                        }
+                        // return <div className="cart-item" /*onClick={()=>props.editPopUp(a)}*/ key={a.product_id ? a.product_id : a.Title}>
+                        //     <div className="main-row" >
+                        //         <p className="quantity">{a.quantity && a.quantity}</p>
+                        //         <p className="content-style">{a.Title && a.Title}</p>
+                        //         <p className="price">{a.Price && a.Price}</p>
+                        //         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
+                        //             <img src={CircledX_Grey} alt="" />
+                        //         </button>
+                        //     </div>
+                        //     <div className="secondary-col">
+                        //         {/* <p>Medium</p>
+                        //     <p>Navy</p> */}
+                        //     </div>
+                        // </div>
+
+                    })}
+                    {/* <div className="cart-item">
                     <div className="main-row">
                         <p className="quantity">10</p>
                         <p className="content-style">Snapback Baseball Hat with Logo</p>
@@ -567,33 +749,33 @@ const CartList = (props) => {
                         </p>
                     </div>
                 </div> */}
-            </div>
-            <div className="footer">
-                <div className="totals">
-                    <div className="row">
-                        <p>Subtotal</p>
-                        <p><b>${subTotal}</b></p>
+                </div>
+                <div className="footer">
+                    <div className="totals">
+                        <div className="row">
+                            <p>{LocalizedLanguage.printSubtotal}</p>
+                            <p><b>${subTotal}</b></p>
+                        </div>
+                        {discountType !="" ?
+                            <div className="row">
+                                <p>Cart Discount - {discountType}</p>
+                                <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
+                                <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                            </div> : null}
+                        <div className="row">
+                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes</button>
+                            <p>(%)</p>
+                            <p><b>${<NumericFormat  value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                        </div>
                     </div>
-                    {discount && discount>0 ?
-                    <div className="row">
-                        <p>Cart Discount - 25%</p>
-                        <button id="editCartDiscount" onClick={()=>props.toggleEditCartDiscount()}>edit</button>
-                        <p><b>-${discount}</b></p>
-                    </div>:null}
-                    <div className="row">
-                        <button id="taxesButton" onClick={()=>props.toggleTaxList()}>Taxes</button>
-                        <p>(%)</p>
-                        <p><b>${taxes}</b></p>
+                    <div className="checkout-container">
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
                     </div>
                 </div>
-                <div className="checkout-container">
-                    <button onClick={() => doCheckout()}>Checkout - ${total}</button>
-                </div>
             </div>
-        </div>
-        <div className="mobile-homepage-footer">
-				<button id="openMobileCart" onClick={()=>toggleMobileCartList()}>View Cart {totalItems!=0?("("+totalItems+")"):""} - ${total}</button>
-			</div>
+            <div className="mobile-homepage-footer">
+                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+            </div>
         </React.Fragment>)
 }
 

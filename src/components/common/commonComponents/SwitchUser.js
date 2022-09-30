@@ -10,7 +10,7 @@ const SwitchUser = (props) => {
             props.toggleSwitchUser();
         }
     }
-    return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
+    return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)} style={{zIndex:9}}>
         <div className={props.isShow === true ? "subwindow switch-user current" : "subwindow switch-user"}>
             <div className="subwindow-header">
                 <p>Switch User</p>
@@ -34,7 +34,7 @@ const SwitchUser = (props) => {
                     the user currently logged in.
                 </p>
                 <div className="divider"></div>
-                <p className="style2">Enter Your User ID</p>
+                {/* <p className="style2">Enter Your User ID</p> */}
                 {props.isShow === true ? <PinPad switchUser={true} toggleSwitchUser={props.toggleSwitchUser}></PinPad> : null}
                 {/* <div className="pinpad">
                 <div className="pin-entries">

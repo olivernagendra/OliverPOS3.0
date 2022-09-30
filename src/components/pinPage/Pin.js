@@ -14,6 +14,7 @@ import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
 import PinPad from "./PinPad";
 import { get_UDid } from "../common/localSettings";
+import $ from "jquery";
 const Pin = () => {
     const dispatch = useDispatch();
     const UID = get_UDid('UDID');
@@ -33,7 +34,10 @@ const Pin = () => {
         }
     }, []);
 
-
+    // if ($('#whichkey')) {
+    //     //inputElement && inputElement !== null && inputElement.current.focus();
+    //     $('#whichkey').focus();
+    // }
 
     const fetchData = () => {
         if (UID && register_Id) {
@@ -266,7 +270,7 @@ const Pin = () => {
                 <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
             </div>
         </header>
-        <main>{<PinPad onClick={onClick}></PinPad>} <button id="closeRegister2">{LocalizedLanguage.closeRegister}</button></main>
+        <main>{<PinPad autoFocus={true} onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>
     </div>
 }
 
