@@ -40,6 +40,7 @@ import { useNavigate } from "react-router-dom";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import { callProductXWindow } from "../../settings/CommonFunctionProductX";
+import { getInventory } from "./slices/inventorySlice";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -205,6 +206,7 @@ const Home = () => {
                     setSelProduct(_product[0]);
                     setisShowPopups(true);
                 }
+        dispatch(getInventory(item.WPID)); // To fetch latest inventory
     }
     const closePopUp = () => {
         setisShowPopups(false);

@@ -1281,8 +1281,17 @@ const Product = (props) => {
         product_price = getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? _product && cartPriceWithTax(_product.old_price, getSettingCase(), _product.TaxClass) : getSettingCase() == 6 ? _product && _product.old_price : _product && _product.old_price;
     }
 
+
+    var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
+    var CurrentWarehouseId = localStorage.getItem("WarehouseId");
+
+    if (warehouseDetail && warehouseDetail.length > 0) {
+        currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+    }
+
     var _currentStock = currentWareHouseDetail && currentWareHouseDetail !== "" ? currentWareHouseDetail.Quantity : variationStockQunatity;
     console.log("Quantity", currentWareHouseDetail.Quantity, variationStockQunatity)
+
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
             <React.Fragment>
