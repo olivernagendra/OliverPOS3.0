@@ -45,23 +45,38 @@ const CartList = (props) => {
         if (a && (a.Type === "variation" || a.Type === "variable")) {
             var _item = await getByID(a.product_id);
             _item["quantity"]=a.quantity;
-            if (_item) {
-                if (_item && _item.ParentId != 0) {
-                    var _parent = await getByID(_item.ParentId);
 
-                    var allCombi = _item && _item.combination !== null && _item.combination !== undefined && _item.combination.split("~");
-                    allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+            _item['after_discount'] = a ? a.after_discount : 0;
+            _item['discount_amount'] = a ? a.discount_amount : 0;
+            _item['product_after_discount'] = a ? a.product_after_discount : 0;
+            _item['product_discount_amount'] = a ? a.product_discount_amount : 0;
+            _item['discount_type'] = a ? a.discount_type : "";
+            _item['new_product_discount_amount'] = a ? a.new_product_discount_amount : 0;
+            _item['cart_after_discount'] = a.cart_after_discount?a.cart_after_discount:0;
+            _item['cart_discount_amount'] = a.cart_discount_amount?a.cart_discount_amount:0;
+            if (_item && _item.ParentId != 0) {
+                var _parent = await getByID(_item.ParentId);
 
-                    _parent["selectedOptions"] = allCombi;
-                    _parent["quantity"]=a.quantity;
-                    props.updateVariationProduct(_item);
-                    props.openPopUp(_parent, index);
-                }
-                else {
-                    props.updateVariationProduct(_item);
-                    props.openPopUp(_item, index);
-                }
+                var allCombi = _item && _item.combination !== null && _item.combination !== undefined && _item.combination.split("~");
+                allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
 
+                _parent["selectedOptions"] = allCombi;
+                _parent["quantity"]=a.quantity;
+
+                _parent['after_discount'] = a ? a.after_discount : 0;
+                _parent['discount_amount'] = a ? a.discount_amount : 0;
+                _parent['product_after_discount'] = a ? a.product_after_discount : 0;
+                _parent['product_discount_amount'] = a ? a.product_discount_amount : 0;
+                _parent['discount_type'] = a ? a.discount_type : "";
+                _parent['new_product_discount_amount'] = a ? a.new_product_discount_amount : 0;
+                _parent['cart_after_discount'] = a.cart_after_discount?a.cart_after_discount:0;
+                _parent['cart_discount_amount'] = a.cart_discount_amount?a.cart_discount_amount:0;
+                props.updateVariationProduct(_item);
+                props.openPopUp(_parent, index);
+            }
+            else {
+                props.updateVariationProduct(_item);
+                props.openPopUp(_item, index);
             }
         }
         else {
@@ -75,6 +90,7 @@ const CartList = (props) => {
             let dtype = cart.discountType === "Percentage" ? '%' : "$";
             let damount = cart.discount_amount;
             setDiscountType(damount + "" + dtype);
+            
         }
         else
         {
@@ -437,7 +453,7 @@ const CartList = (props) => {
         _total = parseFloat(_seprateDiscountAmount) + parseFloat(_exclTax);
         setSubTotal(RoundAmount(_subtotal));
         setTotal(RoundAmount(_total));
-        setDiscount(_totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0);
+        setDiscount(_cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0);
         setTaxes(RoundAmount(_taxAmount));
         //    this.setState({
         //         subTotal: RoundAmount(_subtotal),
@@ -573,6 +589,7 @@ const CartList = (props) => {
                         if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) { item_type = "no_note"; }
                         else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
                         else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
+                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')&& !a.hasOwnProperty('pid')) { item_type = "note"; }
 
                         switch (item_type) {
                             case "product":
@@ -584,7 +601,8 @@ const CartList = (props) => {
                                         <NumericFormat className={a.product_discount_amount !=0?"strike-through":""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                                             </p>
                                             {a.product_discount_amount !=0 &&<p className="price" onClick={() => editPopUp(a, index)}>
-                                              <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            <NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount):a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                              {/* <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> */}
                                             </p>}
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
                                             <img src={CircledX_Grey} alt="" />
@@ -763,7 +781,7 @@ const CartList = (props) => {
                                 <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                             </div> : null}
                         <div className="row">
-                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes</button>
+                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes { typeOfTax() == 'incl' ? LocalizedLanguage.inclTax : LocalizedLanguage.exclTax}</button>
                             <p>(%)</p>
                             <p><b>${<NumericFormat  value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div>

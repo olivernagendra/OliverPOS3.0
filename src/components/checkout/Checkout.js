@@ -10,19 +10,43 @@ import { useNavigate } from 'react-router-dom';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import Header from "./Header";
 import CartListBody from "../common/commonComponents/CartListBody";
-import { RoundAmount } from "../common/TaxSetting";
+import { RoundAmount, typeOfTax } from "../common/TaxSetting";
 import { popupMessage } from "../common/commonAPIs/messageSlice";
-import { NumericFormat } from 'react-number-format'
+import { NumericFormat } from 'react-number-format';
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import NumberPad from "../common/commonComponents/NumberPad";
+import { GetRoundCash } from "../../settings/CheckoutFunction";
+import PartialPayment from "./PartialPayment";
+import ActiveUser from '../../settings/ActiveUser';
+
 const Checkout = () => {
+    
     const [subTotal, setSubTotal] = useState(0.00);
     const [taxes, setTaxes] = useState(0.00);
     const [discount, setDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
     const [discountType, setDiscountType] = useState('');
+    const [isShowNumberPad, setisShowNumberPad] = useState(false);
+    const [isShowPartialPayment, setisShowPartialPayment] = useState(false);
+    const [balance, setbalance] = useState(0);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    var cash_rounding = ActiveUser.key.cash_rounding;
+
+    const toggleNumberPad = () => {
+        setisShowNumberPad(!isShowNumberPad)
+    }
+    const toggleShowPartialPayment = () => {
+        setisShowPartialPayment(!isShowPartialPayment)
+    }
+    const pay_amount = (item) => {
+        if (item.Name.toLowerCase() === "cash")
+        {
+            toggleNumberPad()
+        }
+    }
     const getDiscountAmount_Type = () => {
         if (localStorage.getItem("CART")) {
             let cart = JSON.parse(localStorage.getItem("CART"));
@@ -30,8 +54,7 @@ const Checkout = () => {
             let damount = cart.discount_amount;
             setDiscountType(damount + "" + dtype);
         }
-        else
-        {
+        else {
             setDiscountType('')
         }
     }
@@ -43,212 +66,163 @@ const Checkout = () => {
         setTaxes(RoundAmount(tx));
         setDiscount(RoundAmount(dis));
         setTotal(RoundAmount(tt));
+        setbalance(RoundAmount(tt))
     }
-    const addCustomer=()=>
-    {
-        var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
-        dispatch(popupMessage(data));
+    const addCustomer = () => {
+        navigate('/customer');
+        // var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
+        // dispatch(popupMessage(data));
         //alert('add customer to order');
     }
 
-    return <div className="checkout-wrapper">
-        <LeftNavBar ></LeftNavBar>
-        <Header ></Header>
-        <div className="cart">
-            <div className="checkout-cart-header">
-                {get_customerName()==null?
-                <button onClick={()=>addCustomer()}>Add Customer to Order</button>:
-                <div className="cart-customer">
-                    <div className="avatar">
-                        <img src={person} alt="" />
-                    </div>
-                    <div className="text-col">
-                        <p className="style1">{get_customerName().Name}</p>
-                        <p className="style2">{get_customerName().Email}</p>
-                    </div>
-                </div>
-}
-            </div>
-            <CartListBody setValues={setValues}></CartListBody>
-            {/* <div className="body">
-                <img src={EmptyCart} alt="" />
-                <div className="cart-item">
-                    <div className="main-row">
-                        <p className="quantity">2</p>
-                        <p className="content-style">Face Mask</p>
-                        <p className="price">$16.00</p>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row aligned">
-                        <div className="tag customer">Customer</div>
-                        <div className="content-style">Freddy Mercury</div>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row">
-                        <p className="quantity">10</p>
-                        <p className="content-style">Snapback Baseball Hat with Logo</p>
-                        <p className="price">$24.00</p>
-                    </div>
-                    <div className="secondary-col">
-                        <p>Medium</p>
-                        <p>Navy</p>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row aligned">
-                        <div className="tag group">Group</div>
-                        <p className="content-style">Table 1</p>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row">
-                        <p className="quantity">10,000</p>
-                        <p className="content-style">Reusable Coffee Cups</p>
-                        <p className="price">$60,000</p>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row aligned">
-                        <div className="tag custom-fee">Custom Fee</div>
-                        <div className="content-style">Shipping Fee</div>
-                        <div className="price">$20.00</div>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row aligned">
-                        <div className="tag cart-note">Note</div>
-                        <p className="content-style line-capped">
-                            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Temporibus, praesentium perferendis. Soluta impedit ea
-                            numquam voluptatum qui odit maxime distinctio. Voluptatibus maxime esse voluptates, inventore id commodi aliquid?
-                            Nostrum, hic!
-                        </p>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row">
-                        <p className="quantity">1</p>
-                        <p className="content-style">Dress Shirt</p>
-                        <p className="price">$45.00</p>
-                    </div>
-                    <div className="secondary-col">
-                        <p>White</p>
-                        <p>Neck: 16"</p>
-                        <p>Sleeve: 34"</p>
-                        <p>Chest: 42"</p>
-                        <p><b>**Note:</b> If no white available, please get black.</p>
-                    </div>
-                </div>
-                <div className="cart-item">
-                    <div className="main-row">
-                        <p className="quantity">1</p>
-                        <p className="content-style">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem consequatur cum inventore similique totam sit fuga
-                            repudiandae vel necessitatibus numquam, est perspiciatis hic beatae delectus aspernatur iste placeat nihil illo?
-                        </p>
-                        <p className="price">$45.00</p>
-                    </div>
-                    <div className="secondary-col">
-                        <p>
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magnam praesentium consequuntur eveniet dignissimos
-                            laboriosam veritatis numquam! Officiis vel consequatur quisquam reprehenderit tenetur eveniet alias? Voluptatibus
-                            repellat est magnam ipsum inventore.
-                        </p>
-                    </div>
-                </div>
-            </div> */}
-            <div className="footer">
-                <div className="totals">
-                    <div className="row">
-                        <p>Subtotal</p>
-                        <p><b>${<NumericFormat  value={subTotal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
-                    </div>
+    const getRemainingPrice=()=> {
+        var checkList = JSON.parse(localStorage.getItem("CHECKLIST"));
+        var paid_amount = 0;
+        var getPayments = (typeof JSON.parse(localStorage.getItem("oliver_order_payments")) !== "undefined") ? JSON.parse(localStorage.getItem("oliver_order_payments")) : [];
+        if (getPayments !== null) {
+            getPayments.forEach(paid_payments => {
+                paid_amount += parseFloat(paid_payments.payment_amount);
+            });
+        }
+        if (checkList && checkList.totalPrice && parseFloat(checkList.totalPrice) >= paid_amount) {
+            return (parseFloat(checkList.totalPrice) - parseFloat(paid_amount));
+        }
+    }
 
-                    {/* {discountType !="" ?
+    const getRemainingPriceForCash=()=> {
+        var checkList = JSON.parse(localStorage.getItem("CHECKLIST"));
+        var paid_amount = 0;
+        var getPayments = (typeof JSON.parse(localStorage.getItem("oliver_order_payments")) !== "undefined") ? JSON.parse(localStorage.getItem("oliver_order_payments")) : [];
+        if (getPayments !== null) {
+            getPayments.forEach(paid_payments => {
+                paid_amount += parseFloat(paid_payments.payment_amount);
+            });
+        }
+        var totalPrice = checkList && checkList.totalPrice ? parseFloat(RoundAmount(checkList.totalPrice)) : 0;
+        var cashRoundReturn = parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount))
+        this.state.CashRound = parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount))
+        var new_total_price = (totalPrice - paid_amount) + parseFloat(cashRoundReturn)
+        return new_total_price;
+    }
+
+    var paymentTypeName = localStorage.getItem("PAYMENT_TYPE_NAME") ? JSON.parse(localStorage.getItem("PAYMENT_TYPE_NAME")) : [];
+    //Arranging array to put cash and card type in the first and the second 
+    if (paymentTypeName && paymentTypeName.length > 0) {
+        var card = paymentTypeName.find(a => a.Name.toLowerCase() === "card");
+        var cash = paymentTypeName.find(a => a.Name.toLowerCase() === "cash");
+        paymentTypeName = paymentTypeName.filter(a => a.Name.toLowerCase() != "cash" && a.Name.toLowerCase() != "card");
+        if (card && typeof card != "undefined")
+            paymentTypeName.unshift(card);
+        if (cash && typeof cash != "undefined")
+            paymentTypeName.unshift(cash);
+    }
+
+    return (<React.Fragment>
+        <div className="checkout-wrapper">
+            <LeftNavBar ></LeftNavBar>
+            <Header ></Header>
+            <div className="cart">
+                <div className="checkout-cart-header">
+                    {get_customerName() == null ?
+                        <button onClick={() => addCustomer()}>Add Customer to Order</button> :
+                        <div className="cart-customer">
+                            <div className="avatar">
+                                <img src={person} alt="" />
+                            </div>
+                            <div className="text-col">
+                                <p className="style1">{get_customerName().Name}</p>
+                                <p className="style2">{get_customerName().Email}</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <CartListBody setValues={setValues}></CartListBody>
+                <div className="footer">
+                    <div className="totals">
+                        <div className="row">
+                            <p>Subtotal</p>
+                            <p><b>${<NumericFormat value={subTotal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                        </div>
+
+                        {/* {discountType !="" ?
                             <div className="row">
                                 <p>Cart Discount - {discountType}</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
                                 <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                             </div> : null} */}
 
-                    {discountType !="" ?
-                        <div className="row">
-                            <p>Cart Discount - {discountType}</p>
-                            <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
-                        </div> : null}
+                        {discountType != "" ?
+                            <div className="row">
+                                <p>Cart Discount - {discountType}</p>
+                                <p><b>-${<NumericFormat value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                            </div> : null}
 
-                    {taxes !== 0 ?
+                        {taxes !== 0 ?
+                            <div className="row">
+                                <p>Taxes {typeOfTax() == 'incl' ? LocalizedLanguage.inclTax : LocalizedLanguage.exclTax}</p>
+                                <p><b>${<NumericFormat value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                            </div> : null}
                         <div className="row">
-                            <p>Taxes</p>
-                            <p><b>${<NumericFormat  value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
-                        </div> : null}
+                            <p><b>Total</b></p>
+                            <p><b>${<NumericFormat value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="checkout-body">
+                <button id="balanceButton" className="balance-container" onClick={()=>toggleShowPartialPayment()}>
                     <div className="row">
-                        <p><b>Total</b></p>
-                        <p><b>${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                        <p className="style1">Balance Due</p>
+                        <p className="style2">${balance}</p>
+                    </div>
+                    <div className="row">
+                        <p className="style3">Card</p>
+                        <p className="style3">$60.00</p>
+                    </div>
+                    <div className="row">
+                        <p className="style3">Cash</p>
+                        <p className="style3">$20.00</p>
+                    </div>
+                    <div className="row">
+                        <p className="style4">Total Paid</p>
+                        <p className="style4">$80.00</p>
+                    </div>
+                </button>
+                <p className="style1">Click to make a partial payment</p>
+                <p className="style2">Quick Split</p>
+                <div className="button-row">
+                    <button>1/2</button>
+                    <button>1/3</button>
+                    <button>1/4</button>
+                </div>
+                <div className="button-row">
+                    <button>By Product</button>
+                    <button>By People</button>
+                </div>
+                <p className="style2">Customer Payment Types</p>
+                <p className="style3">Please add a customer to make customer payment types available</p>
+                <div className="button-row">
+                    <button disabled ={get_customerName() == null?true:false}>Layaway</button>
+                    <button disabled ={get_customerName() == null?true:false}>Store Credit ($24.99)</button>
+                </div>
+
+                <div className="payment-types">
+                    <p>Payment Types</p>
+                    <div className="button-container">
+                        {
+                            paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
+                                return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={()=>pay_amount(payment)}>
+                                    {payment.Name}
+                                    {/* <img src="../Assets/Images/SVG/spongebob-squarepants-2.svg" alt="" /> */}
+                                </button>
+                            })
+                        }
                     </div>
                 </div>
             </div>
         </div>
-        <div className="checkout-body">
-            <button id="balanceButton" className="balance-container">
-                <div className="row">
-                    <p className="style1">Balance Due</p>
-                    <p className="style2">$43.45</p>
-                </div>
-                <div className="row">
-                    <p className="style3">Card</p>
-                    <p className="style3">$60.00</p>
-                </div>
-                <div className="row">
-                    <p className="style3">Cash</p>
-                    <p className="style3">$20.00</p>
-                </div>
-                <div className="row">
-                    <p className="style4">Total Paid</p>
-                    <p className="style4">$80.00</p>
-                </div>
-            </button>
-            <p className="style1">Click to make a partial payment</p>
-            <p className="style2">Quick Split</p>
-            <div className="button-row">
-                <button>1/2</button>
-                <button>1/3</button>
-                <button>1/4</button>
-            </div>
-            <div className="button-row">
-                <button>By Product</button>
-                <button>By People</button>
-            </div>
-            <p className="style2">Customer Payment Types</p>
-            <p className="style3">Please add a customer to make customer payment types available</p>
-            <div className="button-row">
-                <button disabled>Layaway</button>
-                <button>Store Credit ($24.99)</button>
-            </div>
-
-            <div className="payment-types">
-                <p>Payment Types</p>
-                <div className="button-container">
-                    <button className="background-blue">Cash</button>
-                    <button className="background-coral">Card</button>
-                    <button>
-                        <img src="../Assets/Images/SVG/Stripe Icon.svg" alt="" />
-                    </button>
-                    <button>
-                        <img src="../Assets/Images/SVG/Amelia_Icon.svg" alt="" />
-                    </button>
-                    <button className="background-teal">
-                        <img src="../Assets/Images/SVG/spongebob-squarepants-2.svg" alt="" />
-                    </button>
-                    <button className="background-cyan">Placeholder</button>
-                    <button className="background-red">Placeholder</button>
-                    <button className="background-yellow">Placeholder</button>
-                    <button className="background-lime">Placeholder</button>
-                    <button className="background-violet">Placeholder</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad}></NumberPad>
+        <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment}></PartialPayment>
+        </React.Fragment>)
 }
 export default Checkout

@@ -6,6 +6,7 @@ import { product } from "./product/productSlice";
 import { addtoCartProduct } from "./product/productLogic";
 import { changeTaxRate } from "../common/TaxSetting";
 import { updateTaxRateList,selectedTaxList } from "../common/commonAPIs/taxSlice";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const TaxList = (props) => {
     const dispatch = useDispatch();
     const [selTax, setSelTax] = useState([]);
@@ -165,6 +166,26 @@ const TaxList = (props) => {
         var selected_tax_list = props.selectedTaxList ? props.selectedTaxList : localStorage.getItem('SELECTED_TAX') ? JSON.parse(localStorage.getItem('SELECTED_TAX')) : null;
         setSelTax(selected_tax_list);
     }
+    const updateOnSelectedTax=(tax)=>
+    {
+        console.log("---selecte dtax---"+JSON.stringify(tax))
+        //{"TaxId":4,"TaxRate":"15%","TaxName":"sgst","TaxClass":"zero-rate","Country":"","State":"","City":null,"PostCode":null,"Priority":"1","Compound":"0","Shipping":"1","check_is":true}
+        var taxRateList=[];
+        taxRateList.push({
+            check_is: tax.check_is,
+            TaxRate: tax.TaxRate,
+            TaxName: tax.TaxName,
+            TaxId: tax.TaxId,
+            Country: tax.Country,
+            State: tax.State,
+            TaxClass: tax.TaxClass
+        })
+        // var updateTaxCarproduct = changeTaxRate(taxRateList, 1);
+        // console.log("---updateTaxCarproduct---"+JSON.stringify(updateTaxCarproduct))
+        // dispatch(updateTaxRateList(taxRateList));
+        // dispatch(addtoCartProduct(updateTaxCarproduct));
+        // dispatch(product());
+    }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={(props.isShow === true && isShowTaxList === false) ? "subwindow quick-tax current" : "subwindow quick-tax"}>
@@ -188,7 +209,7 @@ const TaxList = (props) => {
                             <div className="row" key={m.TaxId}>
                                 <p>{m.TaxName}</p>
                                 <label>
-                                    <input type="radio" id={m.TaxName} name="tax-type" value={m.TaxName} />
+                                    <input type="radio" id={m.TaxName} name="tax-type" value={m.TaxName} onChange={()=>updateOnSelectedTax(m)} />
                                     <div className="custom-toggle">
                                         <div className="knob"></div>
                                     </div>
@@ -219,17 +240,17 @@ const TaxList = (props) => {
             </div>
             <div className={(props.isShow === true && isShowTaxList === true) ? "subwindow detailed-tax current" : "subwindow detailed-tax"}>
                 <div className="subwindow-header">
-                    <p>Select Tax Rate</p>
+                    <p>{LocalizedLanguage.selectTax}</p>
                     <button className="close-subwindow" onClick={() => closePopup()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
                 <div className="subwindow-body">
                     <div className="header-row">
-                        <p>Tax Name</p>
-                        <p>Tax Rate</p>
-                        <p>Country</p>
-                        <p>Province</p>
+                        <p>{LocalizedLanguage.taxName}</p>
+                        <p>{LocalizedLanguage.taxRate}</p>
+                        <p>{LocalizedLanguage.country}</p>
+                        <p>{LocalizedLanguage.province}</p>
                         <p>Select</p>
                     </div>
                     <div className="options-container">

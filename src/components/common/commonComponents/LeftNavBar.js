@@ -30,6 +30,25 @@ const LeftNavBar = (props) => {
     const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
     const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
     const [isShowMobileView, setisShowMobileView] = useState(false);
+    const [extApp, setExtApp] = useState('');
+    const [isInit, setisInit] = useState(false);
+
+
+    useEffect(() => {
+        if (isInit === false) {
+            window.addEventListener('message', function (e) {
+                var data = e && e.data;
+                if (typeof data == 'string' && data !== "") {
+                    responseData(data)
+                    //compositeSwitchCases(JSON.parse(data))
+                }
+            })
+            setisInit(true);
+        }
+    }, [isInit]);
+    const responseData = (data) => {
+        console.log("---ext app data--" + data);
+    }
     const toggleLeftMenu = () => {
         setisShowLeftMenu(!isShowLeftMenu)
     }
@@ -44,7 +63,8 @@ const LeftNavBar = (props) => {
     const navigateTo = (page) => {
         navigate(page);
     }
-    const toggleiFrameWindow = () => {
+    const toggleiFrameWindow = (_exApp = null) => {
+        if (_exApp != null) { setExtApp(_exApp); }
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
     const toggleMobileView = () => {
@@ -77,7 +97,7 @@ const LeftNavBar = (props) => {
     return (
         <React.Fragment>
             <div className={isShowLeftMenu == true || (props.isShowMobLeftNav && props.isShowMobLeftNav === true) ? "navbar open" : "navbar"} >
-                <div className="header-row" onClick={()=>navigate('/home')}>
+                <div className="header-row" onClick={() => navigate('/home')}>
                     <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
                     <img src={Oliver_Type} alt="" className="oliver-text" />
                 </div>
@@ -161,9 +181,9 @@ const LeftNavBar = (props) => {
                 </button>
 
             </div>
-            <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
+            <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
             <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
-            <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
+            {isShowiFrameWindow == true ? <IframeWindow  exApp={extApp} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow> : null}
         </React.Fragment>)
 }
 

@@ -39,7 +39,9 @@ export const get_userId = () => {
 export const get_customerName = () => {
   var customer = localStorage.getItem('AdCusDetail') ? JSON.parse(localStorage.getItem('AdCusDetail')) : null;
   if (customer != null) {
-    return { "Name": customer.FirstName + " " + customer.LastName, "Email": customer.Email }
+    var name = customer.FirstName + " " + customer.LastName;
+    if (name.trim() == "") { name = customer.Email }
+    return { "Name": name, "Email": customer.Email }
   }
   else
     return null;
