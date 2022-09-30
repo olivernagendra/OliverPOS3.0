@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import Pencil_Blue from '../../../images/svg/Pencil-Blue.svg';
 import { useDispatch, useSelector } from "react-redux";
-import { updateInventory } from '../slices/inventorySlice'
+import { getInventory, updateInventory } from '../slices/inventorySlice'
 import { useIndexedDB } from "react-indexed-db";
 
 const AdjustInventory = (props) => {
@@ -82,6 +82,10 @@ const AdjustInventory = (props) => {
         //var inventoryDetails = (props.product ) ? props.product : inventoryCheck && inventoryCheck.WPID ? [inventoryCheck] : []
 
         dispatch(updateInventory(data));
+
+        setTimeout(() => {
+            dispatch(getInventory(props.product.WPID))
+        }, 70);
     }
 
     const handleInventoryChange = (e) => {
