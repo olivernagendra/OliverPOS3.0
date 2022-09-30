@@ -12,15 +12,33 @@ import Header from "./Header";
 import CartListBody from "../common/commonComponents/CartListBody";
 import { RoundAmount } from "../common/TaxSetting";
 import { popupMessage } from "../common/commonAPIs/messageSlice";
+import { NumericFormat } from 'react-number-format'
 const Checkout = () => {
     const [subTotal, setSubTotal] = useState(0.00);
     const [taxes, setTaxes] = useState(0.00);
     const [discount, setDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
+    const [discountType, setDiscountType] = useState('');
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const getDiscountAmount_Type = () => {
+        if (localStorage.getItem("CART")) {
+            let cart = JSON.parse(localStorage.getItem("CART"));
+            let dtype = cart.discountType === "Percentage" ? '%' : "$";
+            let damount = cart.discount_amount;
+            setDiscountType(damount + "" + dtype);
+        }
+        else
+        {
+            setDiscountType('')
+        }
+    }
+
+
     const setValues = (st, tx, dis, tt) => {
+        getDiscountAmount_Type();
         setSubTotal(RoundAmount(st));
         setTaxes(RoundAmount(tx));
         setDiscount(RoundAmount(dis));
@@ -144,21 +162,30 @@ const Checkout = () => {
                 <div className="totals">
                     <div className="row">
                         <p>Subtotal</p>
-                        <p><b>${subTotal}</b></p>
+                        <p><b>${<NumericFormat  value={subTotal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                     </div>
-                    {discount !== 0 ?
+
+                    {/* {discountType !="" ?
+                            <div className="row">
+                                <p>Cart Discount - {discountType}</p>
+                                <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
+                                <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                            </div> : null} */}
+
+                    {discountType !="" ?
                         <div className="row">
-                            <p>Cart Discount - 25%</p>
-                            <p><b>-${discount}</b></p>
+                            <p>Cart Discount - {discountType}</p>
+                            <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div> : null}
+
                     {taxes !== 0 ?
                         <div className="row">
                             <p>Taxes</p>
-                            <p><b>${taxes}</b></p>
+                            <p><b>${<NumericFormat  value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div> : null}
                     <div className="row">
                         <p><b>Total</b></p>
-                        <p><b>${total}</b></p>
+                        <p><b>${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                     </div>
                 </div>
             </div>

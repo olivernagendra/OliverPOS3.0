@@ -27,13 +27,15 @@ import AdjustInventory from "./AdjustInventory";
 import NoVariationSelected from "./NoVariationSelected";
 import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
 import { addSimpleProducttoCart, updateProductNote } from './productLogic';
-import { getTaxAllProduct } from "../../common/TaxSetting";
+import { getTaxAllProduct, getSettingCase, cartPriceWithTax } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import { getInventory } from "../slices/inventorySlice";
+import { NumericFormat } from 'react-number-format';
+import { RoundAmount } from "../../common/TaxSetting";
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -56,6 +58,8 @@ const Product = (props) => {
     const [isEdit, setIsEdit] = useState(false);
 
     const [variationStockQunatity, setVariationStockQunatity] = useState(0)
+    const [customFeeModifiers, setCustomFeeModifiers] = useState([]);
+
     const [respAttribute] = useSelector((state) => [state.attribute])
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
@@ -477,6 +481,7 @@ const Product = (props) => {
                 setSelectedModifiers(update_data)
             }
         }
+        console.log("---selectedModifiers----" + JSON.stringify(selectedModifiers))
     }
     const submitChanges = () => {
         // this.setState({ SaveSelectedModifiers: selectedModifiers });
@@ -521,8 +526,10 @@ const Product = (props) => {
                     _data.push({ Title: m.title + (_summary != null & _summary != "" ? "(" + _summary + ")" : ""), Price: _sum, old_price: _sum, isTaxable: m.TaxOption, TaxStatus: (m.TaxOption == true ? "taxable" : "none"), TaxClass: '', quantity: 1 });
             }
         })
-        // if (_data && _data.length > 0)
-        //     this.setState({ CustomFee_Modifiers: _data });
+        if (_data && _data.length > 0) {
+            setCustomFeeModifiers(_data)
+        }
+        //this.setState({ CustomFee_Modifiers: _data });
         console.log("----modifier as custom fee----" + JSON.stringify(_data));
     }
     const getRecomProducts = () => {
@@ -1164,379 +1171,386 @@ const Product = (props) => {
                     if (!updateProductNote(noteData)) {
                         var result = addSimpleProducttoCart(noteData);
                     }
-                    console.log("----product note---" + note);
+                    if (customFeeModifiers && customFeeModifiers.length > 0) {
+                        //cartItemList= cartItemList.concat(this.state.CustomFee_Modifiers);
+                    }
+
+                    setTimeout(() => {
+                        dispatch(product());
+                    }, 100);
+
+
                 }
-                setTimeout(() => {
-                    dispatch(product());
-                }, 100);
-
-
             }
+            else {
+                toggleNoVariationSelected();
+            }
+
         }
-        else {
-            toggleNoVariationSelected();
+        const addNote = (note) => {
+            setNote(note);
+            toggleProductNote();
         }
-
-    }
-    const addNote = (note) => {
-        setNote(note);
-        toggleProductNote();
-    }
-    var itemQauntity = 0;
-    //=props.selProduct.quantity;
+        var itemQauntity = 0;
+        //=props.selProduct.quantity;
 
 
-    useEffect(() => {
-        console.log("useEffect")
-        //toggleAdjustInventory(isAdjustInventory)
-        setisAdjustInventory(false)
+        useEffect(() => {
+            console.log("useEffect")
+            //toggleAdjustInventory(isAdjustInventory)
+            setisAdjustInventory(false)
 
 
-        props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
-    }, [props.selProduct && props.selProduct.quantity]);
-    // useEffect(() => {
-    //     props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
-    // }, [props.selProduct && props.selProduct.quantity]);
+            props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+        }, [props.selProduct && props.selProduct.quantity]);
+        // useEffect(() => {
+        //     props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+        // }, [props.selProduct && props.selProduct.quantity]);
 
-    useEffect(() => {
-        if (props.selProduct && props.selProduct.quantity) {
-            setProductQty(props.selProduct.quantity);
-        }
-        //props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
-    }, [props.selProduct]);
+        useEffect(() => {
+            if (props.selProduct && props.selProduct.quantity) {
+                setProductQty(props.selProduct.quantity);
+            }
+            //props.selProduct && props.selProduct.quantity && setProductQty(props.selProduct.quantity)
+        }, [props.selProduct]);
 
 
-    const clearSelection = () => {
-        setSelVariations([]);
-    }
-    useEffect(() => {
-        if (props.isShowPopups == true) {
+        const clearSelection = () => {
             setSelVariations([]);
-            getModifiers();
-            getRecomProducts();
-
         }
-    }, [props.isShowPopups, props.selProduct]);
+        useEffect(() => {
+            if (props.isShowPopups == true) {
+                setSelVariations([]);
+                getModifiers();
+                getRecomProducts();
 
-    useEffect(() => {
-        if (props.isShowPopups == true) {
-            if (props.selProduct && props.selProduct.hasOwnProperty("selectedOptions") && props.selProduct.selectedOptions.length > 0) {
-                setSelOptions(props.selProduct.selectedOptions)
-                setIsEdit(true);
-                doVariationSearch();
+            }
+        }, [props.isShowPopups, props.selProduct]);
+
+        useEffect(() => {
+            if (props.isShowPopups == true) {
+                if (props.selProduct && props.selProduct.hasOwnProperty("selectedOptions") && props.selProduct.selectedOptions.length > 0) {
+                    setSelOptions(props.selProduct.selectedOptions)
+                    setIsEdit(true);
+                    doVariationSearch();
+                }
+            }
+        }, [selOptions, props.isShowPopups]);
+
+
+        //   end
+        var _DistictAttribute = [];
+        var _OptionAll = [];
+        var ProductAttribute = props.selProduct && props.selProduct.ProductAttributes;
+        var _attribute = [];
+        if (ProductAttribute !== null) {
+            _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
+
+            _attribute && _attribute.map((attribute, index) => {
+                var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Option: attribute.Option, Variation: attribute.Variation, OptionAll: attribute.OptionAll };
+                var isExist = _DistictAttribute && _DistictAttribute.find(function (element) {
+                    return (element.Slug == item.Slug)
+                });
+                // if (!isExist)               
+                _DistictAttribute.push(item);
+            });
+        }
+        setTimeout(() => {
+            initProuctFn();
+        }, 1000);
+        //var variationStockQunatity = 0;
+
+
+
+        const fatchUpdateInventory = async () => {
+            var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+            // getByID(_product.WPID).then((prodcut) => {
+            //     itemQauntity = prodcut && prodcut.StockQuantity
+            //     console.log("itemQauntity", itemQauntity)
+            //     variationStockQunatity = itemQauntity;
+            // });
+
+            var prodcut = await getProductByID(_product.WPID).then((row) => {
+                return row;
+            });
+            if (prodcut) {
+                itemQauntity = prodcut && prodcut.StockQuantity
+                console.log("itemQauntity", itemQauntity)
+                setVariationStockQunatity(itemQauntity);
             }
         }
-    }, [selOptions, props.isShowPopups]);
+        var product_price = 0;
+        var after_discount_total_price = 0;
+        if (_product) {
+            variationStockQunatity =
+                (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
+                    (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0';
 
-
-    //   end
-    var _DistictAttribute = [];
-    var _OptionAll = [];
-    var ProductAttribute = props.selProduct && props.selProduct.ProductAttributes;
-    var _attribute = [];
-    if (ProductAttribute !== null) {
-        _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
-
-        _attribute && _attribute.map((attribute, index) => {
-            var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Option: attribute.Option, Variation: attribute.Variation, OptionAll: attribute.OptionAll };
-            var isExist = _DistictAttribute && _DistictAttribute.find(function (element) {
-                return (element.Slug == item.Slug)
-            });
-            // if (!isExist)               
-            _DistictAttribute.push(item);
-        });
-    }
-    setTimeout(() => {
-        initProuctFn();
-    }, 1000);
-    //var variationStockQunatity = 0;
-
-    var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
-    // if (_product) {
-    //     setVariationStockQunatity(
-    //         (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
-    //             (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0'
-    //     )
-    // }
-
-    const fatchUpdateInventory = async () => {
-        var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
-        // getByID(_product.WPID).then((prodcut) => {
-        //     itemQauntity = prodcut && prodcut.StockQuantity
-        //     console.log("itemQauntity", itemQauntity)
-        //     variationStockQunatity = itemQauntity;
-        // });
-
-        var prodcut = await getProductByID(_product.WPID).then((row) => {
-            return row;
-        });
-        if (prodcut) {
-            itemQauntity = prodcut && prodcut.StockQuantity
-            console.log("itemQauntity", itemQauntity)
-            setVariationStockQunatity(itemQauntity);
+            var after_discount_total_price = _product && _product.product_discount_amount ?
+                _product.product_discount_amount * (_product.discount_type != "Number" ? _product.quantity ? _product.quantity : productQty : 1) : 0;
+            product_price = getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? _product && cartPriceWithTax(_product.old_price, getSettingCase(), _product.TaxClass) : getSettingCase() == 6 ? _product && _product.old_price : _product && _product.old_price;
         }
-    }
 
-    return (
-        props.isShowPopups == false ? <React.Fragment></React.Fragment> :
-            <React.Fragment>
-                <div className="product-wrapper" >
-                    <LeftNavBar></LeftNavBar>
-                    <div className="header">
-                        <div className="mobile-buttons">
-                            <button id="mobileExitProductButton" onClick={() => props.closePopUp()}>
-                                <img src={X_Icon_DarkBlue} alt="" />
-                            </button>
-                            <button id="mobileAppsButton" onClick={() => props.toggleAppLauncher()}>
-                                <img src={Oliver_Icon_BaseBlue} alt="" />
-                            </button>
-                        </div>
-                        <div className="main">
-                            <p className="route">{"Clothing > T-Shirts"}</p>
-                            <p className="prod-name">{props.selProduct && props.selProduct.Title}</p>
-                            <button id="desktopExitProductButton" onClick={() => props.closePopUp()}>
-                                <img src={X_Icon_DarkBlue} alt="" />
-                            </button>
-                        </div>
-                    </div>
-                    <div className="mod-product">
-                        {_DistictAttribute && _DistictAttribute.length === 0 ?
-                            <div className="img-container display-flex">
-                                <img src={NoVariationDisplay} alt="" />
-                            </div> :
-                            <div className="row">
-                                <p>Select Variations</p>
-                                <button id="clearModsButton" onClick={() => clearSelection()}>Clear Selection</button>
-                            </div>}
-                        {
-
-                            _DistictAttribute && _DistictAttribute.length > 0 ?
-                                (_DistictAttribute.map((attribute, index) => {
-                                    return (
-                                        attribute && attribute.Variation == true &&
-                                        <React.Fragment key={attribute.Slug}><p>{attribute.Name}</p>
-                                            <div className="radio-group">
-                                                {
-                                                    (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
-                                                        let _item = a.replace(/\//g, "-").toLowerCase();
-                                                        allVariations.push(_item);
-                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
-                                                        //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
-                                                        if (isEdit === true) {
-                                                            var selVal = selOptions ? selOptions.includes(_item) : false;
-                                                            if (selVal === true) {
-                                                                setSelectedOption(a, attribute, i)
-                                                            }
-                                                            return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
-
-                                                            // if (_DistictAttribute.length === (index + 1) && attribute.Option.split(',').length === (i + 1)) {
-                                                            //     console.log("_DistictAttribute length--->"+_DistictAttribute.length,index+1+"----"+attribute.Option.split(',').length,i+1)
-                                                            //     saveSelectedOption();
-                                                            // }
-                                                        }
-                                                        else {
-                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle === _item) : false;
-                                                            // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
-                                                            return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
-                                                        }
-
-                                                        // console.log("_DistictAttribute length--->"+_DistictAttribute.length,index)
-                                                        //     console.log("attribute length--->"+attribute.Option.split(',').length,i)
-                                                        //console.log("a, attribute, s--------"+selVal)
-                                                        // if(selOptions && selOptions.length>0)
-                                                        // {
-                                                        //     var selVal = selOptions.includes(_item);
-                                                        //     console.log("a, attribute, s--------"+a, attribute, i);
-                                                        //     return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
-                                                        // }
-                                                        // else
-                                                        // allVariations.push(_item);
-                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
-                                                    })
-                                                }
-                                            </div></React.Fragment>
-                                    )
-                                })
-                                )
-                                : <div className='noAttribute'></div>}
-                        {productModifiers && productModifiers.length > 0 ? <div className="row">
-                            <p>Select Modifier</p>
-                        </div> : null}
-                        {
-                            productModifiers && productModifiers.map(mod => {
-                                var gpid = (mod.Title).replace(/ /g, "_");
-                                var gpname = (mod.Title).replace(/ /g, "_");
-                                switch (mod.Type) {
-                                    case Config.key_InputTypes.CheckBox:
-                                        return (
-                                            <React.Fragment>
-                                                <p>{mod.Title}</p>
-                                                <div className="radio-group">{
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
-                                                            return (
-                                                                <label>
-                                                                    <input type="checkbox" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
-                                                                    <div className="custom-radio">
-                                                                        <p>{efm.Name}</p>
-                                                                    </div>
-                                                                </label>)
-                                                        }))
-                                                    })
-                                                }</div></React.Fragment>
-                                        )
-                                        break;
-                                    case Config.key_InputTypes.NumberField:
-                                        return (
-                                            <React.Fragment>
-                                                <p className="labelTitle">{mod.Title}</p>
-                                                {
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
-                                                            return (<React.Fragment>
-                                                                <p className="label">{efm.Name}</p>
-                                                                <div className="row">
-                                                                    <div className="increment-input">
-                                                                        <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                            <svg width={16} height={2} viewBox="0 0 16 2">
-                                                                                <rect width={16} height={2} fill="var(--primary)" />
-                                                                            </svg>
-                                                                        </div>
-                                                                        <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                        <div className="increment" id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                            <svg className='checkout-increament-mr' width={16} height={16} viewBox="0 0 16 16" id="btn_svg_plus_popup" >
-                                                                                <path d="M16 7H9V0H7V7H0V9H7V16H9V9H16V7Z" fill="var(--primary)" />
-                                                                            </svg>
-                                                                        </div>
-                                                                    </div>
-                                                                    <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                </div>
-                                                            </React.Fragment>)
-                                                        }))
-                                                    })
-                                                }</React.Fragment>
-                                        )
-                                        break;
-                                    case Config.key_InputTypes.RadioButton:
-                                        return (
-                                            <React.Fragment>
-                                                <p >{mod.Title}</p>
-                                                <div className="radio-group">{
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
-                                                            return (
-                                                                <label htmlFor={id}>
-                                                                    <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
-                                                                    <div className="custom-radio">
-                                                                        <p>{efm.Name}</p>
-                                                                    </div>
-                                                                </label>)
-                                                        }))
-                                                    })
-                                                }</div></React.Fragment>
-                                        )
-                                        break;
-                                    case Config.key_InputTypes.TextField:
-                                        return (
-                                            <React.Fragment>
-                                                <p className="labelTitle">{mod.Title}</p>
-                                                {
-                                                    mod.modifierFields && mod.modifierFields.map(mf => {
-                                                        return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
-                                                            var id = (efm.Name).replace(/ /g, "_");
-                                                            return (<React.Fragment>
-                                                                <p className="label">{efm.Name}</p>
-                                                                <div className="row">
-                                                                    <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
-                                                                    <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                </div>
-                                                            </React.Fragment>)
-                                                        }))
-                                                    })
-                                                }</React.Fragment>
-                                        )
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            })
-                        }
-                    </div>
-                    <div className="detailed-product">
-                        <div className="row">
-                            <div className="product-image-container">
-                                {
-                                    _product && _product.ProductImage != null ?
-                                        <img src={_product.ProductImage} alt="" id="productImage" className="height-fit" /> :
-                                        <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
-                                }
+        return (
+            props.isShowPopups == false ? <React.Fragment></React.Fragment> :
+                <React.Fragment>
+                    <div className="product-wrapper" >
+                        <LeftNavBar></LeftNavBar>
+                        <div className="header">
+                            <div className="mobile-buttons">
+                                <button id="mobileExitProductButton" onClick={() => props.closePopUp()}>
+                                    <img src={X_Icon_DarkBlue} alt="" />
+                                </button>
+                                <button id="mobileAppsButton" onClick={() => props.toggleAppLauncher()}>
+                                    <img src={Oliver_Icon_BaseBlue} alt="" />
+                                </button>
                             </div>
-                            <div className="col">
-                                <p className="mobile-only">Stock Details</p>
-                                <div className="group">
-                                    <div className="text-row">
-                                        <p className="mobile-only">Currently in stock:</p>
-                                        <p className="quantity">{variationStockQunatity}</p>
-                                    </div>
-
-                                    {isOutOfStock == false && <p className="desktop-only">In Stock</p>}
-                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&  //no need update stock when unlimited
-                                        <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
-                                    }
-                                </div>
-
-                                <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
-                                    <img src={Coin_Blue} alt="" />
-                                    Add Discount
+                            <div className="main">
+                                <p className="route">{"Clothing > T-Shirts"}</p>
+                                <p className="prod-name">{_product && _product.Title}</p>
+                                <button id="desktopExitProductButton" onClick={() => props.closePopUp()}>
+                                    <img src={X_Icon_DarkBlue} alt="" />
                                 </button>
                             </div>
                         </div>
-                        <div className="col">
-                            {_product && _product.ShortDescription && <p className="title">Description</p>}
-                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.ShortDescription }}>
+                        <div className="mod-product">
+                            {_DistictAttribute && _DistictAttribute.length === 0 ?
+                                <div className="img-container display-flex">
+                                    <img src={NoVariationDisplay} alt="" />
+                                </div> :
+                                <div className="row">
+                                    <p>Select Variations</p>
+                                    <button id="clearModsButton" onClick={() => clearSelection()}>Clear Selection</button>
+                                </div>}
+                            {
 
-                            </p>
-                            {_product && _product.ProductAttributes && _product.ProductAttributes.length > 0 &&
-                                <p className="title">Additional Fields</p>}
-                            <p className="para">
+                                _DistictAttribute && _DistictAttribute.length > 0 ?
+                                    (_DistictAttribute.map((attribute, index) => {
+                                        return (
+                                            attribute && attribute.Variation == true &&
+                                            <React.Fragment key={attribute.Slug}><p>{attribute.Name}</p>
+                                                <div className="radio-group">
+                                                    {
+                                                        (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
+                                                            let _item = a.replace(/\//g, "-").toLowerCase();
+                                                            allVariations.push(_item);
+                                                            // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                            //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
+                                                            if (isEdit === true) {
+                                                                var selVal = selOptions ? selOptions.includes(_item) : false;
+                                                                if (selVal === true) {
+                                                                    setSelectedOption(a, attribute, i)
+                                                                }
+                                                                return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
 
-                                {_product && _product.ProductAttributes && _product.ProductAttributes.map((item, index) => {
-                                    if (item && item.Option) {
-                                        return <div key={index}>{item.Name + " : " + item.Option}</div>
+                                                                // if (_DistictAttribute.length === (index + 1) && attribute.Option.split(',').length === (i + 1)) {
+                                                                //     console.log("_DistictAttribute length--->"+_DistictAttribute.length,index+1+"----"+attribute.Option.split(',').length,i+1)
+                                                                //     saveSelectedOption();
+                                                                // }
+                                                            }
+                                                            else {
+                                                                var selVal = selVariations ? selVariations.some(a => a.OptionTitle === _item) : false;
+                                                                // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                                return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                            }
+
+                                                            // console.log("_DistictAttribute length--->"+_DistictAttribute.length,index)
+                                                            //     console.log("attribute length--->"+attribute.Option.split(',').length,i)
+                                                            //console.log("a, attribute, s--------"+selVal)
+                                                            // if(selOptions && selOptions.length>0)
+                                                            // {
+                                                            //     var selVal = selOptions.includes(_item);
+                                                            //     console.log("a, attribute, s--------"+a, attribute, i);
+                                                            //     return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                            // }
+                                                            // else
+                                                            // allVariations.push(_item);
+                                                            // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
+                                                        })
+                                                    }
+                                                </div></React.Fragment>
+                                        )
+                                    })
+                                    )
+                                    : <div className='noAttribute'></div>}
+                            {productModifiers && productModifiers.length > 0 ? <div className="row">
+                                <p>Select Modifier</p>
+                            </div> : null} <div onChange={onChangeValue}>
+                                {
+                                    productModifiers && productModifiers.map(mod => {
+                                        var gpid = (mod.Title).replace(/ /g, "_");
+                                        var gpname = (mod.Title).replace(/ /g, "_");
+                                        switch (mod.Type) {
+                                            case Config.key_InputTypes.CheckBox:
+                                                return (
+                                                    <React.Fragment>
+                                                        <p>{mod.Title}</p>
+                                                        <div className="radio-group">{
+                                                            mod.modifierFields && mod.modifierFields.map(mf => {
+                                                                return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                    var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
+                                                                    return (
+                                                                        <label>
+                                                                            <input type="checkbox" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                            <div className="custom-radio">
+                                                                                <p>{efm.Name}</p>
+                                                                            </div>
+                                                                        </label>)
+                                                                }))
+                                                            })
+                                                        }</div></React.Fragment>
+                                                )
+                                                break;
+                                            case Config.key_InputTypes.NumberField:
+                                                return (
+                                                    <React.Fragment>
+                                                        <p className="labelTitle">{mod.Title}</p>
+                                                        {
+                                                            mod.modifierFields && mod.modifierFields.map(mf => {
+                                                                return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                    var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
+                                                                    return (<React.Fragment>
+                                                                        <p className="label">{efm.Name}</p>
+                                                                        <div className="row">
+                                                                            <div className="increment-input">
+                                                                                <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <svg width={16} height={2} viewBox="0 0 16 2">
+                                                                                        <rect width={16} height={2} fill="var(--primary)" />
+                                                                                    </svg>
+                                                                                </div>
+                                                                                <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                                <div className="increment" id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <svg className='checkout-increament-mr' width={16} height={16} viewBox="0 0 16 16" id="btn_svg_plus_popup" >
+                                                                                        <path d="M16 7H9V0H7V7H0V9H7V16H9V9H16V7Z" fill="var(--primary)" />
+                                                                                    </svg>
+                                                                                </div>
+                                                                            </div>
+                                                                            <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
+                                                                        </div>
+                                                                    </React.Fragment>)
+                                                                }))
+                                                            })
+                                                        }</React.Fragment>
+                                                )
+                                                break;
+                                            case Config.key_InputTypes.RadioButton:
+                                                return (
+                                                    <React.Fragment>
+                                                        <p >{mod.Title}</p>
+                                                        <div className="radio-group">{
+                                                            mod.modifierFields && mod.modifierFields.map(mf => {
+                                                                return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                    var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
+                                                                    return (
+                                                                        <label htmlFor={id}>
+                                                                            <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                            <div className="custom-radio">
+                                                                                <p>{efm.Name}</p>
+                                                                            </div>
+                                                                        </label>)
+                                                                }))
+                                                            })
+                                                        }</div></React.Fragment>
+                                                )
+                                                break;
+                                            case Config.key_InputTypes.TextField:
+                                                return (
+                                                    <React.Fragment>
+                                                        <p className="labelTitle">{mod.Title}</p>
+                                                        {
+                                                            mod.modifierFields && mod.modifierFields.map(mf => {
+                                                                return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
+                                                                    var id = (efm.Name).replace(/ /g, "_");
+                                                                    return (<React.Fragment>
+                                                                        <p className="label">{efm.Name}</p>
+                                                                        <div className="row">
+                                                                            <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
+                                                                            <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
+                                                                        </div>
+                                                                    </React.Fragment>)
+                                                                }))
+                                                            })
+                                                        }</React.Fragment>
+                                                )
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    })
+                                }</div>
+                        </div>
+                        <div className="detailed-product">
+                            <div className="row">
+                                <div className="product-image-container">
+                                    {
+                                        _product && _product.ProductImage != null ?
+                                            <img src={_product.ProductImage} alt="" id="productImage" className="height-fit" /> :
+                                            <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
                                     }
-                                })
-                                }
-                            </p>
-                            {/* {_product.ShortDescription && <p className="title">Custom Fields</p>}
+                                </div>
+                                <div className="col">
+                                    <p className="mobile-only">Stock Details</p>
+                                    <div className="group">
+                                        <div className="text-row">
+                                            <p className="mobile-only">Currently in stock:</p>
+                                            <p className="quantity">{variationStockQunatity}</p>
+                                        </div>
+
+                                        {isOutOfStock == false && <p className="desktop-only">In Stock</p>}
+                                        {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&  //no need update stock when unlimited
+                                            <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+                                        }
+                                    </div>
+
+                                    <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
+                                        <img src={Coin_Blue} alt="" />
+                                        Add Discount
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="col">
+                                {_product && _product.ShortDescription && <p className="title">Description</p>}
+                                <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.ShortDescription }}>
+
+                                </p>
+                                {_product && _product.ProductAttributes && _product.ProductAttributes.length > 0 &&
+                                    <p className="title">Additional Fields</p>}
+                                <p className="para">
+
+                                    {_product && _product.ProductAttributes && _product.ProductAttributes.map((item, index) => {
+                                        if (item && item.Option) {
+                                            return <div key={index}>{item.Name + " : " + item.Option}</div>
+                                        }
+                                    })
+                                    }
+                                </p>
+                                {/* {_product.ShortDescription && <p className="title">Custom Fields</p>}
                             <p className="para">
                                 {_product.ShortDescription}
                             </p> */}
-                            {_product && _product.Sku && _product.Sku !== "" && <p className="title">SKU #</p>}
-                            <p className="para">{_product && _product.Sku}</p>
-                            {_product && _product.Barcode && _product.Barcode !== "" && <p className="title">Barcode ID #</p>}
-                            <p className="para">{_product && _product.Barcode}</p>
+                                {_product && _product.Sku && _product.Sku !== "" && <p className="title">SKU #</p>}
+                                <p className="para">{_product && _product.Sku}</p>
+                                {_product && _product.Barcode && _product.Barcode !== "" && <p className="title">Barcode ID #</p>}
+                                <p className="para">{_product && _product.Barcode}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="recommended-upsells">
-                        <p>Recommended Upsells</p>
-                        <div className="button-row">
-                            {recommProducts && recommProducts.length > 0 && recommProducts.map(a => {
-                                return <button onClick={() => props.openPopUp(a)} key={a.WPID}>
-                                    <div className="img-container">
-                                        {a && a.ProductImage != null ?
-                                            <img src={a && a.ProductImage} alt="" className="height-fit" /> :
-                                            <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
-                                        }
-                                    </div>
-                                    <div className="prod-name">
-                                        <p>{a && a.Title}</p>
-                                    </div>
-                                </button>
-                            })}
-                            {/* <button>
+                        <div className="recommended-upsells">
+                            <p>Recommended Upsells</p>
+                            <div className="button-row">
+                                {recommProducts && recommProducts.length > 0 && recommProducts.map(a => {
+                                    return <button onClick={() => props.openPopUp(a)} key={a.WPID}>
+                                        <div className="img-container">
+                                            {a && a.ProductImage != null ?
+                                                <img src={a && a.ProductImage} alt="" className="height-fit" /> :
+                                                <img src={NoImageAvailable} alt="" id="productImage" className="height-fit" />
+                                            }
+                                        </div>
+                                        <div className="prod-name">
+                                            <p>{a && a.Title}</p>
+                                        </div>
+                                    </button>
+                                })}
+                                {/* <button>
                                 <div className="img-container">
                                     <img src={Shoes} alt="" />
                                 </div>
@@ -1568,44 +1582,45 @@ const Product = (props) => {
                                     <p>Snapback Ballcap with Logo</p>
                                 </div>
                             </button> */}
+                            </div>
                         </div>
-                    </div>
-                    <div className="product-footer">
-                        <div className="row">
-                            <button id="addProductNote" onClick={() => toggleProductNote()}>
-                                <img src={Pencil} alt="" />
-                                Add Note
-                            </button>
-                            <button id="addProductDiscount" onClick={() => toggleProductDiscount()}>Add Discount</button>
-                        </div>
-                        <div className="row">
-                            <div className="increment-input">
-                                <button onClick={() => quantityUpdate('minus')}>
-                                    <img src={Minus_Blue} alt="" />
+                        <div className="product-footer">
+                            <div className="row">
+                                <button id="addProductNote" onClick={() => toggleProductNote()}>
+                                    <img src={Pencil} alt="" />
+                                    Add Note
                                 </button>
-                                <input type="number" readOnly placeholder="0" value={productQty} />
-                                <button onClick={() => quantityUpdate('plus')}>
-                                    <img src={Plus_Blue} alt="" />
+                                <button id="addProductDiscount" onClick={() => toggleProductDiscount()}>Add Discount</button>
+                            </div>
+                            <div className="row">
+                                <div className="increment-input">
+                                    <button onClick={() => quantityUpdate('minus')}>
+                                        <img src={Minus_Blue} alt="" />
+                                    </button>
+                                    <input type="number" readOnly placeholder="0" value={productQty} />
+                                    <button onClick={() => quantityUpdate('plus')}>
+                                        <img src={Plus_Blue} alt="" />
+                                    </button>
+                                </div>
+                                <button id="addProductToCart" onClick={() => addToCart()}>
+                                    <img src={CircledPlus_White} alt="" />
+                                    Add to Cart - $
+                                    <NumericFormat value={_product && RoundAmount(((product_price * productQty) - after_discount_total_price) + (_product.excl_tax ? _product.excl_tax : 0))} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                                 </button>
                             </div>
-                            <button id="addProductToCart" onClick={() => addToCart()}>
-                                <img src={CircledPlus_White} alt="" />
-                                Add to Cart
-                            </button>
                         </div>
-                    </div>
 
-                    <div id="navCover" className="nav-cover"></div>
-                </div>
-                <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount} selecteditem={props.selProduct}></ProductDiscount>
-                <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
-                    productStockQuantity={variationStockQunatity}
-                    product={_product}
-                    fatchUpdateInventory={fatchUpdateInventory}
-                ></AdjustInventory>
-                <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
-                <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
-                <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
-            </React.Fragment>)
-}
-export default Product 
+                        <div id="navCover" className="nav-cover"></div>
+                    </div>
+                    <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount} selecteditem={props.selProduct}></ProductDiscount>
+                    <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
+                        productStockQuantity={variationStockQunatity}
+                        product={_product}
+                        fatchUpdateInventory={fatchUpdateInventory}
+                    ></AdjustInventory>
+                    <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
+                    <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
+                    <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
+                </React.Fragment>)
+    }
+    export default Product 

@@ -365,6 +365,10 @@ code {
   {
 	display: flex;
   }
+  .strike-through
+  {
+	text-decoration: line-through;
+  }
   
 /* @media (orientation: portrait), (max-width: 1193px) {}
 @media (max-width: 375px) {}
