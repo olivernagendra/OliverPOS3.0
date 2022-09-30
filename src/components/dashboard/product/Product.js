@@ -63,13 +63,25 @@ const Product = (props) => {
     // });
     const [inventoryStatus] = useSelector((state) => [state.inventories])
 
-    useEffect(() => {
-        var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
-        setVariationStockQunatity(_product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
-            (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0'
-        ) : 0)
-    }, []);
+    // useEffect(() => {
+    //     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    //     setVariationStockQunatity(_product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
+    //         (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0'
+    //     ) : 0)
+    // }, [props.variationProduct]);
 
+    useEffect(() => {
+
+        var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
+        var CurrentWarehouseId = localStorage.getItem("WarehouseId");
+        var currentWareHouseDetail = "";
+        if (warehouseDetail && warehouseDetail.length > 0) {
+            currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+        }
+        if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
+            setVariationStockQunatity(currentWareHouseDetail.Quantity)
+        }
+    }, [inventoryStatus.inventoryGet.data])
     const toggleProductNote = () => {
         setisProductNote(!isProductNote)
     }
@@ -1264,17 +1276,7 @@ const Product = (props) => {
             setVariationStockQunatity(itemQauntity);
         }
     }
-    var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
-    var CurrentWarehouseId = localStorage.getItem("WarehouseId");
-    var currentWareHouseDetail = "";
-    if (warehouseDetail && warehouseDetail.length > 0) {
-        currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
-    }
-    useEffect(() => {
-        if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
-            setVariationStockQunatity(currentWareHouseDetail.Quantity)
-        }
-    }, [])
+
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
             <React.Fragment>
