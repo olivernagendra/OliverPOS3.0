@@ -13,6 +13,7 @@ const TaxList = (props) => {
     const [taxList, setTaxList] = useState([]);
     const [tax_items, setTax_items] = useState([]);
     const [isShowTaxList, setisShowTaxList] = useState(false);
+    const [isDefaultTax, setisDefaultTax] = useState(true);
     const toggleShowTaxList = () => {
         setisShowTaxList(!isShowTaxList)
     }
@@ -163,28 +164,101 @@ const TaxList = (props) => {
         setTax_items(tax_items);
     }
     const getSelectedTaxList = () => {
-        var selected_tax_list = props.selectedTaxList ? props.selectedTaxList : localStorage.getItem('SELECTED_TAX') ? JSON.parse(localStorage.getItem('SELECTED_TAX')) : null;
+        
+        var selected_tax_list =  localStorage.getItem('SELECTED_TAX') ? JSON.parse(localStorage.getItem('SELECTED_TAX')) :[];
+        var UpdateTaxRateList=[];
+        selected_tax_list && selected_tax_list.map((item, index) => {
+            var checkStatus = false;
+            if (UpdateTaxRateList && UpdateTaxRateList.length > 0) {
+                var updatedTax = UpdateTaxRateList.find(items => parseInt(items.TaxId) == parseInt(item.TaxId));
+                if (updatedTax && updatedTax.check_is == true) {
+                    checkStatus = true;
+                    item["check_is"]=true;
+                }
+                else if(updatedTax && updatedTax.check_is == false)
+                {
+                    item["check_is"]=false;
+                }
+            }
+        });
+        
         setSelTax(selected_tax_list);
+        
+        
+        
+        
+        var apply_defult_tax = localStorage.getItem('DEFAULT_TAX_STATUS') ? localStorage.getItem('DEFAULT_TAX_STATUS').toString() : null;
+        if(apply_defult_tax==="true")
+        {
+            setisDefaultTax(true);
+        }
+        else
+        {
+            setisDefaultTax(false);
+        }
     }
     const updateOnSelectedTax=(tax)=>
     {
         console.log("---selecte dtax---"+JSON.stringify(tax))
         //{"TaxId":4,"TaxRate":"15%","TaxName":"sgst","TaxClass":"zero-rate","Country":"","State":"","City":null,"PostCode":null,"Priority":"1","Compound":"0","Shipping":"1","check_is":true}
-        var taxRateList=[];
-        taxRateList.push({
-            check_is: tax.check_is,
-            TaxRate: tax.TaxRate,
-            TaxName: tax.TaxName,
-            TaxId: tax.TaxId,
-            Country: tax.Country,
-            State: tax.State,
-            TaxClass: tax.TaxClass
-        })
-        // var updateTaxCarproduct = changeTaxRate(taxRateList, 1);
-        // console.log("---updateTaxCarproduct---"+JSON.stringify(updateTaxCarproduct))
-        // dispatch(updateTaxRateList(taxRateList));
-        // dispatch(addtoCartProduct(updateTaxCarproduct));
-        // dispatch(product());
+        var taxRateList=localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
+        // taxRateList.push({
+        //     check_is: tax.check_is,
+        //     TaxRate: tax.TaxRate,
+        //     TaxName: tax.TaxName,
+        //     TaxId: tax.TaxId,
+        //     Country: tax.Country,
+        //     State: tax.State,
+        //     TaxClass: tax.TaxClass
+        // })
+        
+
+        //---
+        if (taxRateList.length == 0) {
+            taxRateList.push({
+                check_is: tax.check_is,
+                TaxRate: tax.TaxRate,
+                TaxName: tax.TaxName,
+                TaxId: tax.TaxId,
+                Country: tax.Country,
+                State: tax.State,
+                TaxClass: tax.TaxClass
+            })
+        } else {
+            var FindId = taxRateList.find(isName => parseInt(isName.TaxId) === parseInt(tax.TaxId));
+            if (FindId) {
+                taxRateList.map(item => {
+                    if (item.TaxId == FindId.TaxId) {
+                        item['check_is'] = FindId.check_is == true ? false : true
+                    }
+                })
+            } else {
+                taxRateList.push({
+                    check_is: tax.check_is,
+                    TaxRate: tax.TaxRate,
+                    TaxName: tax.TaxName,
+                    TaxId: tax.TaxId,
+                    Country: tax.Country,
+                    State: tax.State,
+                    TaxClass: tax.TaxClass
+                })
+            }
+        }
+
+        //--
+        var updateTaxCarproduct = changeTaxRate(taxRateList, 1);
+        console.log("---updateTaxCarproduct---"+JSON.stringify(updateTaxCarproduct))
+        //dispatch(updateTaxRateList(taxRateList));
+        dispatch(addtoCartProduct(updateTaxCarproduct));
+        dispatch(product());
+    }
+    const defaultTax=()=>
+    {
+        setisDefaultTax(!isDefaultTax)
+        localStorage.setItem('DEFAULT_TAX_STATUS',(!isDefaultTax).toString());
+        var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];//this.state.cartproductlist;
+        addtoCartProduct(cartlist);
+        dispatch(product());
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
@@ -198,7 +272,7 @@ const TaxList = (props) => {
                     <div className="row">
                         <p>Default Tax</p>
                         <label>
-                            <input type="radio" id="defaultTax" name="tax-type" value="defaultTax" />
+                            <input type="radio" id="defaultTax" name="tax-type" value="defaultTax" onClick={()=>defaultTax()} checked={isDefaultTax==true?true:false}/>
                             <div className="custom-toggle">
                                 <div className="knob"></div>
                             </div>
@@ -209,7 +283,7 @@ const TaxList = (props) => {
                             <div className="row" key={m.TaxId}>
                                 <p>{m.TaxName}</p>
                                 <label>
-                                    <input type="radio" id={m.TaxName} name="tax-type" value={m.TaxName} onChange={()=>updateOnSelectedTax(m)} />
+                                    <input type="radio" id={m.TaxName} name={m.TaxName} value={m.TaxName} onClick={()=>updateOnSelectedTax(m)} checked={m.check_is==true?true:false}/>
                                     <div className="custom-toggle">
                                         <div className="knob"></div>
                                     </div>
