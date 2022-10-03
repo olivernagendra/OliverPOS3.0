@@ -28,6 +28,7 @@ import Product from "./product/Product";
 import { product } from "./product/productSlice";
 import { userList } from "../common/commonAPIs/userSlice";
 import { discount } from "../common/commonAPIs/discountSlice";
+import { getExtensions, getPaymentTypeName } from "../checkout/checkoutSlice";
 import { getRates, isMultipleTaxSupport, getTaxRateList } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
@@ -39,6 +40,8 @@ import { popupMessage } from "../common/commonAPIs/messageSlice";
 import { useNavigate } from "react-router-dom";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import { callProductXWindow } from "../../settings/CommonFunctionProductX";
+import { getInventory } from "./slices/inventorySlice";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -107,6 +110,8 @@ const Home = () => {
         dispatch(isMultipleTaxSupport());
         dispatch(getTaxRateList());
         dispatch(discount());
+        dispatch(getExtensions());
+        dispatch(getPaymentTypeName());
         getFavourites();
         var locationId = localStorage.getItem('Location')
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -142,18 +147,18 @@ const Home = () => {
     // return   
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
-    const editPopUp = async (item) => {
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+    // const editPopUp = async (item) => {
+    //     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
 
-        // setSelProduct(_item)
-        var _product = getTaxAllProduct([_item])
-        setSelProduct(_product[0]);
-        setisShowPopups(true)
-    }
+    //     // setSelProduct(_item)
+    //     var _product = getTaxAllProduct([_item])
+    //     setSelProduct(_product[0]);
+    //     setisShowPopups(true)
+    // }
     // useEffect(() => {
     //     toggleiFrameWindow();
     // }, [productxLink]);
-    const openPopUp = async (item,index=null) => {
+    const openPopUp = async (item, index = null) => {
 
         let type = item.Type;
 
@@ -162,35 +167,60 @@ const Home = () => {
             (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal()
                 == true) && item !== null && item.ParamLink !== "" && item.ParamLink
             !== "False" && item.ParamLink !== null) {
-                console.log("product x with tag--"+item.ParamLink)
-                setProductxItem(item);
-                //toggleiFrameWindow();
-                //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
-       }
-        else
-        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
-            //alert(LocalizedLanguage.productxOutOfStock);
-            var data ={title:"",msg:LocalizedLanguage.productxOutOfStock,is_success:true}
-            dispatch(popupMessage(data));
-        }
-        else
-        if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null) {
-            console.log("product x---"+item.ParamLink)
+            console.log("product x with tag--" + item.ParamLink)
             setProductxItem(item);
-            toggleiFrameWindow();
-            //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
+            //toggleiFrameWindow();
+            //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
         }
-        else {
-            updateVariationProduct(null);
-            var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
-            var _product = getTaxAllProduct([_item])
-            if (item.hasOwnProperty("selectedOptions")) {
-                _product[0]["selectedOptions"] = item.selectedOptions;
-                _product[0]["selectedIndex"]=index;
+        else
+            if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+                //alert(LocalizedLanguage.productxOutOfStock);
+                var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
+                dispatch(popupMessage(data));
             }
-            setSelProduct(_product[0]);
-            setisShowPopups(true);
-        }
+            else
+                if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
+                    console.log("product x---" + item.ParamLink)
+
+                    //  var windowCloseEv = callProductXWindow(item);
+                    //     window.addEventListener('message', function (e) {
+                    //         var data = e && e.data;
+                    //         if (typeof data == 'string' && data !== "") {
+                    //             console.log(data);
+                    //             //compositeSwitchCases(JSON.parse(data))
+                    //         }
+                    //     })
+                    //+"?wopen='childwindow"
+                    setProductxItem(item);
+                    toggleiFrameWindow();
+                    //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
+                }
+                else {
+                    updateVariationProduct(null);
+                    var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+                    var _product = getTaxAllProduct([_item])
+                    _product[0]["quantity"] = item.quantity;
+                    if (item.hasOwnProperty("selectedOptions")) {
+                        _product[0]["selectedOptions"] = item.selectedOptions;
+
+                    }
+                    if (index != null) {
+                        _product[0]["selectedIndex"] = index;
+                    }
+                    if (item) {
+                        _product[0]['after_discount'] = item.after_discount ? item.after_discount : 0;
+                        _product[0]['discount_amount'] = item.discount_amount ? item.discount_amount : 0;
+                        _product[0]['product_after_discount'] = item.product_after_discount ? item.product_after_discount : 0;
+                        _product[0]['product_discount_amount'] = item.product_discount_amount ? item.product_discount_amount : 0;
+                        _product[0]['discount_type'] = item.discount_type ? item.discount_type : "";
+                        _product[0]['new_product_discount_amount'] = item.new_product_discount_amount ? item.new_product_discount_amount : 0;
+                        _product[0]['cart_after_discount'] = item.cart_after_discount ? item.cart_after_discount : 0;
+                        _product[0]['cart_discount_amount'] = item.cart_discount_amount ? item.cart_discount_amount : 0;
+                    }
+                    setSelProduct(_product[0]);
+                    setisShowPopups(true);
+                    dispatch(getInventory(item.WPID)); // To fetch latest inventory
+                }
     }
     const closePopUp = () => {
         setisShowPopups(false);
@@ -463,8 +493,8 @@ const Home = () => {
 
     return (
         <React.Fragment>
-            {isShowPopups===true?
-            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product>:null}
+            {isShowPopups === true ?
+                <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product> : null}
             <div onClick={(e) => clearDeleteTileBtn(e)} className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
                 {/* left nav bar */}
                 {/* top header */}
@@ -478,7 +508,7 @@ const Home = () => {
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
                 <IframeWindow product={productxItem} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
-                <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
+                <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} /*editPopUp={editPopUp}*/ toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 
 
                 {/* top naviagtion bar */}

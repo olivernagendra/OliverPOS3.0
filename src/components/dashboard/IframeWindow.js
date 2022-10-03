@@ -17,7 +17,7 @@ const IframeWindow = (props) => {
         </div>
         <div className="subwindow-body">
             <iframe
-                src={props.product && props.product.ParamLink}
+                src={props.product && props.product.ParamLink?props.product.PageUrl:props.exApp?props.exApp.PageUrl:''}
                 frameBorder="0"
                 sandbox="allow-scripts allow-same-origin allow-forms"
                 // ref={(f) => this.ifr = f}

@@ -19,7 +19,7 @@ import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
 import { CustomerSaveSlice } from '../components/customer/CustomerSlice'
-import { checkStockSlice } from '../components/checkout/checkoutSlice';
+import { checkStockSlice,getPaymentTypeNameSlice,getExtensionsSlice } from '../components/checkout/checkoutSlice';
 import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
 import { discountSlice } from '../components/common/commonAPIs/discountSlice';
@@ -72,7 +72,9 @@ export const store = configureStore({
     inventories: inventoryReducer,
     addRemoveCashmanagement:addRemoveCashSlice.reducer,
     customergetDetail:CustomerGetDetailsSlice.reducer,
-    getAllEvents:getAllEventsSlice.reducer
+    getAllEvents:getAllEventsSlice.reducer,
+    getExtensions:getExtensionsSlice.reducer,
+    getPaymentTypeName:getPaymentTypeNameSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

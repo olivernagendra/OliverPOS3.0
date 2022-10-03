@@ -116,26 +116,26 @@ export const  initHomeFn=()=>{
     //     });
     // }
     
-    //App Launcher App Buttons
-    document.querySelectorAll(".app-launcher > .body > button").forEach((button) => {
-        button.addEventListener("click", (e) => {
-            navbarCloseAll();
-            iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
-            toggleSubwindow("iframe-popup");
-        });
-    });
+    // //App Launcher App Buttons
+    // document.querySelectorAll(".app-launcher > .body > button").forEach((button) => {
+    //     button.addEventListener("click", (e) => {
+    //         navbarCloseAll();
+    //         iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
+    //         toggleSubwindow("iframe-popup");
+    //     });
+    // });
     
-    //Navbar App Buttons
-    document.querySelectorAll(".navbar button.launcher.app").forEach((button) => {
-        button.addEventListener("click", (e) => {
-            if (document.getElementById("userInfoWrapper")) {
-                document.getElementById("userInfoWrapper").classList.add("hidden");
-            }
-            navbarCloseAll();
-            iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
-            toggleSubwindow("iframe-popup");
-        });
-    });
+    // //Navbar App Buttons
+    // document.querySelectorAll(".navbar button.launcher.app").forEach((button) => {
+    //     button.addEventListener("click", (e) => {
+    //         if (document.getElementById("userInfoWrapper")) {
+    //             document.getElementById("userInfoWrapper").classList.add("hidden");
+    //         }
+    //         navbarCloseAll();
+    //         iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
+    //         toggleSubwindow("iframe-popup");
+    //     });
+    // });
     
     //Mobile App Launcher
     if (document.getElementById("mobileAppsButton")) {
