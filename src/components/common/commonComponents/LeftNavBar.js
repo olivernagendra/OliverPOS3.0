@@ -108,7 +108,7 @@ const LeftNavBar = (props) => {
                     <p>Register</p>
                     <div className="f-key">F1</div>
                 </button>
-                <button id="customersButton" className={location.pathname === "/customer" ? "page-link selected" : "page-link"} disabled={location.pathname === "/customer" ? true : false} onClick={() => navigateTo('/customer')}>
+                <button id="customersButton" className={location.pathname === "/customers" ? "page-link selected" : "page-link"} disabled={location.pathname === "/customers" ? true : false} onClick={() => navigateTo('/customers')}>
                     <div className="img-container">
                         <img src={Customers_Icon} alt="" />
                     </div>
