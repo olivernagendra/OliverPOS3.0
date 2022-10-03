@@ -14,7 +14,7 @@ import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
 import PinPad from "./PinPad";
 import { get_UDid } from "../common/localSettings";
-import $ from "jquery";
+//import $ from "jquery";
 const Pin = () => {
     const dispatch = useDispatch();
     const UID = get_UDid('UDID');

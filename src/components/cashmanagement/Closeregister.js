@@ -6,7 +6,6 @@ import AngledBracket_Left_White from '../../assets/images/svg/AngledBracket-Left
 import OpenSign from '../../assets/images/svg/OpenSign.svg'
 import PinPad from '../pinPage/PinPad'
 import moment from 'moment';
-import { get_locName, get_regName, get_userName } from "../common/localSettings"
 import Closeregistertwo from "./Closeregistertwo";
 import { get_locName, get_regName, get_userName, getShopName } from "../common/localSettings"
 import { useNavigate } from 'react-router-dom';

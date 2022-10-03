@@ -34,10 +34,43 @@ export function getPageAPI(parameter) {
                     }
                 })
                 result.content['Records'] = customer_list;
-                //console.log("customer_list",customer_list)
+                //console.log("customer_list[0].WPId",customer_list[0].WPId)
                 sessionStorage.setItem("CUSTOMER_ID", customer_list[0].WPId)
             }
            
             return result;
         });
+}
+
+
+export function getAllEventsAPi(id, uid) {
+    var param = {
+        wpid : id,
+        Udid:uid
+    }
+    return serverRequest.clientServiceRequest('POST', `/Customers/GetCustomerEvents`, param)
+        .then(singleList => {
+            return singleList;
+        })
+}
+
+export function updateCustomerNoteAPI(data) {
+    return serverRequest.clientServiceRequest('POST', `/customers/SaveNote`, data)
+     .then(res => {
+            return res
+        })
+}
+
+export function updateCreditScoreAPI(CustomerWpid, AddPoint, DeductPoint, Notes, Udid) {
+
+    return serverRequest.clientServiceRequest('POST', `/customers/AdjustStoreCredit`, {
+        "CustomerWpid": CustomerWpid,
+        "AddPoint": AddPoint,
+        "DeductPoint": DeductPoint,
+        "Notes": Notes,
+        "Udid": Udid,
+    })
+        .then(res => {
+            return res
+        })
 }

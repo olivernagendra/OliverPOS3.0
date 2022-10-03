@@ -14,7 +14,7 @@ import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useIndexedDB } from 'react-indexed-db';
-import $ from 'jquery'
+// import $ from 'jquery'
 function Login() {
     var auth2 = ''
     const bridgDomain = "https://hub.oliverpos.com";
@@ -84,13 +84,13 @@ function Login() {
         } else {
             if (!userEmail && !password) {
                 setLoginError('Email and Password is required');
-                $('#username').focus();
+               // $('#username').focus();
             } else if (!userEmail) {
                 setLoginError('Email is required');
-                $('#username').focus();
+                // $('#username').focus();
             } else {
                 setLoginError('Password is required');
-                $('#password').focus();
+               // $('#password').focus();
             }
         }
         e.preventDefault();

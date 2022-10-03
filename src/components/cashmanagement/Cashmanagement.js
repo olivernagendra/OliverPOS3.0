@@ -220,8 +220,9 @@ function Cashmanagement() {
               </>
             }
           </div>
-
         </div>
+        {cashPopUpOpen == true ?
+          <AddRemoveCashPopup popupstatus={popupstatus} drawerBalance={_balance} HundlePOpupClose={HundlePOpupClose} /> : ""}
         <div className="cm-detailed">
           <div class="detailed-header-mobile">
             <div id="mobileDetailedExit">

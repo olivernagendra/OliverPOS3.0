@@ -1,15 +1,43 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
+import PlusSign from '../../assets/images/svg/PlusSign.svg'
 import { useNavigate } from 'react-router-dom';
-
+import { customergetPage, customergetDetail, getAllEvents } from './CustomerSlice'
+import { get_UDid } from '../common/localSettings';
+import moment from 'moment';
+import Config from '../../Config'
+import STATUSES from "../../constants/apiStatus";
+import Customerlist from "./Customerlist";
+import { LoadingSmallModal } from '../common/commonComponents/LoadingSmallModal'
+import { useIndexedDB } from 'react-indexed-db';
+import AddCustomersNotepoup from "./AddCustomersNotepoup";
+import AdjustCreditpopup from "./AdjustCreditpopup";
+import Cusomercreate from './Customercreate';
 const CustomerView = () => {
+  var billingAddress = '';
+  var shippingAddres = ''
+  var orderCount = ''
+  var OrderAmount = 0;
+  var UID = get_UDid('UDID')
+  var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
+  const dispatch = useDispatch();
+  const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
   const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
   const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
   const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
-
   const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
+  const [isShowNoteModel, setisShowNoteModel] = useState(false)
+  const [isShowcreatecustomerToggle, setisShowcreatecustomerToggle] = useState(false)
+  const [isShowCreateCustomerModel, setisShowCreateCustomerModel] = useState(false)
+  const [isShowCreditModel, setisShowCreditModel] = useState(false)
+  const [customerlistdata, setcustomerlist] = useState([]);
+  const [isCustomerListLoaded, setisCustomerListLoaded] = useState(true)
+  const [customerDetailData, setcustomerDetailData] = useState([])
+  const [AllEvant, setcustomerAllEvant] = useState([])
+  const [updateCustomerId, setupdateCustomerId] = useState('')
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
@@ -23,10 +51,169 @@ const CustomerView = () => {
   const toggleiFrameWindow = () => {
     setisShowiFrameWindow(!isShowiFrameWindow)
   }
+  const toggleNoteModel = () => {
+    setisShowNoteModel(!isShowNoteModel)
+  }
+  const toggleCreditModel=()=>[
+    setisShowCreditModel(true)
+  ]
+  const closeNotemodel = () => {
+      setisShowNoteModel(false)
+   // setisShowNoteModel(!isShowNoteModel)
+    setisShowCreditModel(false)
+  }
+  const toggleCreateCustomer = () => {
+    setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
+}
+ 
   if (!localStorage.getItem('user')) {
     navigate('/pin')
   }
+  var eventCollection = [];
+
+
+  // First Api Call ----------------------
+  // const loadMore = (number) => {
+  //   var UID = get_UDid('UDID');
+  //   dispatch(customergetPage({ "registerId": UID, "pageSize": pageSize, "pageNumber": number }));
+  // }
+
+  // let useCancelled = false;
+  // useEffect(() => {
+  //   if (useCancelled == false) {
+  //   }
+  //   loadMore(1)
+  //   return () => {
+  //     useCancelled = true;
+  //   }
+  // }, []);
+  //Response ---Customer  GetPage 
+  //const { status, data, error, is_success } = useSelector((state) => state.customergetPage)
+  //console.log("status", status, "data", data, "error", error, "is_success", is_success)
+  // const [rescustomerlist] = useSelector((state) => [state.customergetPage])
+  // useEffect(() => {
+  //   if (rescustomerlist && rescustomerlist.status == STATUSES.IDLE && rescustomerlist.is_success && rescustomerlist.data) {
+  //     setcustomerlist(rescustomerlist.data.content.Records);
+  //     setisCustomerListLoaded(false)
+  //   }
+  // }, [rescustomerlist]);
+
+
+
+
+  /// Customer Page Data form  IndexDB
+  const getCustomerFromIDB = () => {
+    getAll().then((rows) => {
+      //  console.log("rows", rows)
+      setcustomerlist(rows ? rows : []);
+      sessionStorage.setItem("CUSTOMER_ID", rows[0].WPId ? rows[0].WPId : 0);
+      // setcustomerDetailData(rows[0] ?rows[0]:[])
+    });
+
+    setisCustomerListLoaded(false)
+  }
+  let useCancelledTwo = false;
+  useEffect(() => {
+    if (useCancelledTwo == false) {
+      getCustomerFromIDB()
+    }
+    return () => {
+      useCancelledTwo = true;
+    }
+  }, []);
+
+
+
+
+
+
+
+
+  // First Time GetAllEvant and CustomerDetails API Call
+  let useCancelled1 = false;
+  useEffect(() => {
+    var UID = get_UDid('UDID');
+    var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID");
+    setupdateCustomerId(CUSTOMER_ID)
+    if (useCancelled1 == false) {
+      dispatch(customergetDetail(CUSTOMER_ID, UID));
+      dispatch(getAllEvents(CUSTOMER_ID, UID));
+    }
+    return () => {
+      useCancelled1 = true;
+    }
+  }, []);
+  // Response from customer getDetails
+  const { custsiglestatus, custsigledata, custsigleerror, custsigleis_success } = useSelector((state) => state.customergetDetail)
+  if (custsiglestatus === STATUSES.IDLE && custsigleis_success) {
+    var customerDetails = custsigledata && custsigledata.content.customerDetails
+    billingAddress = customerDetails && customerDetails.customerAddress.find(Items => Items.TypeName.toLowerCase() == "billing");
+    shippingAddres = customerDetails && customerDetails.customerAddress.find(Items => Items.TypeName.toLowerCase() == "shipping");
+
+  }
+
+  // Response ---Customer  getAllEvant 
+  const { status, data, error, is_success } = useSelector((state) => state.getAllEvents)
+  //console.log("status", status, "data", data, "error", error, "is_success", is_success)
+  const [customerAllEvant] = useSelector((state) => [state.getAllEvents])
+  useEffect(() => {
+    if (customerAllEvant && customerAllEvant.status == STATUSES.IDLE && customerAllEvant.is_success && customerAllEvant.data) {
+      setcustomerAllEvant(customerAllEvant.data.content);
+    }
+  }, [customerAllEvant]);
+  if (AllEvant && AllEvant.length > 0) {
+    AllEvant.map((event, index) => {
+      var collectionItem = {
+        eventtype: '', Id: '', amount: '', oliverPOSReciptId: '', datetime: '', status: '',
+        Description: '', ShortDescription: '', location: ''
+      };
+      var jsonData = event.JsonData && JSON.parse(event.JsonData)
+      collectionItem['eventtype'] = event.EventName;
+      collectionItem['Id'] = event.Id;
+      collectionItem['amount'] = jsonData && jsonData.AddPoint ? jsonData.AddPoint : event.Amount;
+      collectionItem['DeductPoint'] = jsonData && jsonData.DeductPoint ? jsonData.DeductPoint : event.Amount;
+      collectionItem['oliverPOSReciptId'] = '';
+      collectionItem['datetime'] = moment.utc(event.CreateDateUtc).local().format(Config.key.TIMEDATE_FORMAT);//event.CreateDateUtc;
+      collectionItem['status'] = event ? event.Status : '';
+      collectionItem['Description'] = jsonData ? jsonData.Notes : event.Description;
+      collectionItem['ShortDescription'] = event.ShortDescription;
+      collectionItem['location'] = event ? event.Location : '';
+      eventCollection.push(collectionItem)
+    })
+    orderCount = eventCollection.filter(x => x.eventtype == "New Order")
+    //Order Total Amount 
+    for (let index = 0; index < orderCount.length; index++) {
+      if (orderCount[index].amount && orderCount[index].amount != 0) {
+        OrderAmount += parseInt(orderCount[index].amount++);
+      }
+    }
+    // console.log("orderCount", orderCount)
+    // console.log("OrderAmount", OrderAmount)
+  }
+
+
+
+
+
+
+
+  const activeClass = (item, index) => {
+    // console.log("item", item)
+    // console.log("index", index)
+
+    var UID = get_UDid('UDID');
+    if (item && item.WPId !== '') {
+      setupdateCustomerId(item.WPId)
+      dispatch(customergetDetail(item.WPId, UID));
+      dispatch(getAllEvents(item.WPId, UID));
+    }
+  }
+
+  // console.log("AllEvant", AllEvant)
+  console.log("eventCollection", eventCollection)
+
   return (
+    <React.Fragment>
     <div className="customer-view-wrapper">
       <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
       <div id="appLauncherWrapper" className="app-launcher-wrapper hidden">
@@ -145,8 +332,8 @@ const CustomerView = () => {
       <div id="CVSearch" className="cv-search">
         <div className="header">
           <p>Customers</p>
-          <button id="cvAddCustomer">
-            <img src="../assets/images/SVG/PlusSign.svg" alt="" />
+          <button id="cvAddCustomer"  onClick={toggleCreateCustomer}>
+            <img src={PlusSign} alt="" />
           </button>
           <button id="mobileCVExitSearch">
             <img src="../assets/images/SVG/AngledBracket-Left-Blue.svg" alt="" />
@@ -196,53 +383,20 @@ const CustomerView = () => {
           </div>
         </div>
         <div className="body">
-          <div className="filter-name">
-            <p>A</p>
-          </div>
-          <button className="customer-card no-transform selected">
-            <div className="avatar">
-              <img src={AvatarIcon} alt="" />
-            </div>
-            <div className="text-group">
-              <p className="style1">Marvel Annihilus</p>
-              <p className="style2">annihilus@marvel.com</p>
-            </div>
-            <div className="selected-indicator"></div>
-          </button>
-          <button className="customer-card no-transform">
-            <div className="avatar">
-              <img src={AvatarIcon} alt="" />
-            </div>
-            <div className="text-group">
-              <p className="style1">Lavaman Ajaxis</p>
-              <p className="style2">ajaxis@gmail.com</p>
-            </div>
-            <div className="selected-indicator"></div>
-          </button>
-          <div className="filter-name">
-            <p>B</p>
-          </div>
-          <button className="customer-card no-transform">
-            <div className="avatar">
-              <img src={AvatarIcon} alt="" />
-            </div>
-            <div className="text-group">
-              <p className="style1">Earnst S. Blofeld</p>
-              <p className="style2">esb@spectra.com</p>
-            </div>
-            <div className="selected-indicator"></div>
-          </button>
-          <button className="customer-card no-transform">
-            <div className="avatar">
-              <img src={AvatarIcon} alt="" />
-            </div>
-            <div className="text-group">
-              <p className="style1">Joe Johnson</p>
-              <p className="style2">jojo@gmail.com</p>
-            </div>
-            <div className="selected-indicator"></div>
-          </button>
+          {isCustomerListLoaded == true ? <LoadingSmallModal /> : customerlistdata && customerlistdata.length > 0 ? customerlistdata.map((item, index) => {
+            return (
+              <Customerlist
+                onClick={() => activeClass(item, index)}
+                key={index}
+                FirstName={item.FirstName}
+                LastName={item.LastName}
+                PhoneNumber={item.Contact}
+                Email={item.Email}
+              />
+            )
+          }) : ""}
         </div>
+
         <div className="mobile-footer">
           <button id="mobileAddCustomerButton">Create New</button>
         </div>
@@ -260,80 +414,85 @@ const CustomerView = () => {
           </div>
           <div className="group-merge">
             <div className="text-group">
-              <p className="style1">Earnst S. Blofeld</p>
-              <p className="style2">esb@spectra.com</p>
+              <p className="style1">{customerDetails && customerDetails.FirstName}</p>
+              <p className="style2">{customerDetails && customerDetails.Email}</p>
             </div>
             <div className="text-group">
               <p className="style2">Phone #:</p>
-              <p className="style2">709 425 007</p>
+              <p className="style2">{customerDetails && customerDetails.Contact}</p>
             </div>
           </div>
         </div>
         <div className="cust-totals">
           <div className="col">
-            <p className="style1">$913.75</p>
+            <p className="style1">{OrderAmount ? OrderAmount : 0}</p>
             <p className="style2">Total Spent</p>
           </div>
           <div className="col">
-            <p className="style1">14</p>
+            <p className="style1">{orderCount && orderCount.length}</p>
             <p className="style2">Orders</p>
           </div>
           <div className="col">
-            <p className="style1">$24.75</p>
+            <p className="style1">{customerDetails && customerDetails.store_credit}</p>
             <p className="style2">Store Credit</p>
-            <button>Adjust Credit</button>
+            <button onClick={toggleCreditModel}>Adjust Credit</button>
           </div>
         </div>
+
         <div className="bill-ship-info">
           <div className="col">
             <p className="style1">Billing Information</p>
             <p className="style2">
-              Gara Medouar Crater <br />
-              Rissani, Morocco <br />
-              52450
+              {billingAddress.Address1}{billingAddress.Address2} <br />
+              {billingAddress.Country}, {billingAddress.City} <br />
+              {billingAddress.PostCode}
             </p>
           </div>
           <div className="col">
             <p className="style1">Shipping Information</p>
             <p className="style2">
-              Gara Medouar Crater <br />
-              Rissani, Morocco <br />
-              52450
+
+              {shippingAddres.Address1}{shippingAddres.Address2} <br />
+              {shippingAddres.Country}, {shippingAddres.City} <br />
+              {shippingAddres.PostCode}
             </p>
           </div>
         </div>
+
         <div className="cust-notes">
           <div className="header-row">
             <p>Customer Notes</p>
-            <button id="addCustNoteButton">Add Note</button>
+            <button id="addCustNoteButton" onClick={toggleNoteModel} >Add Note</button>
           </div>
-          <div className="customer-note">
-            <div className="row">
-              <p className="style1">July 27, 2021</p>
-              <p className="style2">12:50PM</p>
-              <button>
-                <img src="../assets/images/SVG/ClearCart-Icon.svg" alt="" />
-              </button>
-            </div>
-            <p>Customer came into store looking for a t-shirt but out of stock</p>
-          </div>
-          <div className="customer-note">
-            <div className="row">
-              <p className="style1">July 21, 2021</p>
-              <p className="style2">2:50PM</p>
-              <button>
-                <img src="../assets/images/SVG/ClearCart-Icon.svg" alt="" />
-              </button>
-            </div>
-            <p>Customer preferred to be named just Blofeld</p>
-          </div>
+          {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+            return (
+              item.eventtype.toLowerCase() == 'add new note' && item.Description !==null && item.Description !=="" ? 
+                <div className="customer-note">
+                  <div className="row">
+                    <p className="style1">July 27, 2021</p>
+                    <p className="style2">12:50PM</p>
+                    <button>
+                      <img src="../assets/images/SVG/ClearCart-Icon.svg" alt="" />
+                    </button>
+                  </div>
+                  <p>{item.Description}</p>
+                </div>
+                : ""
+            )
+          }) : <div>Record not found</div>}
         </div>
+         <AddCustomersNotepoup  isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId}   toggleNoteModel={toggleNoteModel} /> 
+        <AdjustCreditpopup isShow={isShowCreditModel}  /> 
+         <Cusomercreate  isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
         <div className="footer">
           <button id="customerToTransactions">View Transactions</button>
           <button id="addCustToSaleButton">Add To Sale</button>
         </div>
       </div>
-    </div>
+      
+       </div>
+        
+        </React.Fragment>
   )
 }
 

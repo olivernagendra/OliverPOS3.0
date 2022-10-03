@@ -14,7 +14,7 @@ import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-import { CustomergetPageSlice } from '../components/customer/CustomerSlice'
+import { CustomergetPageSlice ,CustomerGetDetailsSlice ,getAllEventsSlice} from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
@@ -70,7 +70,9 @@ export const store = configureStore({
     popupMessage: popupMessageSlice.reducer,
     discountList: discountSlice.reducer,
     inventories: inventoryReducer,
-    addRemoveCashmanagement:addRemoveCashSlice.reducer
+    addRemoveCashmanagement:addRemoveCashSlice.reducer,
+    customergetDetail:CustomerGetDetailsSlice.reducer,
+    getAllEvents:getAllEventsSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

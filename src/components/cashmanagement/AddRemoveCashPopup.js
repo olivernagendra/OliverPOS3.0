@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { addRemoveCash,getDetails } from './CashmanagementSlice'
+import { addRemoveCash, getDetails } from './CashmanagementSlice'
 import moment from 'moment';
 import STATUSES from "../../constants/apiStatus";
 import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
@@ -10,7 +10,7 @@ function AddRemoveCashPopup(props) {
     const [Amount, setAmount] = useState(0.00)
     const [removeAmount, setremoveAmount] = useState(0.00)
     const [Notes, setNotes] = useState('')
-    var CashmanagementId=''
+    var CashmanagementId = ''
     const addNote = (e) => {
         const { value } = e.target;
         setNotes(value)
@@ -59,25 +59,25 @@ function AddRemoveCashPopup(props) {
             setremoveAmount(0.00)
             setNotes('')
             setTimeout(() => {
-            props.HundlePOpupClose()
+                props.HundlePOpupClose()
             }, 300);
-           
+
         }
     }
 
-  
 
 
-const callApi=()=>{
-    var Cash_Management_ID = localStorage.getItem('Cash_Management_ID');
-    dispatch(getDetails(Cash_Management_ID));
-}
+
+    const callApi = () => {
+        var Cash_Management_ID = localStorage.getItem('Cash_Management_ID');
+        dispatch(getDetails(Cash_Management_ID));
+    }
 
 
 
     return (
         <div className='subwindow-wrapper'>
-            <div className="subwindow add-order-note current">
+            {/* <div className="subwindow add-order-note current">
                 <div className="subwindow-header">
                     <p>{props.popupstatus.toLowerCase() == 'add' ? "Add" : "Remove"} Cash</p>
                     <button onClick={props.HundlePOpupClose} className="close-subwindow">
@@ -110,8 +110,42 @@ const callApi=()=>{
                     <button onClick={() => handleSubmit()}>{props.popupstatus == 'add' ? "Add" : "Remove"} Cash</button>
                     <div className="auto-margin-bottom" />
                 </div>
-            </div>
+            </div> */}
+
+
+           
+                <div className="subwindow-header">
+                <p>{props.popupstatus.toLowerCase() == 'add' ? "Add" : "Remove"} Cash</p>
+                    <button className="close-subwindow">
+                        <img src="../Assets/Images/SVG/X-Icon-DarkBlue.svg" alt="" />
+                    </button>
+                </div>
+                <div className="subwindow-body">
+                    <div className="auto-margin-top" />
+                    <div className="text-row">
+                        <p className="style1">Current balance:</p>
+                        <p className="style2">{props.drawerBalance}</p>
+                    </div>
+                    <div className="input-row">
+                        <label htmlFor="addCashAmount">{props.popupstatus == 'add' ? "Add" : "Remove"}  Cash:</label>
+                        <input type="number" id="addCashAmount" placeholder="Enter Amount" />
+                    </div>
+                    <label htmlFor="addCashNote">Add a note:</label>
+                    <textarea id="addCashNote" placeholder="Please add a note here." onChange={(e) => addNote(e)} defaultValue={""} />
+                    <button onClick={() => handleSubmit()}>{props.popupstatus == 'add' ? "Add" : "Remove"} Cash</button>
+                    <div className="auto-margin-bottom" />
+                </div>
+          
+
+ 
         </div>
+
+
+        
+       
+
+
+
     )
 }
 
