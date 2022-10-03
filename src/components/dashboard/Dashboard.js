@@ -28,7 +28,7 @@ import Product from "./product/Product";
 import { product } from "./product/productSlice";
 import { userList } from "../common/commonAPIs/userSlice";
 import { discount } from "../common/commonAPIs/discountSlice";
-import { getExtensions,getPaymentTypeName } from "../checkout/checkoutSlice";
+import { getExtensions, getPaymentTypeName } from "../checkout/checkoutSlice";
 import { getRates, isMultipleTaxSupport, getTaxRateList } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
@@ -41,6 +41,7 @@ import { useNavigate } from "react-router-dom";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import { callProductXWindow } from "../../settings/CommonFunctionProductX";
+import { getInventory } from "./slices/inventorySlice";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -217,6 +218,7 @@ const Home = () => {
                     }
                     setSelProduct(_product[0]);
                     setisShowPopups(true);
+                    dispatch(getInventory(item.WPID)); // To fetch latest inventory
                 }
     }
     const closePopUp = () => {

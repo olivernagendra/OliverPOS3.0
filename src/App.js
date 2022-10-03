@@ -24,6 +24,7 @@ import Customercreate from './components/customer/Customercreate';
 import CustomerView from './components/customer/Customerview';
 import Checkout from './components/checkout/Checkout';
 import ActivityView from './components/activity/ActivityView';
+
 initDB(DBConfig);
 function App() {
 
@@ -52,7 +53,7 @@ function App() {
         <Route path="/openregister" element={authenticateComponent(<OpenRegister />)} />
         <Route path="/closeregister" element={authenticateComponent(<Closeregister />)} />
         <Route path="*" element={authenticateComponent(<NoPage />)} />
-        <Route path="/customer" element={authenticateComponent(<CustomerView />)} />
+        <Route path="/customers" element={authenticateComponent(<CustomerView />)} />
         <Route path="/checkout" element={authenticateComponent(<Checkout />)} />
         <Route path='/transactions' element={authenticateComponent(<ActivityView />)} />
       </Routes>

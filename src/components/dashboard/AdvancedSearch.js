@@ -328,7 +328,11 @@ const AdvancedSearch = (props) => {
             if (item.ManagingStock == true) {
                 dispatch(getInventory(item.WPID)); //call to get product warehouse quantity
             }
-            props.openPopUp(item);
+            setTimeout(() => {
+                props.openPopUp(item);
+                props.fatchUpdateInventory()
+            }, 100);
+
             setSerachString('');
             props.toggleAdvancedSearch();
         }
@@ -368,15 +372,14 @@ const AdvancedSearch = (props) => {
             props.toggleAdvancedSearch();
         }
     }
-    const closePopUp=()=>
-    {
+    const closePopUp = () => {
         setSerachString('');
         props.toggleAdvancedSearch();
     }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
-            <button className="close-subwindow" onClick={() =>closePopUp() }>
+            <button className="close-subwindow" onClick={() => closePopUp()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
             <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} />
@@ -494,7 +497,7 @@ const AdvancedSearch = (props) => {
                                         <img src={ViewIcon} alt="" />
                                         View
                                     </button>
-                                    <button className="search-add-to-sale" onClick={() => item.Type!="simple"? viewProduct(item):addToCart(item)}>
+                                    <button className="search-add-to-sale" onClick={() => item.Type != "simple" ? viewProduct(item) : addToCart(item)}>
                                         <img src={Add_Icon_White} alt="" />
                                         Add to Sale
                                     </button>

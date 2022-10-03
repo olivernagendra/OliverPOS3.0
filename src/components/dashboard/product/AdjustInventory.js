@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import Pencil_Blue from '../../../images/svg/Pencil-Blue.svg';
 import { useDispatch, useSelector } from "react-redux";
-import { updateInventory } from '../slices/inventorySlice'
+import { getInventory, updateInventory } from '../slices/inventorySlice'
 import { useIndexedDB } from "react-indexed-db";
 
 const AdjustInventory = (props) => {
@@ -17,7 +17,9 @@ const AdjustInventory = (props) => {
     //console.log("prodcutInWarehouse", inventoryGet)
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleAdjustInventory();
+            console.log("AdjustInventory")
+
+            props.toggleAdjustInventory(false);
         }
     }
 
@@ -28,35 +30,45 @@ const AdjustInventory = (props) => {
         currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
 
     }
+    let useCancelled = false;
     useEffect(() => {
-        if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
-            setInventory(currentWareHouseDetail.Quantity)
-        }
+        if (useCancelled == false) {
+            if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
+                setInventory(currentWareHouseDetail.Quantity)
+            }
+            //dispatch(updateInventory(null));
+            //update index DB........................
+            if (inventoryStatus && inventoryStatus.inventoryUpdate && inventoryStatus.inventoryUpdate.is_success == true) {
+                if (props.product && props.product.WPID) {
+                    var prodcut = ""
+                    getByID(props.product.WPID).then(prodcut => {
+                        //prodcut = prd;
+                        prodcut.StockQuantity = inventory;
+                        update(prodcut).then(
+                            () => {
 
-        //update index DB........................
-        if (inventoryStatus && inventoryStatus.inventoryUpdate && inventoryStatus.inventoryUpdate.is_success == true) {
-            if (props.product && props.product.WPID) {
-                var prodcut = ""
-                getByID(props.product.WPID).then(prodcut => {
-                    //prodcut = prd;
-                    prodcut.StockQuantity = inventory;
-                    update({ WPID: props.product.WPID, prodcut }).then(
-                        () => {
-                            console.log("stock Updated", props.product.WPID, inventory)
-                            //setTimeout(() => {
-                            props.toggleAdjustInventory();
-                            //}, 100);
-                        },
-                        error => {
-                            console.log(error);
-                        }
-                    );
-                });
+                                console.log("stock Updated", prodcut)
+                                setTimeout(() => {
+                                    props.fatchUpdateInventory()
+                                    props.toggleAdjustInventory(false); //close inventory popup
+                                    dispatch(updateInventory(null));
+
+                                }, 100);
+                            },
+                            error => {
+                                console.log(error);
+                            }
+                        );
+                    });
+
+
+                }
 
 
             }
-
-
+            return () => {
+                useCancelled = true;
+            }
         }
     }, [inventoryStatus])
     //function for call api request to upddate inventory into warehouse. 
@@ -70,6 +82,10 @@ const AdjustInventory = (props) => {
         //var inventoryDetails = (props.product ) ? props.product : inventoryCheck && inventoryCheck.WPID ? [inventoryCheck] : []
 
         dispatch(updateInventory(data));
+
+        setTimeout(() => {
+            dispatch(getInventory(props.product.WPID))
+        }, 70);
     }
 
     const handleInventoryChange = (e) => {

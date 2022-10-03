@@ -379,3 +379,7 @@ code {
 @media (min-width: 900px) and (max-width: 1193px) {}
 @media (min-width: 1920px) {}
 @media (min-width: 3840px) {} */
+
+.divider{
+	width: 100% !important;
+}

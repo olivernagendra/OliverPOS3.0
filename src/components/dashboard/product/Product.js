@@ -33,6 +33,7 @@ import { product } from "./productSlice";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
+import { getInventory } from "../slices/inventorySlice";
 import { NumericFormat } from 'react-number-format';
 import { RoundAmount } from "../../common/TaxSetting";
 const Product = (props) => {
@@ -55,6 +56,9 @@ const Product = (props) => {
     const [selVariations, setSelVariations] = useState([]);
     const [selOptions, setSelOptions] = useState([]);
     const [isEdit, setIsEdit] = useState(false);
+    const [selectedVariationProduct, setSelectedVariationProduct] = useState(null)
+
+    const [variationStockQunatity, setVariationStockQunatity] = useState(0)
     const [customFeeModifiers, setCustomFeeModifiers] = useState([]);
     const [discounts, setDiscounts] = useState(null);
     const [respAttribute] = useSelector((state) => [state.attribute])
@@ -62,6 +66,47 @@ const Product = (props) => {
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
     // });
+    const [inventoryStatus] = useSelector((state) => [state.inventories])
+
+    // useEffect(() => {
+    //     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    //     setVariationStockQunatity(_product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
+    //         (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0'
+    //     ) : 0)
+    // }, [props.variationProduct]);
+    var itemQauntity = 0;
+    const fatchUpdateInventory = async () => {
+        var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+        // getByID(_product.WPID).then((prodcut) => {
+        //     itemQauntity = prodcut && prodcut.StockQuantity
+        //     console.log("itemQauntity", itemQauntity)
+        //     variationStockQunatity = itemQauntity;
+        // });
+
+        // var prodcut = await getProductByID(_product.WPID).then((row) => {
+        //     return row;
+        // });
+        // if (prodcut) {
+        //     itemQauntity = prodcut && prodcut.StockQuantity
+        //     console.log("itemQauntity", itemQauntity)
+        //     setVariationStockQunatity(itemQauntity);
+        // }
+    }
+
+    var currentWareHouseDetail = "";
+    useEffect(() => {
+
+        var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
+        var CurrentWarehouseId = localStorage.getItem("WarehouseId");
+
+        if (warehouseDetail && warehouseDetail.length > 0) {
+            currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+        }
+        if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
+            setVariationStockQunatity(currentWareHouseDetail.Quantity)
+            console.log("product Qty", currentWareHouseDetail.Quantity)
+        }
+    }, [inventoryStatus])
     const toggleProductNote = () => {
         setisProductNote(!isProductNote)
     }
@@ -76,9 +121,13 @@ const Product = (props) => {
             setisProductDiscount(!isProductDiscount)
         }
     }
-    const toggleAdjustInventory = () => {
-        setisAdjustInventory(!isAdjustInventory)
+
+    const toggleAdjustInventory = (istoggle) => {
+        console.log("istoggle", istoggle)
+        console.log("isAdjustInventory", isAdjustInventory)
+        setisAdjustInventory(istoggle == null || istoggle == "undefined" ? !isAdjustInventory : istoggle)
     }
+
     const toggleNoVariationSelected = () => {
         setisNoVariationSelected(!isNoVariationSelected)
     }
@@ -295,7 +344,7 @@ const Product = (props) => {
             //this.setState({ ProductModifiers: all_modifiers, SelectedModifiers: modifiers });
 
             // console.log("---ModifierList d--"+JSON.stringify(d) )
-            console.log("---ModifierList modifiers--" + JSON.stringify(modifiers))
+            //console.log("---ModifierList modifiers--" + JSON.stringify(modifiers))
         });
         // showOverlay();
         // showModal("modifiers");
@@ -453,12 +502,12 @@ const Product = (props) => {
                 setSelectedModifiers(update_data)
             }
         }
-        console.log("---selectedModifiers----" + JSON.stringify(selectedModifiers))
+        //  console.log("---selectedModifiers----" + JSON.stringify(selectedModifiers))
     }
     const submitChanges = () => {
         // this.setState({ SaveSelectedModifiers: selectedModifiers });
         setSaveSelectedModifiers(selectedModifiers)
-        console.log("----selected modifier----" + JSON.stringify(selectedModifiers));
+        // console.log("----selected modifier----" + JSON.stringify(selectedModifiers));
         setTimeout(() => {
             addModifierAsCustomFee();
             // closeModifier();
@@ -468,7 +517,7 @@ const Product = (props) => {
 
         var tax_is = props.selProduct; //this.props.getVariationProductData && getVariatioModalProduct(this.props.single_product ? this.props.single_product : this.state.variationfound ? this.state.variationfound : this.props.getVariationProductData, this.state.variationDefaultQunatity);
         var product_price = props.selProduct.Price;//getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? tax_is && cartPriceWithTax(tax_is.old_price, getSettingCase(), tax_is.TaxClass) : getSettingCase() == 6 ? tax_is && tax_is.old_price : tax_is && tax_is.old_price;
-        console.log("---product_price---" + product_price);
+        // console.log("---product_price---" + product_price);
         var _data = [];
         saveSelectedModifiers && saveSelectedModifiers.map(m => {
             if (m.is_active == true) {
@@ -502,7 +551,7 @@ const Product = (props) => {
             setCustomFeeModifiers(_data)
         }
         //this.setState({ CustomFee_Modifiers: _data });
-        console.log("----modifier as custom fee----" + JSON.stringify(_data));
+        //console.log("----modifier as custom fee----" + JSON.stringify(_data));
     }
     const getRecomProducts = () => {
         var ids = "";
@@ -545,10 +594,7 @@ const Product = (props) => {
     //     }
     // }
 
-    // useEffect(() => {
-    //     console.log("----_selVariations save" + JSON.stringify(_selVariationsEdit))
-    //     setSelVariations(_selVariationsEdit);
-    // }, []);
+
 
     var _selVariationsEdit = [];
     const setSelectedOption = (option, attribute, AttrIndex) => {
@@ -570,7 +616,7 @@ const Product = (props) => {
         if (checkLength() == false) {
             if (
                 JSON.stringify(selVariations) != JSON.stringify(_selVariationsEdit)) {
-                console.log("----_selVariations" + JSON.stringify(_selVariationsEdit))
+                // console.log("----_selVariations" + JSON.stringify(_selVariationsEdit))
                 setSelVariations(_selVariationsEdit);
             }
         }
@@ -600,7 +646,7 @@ const Product = (props) => {
                     else {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                     }
-                    console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    //  console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     allProdcuts.filter(item => {
@@ -668,7 +714,7 @@ const Product = (props) => {
             return obj;
         });
         setSelVariations(_selVariations);
-        console.log("-----if exists----" + JSON.stringify(_selVariations))
+        // console.log("-----if exists----" + JSON.stringify(_selVariations))
         // doVariationSearch();
         // return;
         if (props && props.selProduct) {
@@ -691,11 +737,14 @@ const Product = (props) => {
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                        dispatch(getInventory(filteredAttribute[0].WPID)); //call to get product warehouse quantity
+
                     }
                     else {
                         props.updateVariationProduct && props.updateVariationProduct(null);
+                        // dispatch(getInventory(null)); //call to get product warehouse quantity
                     }
-                    console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     var filteredAttribute1 = allProdcuts.filter(item => {
@@ -731,7 +780,7 @@ const Product = (props) => {
                     // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
                     //     console.log("-------combi----" + a.combination);
                     // })
-                    console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
+                    // console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
                     // console.log("--allVariations--- ", JSON.stringify(allVariations));
 
                 }
@@ -904,7 +953,7 @@ const Product = (props) => {
             filteredArr.push(sub_attribute ? sub_attribute.Code : itm.option);
         })
         var cominationArr = combo(filteredArr);
-        console.log("----cominationArr---" + JSON.stringify(cominationArr));
+        // console.log("----cominationArr---" + JSON.stringify(cominationArr));
         var variations = Variations;
         var getVariationProductData = props.selProduct
         var _fileterTerm = filterTerms ? filterTerms : "";
@@ -1073,6 +1122,7 @@ const Product = (props) => {
         return result;
     }
     ///-------xxxxx-------
+    ///-------xxxxx-------
     const addToCart = () => {
         if (checkLength() === true) {
 
@@ -1170,33 +1220,32 @@ const Product = (props) => {
         var disString = "";
         if (_product.product_discount_amount > 0) {
             if (_product.discount_type == "Number") {
-                disString =  "$"+_product.new_product_discount_amount + " " + LocalizedLanguage.individual;
+                disString = "$" + _product.new_product_discount_amount + " " + LocalizedLanguage.individual;
             }
             else {
-                disString =  _product.new_product_discount_amount + "% " + LocalizedLanguage.individual;
+                disString = _product.new_product_discount_amount + "% " + LocalizedLanguage.individual;
             }
         }
         let cart = localStorage.getItem("CART") ? JSON.parse(localStorage.getItem("CART")) : null;
         if (_product.cart_discount_amount > 0 && cart) {
-            if(disString!="")
-            {
-                disString+=" + "
+            if (disString != "") {
+                disString += " + "
             }
             if (cart && cart.discountType == "Number") {
-                disString += "$"+cart.discount_amount + " " + LocalizedLanguage.overall;
+                disString += "$" + cart.discount_amount + " " + LocalizedLanguage.overall;
             }
             else {
-                disString +=  cart.discount_amount + "% " + LocalizedLanguage.overall;
+                disString += cart.discount_amount + "% " + LocalizedLanguage.overall;
             }
         }
-        if ((_product.product_discount_amount > 0 || _product.cart_discount_amount > 0) && disString!="") {
-            disString = "("+disString+") " 
-            disString +=" "+ LocalizedLanguage.discountAdded;
+        if ((_product.product_discount_amount > 0 || _product.cart_discount_amount > 0) && disString != "") {
+            disString = "(" + disString + ") "
+            disString += " " + LocalizedLanguage.discountAdded;
         }
         else {
-            disString +=" "+ LocalizedLanguage.addDiscount;
+            disString += " " + LocalizedLanguage.addDiscount;
         }
-        setDiscounts(disString!=""?disString:LocalizedLanguage.addDiscount);
+        setDiscounts(disString != "" ? disString : LocalizedLanguage.addDiscount);
     }
     useEffect(() => {
         if (props.selProduct && props.selProduct.quantity) {
@@ -1248,20 +1297,27 @@ const Product = (props) => {
     setTimeout(() => {
         initProuctFn();
     }, 1000);
-    var variationStockQunatity = 0;
 
     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
     var product_price = 0;
     var after_discount_total_price = 0;
     if (_product) {
-        variationStockQunatity =
-            (_product.ManagingStock == true && _product.StockStatus == "outofstock") ? "outofstock" :
-                (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? "Unlimited" : (typeof _product.StockQuantity != 'undefined') && _product.StockQuantity != '' ? _product.StockQuantity : '0';
 
         var after_discount_total_price = _product && _product.product_discount_amount ?
             _product.product_discount_amount * (_product.discount_type != "Number" ? _product.quantity ? _product.quantity : productQty : 1) : 0;
         product_price = getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? _product && cartPriceWithTax(_product.old_price, getSettingCase(), _product.TaxClass) : getSettingCase() == 6 ? _product && _product.old_price : _product && _product.old_price;
     }
+
+
+    var warehouseDetail = inventoryStatus && inventoryStatus.inventoryGet && inventoryStatus.inventoryGet.data && inventoryStatus.inventoryGet.data.content
+    var CurrentWarehouseId = localStorage.getItem("WarehouseId");
+
+    if (warehouseDetail && warehouseDetail.length > 0) {
+        currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+    }
+
+    var _currentStock = currentWareHouseDetail && currentWareHouseDetail !== "" ? currentWareHouseDetail.Quantity : variationStockQunatity;
+    console.log("Quantity", currentWareHouseDetail.Quantity, variationStockQunatity)
 
     return (
         props.isShowPopups == false ? <React.Fragment></React.Fragment> :
@@ -1467,8 +1523,11 @@ const Product = (props) => {
                                         <p className="mobile-only">Currently in stock:</p>
                                         <p className="quantity">{variationStockQunatity}</p>
                                     </div>
-                                    <p className="desktop-only">In Stock</p>
-                                    <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+
+                                    {isOutOfStock == false && <p className="desktop-only">In Stock</p>}
+                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&  //no need update stock when unlimited
+                                        <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+                                    }
                                 </div>
 
                                 <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
@@ -1478,22 +1537,28 @@ const Product = (props) => {
                             </div>
                         </div>
                         <div className="col">
-                            <p className="title">Description</p>
-                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.Description }}>
+                            {_product && _product.ShortDescription && <p className="title">Description</p>}
+                            <p className="para" dangerouslySetInnerHTML={{ __html: _product && _product.ShortDescription }}>
 
                             </p>
-                            <p className="title">Additional Fields</p>
+                            {_product && _product.ProductAttributes && _product.ProductAttributes.length > 0 &&
+                                <p className="title">Additional Fields</p>}
                             <p className="para">
-                                Material: 100% Cotton <br />
-                                Origin: Made in Canada
+
+                                {_product && _product.ProductAttributes && _product.ProductAttributes.map((item, index) => {
+                                    if (item && item.Option) {
+                                        return <div key={index}>{item.Name + " : " + item.Option}</div>
+                                    }
+                                })
+                                }
                             </p>
-                            <p className="title">Custom Fields</p>
+                            {/* {_product.ShortDescription && <p className="title">Custom Fields</p>}
                             <p className="para">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean erat sem, facilisis vel tincidunt nec, posuere ac ante.
-                            </p>
-                            <p className="title">SKU #</p>
+                                {_product.ShortDescription}
+                            </p> */}
+                            {_product && _product.Sku && _product.Sku !== "" && <p className="title">SKU #</p>}
                             <p className="para">{_product && _product.Sku}</p>
-                            <p className="title">Barcode ID #</p>
+                            {_product && _product.Barcode && _product.Barcode !== "" && <p className="title">Barcode ID #</p>}
                             <p className="para">{_product && _product.Barcode}</p>
                         </div>
                     </div>
@@ -1577,8 +1642,10 @@ const Product = (props) => {
                 </div>
                 <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount} selecteditem={props.selProduct}></ProductDiscount>
                 <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
-                    productStockQuantity={variationStockQunatity}
+                    productStockQuantity={_currentStock}
                     product={_product}
+                    fatchUpdateInventory={fatchUpdateInventory}
+                    isAdjustInventory={isAdjustInventory}
                 ></AdjustInventory>
                 <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
