@@ -7,14 +7,20 @@ import { addtoCartProduct } from "./product/productLogic";
 import { changeTaxRate } from "../common/TaxSetting";
 import { updateTaxRateList,selectedTaxList } from "../common/commonAPIs/taxSlice";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import STATUSES from "../../constants/apiStatus";
 const TaxList = (props) => {
     const dispatch = useDispatch();
     const [selTax, setSelTax] = useState([]);
-    const [taxList, setTaxList] = useState([]);
+     const [taxRateList, setTaxRateList] = useState([]);
     const [tax_items, setTax_items] = useState([]);
     const [isShowTaxList, setisShowTaxList] = useState(false);
     const [isDefaultTax, setisDefaultTax] = useState(true);
     const toggleShowTaxList = () => {
+        if(isShowTaxList==false)
+        {
+            getTaxList();
+        }
+        
         setisShowTaxList(!isShowTaxList)
     }
     const closePopup = () => {
@@ -135,9 +141,9 @@ const TaxList = (props) => {
             // }
         }
         dispatch(selectedTaxList(taxData));
-        setTimeout(() => {
-            getSelectedTaxList();
-        }, 100);
+        // setTimeout(() => {
+        //     getSelectedTaxList();
+        // }, 100);
         toggleShowTaxList();
         props.toggleTaxList();
         // this.props.dispatch(taxRateAction.selectedTaxList(taxData))
@@ -145,33 +151,35 @@ const TaxList = (props) => {
     }
     useEffect(() => {
         getSelectedTaxList();
-        getTaxList();
-
+        // setTimeout(() => {
+        //     getTaxList();
+        // }, 400);
+        
     }, []);
     const getTaxList = () => {
-        var tax_items = localStorage.getItem("SHOP_TAXRATE_LIST") ? JSON.parse(localStorage.getItem("SHOP_TAXRATE_LIST")) : [];
-        tax_items = AddAttribute(tax_items, "check_is", false);
-        // if (selTax && selTax.length > 0 && tax_items) {
-        //    tax_items.map(t => {
-        //         var item = selTax.find(a => a.TaxId === t.TaxId);
-        //         if (item && typeof item != "undefined") {
-        //             console.log("-----item existed" + JSON.stringify(item));
-        //             console.log("-----item t" + JSON.stringify(t));
-        //         }
-        //         return t;
-        //     })
-        // }
-        setTax_items(tax_items);
+        var _tax_items = localStorage.getItem("SHOP_TAXRATE_LIST") ? JSON.parse(localStorage.getItem("SHOP_TAXRATE_LIST")) : [];
+        _tax_items = AddAttribute(_tax_items, "check_is", false);
+        if (selTax && selTax.length > 0 && _tax_items) {
+            _tax_items.map(t => {
+                var item = selTax.find(a => a.TaxId === t.TaxId);
+                if (item && typeof item != "undefined") {
+                    console.log("-----item existed" + JSON.stringify(item));
+                    console.log("-----item t" + JSON.stringify(t));
+                    t["check_is"]=true
+                }
+            })
+        }
+        setTax_items(_tax_items);
     }
     const getSelectedTaxList = () => {
         
         var selected_tax_list =  localStorage.getItem('SELECTED_TAX') ? JSON.parse(localStorage.getItem('SELECTED_TAX')) :[];
-        var UpdateTaxRateList=[];
+        var UpdateTaxRateList=localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];;
         selected_tax_list && selected_tax_list.map((item, index) => {
             var checkStatus = false;
             if (UpdateTaxRateList && UpdateTaxRateList.length > 0) {
                 var updatedTax = UpdateTaxRateList.find(items => parseInt(items.TaxId) == parseInt(item.TaxId));
-                if (updatedTax && updatedTax.check_is == true) {
+                if (updatedTax && typeof updatedTax!="undefined" && updatedTax.check_is == true) {
                     checkStatus = true;
                     item["check_is"]=true;
                 }
@@ -179,6 +187,8 @@ const TaxList = (props) => {
                 {
                     item["check_is"]=false;
                 }
+                else if(typeof updatedTax!="undefined")
+                {item["check_is"]=false;}
             }
         });
         
@@ -197,11 +207,25 @@ const TaxList = (props) => {
             setisDefaultTax(false);
         }
     }
-    const updateOnSelectedTax=(tax)=>
+    // const [resGetRates] = useSelector((state) => [state.getRates])
+    // useEffect(() => {
+    //     if ((resGetRates && resGetRates.status == STATUSES.IDLE && resGetRates.is_success)) {
+    //         setTaxRateList(resGetRates.data.content);
+    //         console.log("---resGetRates.data.content---"+JSON.stringify(resGetRates.data.content))
+    //     }
+    // }, [resGetRates]);
+    const updateOnSelectedTax=(tax,e)=>
     {
         console.log("---selecte dtax---"+JSON.stringify(tax))
+        // console.log("---selecte dtax event---"+JSON.stringify(e.currentTarget))
+        var is_check=true;
+        if(e && e.currentTarget && e.currentTarget.checked && e.currentTarget.checked)
+        {
+            is_check=e.currentTarget.checked;
+        }
         //{"TaxId":4,"TaxRate":"15%","TaxName":"sgst","TaxClass":"zero-rate","Country":"","State":"","City":null,"PostCode":null,"Priority":"1","Compound":"0","Shipping":"1","check_is":true}
-        var taxRateList=localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
+        //var _taxRateList= taxRateList && taxRateList.length>0? (localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : []):[];
+        var _taxRateList=localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
         // taxRateList.push({
         //     check_is: tax.check_is,
         //     TaxRate: tax.TaxRate,
@@ -214,9 +238,9 @@ const TaxList = (props) => {
         
 
         //---
-        if (taxRateList.length == 0) {
-            taxRateList.push({
-                check_is: tax.check_is,
+        if (_taxRateList.length == 0) {
+            _taxRateList.push({
+                check_is: is_check,
                 TaxRate: tax.TaxRate,
                 TaxName: tax.TaxName,
                 TaxId: tax.TaxId,
@@ -225,16 +249,20 @@ const TaxList = (props) => {
                 TaxClass: tax.TaxClass
             })
         } else {
-            var FindId = taxRateList.find(isName => parseInt(isName.TaxId) === parseInt(tax.TaxId));
+            var FindId = _taxRateList.find(isName => parseInt(isName.TaxId) === parseInt(tax.TaxId));
             if (FindId) {
-                taxRateList.map(item => {
+                _taxRateList.map(item => {
                     if (item.TaxId == FindId.TaxId) {
-                        item['check_is'] = FindId.check_is == true ? false : true
+                        // if (!item.hasOwnProperty('check_is')) {
+                        //     item['check_is'] = is_check;
+                        // }
+                        // else
+                        {item['check_is'] = FindId.check_is == true ? false : true;}
                     }
                 })
             } else {
-                taxRateList.push({
-                    check_is: tax.check_is,
+                _taxRateList.push({
+                    check_is: is_check,
                     TaxRate: tax.TaxRate,
                     TaxName: tax.TaxName,
                     TaxId: tax.TaxId,
@@ -246,10 +274,12 @@ const TaxList = (props) => {
         }
 
         //--
-        var updateTaxCarproduct = changeTaxRate(taxRateList, 1);
-        console.log("---updateTaxCarproduct---"+JSON.stringify(updateTaxCarproduct))
-        //dispatch(updateTaxRateList(taxRateList));
-        dispatch(addtoCartProduct(updateTaxCarproduct));
+        var updateTaxCarproduct = changeTaxRate(_taxRateList, 1);
+        //console.log("---updateTaxCarproduct---"+JSON.stringify(updateTaxCarproduct))
+        dispatch(updateTaxRateList(_taxRateList));
+        var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];//this.state.cartproductlist;
+        addtoCartProduct(cartlist);
+        //dispatch(addtoCartProduct(updateTaxCarproduct));
         dispatch(product());
     }
     const defaultTax=()=>
@@ -260,6 +290,14 @@ const TaxList = (props) => {
         addtoCartProduct(cartlist);
         dispatch(product());
     }
+
+    const [ respupdateTaxRateList] = useSelector((state) => [ state.updateTaxRateList])
+    useEffect(() => {
+        if (respupdateTaxRateList && respupdateTaxRateList.status == STATUSES.IDLE && respupdateTaxRateList.is_success) {
+            //setTaxRateList(respupdateTaxRateList.data)
+            getSelectedTaxList();
+        }
+    }, [respupdateTaxRateList]);
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={(props.isShow === true && isShowTaxList === false) ? "subwindow quick-tax current" : "subwindow quick-tax"}>
@@ -280,10 +318,10 @@ const TaxList = (props) => {
                     </div>
                     {selTax && selTax.map(m => {
                         return (
-                            <div className="row" key={m.TaxId}>
+                            <div className= {isDefaultTax===false ?"row":"row btn-disable"} key={m.TaxId}>
                                 <p>{m.TaxName}</p>
                                 <label>
-                                    <input type="radio" id={m.TaxName} name={m.TaxName} value={m.TaxName} onClick={()=>updateOnSelectedTax(m)} checked={m.check_is==true?true:false}/>
+                                    <input type="radio" id={m.TaxName} name={m.TaxName} value={m.TaxName} onClick={(e)=>isDefaultTax===false ?updateOnSelectedTax(m,e):null} checked={m.check_is==true?true:false}/>
                                     <div className="custom-toggle">
                                         <div className="knob"></div>
                                     </div>
