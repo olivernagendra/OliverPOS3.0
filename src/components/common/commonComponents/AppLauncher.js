@@ -1,4 +1,4 @@
-import React, { useState,useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import AngledBracket_Left_BaseBlue from '../../../images/svg/AngledBracket-Left-BaseBlue.svg';
 import NoApps_Message from '../../../images/svg/NoApps-Message.svg';
@@ -10,35 +10,9 @@ import NoApps_Message from '../../../images/svg/NoApps-Message.svg';
 // import Fortis_Icon from '../../../images/Temp/Fortis-Icon.png';
 // import QuoteApp_Icon from '../../../images/Temp/QuoteApp_Icon.png';
 import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
+import { CheckAppDisplayInView } from "../commonFunctions/appDisplayFunction";
 const AppLauncher = (props) => {
-    const [page,setPage]=useState('ShopView');
-    const location = useLocation();
-     useEffect(() => {
-        var _route=location.pathname;
-        if(props && props.view &&  props.view==="Product View")
-        {
-            _route="/product";
-        }
-        switch (_route) {
-            case '/home':
-                setPage('Shop View');
-                break;
-            case '/customer':
-                setPage('Customer View');
-                break;
-            case '/transactions':
-                setPage('Activity View');
-                break;
-            case '/checkout':
-                setPage('Checkout');
-                break;
-            case '/product':
-                setPage('Product View');
-                break;
-            default:
-                break;
-        }
-    },[page]);
+
 
     var true_dimaond_field = localStorage.getItem('GET_EXTENTION_FIELD') ? JSON.parse(localStorage.getItem('GET_EXTENTION_FIELD')) : [];
     return (
@@ -53,8 +27,8 @@ const AppLauncher = (props) => {
                 <div className="body">
                     {true_dimaond_field && true_dimaond_field.length > 0 ? true_dimaond_field.map((Items, index) => {
                         {
-                            return (Items.PluginId == 0 && Items.Name !== 'Contact Details' && Items.ShowAtCheckout === true) ||
-                                (Items.viewManagement && Items.viewManagement !== [] && Items.viewManagement.find(type => type.ViewSlug == page)) ?
+                            //(  Items.PluginId == 0 && Items.Name !== 'Contact Details' && Items.ShowAtCheckout === true) ||
+                            return (Items.viewManagement && Items.viewManagement !== [] && CheckAppDisplayInView(Items.viewManagement) === true) ?
                                 <button onClick={() => props.toggleiFrameWindow(Items)}>
                                     <div className="img-container">
                                         {Items.logo != null ? <img src={Items.logo} alt="" onError={({ currentTarget }) => {
