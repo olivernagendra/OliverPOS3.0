@@ -12,9 +12,12 @@ const CartDiscount = (props) => {
     const [allDiscount, setAllDiscount] = useState([]);
     const [isDiscountBtnEnable, setIsDiscountBtnEnable] = useState(true);
     const [discountType, setDiscountType] = useState('');
-    const [respDiscountList] = useSelector((state) => [state.discountList])
-    const dispatch = useDispatch();
+    const [respDiscountList] = useSelector((state) => [state.discountList]);
 
+    const [txtValue, setTxtValue] = useState("")
+
+    const dispatch = useDispatch();
+   
     useEffect(() => {
         if (localStorage.getItem("discountlst")) {
             var discount_list = JSON.parse(localStorage.getItem("discountlst"));
@@ -22,9 +25,28 @@ const CartDiscount = (props) => {
         }
     }, [respDiscountList])
 
-    // const props.toggleSelectDiscountBtn = () => {
-    //     setprops.isSelectDiscountBtn(!props.isSelectDiscountBtn)
-    // }
+    const discount_Amount = (a) => {
+        //console.log(/^\d+(\.\d{1,2})?$/.test(a.key.toString()))
+        if (a.key !== "Backspace" && a.key !== "backspace") {
+            if ((/^\d+(\.\d{1,2})?$/.test(a.key.toString())) === false) { return; }
+        }
+        var str = "";
+        if (a.key === "Backspace" || a.key === "backspace") {
+            str = txtValue.substring(0, txtValue.length - 1);
+        }
+        else {
+            str = txtValue + a.key;
+        }
+        setTxtValue(str);
+        //console.log(str);
+        setDiscountAmount((parseFloat(str) / 100).toFixed(2));
+    }
+    const closePopup = () => {
+        setDiscountAmount("");
+        setTxtValue("");
+        props.toggleCartDiscount();
+
+    }
     const handleDiscount = (discount_Type) => {
         if (discountAmount == "." || discountAmount == "") {
             return;
@@ -37,11 +59,13 @@ const CartDiscount = (props) => {
             discount_amount,
             Tax_rate: 0
         }
-        setDiscountAmount("")
+        setDiscountAmount("");
+        setTxtValue("");
         localStorage.setItem("CART", JSON.stringify(cart))
         addtoCartProduct(ListItem);
         dispatch(product());
         setIsDiscountBtnEnable(true)
+
         props.toggleCartDiscount();
     }
     const handleListDiscount = (discount_Type, Amount) => {
@@ -60,7 +84,8 @@ const CartDiscount = (props) => {
     const clearDiscount = () => {
         setIsDiscountBtnEnable(true);
         const ListItem = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
-        setDiscountAmount("")
+        setDiscountAmount("");
+        setTxtValue("");
         localStorage.removeItem("CART")
         addtoCartProduct(ListItem);
         dispatch(product());
@@ -147,40 +172,17 @@ const CartDiscount = (props) => {
     }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            setDiscountAmount("");
+            setTxtValue("");
             props.toggleCartDiscount();
-        }
-        else {
-            // if(e && e.target && e.target.className && e.target.className === "custom-radio")
-            // {
-            //     setprops.isSelectDiscountBtn(!props.isSelectDiscountBtn)
-            // }
         }
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            {/* <div className={props.isShow===true? "subwindow cart-discount current":"subwindow cart-discount"}>
-            <div className="subwindow-header">
-                <p>Add Cart Discount</p>
-                <button className="close-subwindow" onClick={()=>props.toggleCartDiscount()}>
-                    <img src={X_Icon_DarkBlue} alt="" />
-                </button>
-            </div>
-            <div className="subwindow-body">
-                <label htmlFor="cartDiscountAmount">Discount feeAmount:</label>
-                <input type="number" id="cartDiscountAmount" placeholder="0" />
-                <p>Select type of discount to be applied to cart:</p>
-                <div className="button-row">
-                    <button id="dollarDiscount">$ Discount</button>
-                    <button id="percentDiscount">% Discount</button>
-                </div>
-            </div>
-        </div> */}
-
-
             <div className={props.isShow === true ? "subwindow discount-fee custom-fee current" : "subwindow discount-fee custom-fee"}>
                 <div className="subwindow-header">
                     <p>Custom Fees/Discounts</p>
-                    <button className="close-subwindow" onClick={() => props.toggleCartDiscount()}>
+                    <button className="close-subwindow" onClick={() => closePopup()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
@@ -202,38 +204,38 @@ const CartDiscount = (props) => {
                         </label>
                     </div>
                     {props.isSelectDiscountBtn == false ?
-                    <div className="custom-fee">
-                        <label htmlFor="customFeeLabel">{LocalizedLanguage.customFeelabel}</label>
-                        <input type="text" id="customFeeLabel" placeholder="Name your custom fee" value={add_title} onChange={(e) => AddTitle(e.target.value)} />
-                        <input type="number" id="customFeeAmount" placeholder="0.00" value={feeAmount} onChange={(e) => FeeAmount(e.target.value)} />
-                        <p>Applies a custom fee item to cart</p>
-                        <div className="button-row">
-                            <button onClick={() => AddFee(true)}>With Tax</button>
-                            <button onClick={() => AddFee(false)}>Without Tax</button>
-                        </div>
-                    </div>:
-                    <div className="cart-discount">
-                        <div className="main">
-                            <label htmlFor="discountAmount">Discount feeAmount:</label>
-                            <input type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onChange={(e) => setDiscountAmount(e.target.value)} disabled={isDiscountBtnEnable == true ? false : true} />
-                            <p>Select type of discount to be applied to cart:</p>
+                        <div className="custom-fee">
+                            <label htmlFor="customFeeLabel">{LocalizedLanguage.customFeelabel}</label>
+                            <input type="text" id="customFeeLabel" placeholder="Name your custom fee" value={add_title} onChange={(e) => AddTitle(e.target.value)} />
+                            <input type="number" id="customFeeAmount" placeholder="0.00" value={feeAmount} onChange={(e) => FeeAmount(e.target.value)} />
+                            <p>Applies a custom fee item to cart</p>
                             <div className="button-row">
-                                <button onClick={() => handleDiscount('$')} disabled={isDiscountBtnEnable == true ? false : true} className={isDiscountBtnEnable == true ? "" : "btn-disable"}>$ {LocalizedLanguage.discount}</button>
-                                <button onClick={() => handleDiscount('%')} disabled={isDiscountBtnEnable == true ? false : true} className={isDiscountBtnEnable == true ? "" : "btn-disable"}>% {LocalizedLanguage.discount}</button>
+                                <button onClick={() => AddFee(true)}>With Tax</button>
+                                <button onClick={() => AddFee(false)}>Without Tax</button>
                             </div>
-                        </div>
-                        <div className="list">
-                            <p>Pre-set discounts</p>
-                            {allDiscount && allDiscount.map(d => {
-                                return <button key={d.Id} onClick={() => handleListDiscount(d.Type, d.Amount)}>
-                                    <p>{d.Name} ({d.Amount} {d.Type === "Percentage" ? "%" : "$"})</p>
+                        </div> :
+                        <div className="cart-discount">
+                            <div className="main">
+                                <label htmlFor="discountAmount">Discount feeAmount:</label>
+                                <input style={{ direction: "LTL" }} type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onKeyDown={(e) => discount_Amount(e)} disabled={isDiscountBtnEnable == true ? false : true} />
+                                <p>Select type of discount to be applied to cart:</p>
+                                <div className="button-row">
+                                    <button onClick={() => handleDiscount('$')} disabled={isDiscountBtnEnable == true ? false : true} className={isDiscountBtnEnable == true ? "" : "btn-disable"}>$ {LocalizedLanguage.discount}</button>
+                                    <button onClick={() => handleDiscount('%')} disabled={isDiscountBtnEnable == true ? false : true} className={isDiscountBtnEnable == true ? "" : "btn-disable"}>% {LocalizedLanguage.discount}</button>
+                                </div>
+                            </div>
+                            <div className="list">
+                                <p>Pre-set discounts</p>
+                                {allDiscount && allDiscount.map(d => {
+                                    return <button key={d.Id} onClick={() => handleListDiscount(d.Type, d.Amount)}>
+                                        <p>{d.Name} ({d.Amount} {d.Type === "Percentage" ? "%" : "$"})</p>
+                                    </button>
+                                })}
+                                <button onClick={() => clearDiscount()}>
+                                    <p>{LocalizedLanguage.discountClr}</p>
                                 </button>
-                            })}
-                            <button onClick={() => clearDiscount()}>
-                                <p>{LocalizedLanguage.discountClr}</p>
-                            </button>
-                        </div>
-                    </div>}
+                            </div>
+                        </div>}
                     <div className="auto-margin-bottom"></div>
                 </div>
             </div>

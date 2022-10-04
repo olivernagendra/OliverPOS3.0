@@ -174,10 +174,14 @@ export const selectedTaxListSlice = createSlice({
                 state.is_success = false;
             })
             .addCase(selectedTaxList.fulfilled, (state, action) => {
-                state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
-                state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
-                state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
-                state.is_success = action.payload && action.payload.is_success == true ? true : false;
+                // state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+                // state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+                // state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+                // state.is_success = action.payload && action.payload.is_success == true ? true : false;
+                state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+                state.data = (action.payload && action.payload? action.payload : "");
+                state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+                state.is_success = action.payload && action.payload? true : false;
             })
             .addCase(selectedTaxList.rejected, (state, action) => {
                 state.status = STATUSES.IDLE;
@@ -219,10 +223,14 @@ export const updateTaxRateListSlice = createSlice({
                 state.is_success = false;
             })
             .addCase(updateTaxRateList.fulfilled, (state, action) => {
-                state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
-                state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
-                state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
-                state.is_success = action.payload && action.payload.is_success == true ? true : false;
+                // state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+                // state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+                // state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+                // state.is_success = action.payload && action.payload.is_success == true ? true : false;
+                state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+                state.data = (action.payload && action.payload? action.payload : "");
+                state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+                state.is_success = action.payload && action.payload? true : false;
             })
             .addCase(updateTaxRateList.rejected, (state, action) => {
                 state.status = STATUSES.IDLE;

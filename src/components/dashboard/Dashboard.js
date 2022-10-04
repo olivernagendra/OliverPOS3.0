@@ -79,12 +79,18 @@ const Home = () => {
     useEffect(() => {
         fetchData();
     }, []);
-
+   
+    const [resGetRates,respIsMultipleTaxSupport] = useSelector((state) => [state.getRates,state.isMultipleTaxSupport])
     useEffect(() => {
-        var multiple_tax_support = localStorage.getItem("multiple_tax_support") ? JSON.parse(localStorage.getItem("multiple_tax_support")) : false
-        var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
-        getTax(multiple_tax_support, get_tax_rates);
-    }, []);
+        if ((resGetRates && resGetRates.status == STATUSES.IDLE && resGetRates.is_success) && (respIsMultipleTaxSupport && respIsMultipleTaxSupport.status == STATUSES.IDLE && respIsMultipleTaxSupport.is_success)) {
+            getTax(respIsMultipleTaxSupport.data.content,resGetRates.data.content);
+        }
+    }, [resGetRates,respIsMultipleTaxSupport]);
+    // useEffect(() => {
+    //     var multiple_tax_support = localStorage.getItem("multiple_tax_support") ? JSON.parse(localStorage.getItem("multiple_tax_support")) : false
+    //     var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
+    //     getTax(multiple_tax_support, get_tax_rates);
+    // }, []);
 
     if (!localStorage.getItem('user')) {
         navigate('/pin')
@@ -524,7 +530,7 @@ const Home = () => {
             </div>
             {/* <div className="subwindow-wrapper"> */}
 
-            <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList>
+            {isShowTaxList===true?<TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList>:null}
             <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>

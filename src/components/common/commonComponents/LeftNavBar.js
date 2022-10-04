@@ -21,6 +21,9 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
+import { CheckAppDisplayInView } from '../commonFunctions/appDisplayFunction'
+
+
 const LeftNavBar = (props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -94,6 +97,8 @@ const LeftNavBar = (props) => {
         var data = { title: title, msg: msg, is_success: true }
         dispatch(popupMessage(data));
     }
+    var appsList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD"));
+    var displayAppCount = 0;
     return (
         <React.Fragment>
             <div className={isShowLeftMenu == true || (props.isShowMobLeftNav && props.isShowMobLeftNav === true) ? "navbar open" : "navbar"} >
@@ -155,7 +160,27 @@ const LeftNavBar = (props) => {
                     </div>
                     <p>App Launcher</p>
                 </button>
-                <button id="navApp1" className="launcher app" onClick={() => toggleiFrameWindow()}>
+
+
+                {/* display Apps for home page */}
+                {appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
+                    var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
+                    if (isDisplay == true) displayAppCount += 1;
+                    {
+                        return displayAppCount < 4 && isDisplay == true &&
+                            <button id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow()}>
+                                <div className="img-container">
+                                    <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" />
+                                </div>
+                                <p>{appItem.Name}</p>
+                            </button>
+
+                    }
+                })}
+
+
+
+                {/* <button id="navApp1" className="launcher app" onClick={() => toggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={ClockIn_Icon} alt="" />
                     </div>
@@ -172,7 +197,7 @@ const LeftNavBar = (props) => {
                         <img src={Quickbooks1} alt="" />
                     </div>
                     <p>Quickbooks Sync</p>
-                </button>
+                </button> */}
                 <button id="navToggle" className="toggle-nav" onClick={() => toggleLeftMenu()}>
                     <div className="img-container">
                         <img src={ToggleNavbar_Icon} alt="" />
@@ -183,7 +208,7 @@ const LeftNavBar = (props) => {
             </div>
             <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
             <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
-            {isShowiFrameWindow == true ? <IframeWindow  exApp={extApp} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow> : null}
+            {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow> : null}
         </React.Fragment>)
 }
 
