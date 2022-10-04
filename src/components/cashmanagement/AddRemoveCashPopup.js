@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addRemoveCash, getDetails } from './CashmanagementSlice'
 import moment from 'moment';
 import STATUSES from "../../constants/apiStatus";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import IconDarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg'
 import Cashmanagement from "./Cashmanagement";
 function AddRemoveCashPopup(props) {
     const dispatch = useDispatch();
@@ -74,50 +74,25 @@ function AddRemoveCashPopup(props) {
     }
 
 
+    const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            props.toggleCreateCustomer && props.toggleCreateCustomer();
+        }
+        else {
+            e.stopPropagation();
+        }
+    }
+
+
 
     return (
-        <div className='subwindow-wrapper'>
-            {/* <div className="subwindow add-order-note current">
-                <div className="subwindow-header">
-                    <p>{props.popupstatus.toLowerCase() == 'add' ? "Add" : "Remove"} Cash</p>
-                    <button onClick={props.HundlePOpupClose} className="close-subwindow">
-                        <img src={X_Icon_DarkBlue} alt="" />
-                    </button>
-                </div>
-                <div className="subwindow-body">
-                    <p>Cash Drawer Balance</p>
-                    <div className="inner-group">
-                        <p className="style4">{props.drawerBalance}</p>
-                    </div>
-                    {props.popupstatus.toLowerCase() == 'add' ? <div className="custom-fee unhide">
-                        <label htmlFor="customFeeLabel">Add Cash</label>
-                        <input type="number" id="customFeeAmount" value={Amount} placeholder="0.00" onChange={(e) => validateAddNumber(e, 'add')} />
-                    </div> : ''}
 
-                    {props.popupstatus.toLowerCase() == 'remove' ? <div className="custom-fee unhide">
-                        <label htmlFor="customFeeLabel">Remove Cash</label>
-                        <input type="number" id="customFeeAmount" value={removeAmount} placeholder="0.00" onChange={(e) => validateAddNumber(e, 'remove')} />
-                    </div> : ""}
-
-                    <div className="auto-margin-top" />
-                    <label htmlFor="orderNote">Enter a note for this cash:</label>
-                    <textarea
-                        name="order-note"
-                        id="orderNote"
-                        placeholder="Add note to order"
-                        onChange={(e) => addNote(e)}
-                    />
-                    <button onClick={() => handleSubmit()}>{props.popupstatus == 'add' ? "Add" : "Remove"} Cash</button>
-                    <div className="auto-margin-bottom" />
-                </div>
-            </div> */}
-
-
-           
+        <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
+        <div className={props.isShow === true ? "subwindow add-cash current" : "subwindow add-cash"}>
                 <div className="subwindow-header">
                 <p>{props.popupstatus.toLowerCase() == 'add' ? "Add" : "Remove"} Cash</p>
-                    <button className="close-subwindow">
-                        <img src="../Assets/Images/SVG/X-Icon-DarkBlue.svg" alt="" />
+                    <button className="close-subwindow" onClick={props.HundlePOpupClose}>
+                        <img src={IconDarkBlue} alt="" />
                     </button>
                 </div>
                 <div className="subwindow-body">
@@ -135,16 +110,8 @@ function AddRemoveCashPopup(props) {
                     <button onClick={() => handleSubmit()}>{props.popupstatus == 'add' ? "Add" : "Remove"} Cash</button>
                     <div className="auto-margin-bottom" />
                 </div>
-          
-
- 
         </div>
-
-
-        
-       
-
-
+        </div>
 
     )
 }

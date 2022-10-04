@@ -152,6 +152,7 @@ function Cashmanagement() {
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
   return (
     <>
+    <React.Fragment>
       <div className="cash-management-wrapper">
         <LeftNavBar></LeftNavBar>
 
@@ -221,8 +222,7 @@ function Cashmanagement() {
             }
           </div>
         </div>
-        {cashPopUpOpen == true ?
-          <AddRemoveCashPopup popupstatus={popupstatus} drawerBalance={_balance} HundlePOpupClose={HundlePOpupClose} /> : ""}
+      
         <div className="cm-detailed">
           <div class="detailed-header-mobile">
             <div id="mobileDetailedExit">
@@ -256,9 +256,11 @@ function Cashmanagement() {
             <button onClick={() => HundleCashPopup('remove')}> Remove Cash</button>
             <button onClick={() => HundleCashPopup('add')}  >Add Cash  </button>
           </div>
-
+        
         </div>
       </div>
+          <AddRemoveCashPopup popupstatus={popupstatus} isShow={cashPopUpOpen} drawerBalance={_balance} HundlePOpupClose={HundlePOpupClose}   /> 
+      </React.Fragment>
     </>
   )
 }

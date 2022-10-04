@@ -61,15 +61,9 @@ export function updateCustomerNoteAPI(data) {
         })
 }
 
-export function updateCreditScoreAPI(CustomerWpid, AddPoint, DeductPoint, Notes, Udid) {
+export function updateCreditScoreAPI(parameter) {
 
-    return serverRequest.clientServiceRequest('POST', `/customers/AdjustStoreCredit`, {
-        "CustomerWpid": CustomerWpid,
-        "AddPoint": AddPoint,
-        "DeductPoint": DeductPoint,
-        "Notes": Notes,
-        "Udid": Udid,
-    })
+    return serverRequest.clientServiceRequest('POST', `/customers/AdjustStoreCredit`, parameter)
         .then(res => {
             return res
         })
