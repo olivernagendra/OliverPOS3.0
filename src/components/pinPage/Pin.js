@@ -264,7 +264,7 @@ const Pin = () => {
             <img src={imgOpenReg} alt="" />
             <div className="col">
                 <p className="style1">{getShopName()}</p>
-                <div className="divider"></div>
+                <div className="divider divider-pin"></div>
                 <p className="style2">{get_regName()}</p>
                 <p className="style3">{get_locName()}</p>
                 <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>

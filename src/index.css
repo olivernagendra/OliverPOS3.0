@@ -380,6 +380,9 @@ code {
 @media (min-width: 1920px) {}
 @media (min-width: 3840px) {} */
 
-.divider{
+/* .divider{
 	width: 100% !important;
-}
+} */
+
+.idle-register-wrapper > header > .col > .divider-pin
+{width: 100% !important;}
