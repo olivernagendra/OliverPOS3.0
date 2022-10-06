@@ -29,6 +29,7 @@ const CustomerView = () => {
   var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
   const dispatch = useDispatch();
   const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
+  const [isSortWrapper, setSortWrapper] = useState(false)
   const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
   const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
   const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
@@ -44,6 +45,12 @@ const CustomerView = () => {
   const [updateCustomerId, setupdateCustomerId] = useState('')
   const [CustomerAddress, setCustomerAddress] = useState([])
   const [isMobileNav, setisMobileNav] = useState(false);
+  const [filterType, setFilterType] = useState('all');
+  const [FirstName, setFirstName] = useState('');
+  const [LastName, setLastName] = useState('')
+  const [Email, setEmail] = useState('')
+  const [PhoneNumber, setPhoneNumber] = useState('')
+  const [filteredCustomer, setFilteredCustomer] = useState([]);
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
@@ -71,6 +78,16 @@ const CustomerView = () => {
   const toggleCreateCustomer = () => {
     setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
   }
+
+  const toggleMobileNav = () => {
+    setisMobileNav(!isMobileNav)
+    // props.toggleShowMobLeftNav();
+    setisShowMobLeftNav(!isShowMobLeftNav)
+  }
+  const toggleSortWrapp = () => {
+    setSortWrapper(!isSortWrapper)
+  }
+
 
   if (!localStorage.getItem('user')) {
     navigate('/pin')
@@ -188,11 +205,89 @@ const CustomerView = () => {
   // console.log("AllEvant", AllEvant)
   // console.log("eventCollection", eventCollection)
 
-  const toggleMobileNav = () => {
-    setisMobileNav(!isMobileNav)
-    // props.toggleShowMobLeftNav();
-    setisShowMobLeftNav(!isShowMobLeftNav)
+
+
+
+  const SetFilter = (ftype) => {
+    setFilterType(ftype);
   }
+
+  useEffect(() => {
+    productDataSearch();
+  }, [filterType, customerlistdata]);
+
+  const productDataSearch = () => {
+    var scount = 0;
+    var _filteredCustomer = customerlistdata
+
+
+    //console.log("filterType", filterType)
+
+    if (filterType == 'lastName') {
+      _filteredCustomer = _filteredCustomer.filter((item) => (
+        (item.LastName && item.LastName.toLowerCase().includes(LastName.toLowerCase()))
+         // (item.sort((a,b) => a.LastName > b.LastName ? 1 : -1))
+      ))
+    } 
+     if (filterType == 'Email') {
+      _filteredCustomer = _filteredCustomer.filter((item) => (
+        (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
+      ))
+    }
+
+    // Search in Customer
+    if (FirstName !== '') {
+      _filteredCustomer = _filteredCustomer.filter((item) => (
+        (item.FirstName && item.FirstName.toLowerCase().includes(FirstName.toLowerCase()))
+      ))
+    }
+    if (PhoneNumber !== '') {
+      _filteredCustomer = _filteredCustomer.filter((item) => (
+        (item.Contact && item.Contact.toLowerCase().includes(PhoneNumber.toLowerCase()))
+      ))
+    }
+    if (LastName !== '') {
+      _filteredCustomer = _filteredCustomer.filter((item) => (
+        (item.lastName && item.lastName.toLowerCase().includes(LastName.toLowerCase()))
+      ))
+    }
+    if (Email !== '') {
+      _filteredCustomer = _filteredCustomer.filter((item) => (
+        (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
+      ))
+    }
+    setFilteredCustomer(_filteredCustomer);
+
+
+
+
+    // if (filterType == 'lastName' || LastName !== '') {
+    //   _filteredCustomer = customerlistdata.filter((item) => (
+    //     (item.LastName && item.LastName.toLowerCase().includes(LastName.toLowerCase()))
+    //   ))
+    // } else if (filterType == 'Email' || Email !== '') {
+    //   _filteredCustomer = customerlistdata.filter((item) => (
+    //     (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
+    //   ))
+    // }else if (FirstName !== '') {
+    //   _filteredCustomer = customerlistdata.filter((item) => (
+    //     (item.FirstName && item.FirstName.toLowerCase().includes(FirstName.toLowerCase()))
+    //   ))
+    // } else if (PhoneNumber !== '') {
+    //   _filteredCustomer = customerlistdata.filter((item) => (
+    //     (item.Contact && item.Contact.toLowerCase().includes(PhoneNumber.toLowerCase()))
+    //   ))
+    // } 
+
+    scount += _filteredCustomer.length;
+   // console.log("_filteredCustomer", _filteredCustomer)
+   // console.log("scount", scount)
+
+
+  }
+
+
+
 
   return (
     <React.Fragment>
@@ -227,58 +322,82 @@ const CustomerView = () => {
           </div>
           <div className="body">
             <label for="fName">First Name</label>
-            <input type="text" id="fName" placeholder="Enter First Name" />
+            <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
             <label for="lName">Last Name</label>
-            <input type="text" id="lName" placeholder="Enter Last Name" />
+            <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
             <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Enter Email" />
+            <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
             <label for="tel">Phone Number</label>
-            <input type="tel" id="tel" placeholder="Enter Phone Number" />
-            <button id="searchCustomersButton">Search</button>
+            <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+            <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>
         </div>
-        <div className="cv-list">
-          <div className="header">
+        <div className="cv-list" >
+          <div className="header" onClick={toggleSortWrapp}>
             <p>Sort by:</p>
-            <div id="customerListSort" className="sort-wrapper">
+            <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <input type="text" id="filterType" />
               <img src={FilterCollapseIcon} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={FilterArrowUp} alt="" />
-                <p>Last Name</p>
+                <p>{filterType}</p>
               </div>
-              <div className="sort-option" data-value="lastNameAsc">
-                <img src={FilterArrowUp} alt="" />
-                <p>Last Name</p>
-              </div>
-              <div className="sort-option" data-value="lastNameDesc">
-                <img src={FilterArrowDown} alt="" />
-                <p>Last Name</p>
-              </div>
-              <div className="sort-option" data-value="emailAsc">
+
+              <div onClick={() => SetFilter('Email')} className="sort-option" data-value="emailAsc">
                 <img src={FilterArrowUp} alt="" />
                 <p>Email</p>
               </div>
-              <div className="sort-option" data-value="emailDesc">
-                <img src={FilterArrowDown} alt="" />
-                <p>Email</p>
+              <div onClick={() => SetFilter('lastName')} className="sort-option" data-value="lastname">
+                <img src={FilterArrowUp} alt="" />
+                <p>lastName</p>
               </div>
+
             </div>
           </div>
 
           <div className="body">
-            {isCustomerListLoaded == true ? <LoadingSmallModal /> : customerlistdata && customerlistdata.length > 0 ? customerlistdata.map((item, index) => {
-              return (
-                <Customerlist
-                  onClick={() => activeClass(item, index)}
-                  key={index}
-                  FirstName={item.FirstName}
-                  LastName={item.LastName}
-                  PhoneNumber={item.Contact}
-                  Email={item.Email}
-                />
-              )
-            }) : ""}
+
+
+
+
+            {isCustomerListLoaded == true ? <LoadingSmallModal /> : <>
+              {false ? filteredCustomer.map((item, index) => {
+                return (
+                  <Customerlist
+                    onClick={() => activeClass(item, index)}
+                    key={index}
+                    FirstName={item.FirstName}
+                    LastName={item.LastName}
+                    PhoneNumber={item.Contact}
+                    Email={item.Email}
+                  />
+                )
+              }) : filteredCustomer && filteredCustomer.length > 0 && filteredCustomer.map((item, index) => {
+                return (
+                  <Customerlist
+                    onClick={() => activeClass(item, index)}
+                    key={index}
+                    FirstName={item.FirstName}
+                    LastName={item.LastName}
+                    PhoneNumber={item.Contact}
+                    Email={item.Email}
+                  />
+                )
+              })}
+
+
+
+
+
+
+
+
+
+            </>}
+
+
+
+
           </div>
 
           <div className="mobile-footer">
@@ -329,11 +448,11 @@ const CustomerView = () => {
                   <div className="col">
                     <p className="style1">Billing Information</p>
                     <p className="style2">
-                     {item.Address1} <br />
-                     {item.Address2} <br />
-                     {item.City} <br />
-                     {item.PostCode} <br/>
-                     {item.Country}
+                      {item.Address1} <br />
+                      {item.Address2} <br />
+                      {item.City} <br />
+                      {item.PostCode} <br />
+                      {item.Country}
                     </p>
                   </div>
                 )
@@ -342,11 +461,11 @@ const CustomerView = () => {
                   <div className="col">
                     <p className="style1">Shipping Information</p>
                     <p className="style2">
-                    {item.Address1} <br />
-                     {item.Address2} <br />
-                     {item.City} <br />
-                     {item.PostCode} <br/>
-                     {item.Country}
+                      {item.Address1} <br />
+                      {item.Address2} <br />
+                      {item.City} <br />
+                      {item.PostCode} <br />
+                      {item.Country}
                     </p>
                   </div>
                 )
