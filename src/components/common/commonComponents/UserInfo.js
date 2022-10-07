@@ -36,14 +36,14 @@ const UserInfo = (props) => {
                     </div>
                 </div>
                 <div className="body">
-                    <div class="language-select">
+                    <div className="language-select">
                         <p>Language:</p>
-                        <div id="languageDropdownWrapper" class={isSelectLangugage===true?"dropdown-input-wrapper open":"dropdown-input-wrapper"}>
+                        <div id="languageDropdownWrapper" className={isSelectLangugage===true?"dropdown-input-wrapper open":"dropdown-input-wrapper"}>
                             {/* <img src={DownArrowGrey} alt="" /> */}
                             <input type="text" id="language" value={selLangugage}  onClick={()=>toggleSelectLangugage()}  readOnly/>
-                            <div class="language-option" onClick={()=>SetLangugage("English")}> <p>English</p></div>
-                            <div class="language-option" onClick={()=>SetLangugage("French")}><p>French</p></div>
-                            <div class="language-option" onClick={()=>SetLangugage("Spanish")}><p>Spanish</p></div>
+                            <div className="language-option" onClick={()=>SetLangugage("English")}> <p>English</p></div>
+                            <div className="language-option" onClick={()=>SetLangugage("French")}><p>French</p></div>
+                            <div className="language-option" onClick={()=>SetLangugage("Spanish")}><p>Spanish</p></div>
                         </div>
                     </div>
                     <button id="knowledgeBaseButton">

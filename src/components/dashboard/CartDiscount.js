@@ -191,13 +191,13 @@ const CartDiscount = (props) => {
                     <p className="style1">Select an option:</p>
                     <div className="toggle-container">
                         <label >
-                            <input type="radio" id="customFeeRadio" name="customFeeDiscount" checked={props.isSelectDiscountBtn == false ? true : false} />
+                            <input type="radio" id="customFeeRadio" name="customFeeDiscount" defaultChecked={props.isSelectDiscountBtn == false ? true : false} />
                             <div className="custom-radio" onClick={() => props.toggleSelectDiscountBtn()}>
                                 <p>Custom Fee</p>
                             </div>
                         </label>
                         <label >
-                            <input type="radio" id="discountRadio" name="customFeeDiscount" checked={props.isSelectDiscountBtn == true ? true : false} />
+                            <input type="radio" id="discountRadio" name="customFeeDiscount" defaultChecked={props.isSelectDiscountBtn == true ? true : false} />
                             <div className="custom-radio" onClick={() => props.toggleSelectDiscountBtn()}>
                                 <p>Discount</p>
                             </div>

@@ -133,35 +133,35 @@ const Refund = () => {
                     </div>
                 </div>
             </div>
-            <div class="refund-body">
-				<button id="balanceButton" class="balance-container" onClick={()=>toggleShowPartialPayment()}>
-					<div class="row">
-						<p class="style1">Refund Amount</p>
-						<p class="style2">$0.00</p>
+            <div className="refund-body">
+				<button id="balanceButton" className="balance-container" onClick={()=>toggleShowPartialPayment()}>
+					<div className="row">
+						<p className="style1">Refund Amount</p>
+						<p className="style2">$0.00</p>
 					</div>
 				</button>
-				<p class="style1">Click to make a partial payment</p>
-				<p class="style2">Quick Split</p>
-				<div class="button-row">
+				<p className="style1">Click to make a partial payment</p>
+				<p className="style2">Quick Split</p>
+				<div className="button-row">
 					<button>1/2</button>
 					<button>1/3</button>
 					<button>1/4</button>
 				</div>
-				<div class="button-row">
+				<div className="button-row">
 					<button id="splitByProductButton">By Product</button>
 					<button id="splitByPeopleButton">By People</button>
 				</div>
-				<p class="style2">Customer Payment Types</p>
-				<p class="style3">Please add a customer to make customer payment types available</p>
-				<div class="button-row">
+				<p className="style2">Customer Payment Types</p>
+				<p className="style3">Please add a customer to make customer payment types available</p>
+				<div className="button-row">
 					{/* <button disabled>Layaway</button>
 					<button disabled>Store Credit</button> */}
                     <button disabled ={get_customerName() == null?true:false}>Layaway</button>
                     <button disabled ={get_customerName() == null?true:false}>Store Credit</button>
 				</div>
-				<div class="payment-types">
+				<div className="payment-types">
 					<p>Payment Types</p>
-					<div class="button-container">
+					<div className="button-container">
                     {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
                                 return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={()=>pay_amount(payment)}>

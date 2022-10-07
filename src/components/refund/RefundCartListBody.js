@@ -110,7 +110,7 @@ const RefundCartListBody = (props) => {
                         <div className="secondary-col">
                         {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
                         </div>
-                        <div class="increment-input">
+                        <div className="increment-input">
 							<button>
 								<img src={Minus_Blue} alt="" />
 							</button>

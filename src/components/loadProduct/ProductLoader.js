@@ -493,7 +493,6 @@ const ProductLoader = () => {
         {/* <h1>Product Loading...</h1>
         <h2> {loadingProducts} ( {loadPerc})% </h2>; */}
         <LoaderOnboarding isDemoUser={isDemoUser} statusCompleted={loadPerc}></LoaderOnboarding>
-        ;
     </div>
 }
 

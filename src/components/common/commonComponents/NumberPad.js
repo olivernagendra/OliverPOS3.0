@@ -13,6 +13,10 @@ const NumberPad = (props) => {
             props.toggleNumberPad();
         }
     }
+    const setValue=()=>
+    {
+        props.pay_by_cash && props.pay_by_cash(txtValue);
+    }
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "c"];
     const NumInput = props =>
         chunkArray(props.numbers, 3).map((num, index) => (
@@ -88,7 +92,7 @@ const NumberPad = (props) => {
                     </div>
                     <div className="input-numpad">
                         <div className="input-container">
-                            <label for="cashPaymentAmount">{LocalizedLanguage.amountTendered}:</label>
+                            <label htmlFor="cashPaymentAmount">{LocalizedLanguage.amountTendered}:</label>
                             <input ref={inputElement} autoFocus={true} type="text" id="cashPaymentAmount" placeholder="$0" value={txtValue} onChange={e => onChange(e)} />
                         </div>
                         <div id="numpad2">
@@ -117,7 +121,7 @@ const NumberPad = (props) => {
                             </div> */}
                         </div>
                     </div>
-                    <button id="enterCashPaymentButton" disabled={parseFloat(txtValue) > 0 ? false : true}>Enter</button>
+                    <button id="enterCashPaymentButton" disabled={parseFloat(txtValue) > 0 ? false : true} onClick={()=>setValue()}>Enter</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
                 <div className="step2">

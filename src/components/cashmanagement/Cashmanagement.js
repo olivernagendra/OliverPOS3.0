@@ -156,7 +156,7 @@ function Cashmanagement() {
       <div className="cash-management-wrapper">
         <LeftNavBar></LeftNavBar>
 
-        <div class="mobile-cm-header">
+        <div className="mobile-cm-header">
           <button id="mobileNavToggle">
             <img src="" alt="" />
           </button>
@@ -172,10 +172,10 @@ function Cashmanagement() {
           </button>
           <p>Cash Management</p>
         </div> */}
-        <div class="cm-list">
-          <div class="cm-list-header">
-            <p class="desktop">Cash Management</p>
-            <p class="mobile">Transaction History</p>
+        <div className="cm-list">
+          <div className="cm-list-header">
+            <p className="desktop">Cash Management</p>
+            <p className="mobile">Transaction History</p>
           </div>
           <div className="cm-list-body">
             {((!allCashRecords) || allCashRecords.length == 0) ? <>
@@ -187,11 +187,11 @@ function Cashmanagement() {
                   <p className="style1"> {CashDrawerPaymentDetail && !CashDrawerPaymentDetail.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
                   <div className="text-row">
                     <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                    <p class="open">OPEN</p>
+                    <p className="open">OPEN</p>
                     {/* <p className="smobile-fake-button">OPEN</p> */}
                   </div>
                   <p className="style2">User: {CashDrawerPaymentDetail && CashDrawerPaymentDetail.SalePersonName}</p>
-                  <div class="mobile-fake-button">OPEN</div>
+                  <div className="mobile-fake-button">OPEN</div>
                 </button>
                 {/* <div className="prev-registers"> */}
 
@@ -224,7 +224,7 @@ function Cashmanagement() {
         </div>
       
         <div className="cm-detailed">
-          <div class="detailed-header-mobile">
+          <div className="detailed-header-mobile">
             <div id="mobileDetailedExit">
               <img src={AngledBracket_Left_Blue} alt="" />
               Go Back
