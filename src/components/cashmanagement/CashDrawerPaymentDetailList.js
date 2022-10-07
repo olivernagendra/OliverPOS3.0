@@ -63,16 +63,16 @@ const CashDrawerPaymentDetailList = () => {
                     <>
                         <div className="register-action">
                             <div className="col fill left">
-                                <div class="group">
+                                <div className="group">
                                     <p className={item.IsManual == true ? "style1 green" : item.IsManual == false && item.Expected < 0 ? "style1" : "style1 blue"}> {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash"}</p>
                                     <p className="style2">{moment.utc(item.TransactionDateOffset).local().format(Config.key.TIMEDATE_FORMAT)}</p>
                                 </div> </div>
 
-                            <div class="col">
-                                <p class="style2 mobile-adjustment">{(item.Expected < 0 ? "" : "+") + item.Expected}</p>
+                            <div className="col">
+                                <p className="style2 mobile-adjustment">{(item.Expected < 0 ? "" : "+") + item.Expected}</p>
                             </div>
-                            <div class="col fill right">
-                                <p class="style2"><b>Balance:</b> {item.RemainingBalance}</p>
+                            <div className="col fill right">
+                                <p className="style2"><b>Balance:</b> {item.RemainingBalance}</p>
                             </div>
 
                             {/* <div className="col">

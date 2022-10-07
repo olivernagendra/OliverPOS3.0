@@ -10,6 +10,8 @@ import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
 import { deleteTile } from '../tiles/tileSlice';
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
+// import ErrorIconBlue from '../../../images/svg/ErrorIconBlue.svg';
+import { getInventory } from "../slices/inventorySlice";
 // var AllProduct = [];
 // var ParentProductList = [];
 // var filtered = [];
@@ -434,6 +436,9 @@ const TileList = (props) => {
             //     break;
             case "product":
                 //productDataSearch(item.Title, 0, null)
+                if (item.ManagingStock == true && item.hasOwnProperty("Product_Id") && item.Product_Id!=0) {
+                    dispatch(getInventory(item.Product_Id)); //call to get product warehouse quantity
+                }
                 props.openPopUp(item);
                 //this.loadingData()
                 break;
@@ -606,6 +611,12 @@ const TileList = (props) => {
     }, [resdeletTile]);
     return (
         <div className="products" onContextMenu={(e) => e.preventDefault()}>
+            <div className="products-container">
+					<div className="no-product-container">
+						{/* <img src={ErrorIconBlue} alt="" /> */}
+						<p>No products to display.</p>
+						<button>Add a Product</button>
+					</div>
             {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
                 <div className="category-row">
                     {showCategorySelection()}
@@ -692,7 +703,7 @@ const TileList = (props) => {
                 <img src={CircledPlus_Icon_Border} alt="" />
                 Add Tile
             </button>{isLoading === true ? <LoadingModal></LoadingModal> : null}
-        </div>)
+        </div></div>)
 }
 
 export default TileList 
