@@ -29,7 +29,7 @@ const AppLauncher = (props) => {
                         {
                             //(  Items.PluginId == 0 && Items.Name !== 'Contact Details' && Items.ShowAtCheckout === true) ||
                             return (Items.viewManagement && Items.viewManagement !== [] && CheckAppDisplayInView(Items.viewManagement) === true) ?
-                                <button onClick={() => props.toggleiFrameWindow(Items)}>
+                                <button onClick={() => props.toggleiFrameWindow(Items)} key={Items.Id}>
                                     <div className="img-container">
                                         {Items.logo != null ? <img src={Items.logo} alt="" onError={({ currentTarget }) => {
                                             currentTarget.onerror = null; // prevents looping

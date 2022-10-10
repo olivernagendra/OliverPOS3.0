@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 //import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';
-import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI} from './checkoutApi';
+import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI, getMakePaymentAPI,makeOnlinePaymentsAPI,saveAPI,paymentAmountAPI} from './checkoutApi';
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -157,4 +157,170 @@ export const getExtensionsSlice = createSlice({
 });
 export const { } = getExtensionsSlice.actions;
 
-export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice };
+//----
+export const getMakePayment = createAsyncThunk(
+  'checkout/getMakePaymentAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await getMakePaymentAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const getMakePaymentSlice = createSlice({
+  name: 'getMakePayment',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getMakePayment.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(getMakePayment.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_success = action.payload && action.payload.is_success == true ? true : false;
+      })
+      .addCase(getMakePayment.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = getMakePaymentSlice.actions;
+//---
+
+//----
+export const makeOnlinePayments = createAsyncThunk(
+  'checkout/makeOnlinePaymentsAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await makeOnlinePaymentsAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const makeOnlinePaymentsSlice = createSlice({
+  name: 'makeOnlinePayments',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(makeOnlinePayments.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(makeOnlinePayments.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_success = action.payload && action.payload.is_success == true ? true : false;
+      })
+      .addCase(makeOnlinePayments.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = makeOnlinePaymentsSlice.actions;
+//---
+
+
+//----
+export const save = createAsyncThunk(
+  'checkout/saveAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await saveAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const saveSlice = createSlice({
+  name: 'save',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(save.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(save.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_success = action.payload && action.payload.is_success == true ? true : false;
+      })
+      .addCase(save.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = saveSlice.actions;
+//---
+
+//----
+export const paymentAmount = createAsyncThunk(
+  'checkout/paymentAmountPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await paymentAmountAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const paymentAmountSlice = createSlice({
+  name: 'save',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(paymentAmount.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(paymentAmount.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload? action.payload : "");
+        state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+        state.is_success = action.payload && action.payload? true : false;
+      })
+      .addCase(paymentAmount.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = paymentAmountSlice.actions;
+//--
+
+
+export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice,paymentAmountSlice };

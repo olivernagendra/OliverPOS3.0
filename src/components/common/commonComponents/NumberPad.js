@@ -6,12 +6,26 @@ import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 const NumberPad = (props) => {
     const inputElement = useRef(null);
     const [totalSize, setTotalSize] = useState(0)
-    const [txtValue, setTxtValue] = useState("")
+    const [txtValue, setTxtValue] = useState(0)
     const outerClick = (e) => {
 
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleNumberPad();
         }
+    }
+    useEffect(() => {
+        if(props.getRemainingPriceForCash)
+        {
+          var _amount=  props.getRemainingPriceForCash();
+          setTxtValue(parseFloat(_amount).toFixed(2) );
+          inputElement.autoFocus=true;
+        }
+        // if(props && props.amount)
+        // setTxtValue(props.amount);
+    },[props.amount]);
+    const setValue=()=>
+    {
+        props.pay_by_cash && props.pay_by_cash(txtValue);
     }
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "c"];
     const NumInput = props =>
@@ -88,7 +102,7 @@ const NumberPad = (props) => {
                     </div>
                     <div className="input-numpad">
                         <div className="input-container">
-                            <label for="cashPaymentAmount">{LocalizedLanguage.amountTendered}:</label>
+                            <label htmlFor="cashPaymentAmount">{LocalizedLanguage.amountTendered}:</label>
                             <input ref={inputElement} autoFocus={true} type="text" id="cashPaymentAmount" placeholder="$0" value={txtValue} onChange={e => onChange(e)} />
                         </div>
                         <div id="numpad2">
@@ -117,7 +131,7 @@ const NumberPad = (props) => {
                             </div> */}
                         </div>
                     </div>
-                    <button id="enterCashPaymentButton" disabled={parseFloat(txtValue) > 0 ? false : true}>Enter</button>
+                    <button id="enterCashPaymentButton" disabled={parseFloat(txtValue) > 0 ? false : true} onClick={()=>setValue()}>Enter</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
                 <div className="step2">
@@ -138,7 +152,7 @@ const NumberPad = (props) => {
                         <p><b>Change:</b></p>
                         <p id="cashStep2Change"><b>$X.XX</b></p>
                     </div>
-                    <button id="closeCashPaymentButton">Done</button>
+                    <button id="closeCashPaymentButton" >Done</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
             </div>
