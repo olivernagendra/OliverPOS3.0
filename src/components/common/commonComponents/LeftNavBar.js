@@ -22,7 +22,9 @@ import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
 import { CheckAppDisplayInView } from '../commonFunctions/appDisplayFunction'
+import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
+import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler'
 
 const LeftNavBar = (props) => {
     const navigate = useNavigate();
@@ -42,7 +44,7 @@ const LeftNavBar = (props) => {
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
                 if (typeof data == 'string' && data !== "") {
-                    responseData(data)
+                    responseData(JSON.parse(data))
                     //compositeSwitchCases(JSON.parse(data))
                 }
             })
@@ -51,6 +53,13 @@ const LeftNavBar = (props) => {
     }, [isInit]);
     const responseData = (data) => {
         console.log("---ext app data--" + data);
+        var _route = location.pathname;
+        var whereToview = "";
+        if (_route == "checkout")
+            whereToview = "CheckoutView"
+        else
+            whereToview = "home"
+        handleAppEvent(data, whereToview)
     }
     const toggleLeftMenu = () => {
         setisShowLeftMenu(!isShowLeftMenu)
@@ -168,9 +177,13 @@ const LeftNavBar = (props) => {
                     if (isDisplay == true) displayAppCount += 1;
                     {
                         return displayAppCount < 4 && isDisplay == true &&
-                            <button id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow()}>
+                            <button id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
                                 <div className="img-container">
-                                    <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" />
+                                    {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
+                                    {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
+                                        currentTarget.onerror = null; // prevents looping
+                                        currentTarget.src = NoImageAvailable;
+                                    }} /> : <img src={NoImageAvailable} alt="" />}
                                 </div>
                                 <p>{appItem.Name}</p>
                             </button>
