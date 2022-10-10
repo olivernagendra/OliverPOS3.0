@@ -14,6 +14,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import IframeWindow from "../dashboard/IframeWindow";
 import ParkSale from "./ParkSale";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const Header = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -63,7 +64,7 @@ const Header = (props) => {
             <button id="exitCheckoutButton" onClick={() => goBack()}>
                 <img src={Arrow_Left} alt="" />
             </button>
-            <p>Checkout</p>
+            <p>{props.title ? props.title : LocalizedLanguage.checkout}</p>
             <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                 <img src={avatar} alt="" />
             </button>
@@ -74,24 +75,24 @@ const Header = (props) => {
                 <img src={Oliver_Icon_BaseBlue} alt="" onClick={() => toggleAppLauncher()} />
             </button>
         </div>
-
-        <div id="pageOptions" className={isShowOptionPage ? "page-options-wrapper" : "page-options-wrapper hidden"}>
-            <div className="page-options">
-                <p>Options Menu</p>
-                <button id="parkSaleButton" onClick={() => toggleParkSale()}>
-                    <div className="img-container">
-                        <img src={Clock} alt="" />
-                    </div>
-                    <p>Park Sale</p>
-                </button>
-                <button id="addNoteButton" onClick={() => toggleOrderNote()}>
-                    <div className="img-container">
-                        <img src={AddNote_Icon} alt="" />
-                    </div>
-                    <p>Add Order Note</p>
-                </button>
-            </div>
-        </div>
+        {props.title == null ?
+            <div id="pageOptions" className={isShowOptionPage ? "page-options-wrapper" : "page-options-wrapper hidden"}>
+                <div className="page-options">
+                    <p>Options Menu</p>
+                    <button id="parkSaleButton" onClick={() => toggleParkSale()}>
+                        <div className="img-container">
+                            <img src={Clock} alt="" />
+                        </div>
+                        <p>{LocalizedLanguage.parkSale}</p>
+                    </button>
+                    <button id="addNoteButton" onClick={() => toggleOrderNote()}>
+                        <div className="img-container">
+                            <img src={AddNote_Icon} alt="" />
+                        </div>
+                        <p>Add Order Note</p>
+                    </button>
+                </div>
+            </div> : null}
         <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} addNote={addNote}></OrderNote>
         <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
         <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>

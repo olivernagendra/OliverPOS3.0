@@ -168,7 +168,7 @@ const LeftNavBar = (props) => {
                     if (isDisplay == true) displayAppCount += 1;
                     {
                         return displayAppCount < 4 && isDisplay == true &&
-                            <button id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow()}>
+                            <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow()}>
                                 <div className="img-container">
                                     <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" />
                                 </div>

@@ -23,19 +23,19 @@ const PartialPayment = (props) => {
 
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div class={props.isShow === true ? "subwindow partial-payment current" : "subwindow partial-payment"}>
-                <div class="subwindow-header">
+            <div className={props.isShow === true ? "subwindow partial-payment current" : "subwindow partial-payment"}>
+                <div className="subwindow-header">
                     <p>Partial Payments</p>
-                    <button class="close-subwindow" onClick={()=>props.toggleShowPartialPayment()}>
+                    <button className="close-subwindow" onClick={()=>props.toggleShowPartialPayment()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div class="subwindow-body">
-                    <div class="auto-margin-top"></div>
-                    <label for="partialPaymentAmount">Enter partial payment amount:</label>
+                <div className="subwindow-body">
+                    <div className="auto-margin-top"></div>
+                    <label htmlFor="partialPaymentAmount">Enter partial payment amount:</label>
                     <input type="number" id="partialPaymentAmount" placeholder="0.00" />
                     <p>Select Payment Type</p>
-                    <div class="payment-types">
+                    <div className="payment-types">
                         {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
                                 return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} >
@@ -45,17 +45,17 @@ const PartialPayment = (props) => {
                             })
                         }
                         {/* <button>Cash</button>
-                <button class="background-coral">Card</button>
+                <button className="background-coral">Card</button>
                 <button>
                     <img src="../Assets/Images/SVG/spongebob-squarepants-2.svg" alt="" />
                 </button>
-                <button class="background-red">Placeholder</button>
-                <button class="background-teal">Placeholder</button>
-                <button class="background-cyan">Placeholder</button>
-                <button class="background-violet">Placeholder</button>
-                <button class="background-yellow">Placeholder</button> */}
+                <button className="background-red">Placeholder</button>
+                <button className="background-teal">Placeholder</button>
+                <button className="background-cyan">Placeholder</button>
+                <button className="background-violet">Placeholder</button>
+                <button className="background-yellow">Placeholder</button> */}
                     </div>
-                    <div class="auto-margin-bottom"></div>
+                    <div className="auto-margin-bottom"></div>
                 </div>
             </div></div>)
 }

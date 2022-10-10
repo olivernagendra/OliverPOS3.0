@@ -7,6 +7,15 @@ const MsgPopup_OutOfStock = (props) => {
             props.toggleOutOfStock();
         }
     }
+    const AdjustInventory=()=>
+    {
+        if(props.toggleAdjustInventory)
+        {
+            props.toggleOutOfStock();
+            props.toggleAdjustInventory();
+        }
+        
+    }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow out-of-stock current" : "subwindow out-of-stock"}>
@@ -16,7 +25,7 @@ const MsgPopup_OutOfStock = (props) => {
                     <img src={OutOfStock} alt="" />
                     <p className="style2">
                         This product is out of stock, <br />
-                        try <button id="outOfStockToAdjustInventory">adjusting the inventory.</button>
+                        try <button id="outOfStockToAdjustInventory" onClick={()=>AdjustInventory()}>adjusting the inventory.</button>
                     </p>
                     <button id="closeOutOfStock" onClick={() => props.toggleOutOfStock()}>{LocalizedLanguage.goBack}</button>
                     <div className="auto-margin-bottom"></div>

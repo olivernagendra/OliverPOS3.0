@@ -77,6 +77,16 @@ const Notifications = (props) => {
                                 </div>
                             </div>))
                         }
+                        else
+                        {
+                            description = ((<div className="notification approval">
+                            <div className="side-color"></div>
+                            <div className="main-row">
+                                <img src={Approval_Icon} alt="" />
+                                <p>Order# {list.TempOrderID}</p>
+                            </div>
+                            </div>))
+                        }
 
             var TempOrderID = list.TempOrderID
             var time = list.Status == "true" ? list.date : list.date;

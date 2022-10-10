@@ -314,7 +314,7 @@ const CustomerView = () => {
         </div>
         <div id="CVSearch" className={isCvmobile === true ? "cv-search open" : "cv-search"}   >
           <div className="header">
-            <p>Customers</p>
+            <p>{LocalizedLanguage.customers}</p>
             <button id="cvAddCustomer" onClick={toggleCreateCustomer}>
               <img src={PlusSign} alt="" />
             </button>
@@ -325,15 +325,15 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-            <label for="fName">First Name</label>
-            <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
-            <label for="lName">Last Name</label>
-            <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
-            <label for="email">Email</label>
-            <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
-            <label for="tel">Phone Number</label>
-            <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
-            <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
+            <label for="fName">{LocalizedLanguage.firstName}</label>
+            <input type="text" id="fName" placeholder="Enter First Name" />
+            <label for="lName">{LocalizedLanguage.lastName}</label>
+            <input type="text" id="lName" placeholder="Enter Last Name" />
+            <label for="email">{LocalizedLanguage.email}</label>
+            <input type="email" id="email" placeholder="Enter Email" />
+            <label for="tel">{LocalizedLanguage.phoneNumber}</label>
+            <input type="tel" id="tel" placeholder="Enter Phone Number" />
+            <button id="searchCustomersButton">{LocalizedLanguage.searchactivity}</button>
           </div>
         </div>
         <div className="cv-list" >

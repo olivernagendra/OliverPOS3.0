@@ -330,7 +330,7 @@ const AdvancedSearch = (props) => {
             }
             setTimeout(() => {
                 props.openPopUp(item);
-                props.fatchUpdateInventory()
+                props.fatchUpdateInventory && props.fatchUpdateInventory()
             }, 100);
 
             setSerachString('');

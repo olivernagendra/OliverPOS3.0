@@ -25,6 +25,8 @@ import CustomerView from './components/customer/Customerview';
 import Checkout from './components/checkout/Checkout';
 import ActivityView from './components/activity/ActivityView';
 
+import Refund from './components/refund/Refund';
+import SaleComplete from './components/salecomplete/SaleComplete';
 initDB(DBConfig);
 function App() {
 
@@ -56,6 +58,8 @@ function App() {
         <Route path="/customers" element={authenticateComponent(<CustomerView />)} />
         <Route path="/checkout" element={authenticateComponent(<Checkout />)} />
         <Route path='/transactions' element={authenticateComponent(<ActivityView />)} />
+        <Route path='/refund' element={authenticateComponent(<Refund />)} />
+        <Route path='/salecomplete' element={authenticateComponent(<SaleComplete />)} />
       </Routes>
     </Router>
 
