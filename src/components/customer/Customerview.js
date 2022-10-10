@@ -22,6 +22,7 @@ import { useIndexedDB } from 'react-indexed-db';
 import AddCustomersNotepoup from "./AddCustomersNotepoup";
 import AdjustCreditpopup from "./AdjustCreditpopup";
 import Cusomercreate from './Customercreate';
+import AppLauncher from "../common/commonComponents/AppLauncher";
 const CustomerView = () => {
   var orderCount = ''
   var OrderAmount = 0;
@@ -30,6 +31,7 @@ const CustomerView = () => {
   const dispatch = useDispatch();
   const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
   const [isSortWrapper, setSortWrapper] = useState(false)
+  const [isCvmobile, setCvmobile] = useState(false)
   const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
   const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
   const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
@@ -51,6 +53,7 @@ const CustomerView = () => {
   const [Email, setEmail] = useState('')
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
+  const [count, setCount] = useState(0);
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
@@ -66,6 +69,7 @@ const CustomerView = () => {
   }
   const toggleNoteModel = () => {
     setisShowNoteModel(!isShowNoteModel)
+
   }
   const toggleCreditModel = () => [
     setisShowCreditModel(!isShowCreditModel)
@@ -87,6 +91,12 @@ const CustomerView = () => {
   const toggleSortWrapp = () => {
     setSortWrapper(!isSortWrapper)
   }
+
+
+  const CustomerSearchMobi = () => {
+    setCvmobile(!isCvmobile)
+  }
+
 
 
   if (!localStorage.getItem('user')) {
@@ -136,7 +146,7 @@ const CustomerView = () => {
     return () => {
       useCancelled1 = true;
     }
-  }, []);
+  }, [count]);
   // // Response from customer getDetails
   const [customerAllDetails] = useSelector((state) => [state.customergetDetail])
   useEffect(() => {
@@ -183,8 +193,6 @@ const CustomerView = () => {
         OrderAmount += parseInt(orderCount[index].amount++);
       }
     }
-    // console.log("orderCount", orderCount)
-    // console.log("OrderAmount", OrderAmount)
   }
 
 
@@ -202,9 +210,7 @@ const CustomerView = () => {
     }
   }
 
-  // console.log("AllEvant", AllEvant)
-  // console.log("eventCollection", eventCollection)
-
+ 
 
 
 
@@ -221,19 +227,37 @@ const CustomerView = () => {
     var _filteredCustomer = customerlistdata
 
 
-    //console.log("filterType", filterType)
-
-    if (filterType == 'lastName') {
-      _filteredCustomer = _filteredCustomer.filter((item) => (
-        (item.LastName && item.LastName.toLowerCase().includes(LastName.toLowerCase()))
-         // (item.sort((a,b) => a.LastName > b.LastName ? 1 : -1))
-      ))
-    } 
-     if (filterType == 'Email') {
-      _filteredCustomer = _filteredCustomer.filter((item) => (
-        (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
-      ))
+     ///Sort By Customer 
+    if (filterType == 'LastName-') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.LastName < b.LastName) { return -1; }
+        if (a.LastName > b.LastName) { return 1; }
+        return 0;
+      })
     }
+    if (filterType == 'Email-') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.Email < b.Email) { return -1; }
+        if (a.Email > b.Email) { return 1; }
+        return 0;
+      })
+    }
+    if (filterType.toLowerCase() == 'lastname') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        let x = a.LastName.toUpperCase(),
+            y = b.LastName.toUpperCase();
+        return x == y ? 0 : x > y ? 1 : -1;
+    
+    });
+    }
+    if (filterType.toLowerCase() == 'email') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        let x = a.Email.toUpperCase(),
+            y = b.Email.toUpperCase();
+        return x == y ? 0 : x > y ? 1 : -1;
+    });
+    }
+
 
     // Search in Customer
     if (FirstName !== '') {
@@ -257,42 +281,22 @@ const CustomerView = () => {
       ))
     }
     setFilteredCustomer(_filteredCustomer);
-
-
-
-
-    // if (filterType == 'lastName' || LastName !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.LastName && item.LastName.toLowerCase().includes(LastName.toLowerCase()))
-    //   ))
-    // } else if (filterType == 'Email' || Email !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
-    //   ))
-    // }else if (FirstName !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.FirstName && item.FirstName.toLowerCase().includes(FirstName.toLowerCase()))
-    //   ))
-    // } else if (PhoneNumber !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.Contact && item.Contact.toLowerCase().includes(PhoneNumber.toLowerCase()))
-    //   ))
-    // } 
-
     scount += _filteredCustomer.length;
-   // console.log("_filteredCustomer", _filteredCustomer)
-   // console.log("scount", scount)
-
-
+    // console.log("_filteredCustomer", _filteredCustomer)
+    // console.log("scount", scount)
   }
 
+  const updateSomething = () => {
+    setCount(count + 1)
+  }
 
 
 
   return (
     <React.Fragment>
       <div className="customer-view-wrapper">
-        <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} isShow={isShowAppLauncher}></LeftNavBar>
+        <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+        <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
 
         <div id="navCover" className="nav-cover"></div>
         <div className="mobile-cv-header">
@@ -300,7 +304,7 @@ const CustomerView = () => {
             <img src="" alt="" />
           </button>
           <p>Customers</p>
-          <button id="mobileCVSearchButton">
+          <button id="mobileCVSearchButton" onClick={CustomerSearchMobi}>
             <img src={SearchBaseBlue} alt="" />
           </button>
           <button id="mobileAppsButton" onClick={() => toggleAppLauncher()}>
@@ -308,7 +312,7 @@ const CustomerView = () => {
               alt="" />
           </button>
         </div>
-        <div id="CVSearch" className="cv-search">
+        <div id="CVSearch" className={isCvmobile === true ? "cv-search open" : "cv-search"}   >
           <div className="header">
             <p>Customers</p>
             <button id="cvAddCustomer" onClick={toggleCreateCustomer}>
@@ -343,15 +347,23 @@ const CustomerView = () => {
                 <p>{filterType}</p>
               </div>
 
-              <div onClick={() => SetFilter('Email')} className="sort-option" data-value="emailAsc">
+              <div onClick={() => SetFilter('Email-')} className="sort-option" data-value="emailAsc">
                 <img src={FilterArrowUp} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={() => SetFilter('lastName')} className="sort-option" data-value="lastname">
+              <div onClick={() => SetFilter('LastName-')} className="sort-option" data-value="lastname">
                 <img src={FilterArrowUp} alt="" />
                 <p>lastName</p>
               </div>
-
+              <div onClick={() => SetFilter('email')} className="sort-option" data-value="emailAsc">
+                <img src={FilterArrowDown} alt="" />
+                <p>Email</p>
+              </div>
+              <div onClick={() => SetFilter('lastname')} className="sort-option" data-value="lastname">
+                <img src={FilterArrowDown} alt="" />
+                <p>lastName</p>
+              </div>
+             
             </div>
           </div>
 
@@ -432,7 +444,7 @@ const CustomerView = () => {
               <p className="style2">Total Spent</p>
             </div>
             <div className="col">
-              <p className="style1">{orderCount && orderCount.length}</p>
+              <p className="style1">{orderCount && orderCount.length ? orderCount.length:0 }</p>
               <p className="style2">Orders</p>
             </div>
             <div className="col">
@@ -498,8 +510,8 @@ const CustomerView = () => {
               )
             }) : <div>Record not found</div>}
           </div>
-          <AddCustomersNotepoup isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
-          <AdjustCreditpopup isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
+          <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
+          <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
           <Cusomercreate isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
           <div className="footer">
             <button id="customerToTransactions">View Transactions</button>
