@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 //import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';
-import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI, getMakePaymentAPI,makeOnlinePaymentsAPI,saveAPI} from './checkoutApi';
+import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI, getMakePaymentAPI,makeOnlinePaymentsAPI,saveAPI,paymentAmountAPI} from './checkoutApi';
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -281,4 +281,46 @@ export const saveSlice = createSlice({
 export const { } = saveSlice.actions;
 //---
 
-export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice };
+//----
+export const paymentAmount = createAsyncThunk(
+  'checkout/paymentAmountPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await paymentAmountAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const paymentAmountSlice = createSlice({
+  name: 'save',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(paymentAmount.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(paymentAmount.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload? action.payload : "");
+        state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+        state.is_success = action.payload && action.payload? true : false;
+      })
+      .addCase(paymentAmount.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = paymentAmountSlice.actions;
+//--
+
+
+export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice,paymentAmountSlice };
