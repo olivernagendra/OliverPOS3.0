@@ -15,7 +15,7 @@ export const CheckAppDisplayInView = (viewManagement, view = null) => {
                 // setPage('Shop View');
                 setPage('Checkout');//for testting
                 break;
-            case '/customer':
+            case '/customers':
                 setPage('Customer View');
                 break;
             case '/transactions':
@@ -27,12 +27,15 @@ export const CheckAppDisplayInView = (viewManagement, view = null) => {
             case '/product':
                 setPage('Product View');
                 break;
+            case '/cashdrawer':
+                setPage('Product View');
+                break;
             default:
                 break;
         }
     }, [page]);
 
-    console.log("page", page)
+  //  console.log("page", page)
     var returnRes = false;
     viewManagement && viewManagement !== [] && viewManagement.map((type, ind) => {
         // isUrlImg = ext.logo ? (ext.logo.match(/\.(jpeg|jpg|gif|png|svg|TIFF|PSD|AI)$/) != null) : false // check if logo url is full imge url

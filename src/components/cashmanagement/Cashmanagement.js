@@ -12,11 +12,18 @@ import AddRemoveCashPopup from './AddRemoveCashPopup'
 import { useNavigate } from "react-router-dom";
 import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
 import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg';
+import AppLauncher from "../common/commonComponents/AppLauncher";
 function Cashmanagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
+
+  const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
+  const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
+  const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+  const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
+  const [isMobileNav, setisMobileNav] = useState(false);
   const [cashPopUpOpen, setcashPopUpOpen] = useState(false)
   const [popupstatus, setpopupstatus] = useState('')
   const [addremoveCash, setaddremoveCash] = useState(true)
@@ -30,7 +37,24 @@ function Cashmanagement() {
   }
   const HundlePOpupClose = () => {
     setcashPopUpOpen(false)
+  }
 
+
+  const toggleMobileNav = () => {
+    setisMobileNav(!isMobileNav)
+    setisShowMobLeftNav(!isShowMobLeftNav)
+  }
+  const toggleLinkLauncher = () => {
+    setisShowLinkLauncher(!isShowLinkLauncher)
+    setisShowAppLauncher(false)
+  }
+
+  const toggleAppLauncher = () => {
+    setisShowAppLauncher(!isShowAppLauncher)
+    setisShowLinkLauncher(false)
+  }
+  const toggleiFrameWindow = () => {
+    setisShowiFrameWindow(!isShowiFrameWindow)
   }
 
 
@@ -150,18 +174,24 @@ function Cashmanagement() {
   var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
   var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
+
+
+
+
+
   return (
     <>
     <React.Fragment>
       <div className="cash-management-wrapper">
-        <LeftNavBar></LeftNavBar>
+      <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+        <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
 
         <div class="mobile-cm-header">
-          <button id="mobileNavToggle">
+        <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""} >
             <img src="" alt="" />
           </button>
           <p>Cash Management</p>
-          <button id="mobileAppsButton">
+          <button id="mobileAppsButton" onClick={() => toggleAppLauncher()}>
             <img src={Oliver_Icon_BaseBlue} alt="" />
           </button>
         </div>
