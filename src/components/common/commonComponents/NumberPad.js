@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
-import Arrow_Left from '../../../images/svg/Arrow_Left.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
+import Arrow_Left from '../../../assets/images/svg/Arrow_Left.svg';
 import { chunkArray } from "../localSettings";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 const NumberPad = (props) => {

@@ -1,12 +1,12 @@
 import React, { useState,useEffect, useLayoutEffect } from "react";
-import avatar from '../../../images/svg/avatar.svg';
-import knowledgeBase_Icon from '../../../images/svg/knowledgeBase-Icon.svg';
-import SwitchUser_Icon from '../../../images/svg/SwitchUser-Icon.svg';
-import star from '../../../images/svg/star.svg';
-import LogOut_Icon from '../../../images/svg/LogOut-Icon.svg';
+import avatar from '../../../assets/images/svg/avatar.svg';
+import knowledgeBase_Icon from '../../../assets/images/svg/knowledgeBase-Icon.svg';
+import SwitchUser_Icon from '../../../assets/images/svg/SwitchUser-Icon.svg';
+import star from '../../../assets/images/svg/star.svg';
+import LogOut_Icon from '../../../assets/images/svg/LogOut-Icon.svg';
 
-import ClockIn_Icon from '../../../images/Temp/ClockIn_Icon.png';
-// import DownArrowGrey from '../../../images/Temp/DownArrowGrey.png';
+import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
+// import DownArrowGrey from '../../../assets/images/Temp/DownArrowGrey.png';
 import { get_regName, get_userName } from "../../common/localSettings";
 const UserInfo = (props) => {
     const [isSelectLangugage, setisSelectLangugage] = useState(false);

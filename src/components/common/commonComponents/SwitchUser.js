@@ -1,8 +1,8 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import AngledBracket_Left_Blue from '../../../images/svg/AngledBracket-Left-Blue.svg';
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
-import SwitchUser_Icon from '../../../images/svg/SwitchUser-Icon.svg';
-import Backspace_BaseBlue from '../../../images/svg/Backspace-BaseBlue.svg';
+import AngledBracket_Left_Blue from '../../../assets/images/svg/AngledBracket-Left-Blue.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
+import SwitchUser_Icon from '../../../assets/images/svg/SwitchUser-Icon.svg';
+import Backspace_BaseBlue from '../../../assets/images/svg/Backspace-BaseBlue.svg';
 import PinPad from "../../pinPage/PinPad";
 const SwitchUser = (props) => {
     const outerClick = (e) => {

@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
-import imglogo from '../../images/svg/Oliver-Horizontal.svg'
-import imgGoogle from '../../images/svg/google-logo.svg'
-import imgFaceBook from '../../images/svg/facebook-logo.svg'
-import imgApple from '../../images/svg/apple-logo.svg'
-import Checkmark from '../../images/svg/Checkmark.svg'
+import imglogo from '../../assets/images/svg/Oliver-Horizontal.svg'
+import imgGoogle from '../../assets/images/svg/google-logo.svg'
+import imgFaceBook from '../../assets/images/svg/facebook-logo.svg'
+import imgApple from '../../assets/images/svg/apple-logo.svg'
+import Checkmark from '../../assets/images/svg/Checkmark.svg'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { userLogin, userExternalLogin, GetUserProfileLogin } from '../login/loginSlice';
 import STATUSES from "../../constants/apiStatus";

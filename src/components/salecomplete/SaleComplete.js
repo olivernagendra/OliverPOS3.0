@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
 
-import Sale_Complete from '../../images/svg/SaleComplete.svg';
-import Checkmark from '../../images/svg/Checkmark.svg';
-import LogOut_Icon_White from '../../images/svg/LogOut-Icon-White.svg';
-import spongebob_squarepants_2 from '../../images/svg/spongebob-squarepants-2.svg';
-import Google_Calendar_Icon from '../../images/Temp/Google-Calendar-Icon.png';
-import DYMO_Icon from '../../images/Temp/DYMO-Icon.png';
-import QuoteApp_Icon from '../../images/Temp/QuoteApp_Icon.png';
+import Sale_Complete from '../../assets/images/svg/SaleComplete.svg';
+import Checkmark from '../../assets/images/svg/Checkmark.svg';
+import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg';
+import spongebob_squarepants_2 from '../../assets/images/svg/spongebob-squarepants-2.svg';
+import Google_Calendar_Icon from '../../assets/images/Temp/Google-Calendar-Icon.png';
+import DYMO_Icon from '../../assets/images/Temp/DYMO-Icon.png';
+import QuoteApp_Icon from '../../assets/images/Temp/QuoteApp_Icon.png';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import LocalizedLanguage from "../../settings/LocalizedLanguage";

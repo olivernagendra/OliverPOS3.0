@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import avatar from '../../images/svg/avatar.svg';
-import Oliver_Type from '../../images/svg/Oliver-Type.svg';
-import Search_Icon_Blue from '../../images/svg/Search-Icon-Blue.svg';
-import Ellipsis_Icon_DarkBlue from '../../images/svg/Ellipsis-Icon-DarkBlue.svg';
+import avatar from '../../assets/images/svg/avatar.svg';
+import Oliver_Type from '../../assets/images/svg/Oliver-Type.svg';
+import Search_Icon_Blue from '../../assets/images/svg/Search-Icon-Blue.svg';
+import Ellipsis_Icon_DarkBlue from '../../assets/images/svg/Ellipsis-Icon-DarkBlue.svg';
 
-import Add_Discount_Icon from '../../images/svg/Add-Discount-Icon.svg';
-import AddNote_Icon from '../../images/svg/AddNote-Icon.svg';
-import ClearCart_Icon from '../../images/svg/ClearCart-Icon.svg';
-import Notifications_Icon from '../../images/svg/Notifications-Icon.svg';
-import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
+import Add_Discount_Icon from '../../assets/images/svg/Add-Discount-Icon.svg';
+import AddNote_Icon from '../../assets/images/svg/AddNote-Icon.svg';
+import ClearCart_Icon from '../../assets/images/svg/ClearCart-Icon.svg';
+import Notifications_Icon from '../../assets/images/svg/Notifications-Icon.svg';
+import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
 import { removeCheckOutList } from '../dashboard/product/productLogic';
 import { product } from "../dashboard/product/productSlice";
 import UserInfo from "../common/commonComponents/UserInfo";

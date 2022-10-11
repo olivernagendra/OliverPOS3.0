@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import EmptyCart from '../../images/svg/EmptyCart.svg';
-import Minus_Blue from '../../images/svg/Minus-Blue.svg';
-import Plus_Blue from '../../images/svg/Plus-Blue.svg';
+import EmptyCart from '../../assets/images/svg/EmptyCart.svg';
+import Minus_Blue from '../../assets/images/svg/Minus-Blue.svg';
+import Plus_Blue from '../../assets/images/svg/Plus-Blue.svg';
 import { RoundAmount } from "../common/TaxSetting";
 import STATUSES from "../../constants/apiStatus";
 import { useSelector } from 'react-redux';

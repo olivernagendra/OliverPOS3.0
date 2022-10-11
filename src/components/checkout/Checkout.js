@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-import EmptyCart from '../../images/svg/EmptyCart.svg'
-import person from '../../images/svg/person.svg'
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
+import EmptyCart from '../../assets/images/svg/EmptyCart.svg'
+import person from '../../assets/images/svg/person.svg'
 import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
