@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
-import Arrow_Left from '../../../images/svg/Arrow_Left.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
+import Arrow_Left from '../../../assets/images/svg/Arrow_Left.svg';
 import { chunkArray } from "../localSettings";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 const NumberPad = (props) => {
@@ -98,7 +98,7 @@ const NumberPad = (props) => {
                     <div className="auto-margin-top"></div>
                     <div className="text-row">
                         <p className="style1">Total balance:</p>
-                        <p className="style2" id="cashStep1Balance">$X.XX</p>
+                        <p className="style2" id="cashStep1Balance">${props.amount && parseFloat(props.amount).toFixed(2) }</p>
                     </div>
                     <div className="input-numpad">
                         <div className="input-container">

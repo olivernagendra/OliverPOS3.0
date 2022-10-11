@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
 
-import NotificationsSounds from '../../images/svg/NotificationsSounds.svg';
-import Approval_Icon from '../../images/svg/Approval-Icon.svg';
-import VolumeIcon from '../../images/svg/VolumeIcon.svg';
-import Changelog_Icon from '../../images/svg/Changelog-Icon.svg';
-import Info_Icon from '../../images/svg/Info-Icon.svg';
-import Error_Icon from '../../images/svg/Error-Icon.svg';
+import NotificationsSounds from '../../assets/images/svg/NotificationsSounds.svg';
+import Approval_Icon from '../../assets/images/svg/Approval-Icon.svg';
+import VolumeIcon from '../../assets/images/svg/VolumeIcon.svg';
+import Changelog_Icon from '../../assets/images/svg/Changelog-Icon.svg';
+import Info_Icon from '../../assets/images/svg/Info-Icon.svg';
+import Error_Icon from '../../assets/images/svg/Error-Icon.svg';
 import ActiveUser from '../../settings/ActiveUser';
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const Notifications = (props) => {

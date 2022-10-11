@@ -42,6 +42,8 @@ import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import { callProductXWindow } from "../../settings/CommonFunctionProductX";
 import { getInventory } from "./slices/inventorySlice";
+import { getDetails } from "../cashmanagement/CashmanagementSlice";
+import {getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -74,7 +76,7 @@ const Home = () => {
     const [msgBody, setmsgBody] = useState('');
     const [productxItem, setProductxItem] = useState('');
     const navigate = useNavigate()
-
+    var Cash_Management_ID = localStorage.getItem('Cash_Management_ID')
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
@@ -118,14 +120,23 @@ const Home = () => {
         dispatch(discount());
         dispatch(getExtensions());
         dispatch(getPaymentTypeName());
+        dispatch(getDetails(Cash_Management_ID));
         getFavourites();
-        var locationId = localStorage.getItem('Location')
+        var locationId = localStorage.getItem('Location');
+        dispatch(getCloudPrinters(locationId));
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
         if (user_ && user_.group_sales && user_.group_sales !== null && user_.group_sales !== "" && user_.group_sales !== "undefined") {
             dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
         }
     }
-
+      // Set First time CashManagment Datain localStore
+    const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
+    const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
+    useEffect(() => {
+      if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
+        localStorage.setItem("Cash_Management_Data",JSON.stringify(cashDrawerAllDetails.getdetail && getdetail.content));
+      }
+    }, [cashDrawerAllDetails]);
 
     // useEffect(() => {
     //     initFn();

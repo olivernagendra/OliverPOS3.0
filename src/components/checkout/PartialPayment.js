@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
 
 import { chunkArray } from "../common/localSettings";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";

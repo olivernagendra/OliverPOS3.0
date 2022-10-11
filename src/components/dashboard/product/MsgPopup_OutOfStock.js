@@ -1,5 +1,5 @@
 import React from "react";
-import OutOfStock from '../../../images/svg/OutOfStock.svg';
+import OutOfStock from '../../../assets/images/svg/OutOfStock.svg';
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 const MsgPopup_OutOfStock = (props) => {
     const outerClick = (e) => {

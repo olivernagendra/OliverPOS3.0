@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
-import AngledBracket_Left_Blue from '../../../images/svg/AngledBracket-Left-Blue.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
+import AngledBracket_Left_Blue from '../../../assets/images/svg/AngledBracket-Left-Blue.svg';
 import { useNavigate } from 'react-router-dom';
 const EndSession = (props) => {
     const navigate = useNavigate();

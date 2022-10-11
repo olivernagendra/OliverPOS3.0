@@ -38,7 +38,7 @@ export const CheckAppDisplayInView = (viewManagement, view = null) => {
     }
     // }, [page]);
 
-    //console.log("page", page)
+    //  console.log("page", page)
     var returnRes = false;
     viewManagement && viewManagement !== [] && viewManagement.map((type, ind) => {
         // isUrlImg = ext.logo ? (ext.logo.match(/\.(jpeg|jpg|gif|png|svg|TIFF|PSD|AI)$/) != null) : false // check if logo url is full imge url

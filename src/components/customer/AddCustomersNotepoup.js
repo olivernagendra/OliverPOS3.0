@@ -16,13 +16,9 @@ const AddCustomersNotepoup = (props) => {
            // console.log("check===>", Notes);
             var userLocal = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : '';
             dispatch(updateCustomerNote({ "wpid": customer_Id, "notes": Notes,"MetaData":userLocal }));         
-            setTimeout(() => {
-                // this.props.UpdateCustomerDetail(this.props,customer_Id, udid);                
-                // this.setState({isloading:false}) 
-                // this.props.closeNotespopup();  
-            }, 1000);       
-            // $(".form-control").val('');    
             props.toggleNoteModel()
+            props.updateSomething()
+            setNotes('');
         }
     }
 

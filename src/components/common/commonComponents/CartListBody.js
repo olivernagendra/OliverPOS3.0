@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import EmptyCart from '../../../images/svg/EmptyCart.svg';
+import EmptyCart from '../../../assets/images/svg/EmptyCart.svg';
 import { RoundAmount } from "../TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { useSelector } from 'react-redux';

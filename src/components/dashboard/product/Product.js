@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../../common/commonComponents/LeftNavBar";
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
-import Oliver_Icon_BaseBlue from '../../../images/svg/Oliver-Icon-BaseBlue.svg';
-import Coin_Blue from '../../../images/svg/Coin-Blue.svg';
-import Minus_Blue from '../../../images/svg/Minus-Blue.svg';
-import Plus_Blue from '../../../images/svg/Plus-Blue.svg';
-import CircledPlus_White from '../../../images/svg/CircledPlus-White.svg';
-import NoVariationDisplay from '../../../images/svg/NoVariationDisplay.svg';
-import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
-import Pencil from '../../../images/svg/Pencil.svg';
-// import Shoes from '../../../images/Temp/Shoes.png';
-// import CoffeeCup from '../../../images/Temp/CoffeeCup.png';
-// import SnapbackHat from '../../../images/Temp/SnapbackHat.png';
-// import Face_Mask from '../../../images/Temp/Face Mask.png';
-import Checkmark from '../../../images/svg/Checkmark.svg';
-import LockedIcon from '../../../images/svg/LockedIcon.svg';
-import Hanged_Tshirt from '../../../images/Temp/Hanged-Tshirt.png';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
+import Oliver_Icon_BaseBlue from '../../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
+import Coin_Blue from '../../../assets/images/svg/Coin-Blue.svg';
+import Minus_Blue from '../../../assets/images/svg/Minus-Blue.svg';
+import Plus_Blue from '../../../assets/images/svg/Plus-Blue.svg';
+import CircledPlus_White from '../../../assets/images/svg/CircledPlus-White.svg';
+import NoVariationDisplay from '../../../assets/images/svg/NoVariationDisplay.svg';
+import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
+import Product_OutOfStock from '../../../assets/images/svg/ProductOutOfStock.svg';
+import Pencil from '../../../assets/images/svg/Pencil.svg';
+// import Shoes from '../../../assets/images/Temp/Shoes.png';
+// import CoffeeCup from '../../../assets/images/Temp/CoffeeCup.png';
+// import SnapbackHat from '../../../assets/images/Temp/SnapbackHat.png';
+// import Face_Mask from '../../../assets/images/Temp/Face Mask.png';
+import Checkmark from '../../../assets/images/svg/Checkmark.svg';
+import LockedIcon from '../../../assets/images/svg/LockedIcon.svg';
+import Hanged_Tshirt from '../../../assets/images/Temp/Hanged-Tshirt.png';
 import { useIndexedDB } from 'react-indexed-db';
 import FormateDateAndTime from '../../../settings/FormateDateAndTime';
 import Config from '../../../Config'
@@ -1041,8 +1042,9 @@ const Product = (props) => {
                     </div>
                     <div className="mod-product">
                         {_DistictAttribute && _DistictAttribute.length === 0 ?
-                            <div className="img-container display-flex">
+                            <div className="img-container no-var">
                                 <img src={NoVariationDisplay} alt="" />
+                                <img src={Product_OutOfStock} alt="" />
                             </div> :
                             <div className="row">
                                 <p>Select Variations</p>

@@ -22,7 +22,8 @@ import { useIndexedDB } from 'react-indexed-db';
 import AddCustomersNotepoup from "./AddCustomersNotepoup";
 import AdjustCreditpopup from "./AdjustCreditpopup";
 import Cusomercreate from './Customercreate';
-import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import AppLauncher from "../common/commonComponents/AppLauncher";
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 const CustomerView = () => {
   var orderCount = ''
   var OrderAmount = 0;
@@ -31,6 +32,7 @@ const CustomerView = () => {
   const dispatch = useDispatch();
   const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
   const [isSortWrapper, setSortWrapper] = useState(false)
+  const [isCvmobile, setCvmobile] = useState(false)
   const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
   const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
   const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
@@ -52,10 +54,15 @@ const CustomerView = () => {
   const [Email, setEmail] = useState('')
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
+  const [count, setCount] = useState(0);
+  const [toggleList, setToggleList] = useState(false)
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
     setisShowLinkLauncher(false)
+  }
+  const toggleClickList =()=>{
+    setToggleList(!toggleList)
   }
   const toggleLinkLauncher = () => {
     setisShowLinkLauncher(!isShowLinkLauncher)
@@ -67,6 +74,7 @@ const CustomerView = () => {
   }
   const toggleNoteModel = () => {
     setisShowNoteModel(!isShowNoteModel)
+
   }
   const toggleCreditModel = () => [
     setisShowCreditModel(!isShowCreditModel)
@@ -88,6 +96,12 @@ const CustomerView = () => {
   const toggleSortWrapp = () => {
     setSortWrapper(!isSortWrapper)
   }
+
+
+  const CustomerSearchMobi = () => {
+    setCvmobile(!isCvmobile)
+  }
+
 
 
   if (!localStorage.getItem('user')) {
@@ -137,7 +151,7 @@ const CustomerView = () => {
     return () => {
       useCancelled1 = true;
     }
-  }, []);
+  }, [count]);
   // // Response from customer getDetails
   const [customerAllDetails] = useSelector((state) => [state.customergetDetail])
   useEffect(() => {
@@ -184,8 +198,6 @@ const CustomerView = () => {
         OrderAmount += parseInt(orderCount[index].amount++);
       }
     }
-    // console.log("orderCount", orderCount)
-    // console.log("OrderAmount", OrderAmount)
   }
 
 
@@ -200,12 +212,11 @@ const CustomerView = () => {
       setupdateCustomerId(item.WPId)
       dispatch(customergetDetail(item.WPId, UID));
       dispatch(getAllEvents(item.WPId, UID));
+      toggleClickList()
     }
   }
 
-  // console.log("AllEvant", AllEvant)
-  // console.log("eventCollection", eventCollection)
-
+ 
 
 
 
@@ -218,22 +229,43 @@ const CustomerView = () => {
   }, [filterType, customerlistdata]);
 
   const productDataSearch = () => {
+    CustomerSearchMobi()
     var scount = 0;
     var _filteredCustomer = customerlistdata
 
 
-    //console.log("filterType", filterType)
-
-    if (filterType == 'lastName') {
-      _filteredCustomer = _filteredCustomer.filter((item) => (
-        (item.LastName && item.LastName.toLowerCase().includes(LastName.toLowerCase()))
-         // (item.sort((a,b) => a.LastName > b.LastName ? 1 : -1))
-      ))
-    } 
-     if (filterType == 'Email') {
-      _filteredCustomer = _filteredCustomer.filter((item) => (
-        (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
-      ))
+     ///Sort By Customer 
+    if (filterType == 'LastName-') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.LastName < b.LastName) { return -1; }
+        if (a.LastName > b.LastName) { return 1; }
+        return 0;
+      })
+    }
+    if (filterType == 'Email-') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.Email < b.Email) { return -1; }
+        if (a.Email > b.Email) { return 1; }
+        return 0;
+      })
+    }
+    if (filterType.toLowerCase() == 'lastname') {
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.LastName > b.LastName)
+            return -1;
+        if (a.LastName < b.LastName)
+            return 1;
+        return 0;
+    });
+    }
+    if (filterType.toLowerCase() == 'email') {
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.Email > b.Email)
+            return -1;
+        if (a.Email < b.Email)
+            return 1;
+        return 0;
+    });
     }
 
     // Search in Customer
@@ -258,50 +290,30 @@ const CustomerView = () => {
       ))
     }
     setFilteredCustomer(_filteredCustomer);
-
-
-
-
-    // if (filterType == 'lastName' || LastName !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.LastName && item.LastName.toLowerCase().includes(LastName.toLowerCase()))
-    //   ))
-    // } else if (filterType == 'Email' || Email !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
-    //   ))
-    // }else if (FirstName !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.FirstName && item.FirstName.toLowerCase().includes(FirstName.toLowerCase()))
-    //   ))
-    // } else if (PhoneNumber !== '') {
-    //   _filteredCustomer = customerlistdata.filter((item) => (
-    //     (item.Contact && item.Contact.toLowerCase().includes(PhoneNumber.toLowerCase()))
-    //   ))
-    // } 
-
     scount += _filteredCustomer.length;
-   // console.log("_filteredCustomer", _filteredCustomer)
-   // console.log("scount", scount)
-
-
+    // console.log("_filteredCustomer", _filteredCustomer)
+    // console.log("scount", scount)
   }
 
+  const updateSomething = () => {
+    setCount(count + 1)
+  }
 
 
 
   return (
     <React.Fragment>
       <div className="customer-view-wrapper">
-        <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} isShow={isShowAppLauncher}></LeftNavBar>
+        <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+        <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
 
         <div id="navCover" className="nav-cover"></div>
         <div className="mobile-cv-header">
           <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""} >
             <img src="" alt="" />
           </button>
-          <p>{LocalizedLanguage.customers}</p>
-          <button id="mobileCVSearchButton">
+          <p>Customers</p>
+          <button id="mobileCVSearchButton" onClick={CustomerSearchMobi}>
             <img src={SearchBaseBlue} alt="" />
           </button>
           <button id="mobileAppsButton" onClick={() => toggleAppLauncher()}>
@@ -309,28 +321,28 @@ const CustomerView = () => {
               alt="" />
           </button>
         </div>
-        <div id="CVSearch" className="cv-search">
+        <div id="CVSearch" className={isCvmobile === true ? "cv-search open" : "cv-search"}   >
           <div className="header">
             <p>{LocalizedLanguage.customers}</p>
             <button id="cvAddCustomer" onClick={toggleCreateCustomer}>
               <img src={PlusSign} alt="" />
             </button>
-            <button id="mobileCVExitSearch">
+            <button id="mobileCVExitSearch" onClick={CustomerSearchMobi}>
               <img src="../assets/images/SVG/AngledBracket-Left-Blue.svg" alt="" />
               Go Back
             </button>
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-            <label for="fName">{LocalizedLanguage.firstName}</label>
-            <input type="text" id="fName" placeholder="Enter First Name" />
-            <label for="lName">{LocalizedLanguage.lastName}</label>
-            <input type="text" id="lName" placeholder="Enter Last Name" />
-            <label for="email">{LocalizedLanguage.email}</label>
-            <input type="email" id="email" placeholder="Enter Email" />
-            <label for="tel">{LocalizedLanguage.phoneNumber}</label>
-            <input type="tel" id="tel" placeholder="Enter Phone Number" />
-            <button id="searchCustomersButton">{LocalizedLanguage.searchactivity}</button>
+            <label for="fName">First Name</label>
+            <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
+            <label for="lName">Last Name</label>
+            <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
+            <label for="email">Email</label>
+            <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
+            <label for="tel">Phone Number</label>
+            <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+            <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>
         </div>
         <div className="cv-list" >
@@ -344,15 +356,23 @@ const CustomerView = () => {
                 <p>{filterType}</p>
               </div>
 
-              <div onClick={() => SetFilter('Email')} className="sort-option" data-value="emailAsc">
+              <div onClick={() => SetFilter('Email-')} className="sort-option" data-value="emailAsc">
                 <img src={FilterArrowUp} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={() => SetFilter('lastName')} className="sort-option" data-value="lastname">
+              <div onClick={() => SetFilter('LastName-')} className="sort-option" data-value="lastname">
                 <img src={FilterArrowUp} alt="" />
                 <p>lastName</p>
               </div>
-
+              <div onClick={() => SetFilter('email')} className="sort-option" data-value="emailAsc">
+                <img src={FilterArrowDown} alt="" />
+                <p>Email</p>
+              </div>
+              <div onClick={() => SetFilter('lastname')} className="sort-option" data-value="lastname">
+                <img src={FilterArrowDown} alt="" />
+                <p>lastName</p>
+              </div>
+             
             </div>
           </div>
 
@@ -385,30 +405,17 @@ const CustomerView = () => {
                   />
                 )
               })}
-
-
-
-
-
-
-
-
-
             </>}
-
-
-
-
           </div>
 
           <div className="mobile-footer">
             <button id="mobileAddCustomerButton">Create New</button>
           </div>
         </div>
-        <div id="CVDetailed" className="cv-detailed open">
+        <div id="CVDetailed" className={toggleList === true ? "cv-detailed open " : "cv-detailed"}>
           <div className="mobile-back">
-            <button id="exitCVDetailed">
-              <img src="../assets/images/SVG/AngledBracket-Left-Blue.svg" alt="" />
+            <button id="exitCVDetailed" onClick={toggleClickList}>
+              <img src={AngledBracketBlueleft} alt="" />
               Go Back
             </button>
           </div>
@@ -433,7 +440,7 @@ const CustomerView = () => {
               <p className="style2">Total Spent</p>
             </div>
             <div className="col">
-              <p className="style1">{orderCount && orderCount.length}</p>
+              <p className="style1">{orderCount && orderCount.length ? orderCount.length:0 }</p>
               <p className="style2">Orders</p>
             </div>
             <div className="col">
@@ -499,8 +506,8 @@ const CustomerView = () => {
               )
             }) : <div>Record not found</div>}
           </div>
-          <AddCustomersNotepoup isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
-          <AdjustCreditpopup isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
+          <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
+          <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
           <Cusomercreate isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
           <div className="footer">
             <button id="customerToTransactions">View Transactions</button>

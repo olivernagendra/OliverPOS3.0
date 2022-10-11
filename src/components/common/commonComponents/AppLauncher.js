@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import AngledBracket_Left_BaseBlue from '../../../images/svg/AngledBracket-Left-BaseBlue.svg';
-import NoApps_Message from '../../../images/svg/NoApps-Message.svg';
-// import ClockIn_Icon from '../../../images/Temp/GiftCard_Icon.png';
-// import Stripe_Icon from '../../../images/Temp/Stripe Icon.png';
-// import GiftCard_Icon from '../../../images/Temp/GiftCard_Icon.png';
-// import QRCode_Icon from '../../../images/Temp/QRCode_Icon.png';
-// import DYMO_Icon from '../../../images/Temp/DYMO-Icon.png';
-// import Fortis_Icon from '../../../images/Temp/Fortis-Icon.png';
-// import QuoteApp_Icon from '../../../images/Temp/QuoteApp_Icon.png';
-import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
+import AngledBracket_Left_BaseBlue from '../../../assets/images/svg/AngledBracket-Left-BaseBlue.svg';
+import NoApps_Message from '../../../assets/images/svg/NoApps-Message.svg';
+// import ClockIn_Icon from '../../../assets/images/Temp/GiftCard_Icon.png';
+// import Stripe_Icon from '../../../assets/images/Temp/Stripe Icon.png';
+// import GiftCard_Icon from '../../../assets/images/Temp/GiftCard_Icon.png';
+// import QRCode_Icon from '../../../assets/images/Temp/QRCode_Icon.png';
+// import DYMO_Icon from '../../../assets/images/Temp/DYMO-Icon.png';
+// import Fortis_Icon from '../../../assets/images/Temp/Fortis-Icon.png';
+// import QuoteApp_Icon from '../../../assets/images/Temp/QuoteApp_Icon.png';
+import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 import { CheckAppDisplayInView } from "../commonFunctions/appDisplayFunction";
 const AppLauncher = (props) => {
 

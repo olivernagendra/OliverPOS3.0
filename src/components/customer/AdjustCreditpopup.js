@@ -54,6 +54,7 @@ const AdjustCreditpopup = (props) => {
             setDeductCredAMount(0.00)
             setTimeout(() => {
                 props.toggleCreditModel()
+                props.updateSomething()
             }, 300);
         }
 

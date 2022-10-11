@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
-import Register_Icon_White from '../../images/svg/Register-Icon-White.svg'
-import Kiosk_Icon_White from '../../images/svg/Kiosk-Icon-White.svg'
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg'
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
+import AngledBracket_Right_Grey from '../../assets/images/svg/AngledBracket-Right-Grey.svg'
+import Register_Icon_White from '../../assets/images/svg/Register-Icon-White.svg'
+import Kiosk_Icon_White from '../../assets/images/svg/Kiosk-Icon-White.svg'
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg'
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 
 import STATUSES from "../../constants/apiStatus";
