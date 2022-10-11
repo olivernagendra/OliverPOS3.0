@@ -3,7 +3,7 @@ import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 const Customerlist = (props) => {
   return (
      <>
-          <button onClick={props.onClick} id={props.FirstName}  className="customer-card no-transform selected">
+          <button  onClick={(e)=> props.onClick(e)}    id={props.FirstName}  className="customer-card no-transform selected">
             <div className="avatar">
               <img src={AvatarIcon} alt="" />
             </div>
@@ -11,7 +11,8 @@ const Customerlist = (props) => {
               <p className="style1">{props.FirstName}  {props.LastName} </p>
               <p className="style2">{props.Email}</p>
             </div>
-            <div className="selected-indicator"></div>
+            {props.updateCustomerId === props.CustomerId ?  <div  className="selected-indicator" ></div>:""  }
+          
           </button>
           </>
         )

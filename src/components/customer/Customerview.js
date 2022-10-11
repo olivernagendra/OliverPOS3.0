@@ -54,14 +54,13 @@ const CustomerView = () => {
   const [Email, setEmail] = useState('')
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
-  const [count, setCount] = useState(0);
   const [toggleList, setToggleList] = useState(false)
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
     setisShowLinkLauncher(false)
   }
-  const toggleClickList =()=>{
+  const toggleClickList = () => {
     setToggleList(!toggleList)
   }
   const toggleLinkLauncher = () => {
@@ -117,6 +116,7 @@ const CustomerView = () => {
       setcustomerlist(rows ? rows : []);
       sessionStorage.setItem("CUSTOMER_ID", rows[0].WPId ? rows[0].WPId : 0);
       // setcustomerDetailData(rows[0] ?rows[0]:[])
+      setupdateCustomerId(rows[0].WPId ? rows[0].WPId : 0)
     });
     setisCustomerListLoaded(false)
   }
@@ -147,11 +147,12 @@ const CustomerView = () => {
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
+      
     }
     return () => {
       useCancelled1 = true;
     }
-  }, [count]);
+  }, []);
   // // Response from customer getDetails
   const [customerAllDetails] = useSelector((state) => [state.customergetDetail])
   useEffect(() => {
@@ -172,6 +173,7 @@ const CustomerView = () => {
       setcustomerAllEvant(customerAllEvant.data.content);
     }
   }, [customerAllEvant]);
+  // console.log("customerAllEvant",customerAllEvant)
   if (AllEvant && AllEvant.length > 0) {
     AllEvant.map((event, index) => {
       var collectionItem = {
@@ -193,6 +195,7 @@ const CustomerView = () => {
     })
     orderCount = eventCollection.filter(x => x.eventtype == "New Order")
     //Order Total Amount 
+   // console.log("eventCollection",eventCollection)
     for (let index = 0; index < orderCount.length; index++) {
       if (orderCount[index].amount && orderCount[index].amount != 0) {
         OrderAmount += parseInt(orderCount[index].amount++);
@@ -205,7 +208,7 @@ const CustomerView = () => {
 
 
 
-
+      /// Customer render List Click Function
   const activeClass = (item, index) => {
     var UID = get_UDid('UDID');
     if (item && item.WPId !== '') {
@@ -214,10 +217,8 @@ const CustomerView = () => {
       dispatch(getAllEvents(item.WPId, UID));
       toggleClickList()
     }
+
   }
-
- 
-
 
 
   const SetFilter = (ftype) => {
@@ -232,9 +233,10 @@ const CustomerView = () => {
     CustomerSearchMobi()
     var scount = 0;
     var _filteredCustomer = customerlistdata
-
-
-     ///Sort By Customer 
+    ///Sort By Customer 
+    if (filterType == 'All-') {
+      _filteredCustomer = customerlistdata
+    }
     if (filterType == 'LastName-') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
         if (a.LastName < b.LastName) { return -1; }
@@ -252,20 +254,20 @@ const CustomerView = () => {
     if (filterType.toLowerCase() == 'lastname') {
       _filteredCustomer = _filteredCustomer.sort((a, b) => {
         if (a.LastName > b.LastName)
-            return -1;
+          return -1;
         if (a.LastName < b.LastName)
-            return 1;
+          return 1;
         return 0;
-    });
+      });
     }
     if (filterType.toLowerCase() == 'email') {
       _filteredCustomer = _filteredCustomer.sort((a, b) => {
         if (a.Email > b.Email)
-            return -1;
+          return -1;
         if (a.Email < b.Email)
-            return 1;
+          return 1;
         return 0;
-    });
+      });
     }
 
     // Search in Customer
@@ -281,7 +283,7 @@ const CustomerView = () => {
     }
     if (LastName !== '') {
       _filteredCustomer = _filteredCustomer.filter((item) => (
-        (item.lastName && item.lastName.toLowerCase().includes(LastName.toLowerCase()))
+        (item.LastName && item.LastName.toLowerCase().includes(LastName.toLowerCase()))
       ))
     }
     if (Email !== '') {
@@ -291,14 +293,18 @@ const CustomerView = () => {
     }
     setFilteredCustomer(_filteredCustomer);
     scount += _filteredCustomer.length;
-    // console.log("_filteredCustomer", _filteredCustomer)
-    // console.log("scount", scount)
+   // console.log("_filteredCustomer", _filteredCustomer)
+   // console.log("customer count", scount)
   }
 
-  const updateSomething = () => {
-    setCount(count + 1)
+  const updateSomething = (customer_Id) => {
+    var UID = get_UDid('UDID');
+    dispatch(customergetDetail(customer_Id, UID));
+    dispatch(getAllEvents(customer_Id, UID));
   }
 
+
+  
 
 
   return (
@@ -355,7 +361,10 @@ const CustomerView = () => {
                 <img src={FilterArrowUp} alt="" />
                 <p>{filterType}</p>
               </div>
-
+              <div onClick={() => SetFilter('All-')} className="sort-option" data-value="emailAsc">
+                <img src={FilterArrowUp} alt="" />
+                <p>all</p>
+              </div>
               <div onClick={() => SetFilter('Email-')} className="sort-option" data-value="emailAsc">
                 <img src={FilterArrowUp} alt="" />
                 <p>Email</p>
@@ -372,40 +381,31 @@ const CustomerView = () => {
                 <img src={FilterArrowDown} alt="" />
                 <p>lastName</p>
               </div>
-             
+
             </div>
           </div>
 
           <div className="body">
 
 
-
-
             {isCustomerListLoaded == true ? <LoadingSmallModal /> : <>
-              {false ? filteredCustomer.map((item, index) => {
+              {filteredCustomer && filteredCustomer.length > 0 ? filteredCustomer.map((item, index) => {
                 return (
                   <Customerlist
                     onClick={() => activeClass(item, index)}
                     key={index}
+                    CustomerId={item.WPId}
                     FirstName={item.FirstName}
                     LastName={item.LastName}
                     PhoneNumber={item.Contact}
                     Email={item.Email}
+                    updateCustomerId={updateCustomerId}
+                  // className={active == index ? 'selected-indicator' : ''} 
                   />
                 )
-              }) : filteredCustomer && filteredCustomer.length > 0 && filteredCustomer.map((item, index) => {
-                return (
-                  <Customerlist
-                    onClick={() => activeClass(item, index)}
-                    key={index}
-                    FirstName={item.FirstName}
-                    LastName={item.LastName}
-                    PhoneNumber={item.Contact}
-                    Email={item.Email}
-                  />
-                )
-              })}
+              }) : <div style={{ textAlign: "center", margin: "auto" }}> <h3>Record not found</h3></div>}
             </>}
+
           </div>
 
           <div className="mobile-footer">
@@ -429,8 +429,8 @@ const CustomerView = () => {
                 <p className="style2">{customerDetailData && customerDetailData.Email}</p>
               </div>
               <div className="text-group">
-                <p className="style2">Phone #:</p>
-                <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
+                <p className="style2">Phone #:{customerDetailData && customerDetailData.Contact}</p>
+                {/*  <p className="style2">{customerDetailData && customerDetailData.Contact}</p> */}
               </div>
             </div>
           </div>
@@ -440,7 +440,7 @@ const CustomerView = () => {
               <p className="style2">Total Spent</p>
             </div>
             <div className="col">
-              <p className="style1">{orderCount && orderCount.length ? orderCount.length:0 }</p>
+              <p className="style1">{orderCount && orderCount.length ? orderCount.length : 0}</p>
               <p className="style2">Orders</p>
             </div>
             <div className="col">
@@ -494,7 +494,7 @@ const CustomerView = () => {
                 item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
                   <div className="customer-note">
                     <div className="row">
-                      <p className="style1">July 27, 2021</p>
+                      <p className="style1">{item.datetime}</p>
                       <p className="style2">12:50PM</p>
                       <button>
                         <img src={ClearCart} alt="" />
@@ -508,6 +508,7 @@ const CustomerView = () => {
           </div>
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
+
           <Cusomercreate isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
           <div className="footer">
             <button id="customerToTransactions">View Transactions</button>

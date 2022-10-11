@@ -4,32 +4,34 @@ import IconDarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg'
 import { updateCreditScore } from './CustomerSlice'
 const AdjustCreditpopup = (props) => {
     const dispatch = useDispatch();
-   const [AddCreAmount, setAddCreAmount] = useState(0.00)
-   const [DeductCredAMount, setDeductCredAMount] = useState(0.00)
-   const [addCreditAmt, setaddCreditAmt] = useState(0.00)
-   const [deductCreditAmt, setdeductCreditAmt] = useState(0.00)
-   const [Notes, setNotes] = useState('')
+    const [AddCreAmount, setAddCreAmount] = useState('')
+    const [DeductCredAMount, setDeductCredAMount] = useState('')
+    const [StatusFiled, setStatusFiled] = useState('Add')
+    const [Notes, setNotes] = useState('')
 
 
 
 
 
-    const validateAddNumber = (e,type) => {
-        const { value } = e.target;       
-        const re = new RegExp('^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$')        
-        if (value === '' || re.test(value)) {  
-            if(type=='add'){ 
-                var addCreAmount =  value ? value:0.00
+    const validateAddNumber = (e, type) => {
+        const { value } = e.target;
+        const re = new RegExp('^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$')
+        if (value === '' || re.test(value)) {
+            if (type == 'add') {
+                var addCreAmount = value ? value : ""
                 setAddCreAmount(addCreAmount)
 
             }
-            else{
-                var deductCredAMount =  value ? value:0.00
+            if (type == 'deduct') {
+                var deductCredAMount = value ? value : ""
                 setDeductCredAMount(deductCredAMount)
             }
-        } 
-        var notes = value?value:''
-        setNotes(notes)
+        }
+        if (type == 'notes') {
+            var notes = value ? value : ''
+            setNotes(notes)
+        }
+
 
 
     }
@@ -41,7 +43,6 @@ const AdjustCreditpopup = (props) => {
             return;
         }
         if (AddCreAmount || DeductCredAMount) {
-
             var addRemoveParm = {
                 "CustomerWpid": customer_Id,
                 "AddPoint": AddCreAmount,
@@ -50,16 +51,27 @@ const AdjustCreditpopup = (props) => {
                 "Udid": UID,
             }
             dispatch(updateCreditScore(addRemoveParm));
-            setAddCreAmount(0.00)
-            setDeductCredAMount(0.00)
+            props.toggleCreditModel()
+            setAddCreAmount("")
+            setDeductCredAMount("")
+            setNotes('')
             setTimeout(() => {
-                props.toggleCreditModel()
-                props.updateSomething()
-            }, 300);
+             props.updateSomething(customer_Id)
+            }, 3000);
         }
 
     }
 
+    const modelClose = () => {
+        setAddCreAmount(0.00)
+        setDeductCredAMount(0.00)
+        setNotes('')
+        props.toggleCreditModel()
+    }
+
+    const HundleCreditFiled =(statusFiled)=>{
+        setStatusFiled(statusFiled)
+    }
 
 
 
@@ -75,8 +87,7 @@ const AdjustCreditpopup = (props) => {
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div className={props.isShow === true ? "subwindow add-cash current" : "subwindow add-cash"}>
-
+            <div  className={props.isShow === true ? "subwindow adjust-credit current" : "subwindow adjust-credit"}    >
                 <div className="subwindow-header">
                     <p>Adjust Credit</p>
                     <button className="close-subwindow" onClick={props.toggleCreditModel}>
@@ -85,32 +96,54 @@ const AdjustCreditpopup = (props) => {
                 </div>
                 <div className="subwindow-body">
                     <div className="auto-margin-top" />
+                    <p>Select an option:</p>
+                    <div className="toggle-wrapper" id="adjustCreditToggle">
+                        <label>
+                            <input
+                                type="radio"
+                                id="addCreditToggle"
+                                name="add_remove_credit_toggle"
+                                defaultChecked=""
+                            />
+                            <div className="custom-radio" onClick={() => HundleCreditFiled('Add')}>Add Credit</div>
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                id="removeCreditToggle"
+                                name="add_remove_credit_toggle"
+                            />
+                            <div className="custom-radio" onClick={() => HundleCreditFiled('Remove')}>Remove Credit</div>
+                        </label>
+                    </div>
                     <div className="text-row">
-                        <p className="style1">Current Credit:</p>
+                        <p className="style1">Current credit:</p>
                         <p className="style2">{props.details.store_credit ? props.details.store_credit : 0.00}</p>
                     </div>
-                    <div className="input-row">
-                        <label htmlFor="addCashAmount">Add Credit:</label>
-                        <input type="number" id="addCashAmount" placeholder="Enter Amount"  onChange={(e) => validateAddNumber(e, "add")} />
+                    <div className={StatusFiled === "Add" ? "change-credit-row " : "change-credit-row hidden"} >
+                        <p>Add Credit:</p>
+                        <input type="number" id="addCreditInput" placeholder="Enter Amount" value={AddCreAmount}  onChange={(e) => validateAddNumber(e, "add")} />
+                    </div> 
+                     <div className={StatusFiled === "Remove" ? "change-credit-row " : "change-credit-row hidden"}>
+                        <p>Remove Credit:</p>
+                        <input type="number" id="removeCreditInput" placeholder="Enter Amount" onChange={(e) => validateAddNumber(e, "deduct")}  value={DeductCredAMount} />
                     </div>
-                    <div className="input-row">
-                        <label htmlFor="addCashAmount">Deduct Credit:</label>
-                        <input type="number" id="removeCashAmount" placeholder="Enter Amount"  onChange={(e) => validateAddNumber(e, "deduct")} />
-                    </div>
-                    <label htmlFor="addCashNote">Add a note:</label>
+                   
+                    
+                    <label htmlFor="adjustCreditAddNote">Add a note:</label>
                     <textarea
-                        id="addCashNote"
+                        id="adjustCreditAddNote"
                         placeholder="Please add a note here."
                         defaultValue={""}
-                        onChange={(e) => validateAddNumber(e)}
+                        onChange={(e) => validateAddNumber(e, "notes")}
+                        value={Notes}
                     />
-                    <button onClick={() => handleSubmit(props.details.WPId, props.UID)}>Adjust Credit</button>
+                    <button onClick={() => handleSubmit(props.details.WPId, props.UID)}>Update Credit</button>
                     <div className="auto-margin-bottom" />
                 </div>
-
             </div>
-        </div>
 
+        </div>
     )
 }
 

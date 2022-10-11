@@ -13,11 +13,10 @@ const AddCustomersNotepoup = (props) => {
     }
     const handleSubmit = (customer_Id, udid) => {
         if (Notes !== "") {
-           // console.log("check===>", Notes);
             var userLocal = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : '';
             dispatch(updateCustomerNote({ "wpid": customer_Id, "notes": Notes,"MetaData":userLocal }));         
             props.toggleNoteModel()
-            props.updateSomething()
+            props.updateSomething(customer_Id)
             setNotes('');
         }
     }
@@ -38,7 +37,7 @@ const AddCustomersNotepoup = (props) => {
     return (
      <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
        <div className={props.isShow === true ? "subwindow add-customer-note current" : "subwindow add-customer-note"}>
-            <div className="subwindow-header">
+            <div className="subwindow-header" >
                 <p>Add Customer Note</p>
                 <button onClick={props.toggleNoteModel} className="close-subwindow">
                     <img src={IconDarkBlue} alt="" />
@@ -53,6 +52,7 @@ const AddCustomersNotepoup = (props) => {
                     placeholder="Add note here"
                     defaultValue={""}
                     onChange={(e) => handleChange(e)}
+                    value={Notes}
                 />
                 <button onClick={() => handleSubmit(props.customerId, props.UID)}>Add Note</button>
                 <div className="auto-margin-bottom" />
