@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
 
 const IframeWindow = (props) => {
     return (<div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={() => props.toggleiFrameWindow()}><div id="iframeSubwindow" className={props.isShow === true ? "subwindow iframe-popup current" : "subwindow iframe-popup"}>

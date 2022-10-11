@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import avatar from '../../images/svg/avatar.svg';
-import Arrow_Left from '../../images/svg/Arrow_Left.svg';
-import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
-import Ellipsis_Icon_DarkBlue from '../../images/svg/Ellipsis-Icon-DarkBlue.svg';
-import AddNote_Icon from '../../images/svg/AddNote-Icon.svg';
-import Clock from '../../images/svg/Clock.svg';
+import avatar from '../../assets/images/svg/avatar.svg';
+import Arrow_Left from '../../assets/images/svg/Arrow_Left.svg';
+import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
+import Ellipsis_Icon_DarkBlue from '../../assets/images/svg/Ellipsis-Icon-DarkBlue.svg';
+import AddNote_Icon from '../../assets/images/svg/AddNote-Icon.svg';
+import Clock from '../../assets/images/svg/Clock.svg';
 import UserInfo from "../common/commonComponents/UserInfo";
 import SwitchUser from "../common/commonComponents/SwitchUser";
 import EndSession from "../common/commonComponents/EndSession";

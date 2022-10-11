@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useIndexedDB } from 'react-indexed-db';
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
 import { AddItemType } from "../../common/EventFunctions";
 import { addTile, tile } from '../tiles/tileSlice';
 import { get_regId, get_UDid, get_userId } from "../../common/localSettings";

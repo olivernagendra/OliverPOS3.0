@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
-import Store_Icon_White from '../../images/svg/Store-Icon-White.svg'
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
+import AngledBracket_Right_Grey from '../../assets/images/svg/AngledBracket-Right-Grey.svg'
+import Store_Icon_White from '../../assets/images/svg/Store-Icon-White.svg'
 import { location } from './locationSlice';
 
 import { get_UDid, get_userName } from '../common/localSettings';

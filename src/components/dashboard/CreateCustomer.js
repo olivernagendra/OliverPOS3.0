@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-import Checkmark from '../../images/svg/Checkmark.svg';
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
+import Checkmark from '../../assets/images/svg/Checkmark.svg';
 import { customergetPage, customersave } from '../customer/CustomerSlice'
 import { get_UDid } from "../common/localSettings";
 import STATUSES from "../../constants/apiStatus";

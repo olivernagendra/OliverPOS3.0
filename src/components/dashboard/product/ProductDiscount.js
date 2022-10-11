@@ -1,5 +1,5 @@
 import React, { useState} from "react";
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
 import {  singleProductDiscount } from "./productLogic";
 const ProductDiscount = (props) => {
     const [discountAmount, setDiscountAmount] = useState("");

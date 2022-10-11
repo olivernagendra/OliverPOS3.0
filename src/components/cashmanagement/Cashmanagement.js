@@ -10,8 +10,8 @@ import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
 import AddRemoveCashPopup from './AddRemoveCashPopup'
 import { useNavigate } from "react-router-dom";
-import Oliver_Icon_BaseBlue from '../../images/svg/Oliver-Icon-BaseBlue.svg';
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg';
+import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 function Cashmanagement() {
   const dispatch = useDispatch();

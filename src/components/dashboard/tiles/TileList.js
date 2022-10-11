@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import CircledPlus_Icon_Border from '../../../images/svg/CircledPlus-Icon-Border.svg';
+import CircledPlus_Icon_Border from '../../../assets/images/svg/CircledPlus-Icon-Border.svg';
 import STATUSES from "../../../constants/apiStatus";
 import { AddItemType } from "../../common/EventFunctions";
 import { useIndexedDB } from 'react-indexed-db';
 import { getTaxAllProduct } from '../../common/TaxSetting';
 import { useLongPress } from 'use-long-press';
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
 import { deleteTile } from '../tiles/tileSlice';
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
-import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
-// import ErrorIconBlue from '../../../images/svg/ErrorIconBlue.svg';
+import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
+import ErrorIconBlue from '../../../assets/images/svg/ErrorIconBlue.svg';
 import { getInventory } from "../slices/inventorySlice";
 // var AllProduct = [];
 // var ParentProductList = [];
@@ -613,7 +613,7 @@ const TileList = (props) => {
         <div className="products" onContextMenu={(e) => e.preventDefault()}>
             <div className="products-container">
 					<div className="no-product-container">
-						{/* <img src={ErrorIconBlue} alt="" /> */}
+						<img src={ErrorIconBlue} alt="" />
 						<p>No products to display.</p>
 						<button>Add a Product</button>
 					</div>

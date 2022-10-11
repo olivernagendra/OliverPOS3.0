@@ -1,12 +1,12 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-import down_angled_bracket from '../../images/svg/down-angled-bracket.svg';
-import BlueDot from '../../images/svg/BlueDot.svg';
-import ViewIcon from '../../images/svg/ViewIcon.svg';
-import Add_Icon_White from '../../images/svg/Add-Icon-White.svg';
-import Transactions_Icon_White from '../../images/svg/Transactions-Icon-White.svg';
-import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg';
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
+import down_angled_bracket from '../../assets/images/svg/down-angled-bracket.svg';
+import BlueDot from '../../assets/images/svg/BlueDot.svg';
+import ViewIcon from '../../assets/images/svg/ViewIcon.svg';
+import Add_Icon_White from '../../assets/images/svg/Add-Icon-White.svg';
+import Transactions_Icon_White from '../../assets/images/svg/Transactions-Icon-White.svg';
+import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg';
 
 import { useIndexedDB } from 'react-indexed-db';
 import { AddItemType } from "../common/EventFunctions";

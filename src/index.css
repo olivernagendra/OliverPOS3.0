@@ -390,3 +390,9 @@ code {
 {
 display: none;
 }
+/* @media (orientation: portrait), (max-width: 1193px)
+{ */
+.product-wrapper > .mod-product > .img-container {
+    display: flex !important;
+}
+/* } */

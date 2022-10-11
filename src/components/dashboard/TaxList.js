@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
 import { AddAttribute } from "../common/EventFunctions";
 import { product } from "./product/productSlice";
 import { addtoCartProduct } from "./product/productLogic";

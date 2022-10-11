@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from 'react-redux';
 import { get_locName, get_regName, getShopName } from '../common/localSettings'
-import imgOpenReg from '../../images/svg/OpenSign.svg'
+import imgOpenReg from '../../assets/images/svg/OpenSign.svg'
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useDispatch, useSelector } from 'react-redux';
-// import imgBackSpace from '../../images/svg/Backspace-BaseBlue.svg'
+// import imgBackSpace from '../../assets/images/svg/Backspace-BaseBlue.svg'
 import { GetOpenRegister } from '../cashmanagement/CashmanagementSlice'
 // import {createPin, validatePin} from "./pinSlice"
 // import { useNavigate } from "react-router-dom";

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
-import EmptyCart from '../../../images/svg/EmptyCart.svg';
-import CircledX_Grey from '../../../images/svg/CircledX-Grey.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
+import EmptyCart from '../../../assets/images/svg/EmptyCart.svg';
+import CircledX_Grey from '../../../assets/images/svg/CircledX-Grey.svg';
 import { deleteProduct } from './productLogic';
 import { RoundAmount } from "../../common/TaxSetting";
 import { product } from "./productSlice";
