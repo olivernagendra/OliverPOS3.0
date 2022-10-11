@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-//import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';
-import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI, getMakePaymentAPI,makeOnlinePaymentsAPI,saveAPI,paymentAmountAPI} from './checkoutApi';
+//import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';changeReturnAmount
+import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI, getMakePaymentAPI,makeOnlinePaymentsAPI,saveAPI,paymentAmountAPI, changeReturnAmountAPI,checkTempOrderSyncAPI,checkTempOrderStatusAPI} from './checkoutApi';
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -322,5 +322,129 @@ export const paymentAmountSlice = createSlice({
 export const { } = paymentAmountSlice.actions;
 //--
 
+//----
+export const changeReturnAmount = createAsyncThunk(
+  'checkout/changeReturnAmountAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await changeReturnAmountAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const changeReturnAmountSlice = createSlice({
+  name: 'save',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(changeReturnAmount.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(changeReturnAmount.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload? action.payload : "");
+        state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+        state.is_success = action.payload && action.payload? true : false;
+      })
+      .addCase(changeReturnAmount.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = changeReturnAmountSlice.actions;
+//--
 
-export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice,paymentAmountSlice };
+//----
+export const checkTempOrderSync = createAsyncThunk(
+  'checkout/checkTempOrderSyncAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await checkTempOrderSyncAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const checkTempOrderSyncSlice = createSlice({
+  name: 'checkTempOrderSync',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(checkTempOrderSync.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(checkTempOrderSync.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload? action.payload : "");
+        state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+        state.is_success = action.payload && action.payload? true : false;
+      })
+      .addCase(checkTempOrderSync.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = checkTempOrderSyncSlice.actions;
+//--
+
+//----
+export const checkTempOrderStatus = createAsyncThunk(
+  'checkout/checkTempOrderStatusAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await checkTempOrderStatusAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const checkTempOrderStatusSlice = createSlice({
+  name: 'checkTempOrderStatus',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(checkTempOrderStatus.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(checkTempOrderStatus.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload? action.payload : "");
+        state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+        state.is_success = action.payload && action.payload? true : false;
+      })
+      .addCase(checkTempOrderStatus.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = checkTempOrderStatusSlice.actions;
+//--
+
+
+
+export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice,paymentAmountSlice ,changeReturnAmountSlice,checkTempOrderSyncSlice,checkTempOrderStatusSlice};

@@ -1,5 +1,6 @@
-import {serverRequest} from '../../CommonServiceRequest/serverRequest'
-
+import { serverRequest } from '../../CommonServiceRequest/serverRequest'
+import Config from '../../Config';
+import ActiveUser from '../../settings/ActiveUser';
 export function saveAPI(customer) {
     return serverRequest.clientServiceRequest('POST', `/customers/Save`, customer)
         .then(res => {
@@ -25,9 +26,9 @@ export function getDetailAPI(id, uid) {
 export function getPageAPI(parameter) {
     var customer_list = [];
     return serverRequest.clientServiceRequest('GET', `/customers/GetPage?pageSize=${parameter.pageSize}&pageNumber=${parameter.pageNumber}`, '')
-        .then(result => {           
+        .then(result => {
             var new_list = result && result.content;
-            if (new_list && new_list.Records && new_list.Records.length>0) {
+            if (new_list && new_list.Records && new_list.Records.length > 0) {
                 new_list.Records.map(item => {
                     if (item.WPId !== "" && item.WPId !== 0) {
                         customer_list.push(item)
@@ -37,7 +38,7 @@ export function getPageAPI(parameter) {
                 //console.log("customer_list[0].WPId",customer_list[0].WPId)
                 sessionStorage.setItem("CUSTOMER_ID", customer_list[0].WPId)
             }
-           
+
             return result;
         });
 }
@@ -45,8 +46,8 @@ export function getPageAPI(parameter) {
 
 export function getAllEventsAPi(id, uid) {
     var param = {
-        wpid : id,
-        Udid:uid
+        wpid: id,
+        Udid: uid
     }
     return serverRequest.clientServiceRequest('POST', `/Customers/GetCustomerEvents`, param)
         .then(singleList => {
@@ -56,7 +57,7 @@ export function getAllEventsAPi(id, uid) {
 
 export function updateCustomerNoteAPI(data) {
     return serverRequest.clientServiceRequest('POST', `/customers/SaveNote`, data)
-     .then(res => {
+        .then(res => {
             return res
         })
 }
@@ -67,4 +68,32 @@ export function updateCreditScoreAPI(parameter) {
         .then(res => {
             return res
         })
+}
+
+export function saveCustomerToTempOrderAPI(order_id, email_id) {
+    var notificationLimit = Config.key.NOTIFICATION_LIMIT;
+    return serverRequest.clientServiceRequest('GET', `/orders/SaveCustomerInTempOrder?OrderId=${order_id}&CustomerEmail=${email_id}`, '')
+        .then(response => {
+            var _status = "true";
+            var _emailSend = true;
+            // Add Customer order success ------------------------------------
+            var TempOrders = localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`)) : [];
+            if (TempOrders && TempOrders.length > 0) {
+                if (TempOrders.length > notificationLimit) {
+                    TempOrders.splice(0, 1);
+                }
+                TempOrders.map(ele => {
+                    if (ele.TempOrderID == order_id && ele.new_customer_email !== "") {
+                        ele.Status = _status;
+                        ele.isCustomerEmail_send = _emailSend;
+                        ele.Sync_Count = ele.Sync_Count + 1
+                        //  recheckTempOrderSync(udid,ele.TempOrderID)                                
+                    }
+                })
+                localStorage.setItem(`TempOrders_${ActiveUser.key.Email}`, JSON.stringify(TempOrders))
+            }
+            //--------------------------------------------------------------
+            return response;
+        }
+        );
 }

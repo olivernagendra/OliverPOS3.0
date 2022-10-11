@@ -15,6 +15,10 @@ import AppLauncher from "../common/commonComponents/AppLauncher";
 import IframeWindow from "../dashboard/IframeWindow";
 import ParkSale from "./ParkSale";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import { get_UDid } from "../common/localSettings";
+import { checkTempOrderSync } from "./checkoutSlice";
+import ActiveUser from '../../settings/ActiveUser';
+import Config from '../../Config';
 const Header = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -58,6 +62,44 @@ const Header = (props) => {
     }
     const goBack = () => {
         navigate('/home');
+    }
+    const checkTempOrderSyncStatus=()=> {
+        var udid = get_UDid;
+        const { Email } = ActiveUser.key;
+        setTimeout(function () {
+            var TempOrdersForSync = localStorage.getItem(`TempOrders_${Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${Email}`)) : [];
+            if (TempOrdersForSync && TempOrdersForSync.length > 0) {
+                var TempOrders = TempOrdersForSync.filter(item => item.Status.toString() == "false" && item.Sync_Count < Config.key.SYNC_COUNT_LIMIT);
+                if (TempOrders && TempOrders.length > 0) {
+                    var sortArr = TempOrders.sort(function (obj1, obj2) {
+                        return obj1.Index - obj2.Index;
+                    })
+                    var syncOrderID = sortArr[0].TempOrderID;
+
+                    if (syncOrderID && syncOrderID !== '') {
+                        // console.log("checkTempOrderSync", syncOrderID)
+                        dispatch(checkTempOrderSync(udid, syncOrderID));
+                    }
+                }
+
+                /// Sync for add new customer to order and send email to customer
+                TempOrders = TempOrdersForSync.filter(item => item.new_customer_email !== "" && item.isCustomerEmail_send == false && item.Sync_Count < Config.key.SYNC_COUNT_LIMIT);
+                if (TempOrders && TempOrders.length > 0) {
+                    var sortArr = TempOrders.sort(function (obj1, obj2) {
+                        return obj1.Index - obj2.Index;
+                    })
+                    var syncOrderID = sortArr[0].TempOrderID;
+
+                    //Sync_Count<=1 FOR ONLY ONE TIME EXCECUTION
+                    // console.log("TempOrders[0].Sync_Count", TempOrders[0].Sync_Count)
+                    if (syncOrderID && TempOrders[0].Sync_Count <= 1 && TempOrders[0].new_customer_email !== "" && TempOrders[0].isCustomerEmail_send == false) {
+                        // console.log("Call email customer", TempOrders[0].Sync_Count)
+                        //dispatch(saveCustomerInOrderAction.saveCustomerToTempOrder(udid, syncOrderID, TempOrders[0].new_customer_email))
+                    }
+
+                }
+            }
+        }, 10000);
     }
     return (<React.Fragment>
         <div className="header">

@@ -113,7 +113,7 @@ export const redirectToURL = () => {
         }
         else
         {
-            history.push("/login");
+            //history.push("/login");
         }
     } else {
        // history.push('/loginpin')
