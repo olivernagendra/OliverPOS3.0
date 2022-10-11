@@ -307,8 +307,11 @@ export function saveAPI(shopOrder, path , updatedBy="") {
                         }
                     }
                 }, 500)
-                alert('save custmoer order successfully');
+                //alert('save custmoer order successfully');
             }
             return shop_order;
         });
+}
+export function paymentAmountAPI(amount) {
+    return amount;
 }

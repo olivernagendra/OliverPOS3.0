@@ -257,8 +257,24 @@ const AddTile = (props) => {
                     <input type="search" id="product_search_field_pro" className=""  name="search" onChange={() => filterProduct()}
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
+                <div class="dropdown-search open">
                 <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} />
-                <ul>
+                <div class="option-container">
+                            {filterList && filterList.length > 0 && filterList.map(item => {
+                        switch (item.type) {
+                            case "product":
+                                return <div class="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Title}</div>
+                            case "category":
+                                return <div class="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Value}</div>
+                            case "attribute":
+                                return <div class="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Description}</div>
+                            default:
+                                return ''
+                        }
+
+                    })}
+                </div></div>
+                {/* <ul>
                     {filterList && filterList.length > 0 && filterList.map(item => {
                         switch (item.type) {
                             case "product":
@@ -271,7 +287,7 @@ const AddTile = (props) => {
                                 return ''
                         }
 
-                    })}</ul>
+                    })}</ul> */}
                 <p>Select the tile color</p>
                 <div className="radio-group">
                     {/* {

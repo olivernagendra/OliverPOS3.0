@@ -386,3 +386,7 @@ code {
 
 .idle-register-wrapper > header > .col > .divider-pin
 {width: 100% !important;}
+.pinpad > input[type="number"]
+{
+display: none;
+}

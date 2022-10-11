@@ -31,6 +31,8 @@ const CartList = (props) => {
     const [totalItems, setTotalItems] = useState(0)
     const [isShowMobileCartList, setisShowMobileCartList] = useState(false)
     const [discountType, setDiscountType] = useState('');
+    const [discountCalculated,setDiscountCalculated]=useState(0);
+    const [showTaxStaus,setShowTaxStaus]=useState(false);
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const toggleMobileCartList = () => {
         setisShowMobileCartList(!isShowMobileCartList)
@@ -168,7 +170,7 @@ const CartList = (props) => {
             }
         })
         var discountIs = 0;
-        discountIs = discount;
+        discountIs = discountCalculated;
         var _checklist = (typeof localStorage.getItem("CHECKLIST") !== 'undefined') ? JSON.parse(localStorage.getItem("CHECKLIST")) : null;
         var taxratelist;
         var _TaxIs = [];
@@ -209,8 +211,8 @@ const CartList = (props) => {
             TaxRate: taxRate,
             _checklist: _checklist !== null ? _checklist.order_id : 0,
             oliver_pos_receipt_id: _checklist && _checklist !== null && _checklist.oliver_pos_receipt_id !== null ? _checklist.oliver_pos_receipt_id : "",
-            // showTaxStaus: this.state.showTaxStaus,
-            showTaxStaus: typeOfTax(),
+             showTaxStaus: showTaxStaus,
+            //showTaxStaus: typeOfTax(),
             _wc_points_redeemed: 0,
             _wc_amount_redeemed: 0,
             _wc_points_logged_redemption: 0
@@ -455,6 +457,8 @@ const CartList = (props) => {
         setTotal(RoundAmount(_total));
         setDiscount(_cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0);
         setTaxes(RoundAmount(_taxAmount));
+        setDiscountCalculated(_totalDiscountedAmount > 0 ? RoundAmount(_totalDiscountedAmount) : 0);
+        setShowTaxStaus(typeOfTax() == 'incl' ? LocalizedLanguage.inclTax : LocalizedLanguage.exclTax);
         //    this.setState({
         //         subTotal: RoundAmount(_subtotal),
         //         totalAmount: RoundAmount(_total),// parseFloat(_subtotal) - parseFloat(nextProps.discountAmount),           

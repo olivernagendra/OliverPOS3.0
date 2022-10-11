@@ -25,7 +25,7 @@ import moment from "moment";
 import { isSafari, isMobileOnly, isTablet } from "react-device-detect";
 import { product } from "../dashboard/product/productSlice";
 import { addtoCartProduct } from "../dashboard/product/productLogic";
-import { makeOnlinePayments, getMakePayment, save } from "../checkout/checkoutSlice";
+import { makeOnlinePayments, getMakePayment, save ,paymentAmount} from "../checkout/checkoutSlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Checkout = () => {
 
@@ -38,7 +38,7 @@ const Checkout = () => {
     const [isShowPartialPayment, setisShowPartialPayment] = useState(false);
     const [balance, setbalance] = useState(0);
     const [paidAmount, setPaidAmount] = useState(0);
-
+    const [partialAmount, setPartialAmount] = useState(0);
 
     const [checkList, setCheckList] = useState(JSON.parse(localStorage.getItem("CHECKLIST")));
     const [changeAmount, setChangeAmount] = useState(0);
@@ -77,6 +77,7 @@ const Checkout = () => {
     useEffect(() => {
         if (resSave && resSave.status == STATUSES.IDLE && resSave.is_success && loading===true) {
             setLoading(false);
+            dispatch(paymentAmount(null));
             navigate('/salecomplete');
         }
     }, [resSave]);
@@ -135,8 +136,10 @@ const Checkout = () => {
         setDiscount(RoundAmount(dis));
         setTotal(RoundAmount(tt));
         setbalance(RoundAmount(tt))
+        setPaidAmount(RoundAmount(tt));
     }
     const addCustomer = () => {
+        dispatch(paymentAmount(null));
         navigate('/customer');
         // var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
         // dispatch(popupMessage(data));
@@ -176,9 +179,44 @@ const Checkout = () => {
     const pay_by_cash = (amount) => {
         toggleNumberPad();
         setPaidAmount(amount);
-        pay_amount("cash");
+        setPartialAmount(null);
+        dispatch(paymentAmount({"type":"cash","amount":amount}));
+        //pay_amount("cash");
         //setPayment_Type("cash");
     }
+    const pay_partial = (amount,type) => {
+        toggleShowPartialPayment();
+        //setPaidAmount(amount);
+        setPartialAmount(amount);
+
+        dispatch(paymentAmount({"type":type,"amount":amount}));
+        //pay_amount(type);
+        //setPayment_Type("cash");
+    }
+
+    const [respPaymentAmount] = useSelector((state) => [state.paymentAmount])
+    useEffect(() => {
+        if ((respPaymentAmount && respPaymentAmount.status == STATUSES.IDLE && respPaymentAmount.is_success) ) {
+            console.log("----"+JSON.stringify(respPaymentAmount));
+            if(respPaymentAmount.data.type=="cash")
+            {
+                pay_amount("cash");
+            }
+            else
+            {
+                if(partialAmount!=null)
+                {
+                    setPartialPayment(respPaymentAmount.data.type,partialAmount)
+                }
+                else
+                pay_amount(respPaymentAmount.data.type);
+            }
+        }
+    }, [respPaymentAmount]);
+
+    // useEffect(() => {
+    //     pay_amount("cash");
+    // },[partialAmount]);
     // useEffect(() => {
     //     pay_amount(payment_Type);
     // }, [payment_Type]);
@@ -190,14 +228,16 @@ const Checkout = () => {
             setPaidAmount(paidConfirmAmount);
         }
 
-        var payment_amount = paidAmount ? paidAmount : 0;
+        var payment_amount = partialAmount!=null?partialAmount:paidAmount ? paidAmount : 0;
+        setPartialAmount(null);
         setPayment_Type(paymentType);
         const _getRemainingPrice = getRemainingPrice() ? getRemainingPrice() : 0;
         const _getRemainingPriceForCash = getRemainingPriceForCash();
 
         if (paymentType == paymentsType.typeName.cashPayment) {
-            var amount = paidAmount;// amount entered manually$('#calc_output_cash').val();
-            payment_amount = amount
+           // var amount = paidAmount;// amount entered manually$('#calc_output_cash').val();
+           var amount = partialAmount!=null?partialAmount:paidAmount ? paidAmount : 0;;
+           payment_amount = amount
             if (payment_amount == 0) {
                 // this.state.paidAmount = parseFloat(RoundAmount(getRemainingPrice)).toFixed(2)
                 // this.setState({
@@ -423,6 +463,7 @@ const Checkout = () => {
                 setOrderPartialPayments(parseFloat(paymentAmount), paymentType);
             }
         } else {
+            setLoading(false);
             extraPayAmount(LocalizedLanguage.validModeMsg)
         }
     }
@@ -442,7 +483,8 @@ const Checkout = () => {
         dispatch(makeOnlinePayments(onlinePayCardData))
     }
     const extraPayAmount = (msg) => {
-        alert(msg)
+        console.log(msg)
+        setLoading(false);
         // this.setState({ common_Msg: msg })
         // setTimeout(function () {
         //     showModal('common_msg_popup');
@@ -841,11 +883,15 @@ const Checkout = () => {
             } else if (parseFloat(RoundAmount(amountToBePaid)) <= parseFloat(RoundAmount(paidAmount))) {
                 createOrder("completed");
             }
+            else
+            {setLoading(false);}
 
         } else {
             if (parseFloat(RoundAmount(amountToBePaid + cash_round)) == parseFloat(RoundAmount(paidAmount))) {
                 createOrder("completed");
             }
+            else
+            {setLoading(false);}
         }
 
     }
@@ -1105,8 +1151,8 @@ const Checkout = () => {
                         details: _details,
                         cost_per_item: productCost && productCost.Cost ? productCost.Cost : 0,
                         psummary: items && items.psummary ? items.psummary : '',
-                        cart_item_discount_amount: items.cart_discount_amount ? items.cart_discount_amount : 0,
-                        individual_discount_amount: items.product_discount_amount ? items.product_discount_amount : 0,
+                        //cart_item_discount_amount: items.cart_discount_amount ? items.cart_discount_amount : 0,
+                        //individual_discount_amount: items.product_discount_amount ? items.product_discount_amount : 0,
                     })
 
 
@@ -1368,7 +1414,9 @@ const Checkout = () => {
         productDiscout && productDiscout.push({ order_notes: (typeof order_notes !== "undefined") && order_notes.length > 0 ? order_notes : [] })
         productDiscout && productDiscout.push({ taxType: typeOfTax() })
         var selectedGroupSale = localStorage.getItem('selectedGroupSale') ? JSON.parse(localStorage.getItem('selectedGroupSale')) : null;
-
+        var couponDetail = localStorage.getItem('couponDetail') ? JSON.parse(localStorage.getItem('couponDetail')) : null;
+        localStorage.removeItem('couponDetail');
+        localStorage.removeItem("couponApplied");
         order_meta.push({
             "manager_id": localStorage.getItem('demoUser') && localStorage.getItem('demoUser') == "true" ? localStorage.getItem('VisiterUserID') : localStorage.getItem('user') !== null && localStorage.getItem('user') !== undefined ? JSON.parse(localStorage.getItem('user')).user_id : "",
             "manager_name": localStorage.getItem('demoUser') && localStorage.getItem('demoUser') == "true" ? localStorage.getItem('VisiterUserEmail') : manager_name,
@@ -1389,7 +1437,8 @@ const Checkout = () => {
             // "_order_oliverpos_order_custom_fee" : order_custom_fee
             "_order_oliverpos_park_sale_notes": (typeof order_notes !== "undefined") && order_notes.length > 0 ? order_notes : [],
             "_order_oliverpos_cash_change": { "cashPayment": cashPayment, "change": changeAmount },
-            //"_order_oliverpos_addons" : productxAddons && productxAddons!== {} ? JSON.stringify(productxAddons) : {}        
+            //"_order_oliverpos_addons" : productxAddons && productxAddons!== {} ? JSON.stringify(productxAddons) : {}      
+            "_order_oliverpos_coupon": couponDetail  
         })
 
         var loginUser = JSON.parse(localStorage.getItem("user"));
@@ -1577,12 +1626,7 @@ const Checkout = () => {
                 <CartListBody setValues={setValues}></CartListBody>
                 <div className="footer">
                     <div className="totals">
-                        {paymentsArr && paymentsArr.map(p => {
-                            return <div className="row">
-                                <p>{paymentsArr.length} {LocalizedLanguage.payments}</p>
-                                <p></p>
-                            </div>
-                        })}
+                        
                         <div className="row">
                             <p>Subtotal</p>
                             <p><b>${<NumericFormat value={subTotal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
@@ -1617,20 +1661,28 @@ const Checkout = () => {
                 <button id="balanceButton" className="balance-container" onClick={() => toggleShowPartialPayment()}>
                     <div className="row">
                         <p className="style1">Balance Due</p>
-                        <p className="style2">${balance}</p>
+                        <p className="style2">${(parseFloat(balance)-(paymentsArr && paymentsArr.length>0 ?(paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 )):0)).toFixed(2)}</p>
                     </div>
-                    <div className="row">
+                    {paymentsArr && paymentsArr.map(p => {
+                            return <div className="row">
+                                 <p className="style3">{p.payment_type}</p>
+                        <p className="style3">${(parseFloat(p.payment_amount)).toFixed(2)}</p>
+                        {/* -(paymentsArr && paymentsArr.length>0 ?(paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 )):0) */}
+                            </div>
+                        })}
+                    {/* <div className="row">
                         <p className="style3">Card</p>
                         <p className="style3">$60.00</p>
                     </div>
                     <div className="row">
                         <p className="style3">Cash</p>
                         <p className="style3">$20.00</p>
-                    </div>
-                    <div className="row">
+                    </div> */}
+                    {paymentsArr && paymentsArr.length>0 && <div className="row">
                         <p className="style4">Total Paid</p>
-                        <p className="style4">$80.00</p>
-                    </div>
+                        <p className="style4">${ parseFloat((paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 ))).toFixed(2)}</p>
+                    </div>}
+                    
                 </button>
                 <p className="style1">Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
@@ -1665,8 +1717,8 @@ const Checkout = () => {
                 </div>
             </div>
         </div>
-        <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash}></NumberPad>
-        <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment}></PartialPayment>
+       {isShowNumberPad?<NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={paidAmount} getRemainingPriceForCash={getRemainingPriceForCash}></NumberPad>:null}
+        {isShowPartialPayment?<PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice}></PartialPayment>:null}
     </React.Fragment>)
 }
 export default Checkout
