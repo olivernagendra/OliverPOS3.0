@@ -23,6 +23,7 @@ import AddCustomersNotepoup from "./AddCustomersNotepoup";
 import AdjustCreditpopup from "./AdjustCreditpopup";
 import Cusomercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const CustomerView = () => {
   var orderCount = ''
   var OrderAmount = 0;
