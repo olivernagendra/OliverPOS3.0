@@ -23,6 +23,7 @@ import AddCustomersNotepoup from "./AddCustomersNotepoup";
 import AdjustCreditpopup from "./AdjustCreditpopup";
 import Cusomercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
 const CustomerView = () => {
   var orderCount = ''
   var OrderAmount = 0;
@@ -54,10 +55,14 @@ const CustomerView = () => {
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
   const [count, setCount] = useState(0);
+  const [toggleList, setToggleList] = useState(false)
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
     setisShowLinkLauncher(false)
+  }
+  const toggleClickList =()=>{
+    setToggleList(!toggleList)
   }
   const toggleLinkLauncher = () => {
     setisShowLinkLauncher(!isShowLinkLauncher)
@@ -207,6 +212,7 @@ const CustomerView = () => {
       setupdateCustomerId(item.WPId)
       dispatch(customergetDetail(item.WPId, UID));
       dispatch(getAllEvents(item.WPId, UID));
+      toggleClickList()
     }
   }
 
@@ -223,6 +229,7 @@ const CustomerView = () => {
   }, [filterType, customerlistdata]);
 
   const productDataSearch = () => {
+    CustomerSearchMobi()
     var scount = 0;
     var _filteredCustomer = customerlistdata
 
@@ -243,21 +250,23 @@ const CustomerView = () => {
       })
     }
     if (filterType.toLowerCase() == 'lastname') {
-      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-        let x = a.LastName.toUpperCase(),
-            y = b.LastName.toUpperCase();
-        return x == y ? 0 : x > y ? 1 : -1;
-    
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.LastName > b.LastName)
+            return -1;
+        if (a.LastName < b.LastName)
+            return 1;
+        return 0;
     });
     }
     if (filterType.toLowerCase() == 'email') {
-      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-        let x = a.Email.toUpperCase(),
-            y = b.Email.toUpperCase();
-        return x == y ? 0 : x > y ? 1 : -1;
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.Email > b.Email)
+            return -1;
+        if (a.Email < b.Email)
+            return 1;
+        return 0;
     });
     }
-
 
     // Search in Customer
     if (FirstName !== '') {
@@ -318,22 +327,22 @@ const CustomerView = () => {
             <button id="cvAddCustomer" onClick={toggleCreateCustomer}>
               <img src={PlusSign} alt="" />
             </button>
-            <button id="mobileCVExitSearch">
+            <button id="mobileCVExitSearch" onClick={CustomerSearchMobi}>
               <img src="../assets/images/SVG/AngledBracket-Left-Blue.svg" alt="" />
               Go Back
             </button>
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-            <label for="fName">{LocalizedLanguage.firstName}</label>
-            <input type="text" id="fName" placeholder="Enter First Name" />
-            <label for="lName">{LocalizedLanguage.lastName}</label>
-            <input type="text" id="lName" placeholder="Enter Last Name" />
-            <label for="email">{LocalizedLanguage.email}</label>
-            <input type="email" id="email" placeholder="Enter Email" />
-            <label for="tel">{LocalizedLanguage.phoneNumber}</label>
-            <input type="tel" id="tel" placeholder="Enter Phone Number" />
-            <button id="searchCustomersButton">{LocalizedLanguage.searchactivity}</button>
+            <label for="fName">First Name</label>
+            <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
+            <label for="lName">Last Name</label>
+            <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
+            <label for="email">Email</label>
+            <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
+            <label for="tel">Phone Number</label>
+            <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+            <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>
         </div>
         <div className="cv-list" >
@@ -396,30 +405,17 @@ const CustomerView = () => {
                   />
                 )
               })}
-
-
-
-
-
-
-
-
-
             </>}
-
-
-
-
           </div>
 
           <div className="mobile-footer">
             <button id="mobileAddCustomerButton">Create New</button>
           </div>
         </div>
-        <div id="CVDetailed" className="cv-detailed open">
+        <div id="CVDetailed" className={toggleList === true ? "cv-detailed open " : "cv-detailed"}>
           <div className="mobile-back">
-            <button id="exitCVDetailed">
-              <img src="../assets/images/SVG/AngledBracket-Left-Blue.svg" alt="" />
+            <button id="exitCVDetailed" onClick={toggleClickList}>
+              <img src={AngledBracketBlueleft} alt="" />
               Go Back
             </button>
           </div>
