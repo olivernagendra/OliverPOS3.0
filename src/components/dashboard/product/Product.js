@@ -123,6 +123,11 @@ const Product = (props) => {
             {
                 setProductQty(0);
             }
+            else
+            {
+                if(productQty==0)
+                {setProductQty(1);}
+            }
             // console.log("product Qty", currentWareHouseDetail.Quantity)
              //console.log("sel _stockStatus--", _stockStatus)
         }

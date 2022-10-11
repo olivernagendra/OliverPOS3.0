@@ -10,9 +10,12 @@ import QuoteApp_Icon from '../../images/Temp/QuoteApp_Icon.png';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import {getTotalTaxByName} from  "../common/TaxSetting";
 // import { product } from "../dashboard/product/productSlice";
 // import { addtoCartProduct } from "../dashboard/product/productLogic";
-
+//import { PrintPage } from "../common/PrintPage";
+import { get_UDid } from "../common/localSettings";
+import ActiveUser from "../../settings/ActiveUser";
 const SaleComplete = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -41,6 +44,74 @@ const SaleComplete = () => {
 
        // dispatch(addtoCartProduct(null));
         navigate('/home');
+    }
+	const printReceipt=(appResponse = undefined)=> {
+        var type = 'completecheckout';
+        var address;
+        var site_name;
+        var register_id = localStorage.getItem('register')
+        var location_name = localStorage.getItem('UserLocations') && JSON.parse(localStorage.getItem('UserLocations'));
+        var tempOrderId = localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : ''
+        var siteName = localStorage.getItem('clientDetail') && JSON.parse(localStorage.getItem('clientDetail'));
+
+        var udid = get_UDid;
+        var AllProductList = []
+        // var idbKeyval = FetchIndexDB.fetchIndexDb();
+        // idbKeyval.get('ProductList').then(val => {
+        //     if (!val || val.length == 0 || val == null || val == "") {
+        //     } else { AllProductList = val; }
+        // });
+
+        if (siteName && siteName.subscription_detail && siteName.subscription_detail !== "") {
+            if (siteName.subscription_detail.udid == udid) {
+                site_name = siteName.subscription_detail.host_name && siteName.subscription_detail.host_name
+            }
+        }
+
+        location_name && location_name.map(item => {
+            if (item.Id == register_id) {
+                address = item;
+            }
+        })
+        var order_reciept = localStorage.getItem('orderreciept') && localStorage.getItem('orderreciept') !== 'undefined' ? JSON.parse(localStorage.getItem('orderreciept')) : "";
+        var productxList = localStorage.getItem('PRODUCTX_DATA') ? JSON.parse(localStorage.getItem('PRODUCTX_DATA')) : "";
+        var TotalTaxByName = (order_reciept && order_reciept.ShowCombinedTax == false) ? getTotalTaxByName(type, productxList) : "";
+        var checkList = localStorage.getItem('PrintCHECKLIST') ? JSON.parse(localStorage.getItem('PrintCHECKLIST')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
+        var orderList = localStorage.getItem('oliver_order_payments') ? JSON.parse(localStorage.getItem('oliver_order_payments')) : "";
+        //var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
+        var orderMeta = localStorage.getItem("GTM_ORDER") && localStorage.getItem("GTM_ORDER") !== undefined ? JSON.parse(localStorage.getItem("GTM_ORDER")) : null;
+        var cash_rounding_total = '';
+        if (orderMeta !== null && orderMeta.order_meta !== null && orderMeta.order_meta !== undefined) {
+            cash_rounding_total = orderMeta.order_meta[0].cash_rounding && orderMeta.order_meta[0].cash_rounding !== null && orderMeta.order_meta[0].cash_rounding !== undefined && orderMeta.order_meta[0].cash_rounding !== 0 ? orderMeta.order_meta[0].cash_rounding : '';
+        }
+        var findTicketInfo = "";
+        if (checkList && checkList != "") {
+            findTicketInfo = checkList.ListItem.find(findTicketInfo => (findTicketInfo.ticket_info && findTicketInfo.ticket_info.length > 0))
+        }
+      
+        if (tempOrderId) {
+            setTimeout(function () {
+                var getPdfdateTime = ''; var isTotalRefund = ''; var cash_rounding_amount = '';
+                // console.log("Checklst", checkList);
+                if (ActiveUser.key.isSelfcheckout == true) {
+                    //PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, textToBase64Barcode(tempOrderId), orderList, type, productxList, AllProductList, TotalTaxByName, appResponse)
+                }
+                else {
+					var print_bar_code="";
+                   // PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, 0, appResponse)
+                }
+                if (ActiveUser.key.isSelfcheckout == true) {
+                    setTimeout(function () {
+                        //history.push('/selfcheckout')
+                    }, 500);
+                }
+            }, 1000);
+            var ServedBy = ''
+            var line_items = '';
+            if (typeof findTicketInfo !== 'undefined' && findTicketInfo !== "") {
+                //callBackTickeraPrintApi(udid, orderList, manager, register, location_name, site_name, ServedBy = '', inovice_Id, line_items, tempOrderId, print_bar_code, type);
+            }
+        }
     }
     return (
         <React.Fragment>
@@ -81,6 +152,9 @@ const SaleComplete = () => {
 					</button>
 					<button>
 						<img src={DYMO_Icon} alt="" />
+					</button>
+					<button>
+						<img src={QuoteApp_Icon} alt="" />
 					</button>
 					<button>
 						<img src={QuoteApp_Icon} alt="" />
