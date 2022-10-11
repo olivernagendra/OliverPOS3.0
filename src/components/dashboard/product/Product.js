@@ -9,6 +9,7 @@ import Plus_Blue from '../../../images/svg/Plus-Blue.svg';
 import CircledPlus_White from '../../../images/svg/CircledPlus-White.svg';
 import NoVariationDisplay from '../../../images/svg/NoVariationDisplay.svg';
 import NoImageAvailable from '../../../images/svg/NoImageAvailable.svg';
+import Product_OutOfStock from '../../../images/svg/ProductOutOfStock.svg';
 import Pencil from '../../../images/svg/Pencil.svg';
 // import Shoes from '../../../images/Temp/Shoes.png';
 // import CoffeeCup from '../../../images/Temp/CoffeeCup.png';
@@ -1041,8 +1042,9 @@ const Product = (props) => {
                     </div>
                     <div className="mod-product">
                         {_DistictAttribute && _DistictAttribute.length === 0 ?
-                            <div className="img-container display-flex">
+                            <div className="img-container no-var">
                                 <img src={NoVariationDisplay} alt="" />
+                                <img src={Product_OutOfStock} alt="" />
                             </div> :
                             <div className="row">
                                 <p>Select Variations</p>

@@ -98,7 +98,7 @@ const NumberPad = (props) => {
                     <div className="auto-margin-top"></div>
                     <div className="text-row">
                         <p className="style1">Total balance:</p>
-                        <p className="style2" id="cashStep1Balance">$X.XX</p>
+                        <p className="style2" id="cashStep1Balance">${props.amount && parseFloat(props.amount).toFixed(2) }</p>
                     </div>
                     <div className="input-numpad">
                         <div className="input-container">

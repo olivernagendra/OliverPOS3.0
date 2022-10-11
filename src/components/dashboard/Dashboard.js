@@ -42,6 +42,7 @@ import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import { callProductXWindow } from "../../settings/CommonFunctionProductX";
 import { getInventory } from "./slices/inventorySlice";
+import {getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -119,7 +120,8 @@ const Home = () => {
         dispatch(getExtensions());
         dispatch(getPaymentTypeName());
         getFavourites();
-        var locationId = localStorage.getItem('Location')
+        var locationId = localStorage.getItem('Location');
+        dispatch(getCloudPrinters(locationId));
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
         if (user_ && user_.group_sales && user_.group_sales !== null && user_.group_sales !== "" && user_.group_sales !== "undefined") {
             dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
