@@ -22,7 +22,7 @@ const IframeWindow = (props) => {
                 <img src="" alt="" />
             </div>
             <div className="col">
-                <p className="style1">Placeholder</p>
+                <p className="style1">{props && props.exApp && props.exApp.Name}</p>
                 <p className="style2">Placeholder</p>
             </div>
             <button className="close-subwindow">
@@ -33,7 +33,7 @@ const IframeWindow = (props) => {
                 <iframe
                     src={props.product && props.product.ParamLink ? props.product.PageUrl : props.exApp ? props.exApp.PageUrl : ''}
                     frameBorder="0"
-                // sandbox="allow-scripts allow-same-origin allow-forms"
+                    sandbox="allow-scripts allow-same-origin allow-forms"
                 // ref={(f) => this.ifr = f}
                 ></iframe>
             </div>
