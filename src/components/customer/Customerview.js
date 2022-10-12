@@ -24,6 +24,7 @@ import AdjustCreditpopup from "./AdjustCreditpopup";
 import Cusomercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 const CustomerView = () => {
   var orderCount = ''
   var OrderAmount = 0;
@@ -147,7 +148,7 @@ const CustomerView = () => {
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
-      
+
     }
     return () => {
       useCancelled1 = true;
@@ -181,21 +182,27 @@ const CustomerView = () => {
         Description: '', ShortDescription: '', location: ''
       };
       var jsonData = event.JsonData && JSON.parse(event.JsonData)
+
+      var gmtDateTime = FormateDateAndTime.formatDateAndTime(event.CreateDateUtc, event.time_zone)
+      var time = FormateDateAndTime.formatDateWithTime(event.CreateDateUtc, event.time_zone);
       collectionItem['eventtype'] = event.EventName;
       collectionItem['Id'] = event.Id;
       collectionItem['amount'] = jsonData && jsonData.AddPoint ? jsonData.AddPoint : event.Amount;
       collectionItem['DeductPoint'] = jsonData && jsonData.DeductPoint ? jsonData.DeductPoint : event.Amount;
       collectionItem['oliverPOSReciptId'] = '';
-      collectionItem['datetime'] = moment.utc(event.CreateDateUtc).local().format(Config.key.TIMEDATE_FORMAT);//event.CreateDateUtc;
+      collectionItem['datetime'] = gmtDateTime
+      // moment.utc(event.CreateDateUtc).local().format(Config.key.TIMEDATE_FORMAT);//event.CreateDateUtc;
       collectionItem['status'] = event ? event.Status : '';
       collectionItem['Description'] = jsonData ? jsonData.Notes : event.Description;
       collectionItem['ShortDescription'] = event.ShortDescription;
       collectionItem['location'] = event ? event.Location : '';
+      collectionItem['time'] = time ? time : '';
+
       eventCollection.push(collectionItem)
     })
     orderCount = eventCollection.filter(x => x.eventtype == "New Order")
     //Order Total Amount 
-   // console.log("eventCollection",eventCollection)
+    // console.log("eventCollection",eventCollection)
     for (let index = 0; index < orderCount.length; index++) {
       if (orderCount[index].amount && orderCount[index].amount != 0) {
         OrderAmount += parseInt(orderCount[index].amount++);
@@ -208,7 +215,7 @@ const CustomerView = () => {
 
 
 
-      /// Customer render List Click Function
+  /// Customer render List Click Function
   const activeClass = (item, index) => {
     var UID = get_UDid('UDID');
     if (item && item.WPId !== '') {
@@ -293,8 +300,8 @@ const CustomerView = () => {
     }
     setFilteredCustomer(_filteredCustomer);
     scount += _filteredCustomer.length;
-   // console.log("_filteredCustomer", _filteredCustomer)
-   // console.log("customer count", scount)
+    // console.log("_filteredCustomer", _filteredCustomer)
+    // console.log("customer count", scount)
   }
 
   const updateSomething = (customer_Id) => {
@@ -304,7 +311,7 @@ const CustomerView = () => {
   }
 
 
-  
+
 
 
   return (
@@ -490,12 +497,13 @@ const CustomerView = () => {
               <button id="addCustNoteButton" onClick={toggleNoteModel} >Add Note</button>
             </div>
             {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+
               return (
                 item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
                   <div className="customer-note">
                     <div className="row">
                       <p className="style1">{item.datetime}</p>
-                      <p className="style2">12:50PM</p>
+                      <p className="style2">{item.time}</p>
                       <button>
                         <img src={ClearCart} alt="" />
                       </button>
