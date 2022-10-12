@@ -14,12 +14,12 @@ import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-import { CustomergetPageSlice ,CustomerGetDetailsSlice ,getAllEventsSlice} from '../components/customer/CustomerSlice'
+import { CustomergetPageSlice ,CustomerGetDetailsSlice ,getAllEventsSlice,saveCustomerToTempOrderSlice} from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
 import { CustomerSaveSlice } from '../components/customer/CustomerSlice'
-import { checkStockSlice,getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice ,paymentAmountSlice} from '../components/checkout/checkoutSlice';
+import { checkStockSlice,getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice ,paymentAmountSlice, changeReturnAmountSlice,checkTempOrderSyncSlice,checkTempOrderStatusSlice} from '../components/checkout/checkoutSlice';
 import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
 import { discountSlice } from '../components/common/commonAPIs/discountSlice';
@@ -78,7 +78,11 @@ export const store = configureStore({
     makePayment:getMakePaymentSlice.reducer,
     makeOnlinePayments:makeOnlinePaymentsSlice.reducer,
     save:saveSlice.reducer,
-    paymentAmount:paymentAmountSlice.reducer
+    paymentAmount:paymentAmountSlice.reducer,
+    changeReturnAmount:changeReturnAmountSlice.reducer,
+    checkTempOrderSync:checkTempOrderSyncSlice.reducer,
+    checkTempOrderStatus:checkTempOrderStatusSlice.reducer,
+    saveCustomerToTempOrder:saveCustomerToTempOrderSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

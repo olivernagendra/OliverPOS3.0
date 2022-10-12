@@ -11,6 +11,7 @@ import NoVariationDisplay from '../../../assets/images/svg/NoVariationDisplay.sv
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 import Product_OutOfStock from '../../../assets/images/svg/ProductOutOfStock.svg';
 import Pencil from '../../../assets/images/svg/Pencil.svg';
+import RefreshGrey from '../../../assets/images/svg/RefreshGrey.svg';
 // import Shoes from '../../../assets/images/Temp/Shoes.png';
 // import CoffeeCup from '../../../assets/images/Temp/CoffeeCup.png';
 // import SnapbackHat from '../../../assets/images/Temp/SnapbackHat.png';

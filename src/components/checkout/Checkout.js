@@ -25,7 +25,7 @@ import moment from "moment";
 import { isSafari, isMobileOnly, isTablet } from "react-device-detect";
 import { product } from "../dashboard/product/productSlice";
 import { addtoCartProduct } from "../dashboard/product/productLogic";
-import { makeOnlinePayments, getMakePayment, save ,paymentAmount} from "../checkout/checkoutSlice";
+import { makeOnlinePayments, getMakePayment, save, paymentAmount,changeReturnAmount } from "../checkout/checkoutSlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Checkout = () => {
 
@@ -75,9 +75,10 @@ const Checkout = () => {
 
     const [resSave] = useSelector((state) => [state.save])
     useEffect(() => {
-        if (resSave && resSave.status == STATUSES.IDLE && resSave.is_success && loading===true) {
+        if (resSave && resSave.status == STATUSES.IDLE && resSave.is_success && loading === true) {
             setLoading(false);
             dispatch(paymentAmount(null));
+            dispatch(changeReturnAmount(null));
             navigate('/salecomplete');
         }
     }, [resSave]);
@@ -180,40 +181,44 @@ const Checkout = () => {
         toggleNumberPad();
         setPaidAmount(amount);
         setPartialAmount(null);
-        dispatch(paymentAmount({"type":"cash","amount":amount}));
+        dispatch(paymentAmount({ "type": "cash", "amount": amount }));
         //pay_amount("cash");
         //setPayment_Type("cash");
     }
-    const pay_partial = (amount,type) => {
+    const pay_partial = (amount, type) => {
         toggleShowPartialPayment();
         //setPaidAmount(amount);
         setPartialAmount(amount);
 
-        dispatch(paymentAmount({"type":type,"amount":amount}));
+        dispatch(paymentAmount({ "type": type, "amount": amount }));
         //pay_amount(type);
         //setPayment_Type("cash");
     }
 
     const [respPaymentAmount] = useSelector((state) => [state.paymentAmount])
     useEffect(() => {
-        if ((respPaymentAmount && respPaymentAmount.status == STATUSES.IDLE && respPaymentAmount.is_success) ) {
-            console.log("----"+JSON.stringify(respPaymentAmount));
-            if(respPaymentAmount.data.type=="cash")
-            {
+        if ((respPaymentAmount && respPaymentAmount.status == STATUSES.IDLE && respPaymentAmount.is_success)) {
+            console.log("----" + JSON.stringify(respPaymentAmount));
+            if (respPaymentAmount.data.type == "cash") {
                 pay_amount("cash");
             }
-            else
-            {
-                if(partialAmount!=null)
-                {
-                    setPartialPayment(respPaymentAmount.data.type,partialAmount)
+            else {
+                if (partialAmount != null) {
+                    setPartialPayment(respPaymentAmount.data.type, partialAmount)
                 }
                 else
-                pay_amount(respPaymentAmount.data.type);
+                    pay_amount(respPaymentAmount.data.type);
             }
         }
     }, [respPaymentAmount]);
 
+    const [respChangeAmount] = useSelector((state) => [state.changeReturnAmount])
+    useEffect(() => {
+        if ((respChangeAmount && respChangeAmount.status == STATUSES.IDLE && respChangeAmount.is_success)) {
+            //console.log("--respChangeAmount--" + JSON.stringify(respChangeAmount));
+            finalAdd();
+        }
+    }, [respChangeAmount]);
     // useEffect(() => {
     //     pay_amount("cash");
     // },[partialAmount]);
@@ -228,16 +233,16 @@ const Checkout = () => {
             setPaidAmount(paidConfirmAmount);
         }
 
-        var payment_amount = partialAmount!=null?partialAmount:paidAmount ? paidAmount : 0;
+        var payment_amount = partialAmount != null ? partialAmount : paidAmount ? paidAmount : 0;
         setPartialAmount(null);
         setPayment_Type(paymentType);
         const _getRemainingPrice = getRemainingPrice() ? getRemainingPrice() : 0;
         const _getRemainingPriceForCash = getRemainingPriceForCash();
 
         if (paymentType == paymentsType.typeName.cashPayment) {
-           // var amount = paidAmount;// amount entered manually$('#calc_output_cash').val();
-           var amount = partialAmount!=null?partialAmount:paidAmount ? paidAmount : 0;;
-           payment_amount = amount
+            // var amount = paidAmount;// amount entered manually$('#calc_output_cash').val();
+            var amount = partialAmount != null ? partialAmount : paidAmount ? paidAmount : 0;;
+            payment_amount = amount
             if (payment_amount == 0) {
                 // this.state.paidAmount = parseFloat(RoundAmount(getRemainingPrice)).toFixed(2)
                 // this.setState({
@@ -508,6 +513,53 @@ const Checkout = () => {
         // }
 
     }
+    const finalAdd=()=> {
+        // if (isMobileOnly == true) {
+        //     $("#popup_cash_rounding").removeClass("show")
+        //     hideModal('popup_cash_rounding');
+        // }
+        //const { checkList, total_price, cash_round } = this.state;
+        var after_payment_is = 0;
+        var getPayments = (typeof JSON.parse(localStorage.getItem("oliver_order_payments")) !== "undefined") ? JSON.parse(localStorage.getItem("oliver_order_payments")) : [];
+        if (getPayments !== null) {
+            getPayments.forEach(paid_payments => {
+                after_payment_is += parseFloat(paid_payments.payment_amount);
+            });
+        }
+        var totalPrice = checkList && checkList.totalPrice;
+        var order_id = (typeof checkList.order_id !== "undefined") ? checkList.order_id : 0;
+        var cash_round_is = parseFloat(getRemainingPriceForCash())
+        //this.setState({ cash_round: cash_round_is })
+        setCashRound(cash_round_is);
+        if (localStorage.getItem("oliver_order_payments")) {
+            var payments = JSON.parse(localStorage.getItem("oliver_order_payments"));
+            payments.push({
+                "Id": 0,
+                "payment_type": 'cash',
+                "payment_amount": RoundAmount((totalPrice + cash_round_is) - after_payment_is),
+                "order_id": order_id,
+                "description": ''
+            });
+            localStorage.setItem("oliver_order_payments", JSON.stringify(payments));
+        } else {
+
+            var payments = new Array();
+            payments.push({
+                "Id": 0,
+                "payment_type": 'cash',
+                "payment_amount": RoundAmount(totalPrice + cashRound),
+                "order_id": order_id,
+                "description": ''
+            });
+            localStorage.setItem("oliver_order_payments", JSON.stringify(payments));
+            localStorage.setItem("VOID_SALE", "void_sale");
+            //this.props.dispatch(checkoutActions.changeStatusSaleToVoid("void_sale"));
+        }
+        setLoading(false);
+        getPaymentDetails();
+        isOrderPaymentComplete(order_id, cash_round_is);
+
+    }
     // its set the order payments
     const setOrderPartialPayments = (paying_amount, payment_type) => {
         //var checkList = JSON.parse(localStorage.getItem('CHECKLIST'));
@@ -523,7 +575,7 @@ const Checkout = () => {
             //checkList.transection_id = 0;
         }
         var actual_amount = totalPrice == 0 ? checkList && checkList.totalPrice : totalPrice;
-        var cash_round = parseFloat(getRemainingPriceForCash())
+        var cash_round = 0;//parseFloat(getRemainingPriceForCash())
         var check_required_field = false;
         var paymentTypeName = localStorage.getItem("PAYMENT_TYPE_NAME") && JSON.parse(localStorage.getItem("PAYMENT_TYPE_NAME"))
         var isGlobalPay = false;
@@ -569,6 +621,13 @@ const Checkout = () => {
                         setChangeAmount(change_amount);
                         setCashPayment(paying_amount);
                         setAfterPaymentIs(payment_is);
+
+                        dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": parseFloat(paying_amount)-parseFloat(actual_amount) }));
+                        //make payment while enter amount is greater than total price
+                        //finalAdd();
+                        //---------- 
+                
+
                         // this.freezScreen();
                         // if (isMobileOnly == true) {
                         //     $('#popup_cash_rounding').addClass('show')
@@ -612,6 +671,11 @@ const Checkout = () => {
                         setChangeAmount(change_amount);
                         setCashPayment(paying_amount);
                         setAfterPaymentIs(0);
+                        dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": parseFloat(paying_amount)-parseFloat(actual_amount) }));
+                        //dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": change_amount }));
+                        //make payment while enter amount is greater than total price
+                        //finalAdd();
+                    
 
                         //show message if payment amount is greater than total amount
 
@@ -872,7 +936,7 @@ const Checkout = () => {
         var paidPaments = getOrderPayments(order_id);
         var paidAmount = 0;
         var cash_round = (cash_round1 == 'undefined') ? 0 : cash_round1
-        paidPaments.forEach(paid_payments => {
+        paidPaments && paidPaments.forEach(paid_payments => {
             paidAmount += parseFloat(paid_payments.payment_amount);
         });
         if (cash_round > 0) {
@@ -883,15 +947,13 @@ const Checkout = () => {
             } else if (parseFloat(RoundAmount(amountToBePaid)) <= parseFloat(RoundAmount(paidAmount))) {
                 createOrder("completed");
             }
-            else
-            {setLoading(false);}
+            else { setLoading(false); }
 
         } else {
             if (parseFloat(RoundAmount(amountToBePaid + cash_round)) == parseFloat(RoundAmount(paidAmount))) {
                 createOrder("completed");
             }
-            else
-            {setLoading(false);}
+            else { setLoading(false); }
         }
 
     }
@@ -1408,7 +1470,13 @@ const Checkout = () => {
         if (localStorage.getItem('IPAddress')) {
             deviceIP = localStorage.getItem('IPAddress')
         }
-
+        var _cashPayment=0;
+        var _changeAmount=0;
+        if ((respChangeAmount && respChangeAmount.status == STATUSES.IDLE && respChangeAmount.is_success && respChangeAmount.data)) {
+            //console.log("--respChangeAmount--" + JSON.stringify(respChangeAmount));
+            _cashPayment=respChangeAmount.data.cashPayment;
+            _changeAmount=respChangeAmount.data.change;
+        }
         // push order_custom_fee in discount meta data
         productDiscout && productDiscout.push({ order_custom_fee: order_custom_fee })
         productDiscout && productDiscout.push({ order_notes: (typeof order_notes !== "undefined") && order_notes.length > 0 ? order_notes : [] })
@@ -1436,9 +1504,9 @@ const Checkout = () => {
             "_order_oliverpos_product_discount_amount": productDiscout,
             // "_order_oliverpos_order_custom_fee" : order_custom_fee
             "_order_oliverpos_park_sale_notes": (typeof order_notes !== "undefined") && order_notes.length > 0 ? order_notes : [],
-            "_order_oliverpos_cash_change": { "cashPayment": cashPayment, "change": changeAmount },
+            "_order_oliverpos_cash_change": { "cashPayment": _cashPayment, "change": _changeAmount },
             //"_order_oliverpos_addons" : productxAddons && productxAddons!== {} ? JSON.stringify(productxAddons) : {}      
-            "_order_oliverpos_coupon": couponDetail  
+            "_order_oliverpos_coupon": couponDetail
         })
 
         var loginUser = JSON.parse(localStorage.getItem("user"));
@@ -1522,7 +1590,7 @@ const Checkout = () => {
             checklist['servedby'] = manager_name;
             checklist['multiple_tax'] = TotalTaxByName;
             //added into checklist for android print receipt
-            checklist['_order_oliverpos_cash_change'] = { "cashPayment": cashPayment, "change": changeAmount };
+            checklist['_order_oliverpos_cash_change'] = { "cashPayment": _cashPayment, "change": _changeAmount };
 
             localStorage.setItem('CHECKLIST', JSON.stringify(checklist))
         }
@@ -1626,7 +1694,7 @@ const Checkout = () => {
                 <CartListBody setValues={setValues}></CartListBody>
                 <div className="footer">
                     <div className="totals">
-                        
+
                         <div className="row">
                             <p>Subtotal</p>
                             <p><b>${<NumericFormat value={subTotal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
@@ -1661,15 +1729,15 @@ const Checkout = () => {
                 <button id="balanceButton" className="balance-container" onClick={() => toggleShowPartialPayment()}>
                     <div className="row">
                         <p className="style1">Balance Due</p>
-                        <p className="style2">${(parseFloat(balance)-(paymentsArr && paymentsArr.length>0 ?(paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 )):0)).toFixed(2)}</p>
+                        <p className="style2">${(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)}</p>
                     </div>
                     {paymentsArr && paymentsArr.map(p => {
-                            return <div className="row">
-                                 <p className="style3">{p.payment_type}</p>
-                        <p className="style3">${(parseFloat(p.payment_amount)).toFixed(2)}</p>
-                        {/* -(paymentsArr && paymentsArr.length>0 ?(paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 )):0) */}
-                            </div>
-                        })}
+                        return <div className="row">
+                            <p className="style3">{p.payment_type}</p>
+                            <p className="style3">${(parseFloat(p.payment_amount)).toFixed(2)}</p>
+                            {/* -(paymentsArr && paymentsArr.length>0 ?(paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 )):0) */}
+                        </div>
+                    })}
                     {/* <div className="row">
                         <p className="style3">Card</p>
                         <p className="style3">$60.00</p>
@@ -1678,11 +1746,11 @@ const Checkout = () => {
                         <p className="style3">Cash</p>
                         <p className="style3">$20.00</p>
                     </div> */}
-                    {paymentsArr && paymentsArr.length>0 && <div className="row">
+                    {paymentsArr && paymentsArr.length > 0 && <div className="row">
                         <p className="style4">Total Paid</p>
-                        <p className="style4">${ parseFloat((paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 ))).toFixed(2)}</p>
+                        <p className="style4">${parseFloat((paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0))).toFixed(2)}</p>
                     </div>}
-                    
+
                 </button>
                 <p className="style1">Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
@@ -1717,8 +1785,8 @@ const Checkout = () => {
                 </div>
             </div>
         </div>
-       {isShowNumberPad?<NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={paidAmount} getRemainingPriceForCash={getRemainingPriceForCash}></NumberPad>:null}
-        {isShowPartialPayment?<PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice}></PartialPayment>:null}
+        {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={paidAmount} getRemainingPriceForCash={getRemainingPriceForCash}></NumberPad> : null}
+        {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice}></PartialPayment> : null}
     </React.Fragment>)
 }
 export default Checkout

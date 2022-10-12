@@ -20,6 +20,41 @@ const Notifications = (props) => {
             props.toggleNotifications();
         }
     }
+
+    // reSyncOrder(tempOrderId) {
+    //     //console.log("ResyncStart", tempOrderId);
+    //     const { Email } = ActiveUser.key;
+    //     var TempOrders = localStorage.getItem(`TempOrders_${Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${Email}`)) : []; if (TempOrders && TempOrders.length > 0) {
+    //         TempOrders = TempOrders.filter(item => item.TempOrderID == tempOrderId);
+    //         if (TempOrders && TempOrders.length > 0) {
+    //             var syncOrderID = TempOrders[0].TempOrderID;
+    //             var udid = get_UDid('UDID');
+    //             if (syncOrderID && syncOrderID !== '') {
+    //                 //add customer to order and sending email to customer
+    //                 if (TempOrders[0].Sync_Count <= 1 && TempOrders[0].new_customer_email !== "" && TempOrders[0].isCustomerEmail_send == false) {
+    //                     this.props.dispatch(saveCustomerInOrderAction.saveCustomerToTempOrder(udid, syncOrderID, TempOrders[0].new_customer_email))
+    //                 }
+    //                 // console.log("syncOrderID",syncOrderID);
+    //                 this.props.dispatch(checkoutActions.recheckTempOrderSync(udid, syncOrderID));
+    //             }
+    //         }
+    //     }
+    // }
+
+    // ActivityPage(id) {
+    //     localStorage.removeItem("CUSTOMER_TO_ACTVITY")
+    //     localStorage.setItem("selected_row", 'customerview');
+    //     localStorage.setItem('CUSTOMER_TO_OrderId', id);
+    //     if(isMobileOnly == true){
+    //         history.push('/activity');
+    //     }
+    //     else
+    //     {
+    //         window.location = '/activity';
+    //     }
+    // }
+
+
     const prepareNotificationList = async () => {
         //const { NotificationFilters } = this.props;
         var temp_Order = 'TempOrders_' + (ActiveUser.key.Email);
@@ -38,7 +73,33 @@ const Notifications = (props) => {
         TempOrders && TempOrders.map(list => {
             var description = "";
             //order completed
-            if (list.Status == "true" && list.order_status == "completed") {
+
+            if(list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true )
+            {
+                description = ((<div className="notification approval">
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Approval_Icon} alt="" />
+                        {/* <p>Order# {list.TempOrderID}</p> */}
+                        <p>Email sent succeessfully to customer for order# {list.TempOrderID}</p>
+                    </div>
+                </div>))
+                //"Email sent succeessfully to customer for order#" + list.TempOrderID + ""
+            }
+            else if(list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false )
+            {
+                description = ((<div className="notification approval">
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Approval_Icon} alt="" />
+                        {/* <p>Order# {list.TempOrderID}</p> */}
+                        <p>Sending email to customer for order# {list.TempOrderID}</p>
+                    </div>
+                </div>))
+                //"Sending email to customer for order#" + list.TempOrderID + ""
+            }  
+            
+            else if (list.Status == "true" && list.order_status == "completed") {
                 description = ((<div className="notification approval">
                     <div className="side-color"></div>
                     <div className="main-row">
@@ -53,40 +114,41 @@ const Notifications = (props) => {
                         <div className="side-color"></div>
                         <div className="main-row">
                             <img src={Info_Icon} alt="" />
+                            {/* <p>Order# {list.TempOrderID}</p> */}
+                            <p>order  Refunded  successfully.</p>
+                        </div>
+                    </div>))
+                }
+            else //sync issue
+                if (list.Status == "failed" && list.order_status == "completed") {
+                    description = ((<div className="notification error">
+                        <div className="side-color"></div>
+                        <div className="main-row">
+                            <img src={Approval_Icon} alt="" />
                             <p>Order# {list.TempOrderID}</p>
                         </div>
                     </div>))
                 }
-                else //sync issue
-                    if (list.Status == "failed" && list.order_status == "completed") {
-                        description = ((<div className="notification error">
-                            <div className="side-color"></div>
-                            <div className="main-row">
-                                <img src={Approval_Icon} alt="" />
-                                <p>Order# {list.TempOrderID}</p>
-                            </div>
-                        </div>))
-                    }
-                    else
-                        if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                            description = ((<div className="notification approval">
-                                <div className="side-color"></div>
-                                <div className="main-row">
-                                    <img src={Approval_Icon} alt="" />
-                                    <p>Order# {list.TempOrderID}</p>
-                                </div>
-                            </div>))
-                        }
-                        else
-                        {
-                            description = ((<div className="notification approval">
-                            <div className="side-color"></div>
-                            <div className="main-row">
-                                <img src={Approval_Icon} alt="" />
-                                <p>Order# {list.TempOrderID}</p>
-                            </div>
-                            </div>))
-                        }
+            else
+                if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
+                    description = ((<div className="notification approval">
+                        <div className="side-color"></div>
+                        <div className="main-row">
+                            <img src={Approval_Icon} alt="" />
+                            {/* <p>Order# {list.TempOrderID} </p> */}
+                            <p>There was an issue to send email to customer for order# {list.TempOrderID}</p>
+                        </div>
+                    </div>))
+                }
+            else {
+                description = ((<div className="notification approval">
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Approval_Icon} alt="" />
+                        <p>Order# {list.TempOrderID}</p>
+                    </div>
+                </div>))
+            }
 
             var TempOrderID = list.TempOrderID
             var time = list.Status == "true" ? list.date : list.date;

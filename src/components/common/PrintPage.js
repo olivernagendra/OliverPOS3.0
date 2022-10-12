@@ -867,7 +867,7 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
       var lineitem_Dis_Percent = lineItem_DiscountDetail && lineItem_DiscountDetail.discountApply && "(" + lineItem_DiscountDetail.discountApply + "%)";
       //order_reciept.PercentageDiscountPerItem==true ? "(" +Math.round(((item.discount_amount *100)/lineitem_AcutalPrice)).toFixed(0)+"%)":"";
       var lineItemTax = "";
-      (order_reciept.IndividualizedTaxAmountPerItem == true || order_reciept.PercentageTaxPerItem == true) && lineitem_taxType && lineitem_taxType.length > 0 ? lineitem_taxType.map(txtitem => {
+      lineItemTax= (order_reciept.IndividualizedTaxAmountPerItem == true || order_reciept.PercentageTaxPerItem == true) && lineitem_taxType && lineitem_taxType.length > 0 ? lineitem_taxType.map(txtitem => {
         lineItemTax += `<tr><td>${txtitem.tax}</td><td align="right">${parseFloat(txtitem.value).toFixed(2)}</td></tr>`;
       }) : ""
       var _lineitemTax = (taxInclusiveName !== '' || order_reciept.IndividualizedTaxAmountPerItem == true ? item.total_tax ? item.total_tax : item.totaltax ? item.totaltax : 0 : 0)
