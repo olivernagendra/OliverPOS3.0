@@ -258,7 +258,7 @@ const SaleComplete = () => {
             redeemedPoints: redeemedPointsToPrint ? redeemedPointsToPrint : 0,
             redeemedAmountToPrint: redeemedAmountToPrint ? redeemedAmountToPrint : 0,
             meta_datas: PrintDetails && PrintDetails.order_meta,
-            _currentTime: PrintDetails._currentTime
+            _currentTime: PrintDetails._currentTime?PrintDetails._currentTime:''
         }
         localStorage.setItem("PrintCHECKLIST", JSON.stringify(CheckoutList));
         //localStorage.removeItem("CHECKLIST");

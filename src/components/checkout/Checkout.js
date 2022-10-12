@@ -69,6 +69,7 @@ const Checkout = () => {
     const [extensionOrderNote, setExtensionOrderNote] = useState([]);
     const [extensionUpdateCart, setExtensionUpdateCart] = useState(false);
     const [set_order_notes, set_set_order_notes] = useState([]);
+    const [partialType, setPartialType] = useState('');
     // change_amount: change_amount,
     // cash_payment: paying_amount,
     // after_payment_is: payment_is
@@ -114,6 +115,7 @@ const Checkout = () => {
         setisShowNumberPad(!isShowNumberPad)
     }
     const toggleShowPartialPayment = () => {
+        setPartialType('');
         setisShowPartialPayment(!isShowPartialPayment)
     }
 
@@ -128,7 +130,11 @@ const Checkout = () => {
             setDiscountType('')
         }
     }
-
+    const showPartial=(val)=>
+    {
+        setPartialType(val);
+        setisShowPartialPayment(true);
+    }
 
     const setValues = (st, tx, dis, tt) => {
         getDiscountAmount_Type();
@@ -1755,9 +1761,9 @@ const Checkout = () => {
                 <p className="style1">Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
                 <div className="button-row">
-                    <button>1/2</button>
-                    <button>1/3</button>
-                    <button>1/4</button>
+                    <button onClick={()=>showPartial(2)}>1/2</button>
+                    <button onClick={()=>showPartial(3)}>1/3</button>
+                    <button onClick={()=>showPartial(4)}>1/4</button>
                 </div>
                 <div className="button-row">
                     <button>By Product</button>
@@ -1785,8 +1791,8 @@ const Checkout = () => {
                 </div>
             </div>
         </div>
-        {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={paidAmount} getRemainingPriceForCash={getRemainingPriceForCash}></NumberPad> : null}
-        {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice}></PartialPayment> : null}
+        {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)} getRemainingPriceForCash={getRemainingPriceForCash} ></NumberPad> : null}
+        {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
     </React.Fragment>)
 }
 export default Checkout
