@@ -30,8 +30,7 @@ const SaleComplete = () => {
     const [isRemember, setisRemember] = useState(false);
     const [changeAmount, setChangeAmount] = useState(0);
     const [paymentAmount, setPaymentAmount] = useState(0);
-    const [custEmail,setCustEmail]=useState((checkList && checkList.customer_email!=""&&
-    typeof checkList.customer_email !== "undefined") ? checkList.customer_email : '');
+    const [custEmail,setCustEmail]=useState('');
     const [isLoading,setIsLoading]=useState(false);
     useEffect(() => {
         printdetails();
@@ -172,6 +171,7 @@ const SaleComplete = () => {
         }
 
         if (PrintDetails && PrintDetails.customer_email != "") {
+           setCustEmail(PrintDetails.customer_email );
             //PrintDetails && PrintDetails.billing_address && PrintDetails.billing_address.map(item => { 
             PrintDetails && PrintDetails.shipping_address && PrintDetails.shipping_address.map(item => {
                 addcust = {

@@ -1526,7 +1526,7 @@ const Checkout = () => {
             oliver_pos_receipt_id: oliver_pos_receipt_id,
             status: status,
             customer_note: Notes ? Notes : 'Add Note',
-            customer_id: CustomerDetail && CustomerDetail.content && CustomerDetail.content.WPId ? CustomerDetail.content.WPId : 0,
+            customer_id: CustomerDetail && CustomerDetail.WPId ? CustomerDetail.WPId : 0,
             order_tax: checkList && checkList.tax ? checkList.tax : 0,
             order_total: (status == 'park_sale' || status == 'lay_away') ? checkList && checkList.totalPrice + tipAmount : checkList && parseFloat(RoundAmount(checkList.totalPrice + cashRound + tipAmount)),
             order_discount: parseFloat(discountIs) + redeemAmount,
@@ -1535,7 +1535,7 @@ const Checkout = () => {
             //line_items: newList,
             line_items: checkoutProductList,
             productx_line_items: productX, //Sending the ProductX data.
-            customer_email: CustomerDetail && CustomerDetail.content && CustomerDetail.content.Email ? CustomerDetail.content.Email : '',
+            customer_email: CustomerDetail && CustomerDetail.Email ? CustomerDetail.Email : '',
             billing_address: [{
                 first_name: FirstName ? FirstName : '',
                 last_name: LastName ? LastName : '',
@@ -1550,8 +1550,8 @@ const Checkout = () => {
                 country: loginUser ? loginUser.shop_country_full_Name : ""
             }],
             shipping_address: [{
-                first_name: CustomerDetail && CustomerDetail.content ? CustomerDetail.content.FirstName : "", // FirstName ? FirstName : '',
-                last_name: CustomerDetail && CustomerDetail.content ? CustomerDetail.content.LastName : "", //  LastName ? LastName : '',
+                first_name: CustomerDetail && CustomerDetail.FirstName ? CustomerDetail.FirstName : "", // FirstName ? FirstName : '',
+                last_name: CustomerDetail && CustomerDetail.LastName ? CustomerDetail.LastName : "", //  LastName ? LastName : '',
                 company: "",
                 email: Email ? Email : '',
                 phone: PhoneNumber ? PhoneNumber : '',

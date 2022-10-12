@@ -10,7 +10,7 @@ const IframeWindow = (props) => {
                 <div className="app-wrapper">
                     <img id="appIconSRC" src={AppIconPlaceholder} alt="" />
                     <div className="text-col">
-                        <p id="appName" className="style1">App Name</p>
+                        <p id="appName" className="style1">{props && props.exApp && props.exApp.Name}</p>
                         <p id="appAuthorName" className="style2">Author Name</p>
                     </div>
                 </div>
@@ -31,6 +31,7 @@ const IframeWindow = (props) => {
             </div>
             <div className="subwindow-body">
                 <iframe
+                    id="commoniframe"
                     src={props.product && props.product.ParamLink ? props.product.PageUrl : props.exApp ? props.exApp.PageUrl : ''}
                     frameBorder="0"
                     sandbox="allow-scripts allow-same-origin allow-forms"
