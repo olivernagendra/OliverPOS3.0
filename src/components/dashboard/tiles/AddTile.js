@@ -257,17 +257,17 @@ const AddTile = (props) => {
                     <input type="search" id="product_search_field_pro" className=""  name="search" onChange={() => filterProduct()}
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
-                <div class="dropdown-search open">
+                <div className="dropdown-search open">
                 <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} />
-                <div class="option-container">
+                <div className="option-container">
                             {filterList && filterList.length > 0 && filterList.map(item => {
                         switch (item.type) {
                             case "product":
-                                return <div class="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Title}</div>
+                                return <div className="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Title}</div>
                             case "category":
-                                return <div class="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Value}</div>
+                                return <div className="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Value}</div>
                             case "attribute":
-                                return <div class="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Description}</div>
+                                return <div className="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Description}</div>
                             default:
                                 return ''
                         }

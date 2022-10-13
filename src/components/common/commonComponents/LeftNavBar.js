@@ -10,9 +10,9 @@ import LinkLauncher_Icon from '../../../assets/images/svg/LinkLauncher-Icon.svg'
 import Oliver_Icon_BaseBlue from '../../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
 import ToggleNavbar_Icon from '../../../assets/images/svg/ToggleNavbar-Icon.svg';
 
-import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
-import MC_Logo1 from '../../../assets/images/Temp/MC_Logo 1.png';
-import Quickbooks1 from '../../../assets/images/Temp/Quickbooks 1.png';
+// import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
+// import MC_Logo1 from '../../../assets/images/Temp/MC_Logo 1.png';
+// import Quickbooks1 from '../../../assets/images/Temp/Quickbooks 1.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AppLauncher from "./AppLauncher";
 import LinkLauncher from "./LinkLauncher";
@@ -44,7 +44,13 @@ const LeftNavBar = (props) => {
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
                 if (typeof data == 'string' && data !== "") {
-                    responseData(JSON.parse(data))
+                    try {
+                       var _data= JSON.parse(data);
+                       responseData(_data)
+                    } catch (e) {
+                       console.log(e);
+                    }
+                    
                     //compositeSwitchCases(JSON.parse(data))
                 }
             })

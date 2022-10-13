@@ -425,7 +425,7 @@ const AdvancedSearch = (props) => {
                 <p>Recent Searches</p>
                 <div className="recent-searches">
                     {searchHistory && searchHistory.map(s => {
-                        return (<a href="#" onClick={() => setSerachString(s)}>{s}</a>)
+                        return (<a key={s} href="#" onClick={() => setSerachString(s)}>{s}</a>)
                     })}
                     {/* <a href="#">Sam Moss</a>
                         <a href="#">Graphic T-Shirts</a>

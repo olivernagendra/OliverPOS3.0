@@ -328,11 +328,11 @@ export const  initHomeFn=()=>{
     }
     
     //Notifications Button
-    if (document.getElementById("notificationsButton")) {
-        document.getElementById("notificationsButton").addEventListener("click", () => {
-            document.getElementById("notificationsWrapper").classList.toggle("hidden");
-        });
-    }
+    // if (document.getElementById("notificationsButton")) {
+    //     document.getElementById("notificationsButton").addEventListener("click", () => {
+    //         document.getElementById("notificationsWrapper").classList.toggle("hidden");
+    //     });
+    // }
     
     //Notifications Wrapper
     // if (document.getElementById("notificationsWrapper")) {

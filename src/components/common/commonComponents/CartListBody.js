@@ -91,7 +91,7 @@ const CartListBody = (props) => {
                 if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')&& !a.hasOwnProperty('pid')) { item_type = "note"; }
                 switch (item_type) {
                     case "product":
-                        return <div className="cart-item">
+                        return <div className="cart-item" key={a.Title}>
                         <div className="main-row" >
                             <p className="quantity">{a.quantity && a.quantity}</p>
                             <p className="content-style">{a.Title && a.Title}</p>
@@ -109,7 +109,7 @@ const CartListBody = (props) => {
                         </div>
                     </div>
                     case "note":
-                        return <div className="cart-item">
+                        return <div className="cart-item" key={a.Title}>
                         <div className="main-row aligned">
                             <div className="tag cart-note">Note</div>
                             <p className="content-style line-capped">
@@ -118,7 +118,7 @@ const CartListBody = (props) => {
                         </div>
                     </div>
                     case "custom_fee":
-                        return <div className="cart-item">
+                        return <div className="cart-item" key={a.Title}>
                             <div className="main-row aligned">
                                 <div className="tag custom-fee">Custom Fee</div>
                                 <div className="content-style">{a.Title && a.Title}</div>
@@ -126,7 +126,7 @@ const CartListBody = (props) => {
                             </div>
                         </div>
                     case "group":
-                        return   <div className="cart-item">
+                        return   <div className="cart-item" key={a.Title}>
                         <div className="main-row aligned">
                             <div className="tag group">Group</div>
                             <p className="content-style">{a.Title && a.Title}</p>

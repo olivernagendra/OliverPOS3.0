@@ -129,7 +129,7 @@ const AdjustInventory = (props) => {
                     {warehouseDetail && warehouseDetail.length > 0 &&
                         warehouseDetail.map(item => {
                             if (item.warehouseId !== parseInt(CurrentWarehouseId)) {
-                                return <div className="text-row">
+                                return <div className="text-row" key={item.warehouseId}>
                                     <p><b>{item.warehouseName}</b></p>
                                     <p><b>{item.Quantity}</b> in stock</p>
                                 </div>
