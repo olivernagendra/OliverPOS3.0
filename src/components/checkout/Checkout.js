@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import EmptyCart from '../../assets/images/svg/EmptyCart.svg'
-import person from '../../assets/images/svg/person.svg'
+import person from '../../assets/images/svg/person.svg';
+import Stripe_Icon from '../../assets/images/svg/Stripe Icon.svg'
+
 import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
@@ -32,6 +34,7 @@ import { CheckAppDisplayInView } from "../common/commonFunctions/appDisplayFunct
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
+import GlobalPayment from "../common/commonComponents/paymentComponents/GlobalPayment";
 const Checkout = (props) => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -78,21 +81,22 @@ const Checkout = (props) => {
     const [isShowParkSale, setisShowParkSale] = useState(false);
     const [isLayAwayOrPark, setIsLayAwayOrPark] = useState('park_sale');
     const [storeCredit, setStoreCredit] = useState(0);
-    const [paymentTypeItem,setPaymentTypeItem]=useState({
-        Code:"",
-        ColorCode:"",
-        EODReconcilliation:true,
-        HasTerminal:false,
-        Id:0,
-        Name:"",
-        Support:"",
-        TerminalCount:0,
-        TerminalSerialNo:[]
+    const [paymentTypeItem, setPaymentTypeItem] = useState({
+        Code: "",
+        ColorCode: "",
+        EODReconcilliation: true,
+        HasTerminal: false,
+        Id: 0,
+        Name: "",
+        Support: "",
+        TerminalCount: 0,
+        TerminalSerialNo: []
     });
     const [isManualPayment, setisManualPayment] = useState(false);
     const [isUPIPayment, setisUPIPayment] = useState(false);
     const [isStripeTerminalPayment, setisStripeTerminalPayment] = useState(false);
-    const [cancleTransaction,setcancleTransaction]=useState(false);
+    const [cancleTransaction, setcancleTransaction] = useState(false);
+    const [isGlobalPayment, setisGlobalPayment] = useState(false);
 
     // change_amount: change_amount,
     // cash_payment: paying_amount,
@@ -129,7 +133,7 @@ const Checkout = (props) => {
         if (_checklist && _checklist.customerDetail && _checklist.customerDetail.store_credit) {
             setStoreCredit(_checklist.customerDetail.store_credit)
         }
-    })
+    },[])
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -141,9 +145,12 @@ const Checkout = (props) => {
     const toggleStripeTerminalPayment = () => {
         setisStripeTerminalPayment(!isStripeTerminalPayment)
     }
-    
-    const toggleUPIPayment= () => {
+
+    const toggleUPIPayment = () => {
         setisUPIPayment(!isUPIPayment)
+    }
+    const toggleGlobalPayment = () => {
+        setisGlobalPayment(!isGlobalPayment)
     }
     const toggleParkSale = (type) => {
         setisShowParkSale(!isShowParkSale);
@@ -228,12 +235,12 @@ const Checkout = (props) => {
         //pay_amount("cash");
         //setPayment_Type("cash");
     }
-    const pay_partial = (amount, type) => {
+    const pay_partial = (amount, item) => {
         toggleShowPartialPayment();
         //setPaidAmount(amount);
         setPartialAmount(amount);
-
-        dispatch(paymentAmount({ "type": type, "amount": amount }));
+        setPaymentTypeItem(item);
+        dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
         //pay_amount(type);
         //setPayment_Type("cash");
     }
@@ -284,11 +291,12 @@ const Checkout = (props) => {
                 pay_amount("cash");
             }
             else {
-                if (partialAmount != null) {
-                    setPartialPayment(respPaymentAmount.data.type, partialAmount)
-                }
-                else
-                    pay_amount(respPaymentAmount.data.type);
+                pay_amount_cash(paymentTypeItem)
+                // if (partialAmount != null) {
+                //     setPartialPayment(respPaymentAmount.data.type, partialAmount)
+                // }
+                // else
+                //     pay_amount(respPaymentAmount.data.type);
             }
         }
     }, [respPaymentAmount]);
@@ -394,7 +402,7 @@ const Checkout = (props) => {
             }
 
             if (paymentType == 'manual_global_payment') {
-                var global_amount = myInput;
+                var global_amount = payment_amount;
                 global_amount = ActiveUser.key.isSelfcheckout == true ? payment_amount : global_amount
                 var paymentMode = paymentType == "manual_global_payment" ? paymentCode : paymentType;
                 payment_amount = parseFloat(RoundAmount(_getRemainingPrice));
@@ -477,7 +485,7 @@ const Checkout = (props) => {
                 }
             }
             if (Support == paymentsType.typeName.UPISupport) {
-                var payconiqAmount = myInput;
+                var payconiqAmount =payment_amount;// myInput;
                 payconiqAmount = ActiveUser.key.isSelfcheckout == true ? payment_amount : payconiqAmount
                 var paymentMode = paymentType;
                 payment_amount = parseFloat(RoundAmount(_getRemainingPrice));
@@ -564,12 +572,12 @@ const Checkout = (props) => {
         // history.push('/cardpaymentRes')
     }
     const [respmakeOnlinePayments] = useSelector((state) => [state.makeOnlinePayments])
-    useEffect(()=>{
+    useEffect(() => {
         if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data)) {
-            console.log("---online paymet response--"+JSON.stringify(respmakeOnlinePayments))
+            console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
         }
-    })
-   
+    },[respmakeOnlinePayments])
+
     // handle online payment payamount
     const onlineCardPayments = (paycode, amount) => {
         setPaidAmount(amount);
@@ -799,7 +807,7 @@ const Checkout = (props) => {
             }
             //  global  payments
             else if (isGlobalPay == true) {
-                var g_payment = this.props.global_payment ? this.props.global_payment : localStorage.getItem('GLOBAL_PAYMENT_RESPONSE') && localStorage.getItem('GLOBAL_PAYMENT_RESPONSE') !== 'undefined' && JSON.parse(localStorage.getItem('GLOBAL_PAYMENT_RESPONSE'));
+                var g_payment = global_payment ? global_payment : localStorage.getItem('GLOBAL_PAYMENT_RESPONSE') && localStorage.getItem('GLOBAL_PAYMENT_RESPONSE') !== 'undefined' && JSON.parse(localStorage.getItem('GLOBAL_PAYMENT_RESPONSE'));
                 if (g_payment && g_payment !== null && g_payment.is_success === true) {
                     var global_payments = g_payment.content;
                     var data = `TerminalId-${global_payments.TerminalId} , Authrization-${global_payments.Authrization},RefranseCode-${global_payments.RefranseCode}`;
@@ -1750,16 +1758,16 @@ const Checkout = (props) => {
         if (item.Code == paymentsType.typeName.cashPayment) {
             toggleNumberPad();
         }
-        else if(item.Support == paymentsType.typeName.UPISupport)
-        {
+        else if (item.Support == paymentsType.typeName.UPISupport) {
             toggleUPIPayment();
         }
-        else if(item.Support == paymentsType.typeName.Support)
-        {
+        else if (item.Support == paymentsType.typeName.Support) {
             toggleManualPayment();
         }
-        else if(item.Code == paymentsType.typeName.stripePayment)
-        {
+        else if (item.HasTerminal == true && item.Support == "Terminal" && item.Code != paymentsType.typeName.stripePayment) {
+            toggleGlobalPayment();
+        }
+        else if (item.Code == paymentsType.typeName.stripePayment) {
             toggleStripeTerminalPayment();
         }
 
@@ -1824,7 +1832,8 @@ const Checkout = (props) => {
     //         :
     //         []
     // }
-    var _activeDisplay=true;
+    var _activeDisplay = true;
+    var global_payment=null;
     return (<React.Fragment>
         {loading === true ? <LoadingModal></LoadingModal> : null}
         <div className="checkout-wrapper">
@@ -1926,9 +1935,13 @@ const Checkout = (props) => {
                     <div className="button-container">
                         {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
-                                return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                return payment.image || payment.Code==="stripe_terminal" ?
+                                // <img src={payment.image}  alt=""></img>
+                                <button >
+                                <img src={Stripe_Icon} alt=""></img></button>
+                                :
+                                <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
                                     {payment.Name}
-                                    {/* <img src="../Assets/Images/SVG/spongebob-squarepants-2.svg" alt="" /> */}
                                 </button>
                             })
                         }
@@ -1936,20 +1949,21 @@ const Checkout = (props) => {
                 </div>
             </div>
         </div>
-        {isStripeTerminalPayment===true?<StripePayment
+        {isStripeTerminalPayment === true ? <StripePayment
             isShow={isStripeTerminalPayment}
             toggleStripeTerminalPayment={toggleStripeTerminalPayment}
-                color={"#f75f40"}
-                Name={"Stripe Terminal"}
-                code={"stripe_terminal"}
-                pay_amount={(text) => pay_amount(text)}
-                activeDisplay={(text) => activeDisplay(text)}
-                styles={activeDisplay == false || activeDisplay == `stripe_terminal_true` ? '' : 'none'}
-                paymentDetails={paymentTypeItem}
-                terminalPopup = {(msg) => extraPayAmount(msg)}
-                paidAmount={paidAmount}
-                cancleTransaction={false} 
-            />:null}
+            color={"#f75f40"}
+            Name={"Stripe Terminal"}
+            code={"stripe_terminal"}
+            pay_amount={(text) => pay_amount(text)}
+            activeDisplay={(text) => activeDisplay(text)}
+            styles={activeDisplay == false || activeDisplay == `stripe_terminal_true` ? '' : 'none'}
+            paymentDetails={paymentTypeItem}
+            terminalPopup={(msg) => extraPayAmount(msg)}
+            paidAmount={paidAmount}
+            cancleTransaction={false}
+            partialAmount={partialAmount}
+        /> : null}
         {isManualPayment === true ? <ManualPayment isShow={isManualPayment} toggleManualPayment={toggleManualPayment}
             color={paymentTypeItem.ColorCode}
             Name={paymentTypeItem.Name}
@@ -1960,6 +1974,7 @@ const Checkout = (props) => {
             styles={_activeDisplay == false || _activeDisplay == `${paymentTypeItem.Code}_true` ? '' : 'none'}
             closingTab={(text) => closingTab(text)}
             onlinePayCardDetails={(cardData) => onlinePayCardDetails(cardData)}
+            partialAmount={partialAmount}
         /> : null}
         {isUPIPayment === true ? <UPIPayments
             isShow={isUPIPayment}
@@ -1971,6 +1986,23 @@ const Checkout = (props) => {
             activeDisplay={(text) => activeDisplay(text)}
             styles={_activeDisplay == false || _activeDisplay == `${paymentTypeItem.Code}_true` ? '' : 'none'}
             cancleTransaction={cancleTransaction}
+            partialAmount={partialAmount}
+        /> : null}
+        {isGlobalPayment === true ? <GlobalPayment
+            isShow={isGlobalPayment}
+            toggleGlobalPayment={toggleGlobalPayment}
+            color={paymentTypeItem.ColorCode}
+            Name={paymentTypeItem.Name}
+            code={paymentTypeItem.Code}
+            pay_amount={(text) => pay_amount(text, paymentTypeItem.TerminalCount, '', paymentTypeItem.Code)}
+            msg={global_payment ? global_payment.message : ''}
+            activeDisplay={(text) => activeDisplay(text)}
+            styles={_activeDisplay == false || _activeDisplay == `${paymentTypeItem.Code}_true` ? '' : 'none'}
+            closingTab={(text) => closingTab(text)}
+            paymentDetails={paymentTypeItem}
+            terminalPopup={(msg) => extraPayAmount(msg)}
+            cancleTransaction={cancleTransaction}
+            partialAmount={partialAmount}
         /> : null}
         {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)} getRemainingPriceForCash={getRemainingPriceForCash} ></NumberPad> : null}
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}

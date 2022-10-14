@@ -360,9 +360,14 @@ const StripePayment = (props) => {
                 //     //paymentMethodTypes = ["interac_present"];
                 //     paymentMethodTypes.push("interac_present");
                 // }
-                console.log("props.paidAmount", props.paidAmount)
+                var _amount=props.paidAmount;
+                if(props.partialAmount && props.partialAmount !=0)
+                {
+                    _amount=props.partialAmount;
+                }
+                console.log("props.paidAmount", _amount)
                 let createIntentResponse = await client.createPaymentIntent({
-                    amount: parseFloat(props.paidAmount),
+                    amount: parseFloat(_amount),
                     currency: currency,
                     description: "TestCharge",
                     paymentMethodTypes: paymentMethodTypes,

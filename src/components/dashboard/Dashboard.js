@@ -43,7 +43,7 @@ import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import { callProductXWindow } from "../../settings/CommonFunctionProductX";
 import { getInventory } from "./slices/inventorySlice";
 import { getDetails } from "../cashmanagement/CashmanagementSlice";
-import {getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
+import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -81,13 +81,13 @@ const Home = () => {
     useEffect(() => {
         fetchData();
     }, []);
-   
-    const [resGetRates,respIsMultipleTaxSupport] = useSelector((state) => [state.getRates,state.isMultipleTaxSupport])
+
+    const [resGetRates, respIsMultipleTaxSupport] = useSelector((state) => [state.getRates, state.isMultipleTaxSupport])
     useEffect(() => {
         if ((resGetRates && resGetRates.status == STATUSES.IDLE && resGetRates.is_success) && (respIsMultipleTaxSupport && respIsMultipleTaxSupport.status == STATUSES.IDLE && respIsMultipleTaxSupport.is_success)) {
-            getTax(respIsMultipleTaxSupport.data.content,resGetRates.data.content);
+            getTax(respIsMultipleTaxSupport.data.content, resGetRates.data.content);
         }
-    }, [resGetRates,respIsMultipleTaxSupport]);
+    }, [resGetRates, respIsMultipleTaxSupport]);
     // useEffect(() => {
     //     var multiple_tax_support = localStorage.getItem("multiple_tax_support") ? JSON.parse(localStorage.getItem("multiple_tax_support")) : false
     //     var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
@@ -129,13 +129,13 @@ const Home = () => {
             dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
         }
     }
-      // Set First time CashManagment Datain localStore
+    // Set First time CashManagment Datain localStore
     const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
     const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
     useEffect(() => {
-      if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
-        localStorage.setItem("Cash_Management_Data",JSON.stringify(cashDrawerAllDetails.getdetail && getdetail.content));
-      }
+        if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
+            localStorage.setItem("Cash_Management_Data", JSON.stringify(cashDrawerAllDetails.getdetail && getdetail.content));
+        }
     }, [cashDrawerAllDetails]);
 
     // useEffect(() => {
@@ -536,18 +536,18 @@ const Home = () => {
                 {/* <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo> */}
                 {/* <AppLauncher></AppLauncher> */}
                 {/* <LinkLauncher></LinkLauncher> */}
-                {isShowNotifications===true?<Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications>:null}
+                {isShowNotifications === true ? <Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications> : null}
                 <div id="navCover" className="nav-cover"></div>
             </div>
             {/* <div className="subwindow-wrapper"> */}
 
-            {isShowTaxList===true?<TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList>:null}
+            {isShowTaxList === true ? <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList> : null}
             <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            {isShowAdvancedSearch===true?<AdvancedSearch isShow={isShowAdvancedSearch} toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp}  toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch>:null}
+            {isShowAdvancedSearch === true ? <AdvancedSearch isShow={isShowAdvancedSearch} toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch> : null}
             {/* <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
             <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>

@@ -149,6 +149,10 @@ const ManualPayment = (props) => {
             var firstLastNameArr = CardName && CardName.split(' ')
             var firstNameByCard = firstLastNameArr && firstLastNameArr.length && firstLastNameArr[0] ? firstLastNameArr[0] : ''
             var lastNameByCard = firstLastNameArr && firstLastNameArr.length && firstLastNameArr[1] ? firstLastNameArr[1] : ''
+            if(props.partialAmount && props.partialAmount !=0)
+            {
+                order_total=props.partialAmount;
+            }
             var data = {
                 "registerId": selectedRegister ? selectedRegister.id : '',
                 "amount": order_total,

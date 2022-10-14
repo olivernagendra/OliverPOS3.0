@@ -154,17 +154,17 @@ export const  initHomeFn=()=>{
     }
     
     //Tablet Link Launcher Button
-    if (document.getElementById("linkLauncherButton")) {
-        document.getElementById("linkLauncherButton").addEventListener("click", (e) => {
-            if (document.getElementById("userInfoWrapper")) {
-                document.getElementById("userInfoWrapper").classList.add("hidden");
-            }
-            document.getElementById("appLauncherWrapper").classList.add("hidden");
-            document.getElementById("appLauncherButton").classList.remove("filter");
-            document.getElementById("linkLauncherWrapper").classList.toggle("hidden");
-            e.currentTarget.classList.toggle("filter");
-        });
-    }
+    // if (document.getElementById("linkLauncherButton")) {
+    //     document.getElementById("linkLauncherButton").addEventListener("click", (e) => {
+    //         if (document.getElementById("userInfoWrapper")) {
+    //             document.getElementById("userInfoWrapper").classList.add("hidden");
+    //         }
+    //         document.getElementById("appLauncherWrapper").classList.add("hidden");
+    //         document.getElementById("appLauncherButton").classList.remove("filter");
+    //         document.getElementById("linkLauncherWrapper").classList.toggle("hidden");
+    //         e.currentTarget.classList.toggle("filter");
+    //     });
+    // }
     
     //Link Launcher Cover
     // if (document.getElementById("linkLauncherWrapper")) {

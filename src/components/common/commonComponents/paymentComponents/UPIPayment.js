@@ -307,7 +307,10 @@ const UPIPayments = (props) => {
         if (checkList && checkList.totalPrice && parseFloat(checkList.totalPrice) >= paid_amount) {
             payconiqPrice = (parseFloat(checkList.totalPrice) - parseFloat(paid_amount));
         }
-
+        if(props.partialAmount && props.partialAmount !=0)
+        {
+            payconiqPrice=props.partialAmount;
+        }
         // var payconiq_pay_amount = ActiveUser.key.isSelfcheckout == true ? payconiqPrice : 0;
         var payconiq_pay_amount = payconiqPrice ;
         console.log("chargeAmount", parseFloat(payconiq_pay_amount))

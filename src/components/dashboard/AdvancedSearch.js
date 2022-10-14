@@ -382,7 +382,7 @@ const AdvancedSearch = (props) => {
             <button className="close-subwindow" onClick={() => closePopUp()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} />
+            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off"/>
         </div>
         <div className="subwindow-body">
             <div className="left-col">

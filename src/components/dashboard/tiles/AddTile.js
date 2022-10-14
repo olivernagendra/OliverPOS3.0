@@ -26,6 +26,7 @@ const AddTile = (props) => {
     const [tileList, settileList] = useState([]);
     const [tileColor, setTileColor] = useState('');
     const [serachString, setSerachString] = useState('');
+    const [tileToAdd, settileToAdd] = useState('');
     const [respAttribute, respCategory,respTile] = useSelector((state) => [state.attribute, state.category,state.tile])
 
     const dispatch = useDispatch();
@@ -89,6 +90,24 @@ const AddTile = (props) => {
         return results;
     };
 
+    const AddTile=(item,index)=>
+    {
+        switch (item.type) {
+            case "product":
+                setSerachString(item.Title);
+                break;
+            case "category":
+                setSerachString(item.Value);
+                break;
+            case "attribute":
+                setSerachString(item.Description);
+                break;
+            default:
+                break;
+        }
+        setfilterList([]);
+        settileToAdd(item);
+    }
     const filterProduct = (e) => {
         
         console.log(e.target.value)
@@ -257,17 +276,17 @@ const AddTile = (props) => {
                     <input type="search" id="product_search_field_pro" className=""  name="search" onChange={() => filterProduct()}
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
-                <div className="dropdown-search open">
-                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} />
+                <div className={filterList && filterList.length > 0?"dropdown-search open":"dropdown-search"}>
+                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autocomplete="off"/>
                 <div className="option-container">
                             {filterList && filterList.length > 0 && filterList.map(item => {
                         switch (item.type) {
                             case "product":
-                                return <div className="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Title}</div>
+                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Title}</div>
                             case "category":
-                                return <div className="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Value}</div>
+                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Value}</div>
                             case "attribute":
-                                return <div className="dropdown-option" onClick={() => addToFavourite(item, 0)}>{item.type + " : " + item.Description}</div>
+                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Description}</div>
                             default:
                                 return ''
                         }
@@ -329,7 +348,7 @@ const AddTile = (props) => {
                         <div className="custom-radio-button background-red"></div>
                     </label>
                 </div>
-                <button>Add Tile</button>
+                <button onClick={()=>addToFavourite(tileToAdd,0)}>Add Tile</button>
                 <div className="auto-margin-bottom"></div>
             </div>
         </div></div>{isLoading===true?<LoadingModal></LoadingModal>:null}</React.Fragment>)
