@@ -9,6 +9,8 @@ import Info_Icon from '../../assets/images/svg/Info-Icon.svg';
 import Error_Icon from '../../assets/images/svg/Error-Icon.svg';
 import ActiveUser from '../../settings/ActiveUser';
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+
+import { v4 as uniqueKey } from 'uuid';
 const Notifications = (props) => {
     const [isSoundNotification, setisSoundNotification] = useState(false);
     const [notificationList, setNotificationList] = useState([]);
@@ -76,7 +78,7 @@ const Notifications = (props) => {
 
             if(list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true )
             {
-                description = ((<div className="notification approval">
+                description = ((<div className="notification approval" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -88,7 +90,7 @@ const Notifications = (props) => {
             }
             else if(list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false )
             {
-                description = ((<div className="notification approval">
+                description = ((<div className="notification approval" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -100,7 +102,7 @@ const Notifications = (props) => {
             }  
             
             else if (list.Status == "true" && list.order_status == "completed") {
-                description = ((<div className="notification approval">
+                description = ((<div className="notification approval" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -110,7 +112,7 @@ const Notifications = (props) => {
             }
             else //order refunded successfully
                 if (list.Status == "true" && list.order_status === "refunded") {
-                    description = ((<div className="notification info">
+                    description = ((<div className="notification info" key={uniqueKey()}>
                         <div className="side-color"></div>
                         <div className="main-row">
                             <img src={Info_Icon} alt="" />
@@ -121,7 +123,7 @@ const Notifications = (props) => {
                 }
             else //sync issue
                 if (list.Status == "failed" && list.order_status == "completed") {
-                    description = ((<div className="notification error">
+                    description = ((<div className="notification error" key={uniqueKey()}>
                         <div className="side-color"></div>
                         <div className="main-row">
                             <img src={Approval_Icon} alt="" />
@@ -131,7 +133,7 @@ const Notifications = (props) => {
                 }
             else
                 if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                    description = ((<div className="notification approval">
+                    description = ((<div className="notification approval" key={uniqueKey()}>
                         <div className="side-color"></div>
                         <div className="main-row">
                             <img src={Approval_Icon} alt="" />
@@ -141,7 +143,7 @@ const Notifications = (props) => {
                     </div>))
                 }
             else {
-                description = ((<div className="notification approval">
+                description = ((<div className="notification approval" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />

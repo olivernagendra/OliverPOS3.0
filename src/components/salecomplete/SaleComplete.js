@@ -23,6 +23,8 @@ import moment from "moment";
 import { isSafari } from "react-device-detect";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import STATUSES from "../../constants/apiStatus";
+var JsBarcode = require('jsbarcode');
+var print_bar_code;
 const SaleComplete = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -30,12 +32,12 @@ const SaleComplete = () => {
     const [isRemember, setisRemember] = useState(false);
     const [changeAmount, setChangeAmount] = useState(0);
     const [paymentAmount, setPaymentAmount] = useState(0);
-    const [custEmail,setCustEmail]=useState((checkList && checkList.customer_email!=""&&
-    typeof checkList.customer_email !== "undefined") ? checkList.customer_email : '');
+    const [custEmail,setCustEmail]=useState('');
     const [isLoading,setIsLoading]=useState(false);
+    const [tempOrder_Id,setTempOrder_Id]=useState(localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '')
     useEffect(() => {
         printdetails();
-    });
+    },[changeAmount,paymentAmount]);
     const newSale=()=>
     {
         localStorage.removeItem('CARD_PRODUCT_LIST');
@@ -68,15 +70,15 @@ const SaleComplete = () => {
     const toggleisRemember = () => {
         setisRemember(!isRemember);
     }
-    // const textToBase64Barcode=(text)=> {
-    //     var canvas = document.createElement("canvas");
-    //     JsBarcode(canvas, text, {
-    //         format: "CODE39", displayValue: false, width: 1,
-    //         height: 30,
-    //     });
-    //     print_bar_code = canvas.toDataURL("image/png");
-    //     return print_bar_code;
-    // }
+    const textToBase64Barcode=(text)=> {
+        var canvas = document.createElement("canvas");
+        JsBarcode(canvas, text, {
+            format: "CODE39", displayValue: false, width: 1,
+            height: 30,
+        });
+        print_bar_code = canvas.toDataURL("image/png");
+        return print_bar_code;
+    }
     const printdetails=()=> {
 
         var ListItem = new Array();
@@ -172,6 +174,7 @@ const SaleComplete = () => {
         }
 
         if (PrintDetails && PrintDetails.customer_email != "") {
+           setCustEmail(PrintDetails.customer_email );
             //PrintDetails && PrintDetails.billing_address && PrintDetails.billing_address.map(item => { 
             PrintDetails && PrintDetails.shipping_address && PrintDetails.shipping_address.map(item => {
                 addcust = {
@@ -258,7 +261,7 @@ const SaleComplete = () => {
             redeemedPoints: redeemedPointsToPrint ? redeemedPointsToPrint : 0,
             redeemedAmountToPrint: redeemedAmountToPrint ? redeemedAmountToPrint : 0,
             meta_datas: PrintDetails && PrintDetails.order_meta,
-            _currentTime: PrintDetails._currentTime
+            _currentTime: (PrintDetails._currentTime && PrintDetails._currentTime!=null && typeof PrintDetails._currentTime!="undefined")?PrintDetails._currentTime:''
         }
         localStorage.setItem("PrintCHECKLIST", JSON.stringify(CheckoutList));
         //localStorage.removeItem("CHECKLIST");
@@ -310,12 +313,10 @@ const SaleComplete = () => {
         if (tempOrderId) {
             setTimeout(function () {
                 var getPdfdateTime = ''; var isTotalRefund = ''; var cash_rounding_amount = '';
-                // console.log("Checklst", checkList);
                 if (ActiveUser.key.isSelfcheckout == true) {
-                    //PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, textToBase64Barcode(tempOrderId), orderList, type, productxList, AllProductList, TotalTaxByName, appResponse)
+                    PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, textToBase64Barcode(tempOrderId), orderList, type, productxList, AllProductList, TotalTaxByName, appResponse)
                 }
                 else {
-					var print_bar_code="";
                     PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, 0, appResponse)
                 }
                 if (ActiveUser.key.isSelfcheckout == true) {
@@ -402,11 +403,14 @@ const SaleComplete = () => {
         }
     }, [respSaveCustomerToTempOrder,isLoading]);
 
-    var checkList = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
+    //var checkList = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
     return (
         <React.Fragment>
             <div className="sale-complete-wrapper">
 			<div className="main">
+                <div style={{ display: 'none' }} >
+                    <img src={textToBase64Barcode(tempOrder_Id)} />
+                </div>
 				<img src={Sale_Complete} alt="" />
 				{changeAmount!=0?<div className="change-container">
 					<p className="style1">Change: ${parseFloat(changeAmount).toFixed(2)}</p>
@@ -418,7 +422,7 @@ const SaleComplete = () => {
 				</label>
 				<label className="checkbox-label">
 					Remember this customer?
-					<input type="checkbox" checked={isRemember===true?true:false} onClick={()=>toggleisRemember()}/>
+					<input type="checkbox" defaultChecked={isRemember===true?true:false} onClick={()=>toggleisRemember()}/>
 					<div className="custom-checkbox">
 						<img src={Checkmark} alt="" />
 					</div>

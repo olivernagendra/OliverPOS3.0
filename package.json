@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^14.4.2",
     "idb": "^7.0.2",
     "jquery": "^3.6.1",
+    "jsbarcode": "^3.11.5",
     "json-parse-better-errors": "^1.0.2",
     "latest-version": "^7.0.0",
     "moment": "^2.29.4",

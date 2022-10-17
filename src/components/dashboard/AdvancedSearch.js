@@ -382,7 +382,7 @@ const AdvancedSearch = (props) => {
             <button className="close-subwindow" onClick={() => closePopUp()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} />
+            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off"/>
         </div>
         <div className="subwindow-body">
             <div className="left-col">
@@ -425,7 +425,7 @@ const AdvancedSearch = (props) => {
                 <p>Recent Searches</p>
                 <div className="recent-searches">
                     {searchHistory && searchHistory.map(s => {
-                        return (<a href="#" onClick={() => setSerachString(s)}>{s}</a>)
+                        return (<a key={s} href="#" onClick={() => setSerachString(s)}>{s}</a>)
                     })}
                     {/* <a href="#">Sam Moss</a>
                         <a href="#">Graphic T-Shirts</a>

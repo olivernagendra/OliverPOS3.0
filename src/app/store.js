@@ -24,6 +24,7 @@ import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
 import { discountSlice } from '../components/common/commonAPIs/discountSlice';
 import { popupMessageSlice } from '../components/common/commonAPIs/messageSlice';
+import { make_payconiq_paymentSlice,check_payconiq_pay_statusSlice,cancel_payconiq_paymentSlice } from '../components/common/commonComponents/paymentComponents/paymentSlice';
 //import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/inventorySlice'
 import inventoryReducer from '../components/dashboard/slices/inventorySlice'
 import { getAllActivityListSlice, getDetailSlice, getFilteredActivitiesSlice } from '../components/activity/ActivitySlice';
@@ -87,6 +88,9 @@ export const store = configureStore({
     activityRecords:getAllActivityListSlice.reducer,
     activityGetDetail:getDetailSlice.reducer,
     getFilteredActivities:getFilteredActivitiesSlice.reducer,
+    make_payconiq_payment:make_payconiq_paymentSlice.reducer,
+    check_payconiq_pay_status:check_payconiq_pay_statusSlice.reducer,
+    cancel_payconiq_payment:cancel_payconiq_paymentSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

@@ -12,11 +12,16 @@ const PartialPayment = (props) => {
         }
     }
     useEffect(() => {
-        if(props.getRemainingPrice)
+        if(props.getRemainingPrice && props.partialType=="")
         {
           var _amount=  props.getRemainingPrice();
           setTxtValue(parseFloat(_amount).toFixed(2));
           inputElement.autoFocus=true;
+        }
+        else if(props.getRemainingPrice && props.partialType!="")
+        {
+            var _amount=  props.getRemainingPrice();
+            setTxtValue(parseFloat(_amount/parseInt(props.partialType)).toFixed(2));
         }
         // if(props && props.amount)
         // setTxtValue(props.amount);
@@ -58,12 +63,12 @@ const PartialPayment = (props) => {
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
                     <label htmlFor="partialPaymentAmount">Enter partial payment amount:</label>
-                    <input ref={inputElement} autoFocus={true} type="number" id="partialPaymentAmount" placeholder="0.00" value={txtValue} onChange={e => onChange(e)}/>
+                    <input ref={inputElement} autoFocus={true} type="number" id="partialPaymentAmount" placeholder="0.00" value={txtValue} onChange={e => onChange(e)} disabled={props.partialType==""?false:true}/>
                     <p>Select Payment Type</p>
                     <div className="payment-types">
                         {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
-                                return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={()=>setValue(payment.Code)}>
+                                return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={()=>setValue(payment)}>
                                     {payment.Name}
                                     {/* <img src="../Assets/Images/SVG/spongebob-squarepants-2.svg" alt="" /> */}
                                 </button>
