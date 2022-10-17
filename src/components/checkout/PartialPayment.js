@@ -68,7 +68,7 @@ const PartialPayment = (props) => {
                     <div className="payment-types">
                         {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
-                                return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={()=>setValue(payment.Code)}>
+                                return <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={()=>setValue(payment)}>
                                     {payment.Name}
                                     {/* <img src="../Assets/Images/SVG/spongebob-squarepants-2.svg" alt="" /> */}
                                 </button>

@@ -83,8 +83,8 @@ const TileList = (props) => {
     const bind = useLongPress(true ? callback : null, {
         onStart: event => onStart(event),
         onFinish: event => onFinish(event),
-        onCancel: event => console.log('Press cancelled'),
-        onMove: event => console.log('Detected mouse or touch movement'),
+        // onCancel: event => console.log('Press cancelled'),
+        // onMove: event => console.log('Detected mouse or touch movement'),
         // filterEvents: event => true, // All events can potentially trigger long press
         threshold: 1000,
         // captureEvent: false,

@@ -56,6 +56,7 @@ const CustomerView = () => {
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
   const [toggleList, setToggleList] = useState(false)
+  const [sortbyvaluename, SetSortByValueName] = useState('FirstName')
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
@@ -227,10 +228,14 @@ const CustomerView = () => {
 
   }
 
-
-  const SetFilter = (ftype) => {
-    setFilterType(ftype);
+  const sortByList = (filterType, FilterValue) => {
+      setFilterType(filterType);
+      SetSortByValueName(FilterValue)
   }
+
+  
+
+
 
   useEffect(() => {
     productDataSearch();
@@ -241,33 +246,16 @@ const CustomerView = () => {
     var scount = 0;
     var _filteredCustomer = customerlistdata
     ///Sort By Customer 
-    if (filterType == 'All-') {
-      _filteredCustomer = customerlistdata
-    }
-    if (filterType == 'LastName-') {
-      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-        if (a.LastName < b.LastName) { return -1; }
-        if (a.LastName > b.LastName) { return 1; }
-        return 0;
-      })
-    }
-    if (filterType == 'Email-') {
+    console.log("filterType",filterType)
+    
+    if (filterType == 'emailforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
         if (a.Email < b.Email) { return -1; }
         if (a.Email > b.Email) { return 1; }
         return 0;
       })
     }
-    if (filterType.toLowerCase() == 'lastname') {
-      _filteredCustomer = _filteredCustomer.sort((a, b) => {
-        if (a.LastName > b.LastName)
-          return -1;
-        if (a.LastName < b.LastName)
-          return 1;
-        return 0;
-      });
-    }
-    if (filterType.toLowerCase() == 'email') {
+    if (filterType.toLowerCase() == 'emailbackward') {
       _filteredCustomer = _filteredCustomer.sort((a, b) => {
         if (a.Email > b.Email)
           return -1;
@@ -276,6 +264,43 @@ const CustomerView = () => {
         return 0;
       });
     }
+
+    
+    if (filterType == 'firstnameforward') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.FirstName < b.FirstName) { return -1; }
+        if (a.FirstName > b.FirstName) { return 1; }
+        return 0;
+      })
+    }
+    if (filterType.toLowerCase() == 'firstnamebackward') {
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.FirstName > b.FirstName)
+          return -1;
+        if (a.FirstName < b.FirstName)
+          return 1;
+        return 0;
+      });
+    }
+
+    if (filterType == 'lastnameforward') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.LastName < b.LastName) { return -1; }
+        if (a.LastName > b.LastName) { return 1; }
+        return 0;
+      })
+    }
+    if (filterType.toLowerCase() == 'lastnamebackward') {
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.LastName > b.LastName)
+          return -1;
+        if (a.LastName < b.LastName)
+          return 1;
+        return 0;
+      });
+    }
+
+  
 
     // Search in Customer
     if (FirstName !== '') {
@@ -341,7 +366,7 @@ const CustomerView = () => {
               <img src={PlusSign} alt="" />
             </button>
             <button id="mobileCVExitSearch" onClick={CustomerSearchMobi}>
-              <img src="../assets/images/SVG/AngledBracket-Left-Blue.svg" alt="" />
+              <img src={AngledBracketBlueleft} alt="" />
               Go Back
             </button>
             <p className="mobile-only">Search for Customer</p>
@@ -366,25 +391,32 @@ const CustomerView = () => {
               <img src={FilterCollapseIcon} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={FilterArrowUp} alt="" />
-                <p>{filterType}</p>
+                <p>{sortbyvaluename}</p>
               </div>
-              <div onClick={() => SetFilter('All-')} className="sort-option" data-value="emailAsc">
+
+
+              
+              <div  onClick={(e) => sortByList("firstnameforward","FirstName")}  className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
-                <p>all</p>
+                <p>FirstName</p>
               </div>
-              <div onClick={() => SetFilter('Email-')} className="sort-option" data-value="emailAsc">
+              <div  onClick={(e) => sortByList("firstnamebackward","FirstName")}  className="sort-option" >
+                <img src={FilterArrowDown} alt="" />
+                <p>FirstName</p>
+              </div>
+              <div  onClick={(e) => sortByList("emailforward","Email")} className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={() => SetFilter('LastName-')} className="sort-option" data-value="lastname">
-                <img src={FilterArrowUp} alt="" />
-                <p>lastName</p>
-              </div>
-              <div onClick={() => SetFilter('email')} className="sort-option" data-value="emailAsc">
+              <div onClick={(e) => sortByList("emailbackward","Email")}className="sort-option">
                 <img src={FilterArrowDown} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={() => SetFilter('lastname')} className="sort-option" data-value="lastname">
+              <div onClick={(e) => sortByList("lastnameforward","LastName")} className="sort-option" data-value="emailAsc">
+                <img src={FilterArrowUp} alt="" />
+                <p>LastName</p>
+              </div>
+              <div onClick={(e) => sortByList("lastnamebackward","LastName")} className="sort-option">
                 <img src={FilterArrowDown} alt="" />
                 <p>lastName</p>
               </div>

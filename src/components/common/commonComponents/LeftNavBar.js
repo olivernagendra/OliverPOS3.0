@@ -10,9 +10,9 @@ import LinkLauncher_Icon from '../../../assets/images/svg/LinkLauncher-Icon.svg'
 import Oliver_Icon_BaseBlue from '../../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
 import ToggleNavbar_Icon from '../../../assets/images/svg/ToggleNavbar-Icon.svg';
 
-import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
-import MC_Logo1 from '../../../assets/images/Temp/MC_Logo 1.png';
-import Quickbooks1 from '../../../assets/images/Temp/Quickbooks 1.png';
+// import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
+// import MC_Logo1 from '../../../assets/images/Temp/MC_Logo 1.png';
+// import Quickbooks1 from '../../../assets/images/Temp/Quickbooks 1.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AppLauncher from "./AppLauncher";
 import LinkLauncher from "./LinkLauncher";
@@ -24,7 +24,8 @@ import { popupMessage } from "../commonAPIs/messageSlice";
 import { CheckAppDisplayInView } from '../commonFunctions/appDisplayFunction'
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
-import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler'
+import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
+import LinkLauncherPage from "./LinkLauncherPage";
 
 const LeftNavBar = (props) => {
     const navigate = useNavigate();
@@ -37,17 +38,21 @@ const LeftNavBar = (props) => {
     const [isShowMobileView, setisShowMobileView] = useState(false);
     const [extApp, setExtApp] = useState('');
     const [isInit, setisInit] = useState(false);
-
     let useCancelled = false;
+    const [isShowLinkLauncherPage, setisShowLinkLauncherPage] = useState(false);
+
     useEffect(() => {
         if (isInit === false && useCancelled == false) {
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
-
                 if (typeof data == 'string' && data !== "" && window.location.pathname !== "/checkout") {  //checkout page handle independentaly 
-                    responseData(JSON.parse(data))
-                    //compositeSwitchCases(JSON.parse(data))
-                    console.log("leftnavigation")
+                    try {
+                        var _data = JSON.parse(data);
+                        responseData(_data)
+                    } catch (e) {
+                        console.log(e);
+                    }
+
                 }
             })
             setisInit(true);
@@ -69,6 +74,10 @@ const LeftNavBar = (props) => {
     }
     const toggleLeftMenu = () => {
         setisShowLeftMenu(!isShowLeftMenu)
+    }
+    const toggleLinkLauncherPage = () => {
+        setisShowLinkLauncher(false)
+        setisShowLinkLauncherPage(!isShowLinkLauncherPage);
     }
     const toggleAppLauncher = () => {
         setisShowAppLauncher(!isShowAppLauncher)
@@ -224,10 +233,10 @@ const LeftNavBar = (props) => {
                     </div>
                     <p>Minimize Sidebar</p>
                 </button>
-
             </div>
-            <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
-            <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
+            {isShowAppLauncher === true ? <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher> : null}
+            {isShowLinkLauncher === true ? <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleLinkLauncherPage={toggleLinkLauncherPage}></LinkLauncher> : null}
+            {isShowLinkLauncherPage === true ? <LinkLauncherPage isShow={isShowLinkLauncherPage} toggleLinkLauncherPage={toggleLinkLauncherPage}></LinkLauncherPage> : null}
             {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow> : null}
         </React.Fragment>)
 }

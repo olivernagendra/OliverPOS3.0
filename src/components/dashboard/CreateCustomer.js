@@ -225,7 +225,7 @@ const CreateCustomer = (props) => {
                     </button>
                 </div>
                 <div className="subwindow-body">
-                    <form id="myform" autoComplete="off">
+                    {/* <form id="myform" autoComplete="off"> */}
                         <section id="contactInfoSection">
                             <p>Contact Information</p>
                             <div className="input-row">
@@ -322,7 +322,11 @@ const CreateCustomer = (props) => {
                                 </div>
                             </div>
                         </section>
-                    </form>
+                    {/* </form> */}
+                    {/* <div class="button-row">
+						<button onClick={handleSubmit}>Create Customer</button>
+						<button>Create & Add to Cart</button>
+					</div> */}
                     <button onClick={handleSubmit}>Create Customer</button>
                 </div>
             </div>
