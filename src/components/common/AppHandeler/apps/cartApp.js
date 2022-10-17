@@ -641,7 +641,7 @@ export const Notes = (RequestData, isbackgroudApp, whereToview) => {
         return "app-modificaiton-external"
 }
 
-export const doParkSale = (RequestData) => {
+export function DoParkSale(RequestData) {
     const { getByID: getProductByID, getAll: getAllProducts } = useIndexedDB("products");
     var clientJSON = {};
     var validationResponse = validateRequest(RequestData)
@@ -660,7 +660,7 @@ export const doParkSale = (RequestData) => {
         // });
         //var wc_order_no= RequestData.wc_order_no;
         var UID = get_UDid('UDID');
-        store.dispatch(activityActions.getDetail(RequestData.wc_order_no, UID));
+        //store.dispatch(activityActions.getDetail(RequestData.wc_order_no, UID));
         var single_Order_list = {};
         setTimeout(() => {
             const state = store.getState();

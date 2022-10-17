@@ -21,7 +21,7 @@ import {
   DataToReceipt, PrintReceiptWithAppData,
   handleCartValue, handleCart,
   sendCustomerDetail, HandleCustomer, CustomerToSale, retrieveCustomerInSale,
-  addCartDiscount, cartTaxes, addProductToCart, Notes, lockEnvironment, Environment, doParkSale, getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon, transactionApp, transactionStatus
+  addCartDiscount, cartTaxes, addProductToCart, Notes, lockEnvironment, Environment, doParkSale, getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon, transactionApp, transactionStatus, DoParkSale
 } from './apps';
 import { productPriceUpdate, sendProductQuantity } from './apps/productApp';
 // var JsBarcode = require('jsbarcode');
@@ -126,7 +126,7 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
         appResponse = getOrderStatus(jsonMsg, whereToview)
         break
       case ("ParkSale").toLowerCase():
-        appResponse = doParkSale(jsonMsg)
+        appResponse = DoParkSale(jsonMsg)
         break
       case ("CustomFee").toLowerCase():
         appResponse = doCustomFee(jsonMsg)
