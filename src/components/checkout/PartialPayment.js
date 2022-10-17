@@ -52,7 +52,7 @@ const PartialPayment = (props) => {
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow partial-payment current" : "subwindow partial-payment"}>
                 <div className="subwindow-header">
-                    <p>Partial Payments</p>
+                    <p> {props.partialType==""?"Partial Payments":"Split Payments"}</p>
                     <button className="close-subwindow" onClick={() => props.toggleShowPartialPayment()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
