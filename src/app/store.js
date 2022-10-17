@@ -26,6 +26,7 @@ import { discountSlice } from '../components/common/commonAPIs/discountSlice';
 import { popupMessageSlice } from '../components/common/commonAPIs/messageSlice';
 //import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/inventorySlice'
 import inventoryReducer from '../components/dashboard/slices/inventorySlice'
+import { getAllActivityListSlice, getDetailSlice, getFilteredActivitiesSlice } from '../components/activity/ActivitySlice';
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -82,7 +83,10 @@ export const store = configureStore({
     changeReturnAmount:changeReturnAmountSlice.reducer,
     checkTempOrderSync:checkTempOrderSyncSlice.reducer,
     checkTempOrderStatus:checkTempOrderStatusSlice.reducer,
-    saveCustomerToTempOrder:saveCustomerToTempOrderSlice.reducer
+    saveCustomerToTempOrder:saveCustomerToTempOrderSlice.reducer,
+    activityRecords:getAllActivityListSlice.reducer,
+    activityGetDetail:getDetailSlice.reducer,
+    getFilteredActivities:getFilteredActivitiesSlice.reducer,
   }
   ,
   middleware: getDefaultMiddleware =>

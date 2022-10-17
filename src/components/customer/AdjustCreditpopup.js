@@ -103,7 +103,7 @@ const AdjustCreditpopup = (props) => {
                                 type="radio"
                                 id="addCreditToggle"
                                 name="add_remove_credit_toggle"
-                                defaultChecked=""
+                                defaultChecked={true}
                             />
                             <div className="custom-radio" onClick={() => HundleCreditFiled('Add')}>Add Credit</div>
                         </label>
