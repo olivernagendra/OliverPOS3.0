@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from 'react-redux';
 import { get_locName, get_regName, getShopName } from '../common/localSettings'
-import imgOpenReg from '../../assets/images/svg/OpenSign.svg'
+import imgOpenReg from '../../assets/images/svg/OpenSign.svg';
+import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg';
+
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useDispatch, useSelector } from 'react-redux';
 // import imgBackSpace from '../../assets/images/svg/Backspace-BaseBlue.svg'
@@ -14,14 +16,18 @@ import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
 import PinPad from "./PinPad";
 import { get_UDid } from "../common/localSettings";
+import LogoutConfirm from "../common/commonComponents/LogoutConfirm";
 //import $ from "jquery";
 const Pin = () => {
     const dispatch = useDispatch();
     const UID = get_UDid('UDID');
     const navigate = useNavigate();
-    const [onClick, setOnClick] = useState(false)
+    const [onClick, setOnClick] = useState(false);
+    const [isShowLogoutConfirm, setisShowLogoutConfirm] = useState(false)
     const register_Id = localStorage.getItem('register');
-
+    const toggleLogoutConfirm = () => {
+        setisShowLogoutConfirm(!isShowLogoutConfirm)
+    }
 
     let useCancelled = false;
     useEffect(() => {
@@ -259,19 +265,45 @@ const Pin = () => {
         setOnClick(true)
     }
 
-    return <div className="idle-register-wrapper" onClick={hundleTrue}>
-        <header>
-            <img src={imgOpenReg} alt="" />
-            <div className="col">
-                <p className="style1">{getShopName()}</p>
-                <div className="divider divider-pin"></div>
-                <p className="style2">{get_regName()}</p>
-                <p className="style3">{get_locName()}</p>
-                <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
+    return <React.Fragment>
+        <div className="idle-register-wrapper" onClick={hundleTrue}>
+            <button id="logoutRegisterButton" onClick={()=>toggleLogoutConfirm()}>
+                <img src={LogOut_Icon_White} alt="" />
+                {LocalizedLanguage.logout}
+            </button>
+            <header>
+                <img src={imgOpenReg} alt="" />
+                <div className="col">
+                    <p className="style1">{getShopName()}</p>
+                    <div className="divider divider-pin"></div>
+                    <p className="style2">{get_regName()}</p>
+                    <p className="style3">{get_locName()}</p>
+                    <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
+                </div>
+            </header>
+            <main>{<PinPad autoFocus={true} onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>
+        </div>
+        {/* <div class={isShowLogoutConfirm===true?"subwindow-wrapper":"subwindow-wrapper hidden"}>
+            <div class={isShowLogoutConfirm===true?"subwindow logout-confirm current":"subwindow logout-confirm"}>
+                <div class="subwindow-body">
+                    <div class="auto-margin-top"></div>
+                    <p class="style1">Account Logout Confirmation</p>
+                    <p class="style2">
+                        Are you sure you want to logout <br />
+                        of the Oliver POS app?
+                    </p>
+                    <p class="style2">
+                        You will need the account username and <br />
+                        password to log back in.
+                    </p>
+                    <button id="registerLogout" onClick={()=> navigate('/login')}>Logout</button>
+                    <button id="cancelRegisterLogout" onClick={()=>toggleLogoutConfirm()}>Cancel</button>
+                    <div class="auto-margin-bottom"></div>
+                </div>
             </div>
-        </header>
-        <main>{<PinPad autoFocus={true} onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>
-    </div>
+        </div> */}
+      {isShowLogoutConfirm===true?<LogoutConfirm isShow={isShowLogoutConfirm} toggleLogoutConfirm={toggleLogoutConfirm}></LogoutConfirm>:null}
+    </React.Fragment>
 }
 
 export default Pin

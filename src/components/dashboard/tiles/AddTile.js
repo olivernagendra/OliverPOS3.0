@@ -27,7 +27,7 @@ const AddTile = (props) => {
     const [tileColor, setTileColor] = useState('');
     const [serachString, setSerachString] = useState('');
     const [tileToAdd, settileToAdd] = useState('');
-    const [respAttribute, respCategory,respTile] = useSelector((state) => [state.attribute, state.category,state.tile])
+    const [respAttribute, respCategory, respTile] = useSelector((state) => [state.attribute, state.category, state.tile])
 
     const dispatch = useDispatch();
 
@@ -51,7 +51,7 @@ const AddTile = (props) => {
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
-        if (isLoading===true && resAddTile && resAddTile.status == STATUSES.IDLE && (resAddTile.is_success===true || resAddTile.is_success===false)) {
+        if (isLoading === true && resAddTile && resAddTile.status == STATUSES.IDLE && (resAddTile.is_success === true || resAddTile.is_success === false)) {
             setIsLoading(false);
             setSerachString('');
             props.toggleAddTitle();
@@ -90,8 +90,7 @@ const AddTile = (props) => {
         return results;
     };
 
-    const AddTile=(item,index)=>
-    {
+    const AddTile = (item, index) => {
         switch (item.type) {
             case "product":
                 setSerachString(item.Title);
@@ -109,13 +108,13 @@ const AddTile = (props) => {
         settileToAdd(item);
     }
     const filterProduct = (e) => {
-        
+
         console.log(e.target.value)
         var value = e.target.value.trim().toLowerCase();
         setSerachString(value);
         var _filteredData = [];
         if (value != "") {
-            
+
             var fCList = recursivelyFindKeyValue('', value, categoryList, 0);
             var fAList = recursivelyFindKeyValue('', value, attributeList, 0);
             if (fCList && fCList.length > 0) {
@@ -130,12 +129,12 @@ const AddTile = (props) => {
             }
             //   var fPList=  recursivelyFindKeyValue('',e.target.value,product_List,0)
             getAll().then((rows) => {
-                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value) && a.ParentId===0);
+                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value) && a.ParentId === 0);
                 if (fPList && fPList.length > 0) {
                     fPList = AddItemType(fPList, "product");
                     // _filteredData.concat(fPList);
                     _filteredData = [...new Set([..._filteredData, ...fPList])];
-                    {_filteredData = _filteredData.slice(0, 10);}
+                    { _filteredData = _filteredData.slice(0, 10); }
                 }
                 setfilterList(_filteredData);
                 console.log("---search data----" + JSON.stringify(_filteredData))
@@ -155,10 +154,10 @@ const AddTile = (props) => {
         // }
     }
     const submitChanges = (id, type, slug) => {
-        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0,"Color": tileColor }
+        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0, "Color": tileColor }
         dispatch(addTile(param));
     }
-    
+
     const addToFavourite = (item, pos) => {
         // console.log(JSON.stringify(item));
         // return;
@@ -178,7 +177,7 @@ const AddTile = (props) => {
             id = item.Id;
             slug = item.Code && item.Code;
         }
-       
+
         var isExist = false;
         var positionIndex = pos;
         if (type == "product") {
@@ -220,9 +219,9 @@ const AddTile = (props) => {
             submitChanges(id, type, slug)
 
         } else {
-            if (isExist==true) { //apply check to protect msg display if no item selected and click on save button
+            if (isExist == true) { //apply check to protect msg display if no item selected and click on save button
                 // alert("alreadyExsist");
-                var data ={title:"",msg:"Item already exist",is_success:true}
+                var data = { title: "", msg: "Item already exist", is_success: true }
                 dispatch(popupMessage(data));
             }
         }
@@ -253,47 +252,48 @@ const AddTile = (props) => {
             props.toggleAddTitle();
         }
     }
-    const closePopUp=()=>
-    {
+    const closePopUp = () => {
         setSerachString('');
         props.toggleAddTitle();
     }
     return (
-    <React.Fragment>
-        
-    <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-        <div className={props.isShow === true ? "subwindow add-tile current" : "subwindow add-tile"}>
-            <div className="subwindow-header">
-                <p>Add Tile</p>
-                <button className="close-subwindow" onClick={() =>closePopUp() }>
-                    <img src={X_Icon_DarkBlue} alt="" />
-                </button>
-            </div>
-            <div className="subwindow-body">
-                <div className="auto-margin-top"></div>
-                <label htmlFor="tileLink">Select Tile Link</label>
-                {/* <div className="search-dropdown">
+        <React.Fragment>
+
+            <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
+                <div className={props.isShow === true ? "subwindow add-tile current" : "subwindow add-tile"}>
+                    <div className="subwindow-header">
+                        <p>Add Tile</p>
+                        <button className="close-subwindow" onClick={() => closePopUp()}>
+                            <img src={X_Icon_DarkBlue} alt="" />
+                        </button>
+                    </div>
+                    <div className="subwindow-body">
+                        <div className="auto-margin-top"></div>
+                        <label htmlFor="tileLink">Select Tile Link</label>
+                        {/* <div className="search-dropdown">
                     <input type="search" id="product_search_field_pro" className=""  name="search" onChange={() => filterProduct()}
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
-                <div className={filterList && filterList.length > 0?"dropdown-search open":"dropdown-search"}>
-                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autocomplete="off"/>
-                <div className="option-container">
-                            {filterList && filterList.length > 0 && filterList.map(item => {
-                        switch (item.type) {
-                            case "product":
-                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Title}</div>
-                            case "category":
-                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Value}</div>
-                            case "attribute":
-                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Description}</div>
-                            default:
-                                return ''
-                        }
+                        <div className={filterList && filterList.length > 0 ? "dropdown-search open" : "dropdown-search"}>
+                            {/* <img class="search" src="" alt="" />
+                            <img class="cancel" id="cancelDropdownSearch" src="" alt="" /> */}
+                            <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" />
+                            <div className="option-container">
+                                {filterList && filterList.length > 0 && filterList.map(item => {
+                                    switch (item.type) {
+                                        case "product":
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Title}</div>
+                                        case "category":
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Value}</div>
+                                        case "attribute":
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Description}</div>
+                                        default:
+                                            return ''
+                                    }
 
-                    })}
-                </div></div>
-                {/* <ul>
+                                })}
+                            </div></div>
+                        {/* <ul>
                     {filterList && filterList.length > 0 && filterList.map(item => {
                         switch (item.type) {
                             case "product":
@@ -307,51 +307,51 @@ const AddTile = (props) => {
                         }
 
                     })}</ul> */}
-                <p>Select the tile color</p>
-                <div className="radio-group">
-                    {/* {
+                        <p>Select the tile color</p>
+                        <div className="radio-group">
+                            {/* {
                     props.categoryList && props.categoryList.map(c=>
                         {
                             <p>{c.name}</p>
                         })
                 } */}
-                    <label onClick={()=>setTileColor('violet')}>
-                        <input type="radio" id="violet" name="tile-color" value="violet" />
-                        <div className="custom-radio-button background-violet"></div>
-                    </label>
-                    <label onClick={()=>setTileColor('blue')}>
-                        <input type="radio" id="blue" name="tile-color" value="blue" />
-                        <div className="custom-radio-button background-blue"></div>
-                    </label>
-                    <label onClick={()=>setTileColor('cyan')}>
-                        <input type="radio" id="cyan" name="tile-color" value="cyan" />
-                        <div className="custom-radio-button background-cyan"></div>
-                    </label>
-                    <label onClick={()=>setTileColor('teal')}>
-                        <input type="radio" id="teal" name="tile-color" value="teal" />
-                        <div className="custom-radio-button background-teal"></div>
-                    </label>
-                    <label onClick={()=>setTileColor('lime')}>
-                        <input type="radio" id="lime" name="tile-color" value="lime" />
-                        <div className="custom-radio-button background-lime"></div>
-                    </label>
-                    <label onClick={()=>setTileColor('yellow')}>
-                        <input type="radio" id="yellow" name="tile-color" value="yellow" />
-                        <div className="custom-radio-button background-yellow"></div>
-                    </label>
-                    <label onClick={()=>setTileColor('coral')}>
-                        <input type="radio" id="coral" name="tile-color" value="coral" />
-                        <div className="custom-radio-button background-coral"></div>
-                    </label>
-                    <label onClick={()=>setTileColor('red')}>
-                        <input type="radio" id="red" name="tile-color" value="red" />
-                        <div className="custom-radio-button background-red"></div>
-                    </label>
-                </div>
-                <button onClick={()=>addToFavourite(tileToAdd,0)}>Add Tile</button>
-                <div className="auto-margin-bottom"></div>
-            </div>
-        </div></div>{isLoading===true?<LoadingModal></LoadingModal>:null}</React.Fragment>)
+                            <label onClick={() => setTileColor('violet')}>
+                                <input type="radio" id="violet" name="tile-color" value="violet" />
+                                <div className="custom-radio-button background-violet"></div>
+                            </label>
+                            <label onClick={() => setTileColor('blue')}>
+                                <input type="radio" id="blue" name="tile-color" value="blue" />
+                                <div className="custom-radio-button background-blue"></div>
+                            </label>
+                            <label onClick={() => setTileColor('cyan')}>
+                                <input type="radio" id="cyan" name="tile-color" value="cyan" />
+                                <div className="custom-radio-button background-cyan"></div>
+                            </label>
+                            <label onClick={() => setTileColor('teal')}>
+                                <input type="radio" id="teal" name="tile-color" value="teal" />
+                                <div className="custom-radio-button background-teal"></div>
+                            </label>
+                            <label onClick={() => setTileColor('lime')}>
+                                <input type="radio" id="lime" name="tile-color" value="lime" />
+                                <div className="custom-radio-button background-lime"></div>
+                            </label>
+                            <label onClick={() => setTileColor('yellow')}>
+                                <input type="radio" id="yellow" name="tile-color" value="yellow" />
+                                <div className="custom-radio-button background-yellow"></div>
+                            </label>
+                            <label onClick={() => setTileColor('coral')}>
+                                <input type="radio" id="coral" name="tile-color" value="coral" />
+                                <div className="custom-radio-button background-coral"></div>
+                            </label>
+                            <label onClick={() => setTileColor('red')}>
+                                <input type="radio" id="red" name="tile-color" value="red" />
+                                <div className="custom-radio-button background-red"></div>
+                            </label>
+                        </div>
+                        <button onClick={() => addToFavourite(tileToAdd, 0)}>Add Tile</button>
+                        <div className="auto-margin-bottom"></div>
+                    </div>
+                </div></div>{isLoading === true ? <LoadingModal></LoadingModal> : null}</React.Fragment>)
 }
 
 export default AddTile 
