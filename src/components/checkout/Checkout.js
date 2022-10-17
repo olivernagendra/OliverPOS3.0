@@ -6,7 +6,7 @@ import person from '../../assets/images/svg/person.svg'
 import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import Header from "./Header";
 import CartListBody from "../common/commonComponents/CartListBody";
@@ -25,8 +25,9 @@ import moment from "moment";
 import { isSafari, isMobileOnly, isTablet } from "react-device-detect";
 import { product } from "../dashboard/product/productSlice";
 import { addtoCartProduct } from "../dashboard/product/productLogic";
-import { makeOnlinePayments, getMakePayment, save, paymentAmount,changeReturnAmount } from "../checkout/checkoutSlice";
+import { makeOnlinePayments, getMakePayment, save, paymentAmount, changeReturnAmount } from "../checkout/checkoutSlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
 const Checkout = () => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -130,8 +131,7 @@ const Checkout = () => {
             setDiscountType('')
         }
     }
-    const showPartial=(val)=>
-    {
+    const showPartial = (val) => {
         setPartialType(val);
         setisShowPartialPayment(true);
     }
@@ -231,6 +231,144 @@ const Checkout = () => {
     // useEffect(() => {
     //     pay_amount(payment_Type);
     // }, [payment_Type]);
+
+    //Handel Apps --------------------------------
+    const [isInit, setisInit] = useState(false)
+    const location = useLocation();
+    let useCancelled = false;
+    useEffect(() => {
+        if (isInit === false && useCancelled == false) {
+            window.addEventListener('message', function (e) {
+                var data = e && e.data;
+                if (typeof data == 'string' && data !== "" && window.location.pathname == "/checkout") {
+                    responseData(JSON.parse(data))
+                    //compositeSwitchCases(JSON.parse(data))
+                    console.log("leftnavigation")
+                }
+            })
+            setisInit(true);
+        }
+
+        return () => {
+            useCancelled = true;
+        }
+    }, [isInit]);
+    const responseData = (data) => {
+        console.log("---ext app data--" + data);
+        var _route = location.pathname;
+        var whereToview = "";
+        // if (_route == "checkout")
+        whereToview = "CheckoutView"
+        // else
+        //     whereToview = "home"
+        var appResponse = handleAppEvent(data, whereToview)
+        console.log("appResponse", appResponse)
+        if (appResponse == 'app_do_transaction') {      // Transection App 2.0                     
+            handleAppTransaction(data)
+        }
+        else if (appResponse == "do_app_orderPark") {
+            setPayment('park_sale', 'byExtApp');
+        }
+        // if (appResponse == 'app_do_payment') {
+        //     this.handleAppPayment(extensionData)
+        // }
+        // else if (appResponse == 'app-coupon_duplicate') {
+        //     var localCouponApplied = JSON.parse(localStorage.getItem("couponApplied"));
+        //     var isCouponFound = null;
+        //     if (extensionData && extensionData.data) {
+        //         isCouponFound = localCouponApplied.find(coupon => { return coupon.coupon_code == extensionData.data.coupon_code })
+        //     } //&& extensionData.data.length > 0 && extensionData.data.map(request => {
+
+        //     if (isCouponFound) {
+        //         this.setState({ common_Msg: "Coupon '" + isCouponFound.coupon_code + "' already exist!" });
+        //     }
+        //     setTimeout(function () {
+        //         hideModal("common_ext_popup");
+        //         showModal('common_msg_popup');
+        //     }, 100)
+        // }
+        // else if (appResponse == 'app-modificaiton-external' || appResponse == 'app-coupon_discount') {
+        //     this.setState({ hideApp: true })
+        //     this.setState({ UpdateCartByApp: true }) //To Refresh the cart need to update the state
+        //     this.close_ext_modal() //To close popup 
+
+        // }
+        // else if (appResponse == 'app-modificaiton-lock-env') {
+        //     setTimeout(() => {
+        //         this.setState({ "appLock": true })
+        //     }, 200);
+
+        // }
+        // else if (appResponse == 'app-modificaiton-unlock-env') {
+        //     setTimeout(() => {
+        //         this.setState({ "appLock": false })
+        //     }, 200);
+        // } else if (appResponse == 'app-get-lock-env') {
+        //     var clientJSON = {
+        //         command: extensionData.command,
+        //         version: extensionData.version,
+        //         method: extensionData.method,
+        //         status: 200,
+        //         state: this.state.appLock == true ? "lock" : 'unlock'
+        //     }
+        //     postmessage(clientJSON)
+        // } else if (appResponse == 'app_cancle_transaction') {
+        //     this.setState({ "cancleTransaction": true })
+        // }
+
+    }
+    function handleAppTransaction(RequesteData) {
+        try {
+            var data = RequesteData && RequesteData.data;
+            //const { checkList } = this.state
+            if (data) {
+                var type = data && data.processor ? data.processor : ''
+                checkList['transection_id'] = data && data.transaction_id ? data.transaction_id : ''
+                var _amount = data && data.amount ? data.amount / 100 : 0
+                var _emv = data && data.emv_data ? data.emv_data : ""
+                var allEmvData = [];
+                allEmvData = emvData ? emvData : [];
+                if (_emv) {
+                    var obj = {};
+                    obj[type] = _emv;
+                    allEmvData.push(obj)
+                }
+
+                setCheckList(checkList);
+                setEmvData(allEmvData)
+                // this.setState({
+                //     //checkList: checkList, 
+                //     isPaymentByExtension: true, 
+                //     extensionPaymentType: type,
+                //     //EmvData: allEmvData
+                // }
+                //)
+                // set the current trnasaction status, Used for APP Command "TransactionStatus"
+                localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": type, "status": "completed" }))
+                //  this.orderPayments.updateClosingTab(true)
+                // hideModal('common_ext_popup')
+                //this.close_ext_modal()
+                setTimeout(() => {
+                    //orderPayments.setPartialPayment(type, _amount)
+                    setPartialPayment(type, _amount)
+                    var clientJSON = {
+                        command: RequesteData.command,
+                        version: RequesteData.version,
+                        method: RequesteData.method,
+                        status: 200,
+                    }
+                    postmessage(clientJSON);
+                }, 500);
+            }
+            else {
+                console.error('App Error : Invalid Data');
+            }
+        } catch (error) {
+            console.error('App Error : ', error);
+        }
+    }
+    //-----------------------------------------------------
+
     //  function use to check for payment types and perform action accordingly 
     const pay_amount = (paymentType, TerminalCount = 0, Support = '', paymentCode = '', paidConfirmAmount = 0) => {
         var closingTab = '';
@@ -519,7 +657,7 @@ const Checkout = () => {
         // }
 
     }
-    const finalAdd=()=> {
+    const finalAdd = () => {
         // if (isMobileOnly == true) {
         //     $("#popup_cash_rounding").removeClass("show")
         //     hideModal('popup_cash_rounding');
@@ -628,11 +766,11 @@ const Checkout = () => {
                         setCashPayment(paying_amount);
                         setAfterPaymentIs(payment_is);
 
-                        dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": parseFloat(paying_amount)-parseFloat(actual_amount) }));
+                        dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": parseFloat(paying_amount) - parseFloat(actual_amount) }));
                         //make payment while enter amount is greater than total price
                         //finalAdd();
                         //---------- 
-                
+
 
                         // this.freezScreen();
                         // if (isMobileOnly == true) {
@@ -677,11 +815,11 @@ const Checkout = () => {
                         setChangeAmount(change_amount);
                         setCashPayment(paying_amount);
                         setAfterPaymentIs(0);
-                        dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": parseFloat(paying_amount)-parseFloat(actual_amount) }));
+                        dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": parseFloat(paying_amount) - parseFloat(actual_amount) }));
                         //dispatch(changeReturnAmount({ "cashPayment": paying_amount, "change": change_amount }));
                         //make payment while enter amount is greater than total price
                         //finalAdd();
-                    
+
 
                         //show message if payment amount is greater than total amount
 
@@ -1476,12 +1614,12 @@ const Checkout = () => {
         if (localStorage.getItem('IPAddress')) {
             deviceIP = localStorage.getItem('IPAddress')
         }
-        var _cashPayment=0;
-        var _changeAmount=0;
+        var _cashPayment = 0;
+        var _changeAmount = 0;
         if ((respChangeAmount && respChangeAmount.status == STATUSES.IDLE && respChangeAmount.is_success && respChangeAmount.data)) {
             //console.log("--respChangeAmount--" + JSON.stringify(respChangeAmount));
-            _cashPayment=respChangeAmount.data.cashPayment;
-            _changeAmount=respChangeAmount.data.change;
+            _cashPayment = respChangeAmount.data.cashPayment;
+            _changeAmount = respChangeAmount.data.change;
         }
         // push order_custom_fee in discount meta data
         productDiscout && productDiscout.push({ order_custom_fee: order_custom_fee })
@@ -1761,9 +1899,9 @@ const Checkout = () => {
                 <p className="style1">Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
                 <div className="button-row">
-                    <button onClick={()=>showPartial(2)}>1/2</button>
-                    <button onClick={()=>showPartial(3)}>1/3</button>
-                    <button onClick={()=>showPartial(4)}>1/4</button>
+                    <button onClick={() => showPartial(2)}>1/2</button>
+                    <button onClick={() => showPartial(3)}>1/3</button>
+                    <button onClick={() => showPartial(4)}>1/4</button>
                 </div>
                 <div className="button-row">
                     <button>By Product</button>

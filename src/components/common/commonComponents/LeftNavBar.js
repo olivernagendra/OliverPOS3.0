@@ -38,17 +38,22 @@ const LeftNavBar = (props) => {
     const [extApp, setExtApp] = useState('');
     const [isInit, setisInit] = useState(false);
 
-
+    let useCancelled = false;
     useEffect(() => {
-        if (isInit === false) {
+        if (isInit === false && useCancelled == false) {
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
-                if (typeof data == 'string' && data !== "") {
+
+                if (typeof data == 'string' && data !== "" && window.location.pathname !== "/checkout") {  //checkout page handle independentaly 
                     responseData(JSON.parse(data))
                     //compositeSwitchCases(JSON.parse(data))
+                    console.log("leftnavigation")
                 }
             })
             setisInit(true);
+        }
+        return () => {
+            useCancelled = true;
         }
     }, [isInit]);
     const responseData = (data) => {
