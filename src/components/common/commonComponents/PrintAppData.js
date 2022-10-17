@@ -74,6 +74,7 @@ function Print(data) {
     // if (currentWidth < 250) { realWidth = "90%"; }
     // else { realWidth = "250px"; }
 
+
     var topLogo = '';
     if (pageSize.width == "80mm" || pageSize.width == "52mm") {
       topLogo = (!data || !data.url || data.url == "") ? ``

@@ -56,6 +56,7 @@ const LeftNavBar = (props) => {
             useCancelled = true;
         }
     }, [isInit]);
+
     const responseData = (data) => {
         console.log("---ext app data--" + data);
         var _route = location.pathname;
