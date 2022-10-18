@@ -4,6 +4,7 @@ import STATUSES from "../../constants/apiStatus";
 import { showSubTitle, showTitle, getInclusiveTaxType } from "../../settings/CommonModuleJS";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import shirt from '../../assets/images/Temp/shirt.png'
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const ActivityOrderList = () => {
     const [activityOrderDetails, setActivityOrderDetails] = useState([])
     var TaxSetting = localStorage.getItem("TAX_SETTING") ? JSON.parse(localStorage.getItem("TAX_SETTING")) : null;
@@ -159,18 +160,11 @@ const ActivityOrderList = () => {
 
 
 
-
-
-
-
-
-
-
     return (
         <>
+        {activitygetdetails.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
             <p>Order Details</p>
             {
-
                 lineitems && lineitems.map((item, inde) => {
                     var varDetail = item.ProductSummery.toString();
                     ///Composit Child product------------------------
@@ -196,7 +190,6 @@ const ActivityOrderList = () => {
                     //-----------------------------------------------
                       //  console.log("_indivisualProductDiscountArray",_indivisualProductDiscountArray)
                     var isIndivisualDiscountApply= _indivisualProductDiscountArray && _indivisualProductDiscountArray.filter(x => x.ProductId === item.product_id);
-
                     var _productCartDiscountAmount=0;
                     if(_indivisualProductCartDiscountArray && _indivisualProductCartDiscountArray.length>0){
                         _indivisualProductCartDiscountArray && _indivisualProductCartDiscountArray.map(x=>{
@@ -204,7 +197,6 @@ const ActivityOrderList = () => {
                               _productCartDiscountAmount=x.discountAmount     
                         });
                     }
-                    
                     var _indivisualDiscount=0;
                     if(_indivisualProductDiscountArray && _indivisualProductDiscountArray.length>0){
                         _indivisualProductDiscountArray && _indivisualProductDiscountArray.map(x=>{
@@ -212,16 +204,11 @@ const ActivityOrderList = () => {
                             _indivisualDiscount=x.discountAmount     
                         });
                     }
-                  
                     var _single_amount = ((item.subtotal + (taxType == "incl" ? item.subtotal_tax : 0)) / item.quantity);
                     var _amount = _single_amount * item.quantity;
                     var _final_amount = qty == 0 ? 0 : (_single_amount * qty) - _indivisualDiscount;
-
                     var qty = item.quantity + item.quantity_refunded;
                     var refundItemTax = ((item.subtotal_tax / item.quantity) * item.quantity_refunded)
-
-
-
 
                     return (
                         <div className="item">
@@ -248,14 +235,14 @@ const ActivityOrderList = () => {
                                                     <div><del style={{ marginRight: 10 }}>
                                                       {_amount} </del>{_final_amount} </div>
                                                     :
-                                                   item.total
+                                                    parseFloat(item.total).toFixed(2)
                                                 :
                                                 ((item.subtotal - item.total) != 0) && isIndivisualDiscountApply.length > 0 ?
                                                     TaxSetting && TaxSetting.pos_prices_include_tax == 'no' ?
                                                        
-                                                        <div><del >{_amount.toFixed(2)}</del>{_final_amount} </div>
+                                                        <div><del >{parseFloat(_amount).toFixed(2)}</del>{_final_amount} </div>
                                                         : <div><del>{(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2)}</del>{(item.total + (taxInclusiveName == "" ? 0 : item.subtotal_tax) + _productCartDiscountAmount).toFixed(2)}   </div>
-                                                    :Math.round(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax))
+                                                    :Math.round(parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2))
                                         }
 
                                     </p>

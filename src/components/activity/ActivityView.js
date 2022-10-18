@@ -20,13 +20,14 @@ import STATUSES from "../../constants/apiStatus";
 import { LoadingSmallModal } from '../common/commonComponents/LoadingSmallModal'
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { activityRecords, getDetail, getFilteredActivities } from './ActivitySlice'
 import Config from '../../Config'
 import ActivityList from "./ActivityList";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import ActivityOrderDetail from "./ActivityOrderDetail";
 import ActivityOrderList from "./ActivityOrderList";
-
+import { ActivityFooter } from "./ActivityFooter";
 
 const ActivityView = () => {
 
@@ -42,6 +43,7 @@ const ActivityView = () => {
     const [filterByPlatform, setFilterByPlatform] = useState('')
     const [filterByStatus, setFilterByStatus] = useState('')
     const [isloader, setSmallLoader] = useState(true)
+    const [getPdfdateTime, setGetPdfdateTime] = useState('')
 
     const [filterByUser, setfilterByUser] = useState('')
     const [selectuserfilter, setSelectuserFilter] = useState('')
@@ -56,6 +58,7 @@ const ActivityView = () => {
     const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
     const [isMobileNav, setisMobileNav] = useState(false);
     const [isSortWrapper, setSortWrapper] = useState(false)
+    const [responsiveCusList, setResponsiveCusList] = useState(false)
 
     // All TOGGLE 
     const toggleAppLauncher = () => {
@@ -89,6 +92,9 @@ const ActivityView = () => {
     }
     const toggleEmployee = () => {
         setEmployeeToggle(!isEmployeeWrapper)
+    }
+    const toggleResponsiveList = () => {
+        setResponsiveCusList(!responsiveCusList)
     }
 
 
@@ -213,6 +219,7 @@ const ActivityView = () => {
             var getPdfdate = (mydate.getMonth() + 1) + '/' + mydate.getDate() + '/' + mydate.getFullYear() + ' ' + item.time;
             var itemCreatedDate = FormateDateAndTime.formatDateAndTime(item.date_time, item.time_zone)
             setupdateActivityId(item.order_id)
+            setGetPdfdateTime(getPdfdate)
             // this.setState({
             //     active: index,
             //     CreatedDate: itemCreatedDate,
@@ -223,7 +230,7 @@ const ActivityView = () => {
             if (item.order_id) {
                 dispatch(getDetail(item.order_id, UID));
             }
-
+            setResponsiveCusList(!responsiveCusList)
             //this.props.dispatch(checkoutActions.getOrderReceipt());
             // $(".button_with_checkbox input").prop("checked", false);
         }
@@ -526,10 +533,10 @@ const ActivityView = () => {
                 </div>
                 <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} />
             </div>
-            <div id="transactionsDetailed" className="transactions-detailed">
+            <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">
-                    <button id="mobileDetailedExit">
-                        <img src="../assets/images/svg/AngledBracket-Left-Blue.svg" alt="" />
+                    <button id="mobileDetailedExit" onClick={toggleResponsiveList}>
+                        <img src={AngledBracketBlueleft} alt="" />
                         Go Back
                     </button>
                 </div>
@@ -537,11 +544,8 @@ const ActivityView = () => {
                 <div className="order-details">
                     <ActivityOrderList />
                 </div>
-                <div className="footer">
-                    <button id="refundButton">Refund</button>
-                    <button id="receiptButton" onClick={() => PrintClick()}   >Receipt</button>
-                    <button id="openSaleButton">Open Sale</button>
-                </div>
+
+                <ActivityFooter getPdfdateTime={getPdfdateTime} />
             </div>
         </div>
         <div className="subwindow-wrapper hidden"></div>

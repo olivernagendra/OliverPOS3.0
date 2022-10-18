@@ -9,6 +9,8 @@ import STATUSES from "../../../constants/apiStatus";
 // import { initDropDown } from "../../common/commonFunctions/tileFn";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
+import Search_Icon_Blue from '../../../assets/images/svg/Search-Icon-Blue.svg';
+import AdvancedSearchCancelIcon from '../../../assets/images/svg/AdvancedSearchCancelIcon.svg';
 function encodeHtml(txt) {
     //return $('<textarea />').html(txt).text();
 }
@@ -24,9 +26,10 @@ const AddTile = (props) => {
     const [filterList, setfilterList] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [tileList, settileList] = useState([]);
-    const [tileColor, setTileColor] = useState('');
+    const [tileColor, setTileColor] = useState('#2797e8');
     const [serachString, setSerachString] = useState('');
     const [tileToAdd, settileToAdd] = useState('');
+    const [isShowCanelBtn, setisShowCanelBtn] = useState(false);
     const [respAttribute, respCategory, respTile] = useSelector((state) => [state.attribute, state.category, state.tile])
 
     const dispatch = useDispatch();
@@ -75,7 +78,7 @@ const AddTile = (props) => {
                 // else if (item[key] === keyValue) {
                 else if (item[key] && typeof item[key] == "string" && item[key].toLowerCase().includes(keyValue)) {
                     //found, return the list
-                    console.log("found ", keyValue);
+                    // console.log("found ", keyValue);
                     //   results.push({
                     //     found: true,
                     //     containingArray: list,
@@ -109,12 +112,12 @@ const AddTile = (props) => {
     }
     const filterProduct = (e) => {
 
-        console.log(e.target.value)
+        // console.log(e.target.value)
         var value = e.target.value.trim().toLowerCase();
         setSerachString(value);
         var _filteredData = [];
         if (value != "") {
-
+            setisShowCanelBtn(true);
             var fCList = recursivelyFindKeyValue('', value, categoryList, 0);
             var fAList = recursivelyFindKeyValue('', value, attributeList, 0);
             if (fCList && fCList.length > 0) {
@@ -137,7 +140,7 @@ const AddTile = (props) => {
                     { _filteredData = _filteredData.slice(0, 10); }
                 }
                 setfilterList(_filteredData);
-                console.log("---search data----" + JSON.stringify(_filteredData))
+                // console.log("---search data----" + JSON.stringify(_filteredData))
             });
         }
         else {
@@ -154,7 +157,7 @@ const AddTile = (props) => {
         // }
     }
     const submitChanges = (id, type, slug) => {
-        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0, "Color": tileColor }
+        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0, "TileColor": tileColor ,"TextColor":"#FFFFFF"}
         dispatch(addTile(param));
     }
 
@@ -214,7 +217,7 @@ const AddTile = (props) => {
 
         if (id && type && isExist == false) {
             setfilterList([]);
-            console.log("-----new favv--" + id, type, slug);
+            // console.log("-----new favv--" + id, type, slug);
             setIsLoading(true);
             submitChanges(id, type, slug)
 
@@ -252,6 +255,21 @@ const AddTile = (props) => {
             props.toggleAddTitle();
         }
     }
+    const clearSearch = () => {
+        setSerachString('');
+        setTileColor('');
+        setfilterList([]);
+        settileToAdd('');
+        setisShowCanelBtn(false);
+    }
+    const showCancelButton = () => {
+        if (serachString != "") {
+            setisShowCanelBtn(true);
+        }
+    }
+    const hideCancelButton = () => {
+        //setisShowCanelBtn(false);
+    }
     const closePopUp = () => {
         setSerachString('');
         props.toggleAddTitle();
@@ -275,9 +293,11 @@ const AddTile = (props) => {
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
                         <div className={filterList && filterList.length > 0 ? "dropdown-search open" : "dropdown-search"}>
-                            {/* <img class="search" src="" alt="" />
-                            <img class="cancel" id="cancelDropdownSearch" src="" alt="" /> */}
-                            <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" />
+                            <img className="search" src={Search_Icon_Blue} alt="" />
+                            <button id="cancelDropdownSearch" onClick={() => clearSearch()} className={isShowCanelBtn === true ? "display-flex" : ""}>
+                                <img src={AdvancedSearchCancelIcon} alt="" />
+                            </button>
+                            <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" onFocus={() => showCancelButton()} onBlur={() => hideCancelButton()} />
                             <div className="option-container">
                                 {filterList && filterList.length > 0 && filterList.map(item => {
                                     switch (item.type) {

@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import STATUSES from "../../constants/apiStatus";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 const ActivityOrderDetail = () => {
+
+    const navigate = useNavigate()
+
     const [activityOrderDetails, setActivityOrderDetails] = useState([])
 
     // Getting Response from activitygetDetail Api
@@ -13,23 +17,30 @@ const ActivityOrderDetail = () => {
 
         }
     }, [activitygetdetails]);
-    //console.log("activityOrderDetails", activityOrderDetails)
+   // console.log("activityOrderDetails", activityOrderDetails)
 
     var DateTime = activityOrderDetails
     var gmtDateTime = "";
     if (DateTime && DateTime.OrderDateTime && DateTime.time_zone) {
         gmtDateTime = FormateDateAndTime.formatDateAndTime(DateTime.OrderDateTime, DateTime.time_zone)
     }
-
-
-
     var Customerdata = activityOrderDetails && activityOrderDetails.orderCustomerInfo ? activityOrderDetails.orderCustomerInfo : ''
+
+    const OpenCustomer = (orderid) => {
+        console.log(orderid)
+        sessionStorage.setItem("CUSTOMER_ID", orderid ? orderid : 0);
+        navigate('/customers')
+    }
+
+
+
+
     return (<>
         <div className="quick-info">
             <div className="col">
                 <p className="style1">Order #{activityOrderDetails.order_id}</p>
                 <p className="style2">Total: <b>{
-                    (activityOrderDetails.refunded_amount > 0) ? <div>{(activityOrderDetails.total_amount - activityOrderDetails.refunded_amount)} <del>{activityOrderDetails.total_amount}</del></div> : activityOrderDetails.total_amount
+                    (activityOrderDetails.refunded_amount > 0) ? <div>{parseFloat(activityOrderDetails.total_amount - activityOrderDetails.refunded_amount).toFixed(2)} <del>{parseFloat(activityOrderDetails.total_amount).toFixed(2)}</del></div> : parseFloat(activityOrderDetails.total_amount).toFixed(2)
                 }</b></p>
                 <p className="style3" >
                     {
@@ -54,7 +65,7 @@ const ActivityOrderDetail = () => {
                 <p className="style2">{Customerdata && Customerdata.customer_email ? Customerdata.customer_email : ''}</p>
                 <p className="style2">{Customerdata && Customerdata.customer_phone ? Customerdata.customer_phone : ''}</p>
             </div>
-            {activityOrderDetails.orderCustomerInfo !== '' && activityOrderDetails.orderCustomerInfo !== null ? <button>Open Customer</button> : ""}
+            {activityOrderDetails.orderCustomerInfo !== '' && activityOrderDetails.orderCustomerInfo !== null ? <button onClick={() => OpenCustomer(activityOrderDetails.customer_id)}>Open Customer</button> : ""}
         </div>
     </>
     )
