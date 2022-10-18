@@ -7,6 +7,8 @@ import ViewIcon from '../../assets/images/svg/ViewIcon.svg';
 import Add_Icon_White from '../../assets/images/svg/Add-Icon-White.svg';
 import Transactions_Icon_White from '../../assets/images/svg/Transactions-Icon-White.svg';
 import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg';
+import Search_Icon_Blue from '../../assets/images/svg/Search-Icon-Blue.svg';
+
 
 import { useIndexedDB } from 'react-indexed-db';
 import { AddItemType } from "../common/EventFunctions";
@@ -52,13 +54,19 @@ const AdvancedSearch = (props) => {
             let _allp = allProdcuts;
             // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
             setAllProductList(_allp);
-            setFilteredProductList(_allp ? _allp : []);
+            //setFilteredProductList(_allp ? _allp : []);
             setSerachCount(_allp.length);
             setSerachCount(_allp.length + allCustomerList.length + filteredGroup.length);
         });
     }
     const handleSearch = (event) => {
         let value = event.target.value;
+        if(value==="")
+        {
+            setFilteredCustomer([]);
+            setFilteredProductList([]);
+            setFilteredGroup([]);
+        }
         setSerachString(value)
     }
     const SetFilter = (ftype) => {
@@ -170,6 +178,7 @@ const AdvancedSearch = (props) => {
     }
     const productDataSearch = (item1) => {
         if (item1 == '') {
+            return;
             if (filterType === "product" || filterType === "customer" || filterType === "group" || filterType === "all") {
                 if (filterType === "product") {
 
@@ -382,7 +391,7 @@ const AdvancedSearch = (props) => {
             <button className="close-subwindow" onClick={() => closePopUp()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off"/>
+            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off" />
         </div>
         <div className="subwindow-body">
             <div className="left-col">
@@ -436,6 +445,14 @@ const AdvancedSearch = (props) => {
                 </div>
             </div>
             <div className="right-col">
+                {/* Will only appear if right col is empty besides start-searching element  */}
+               {filteredCustomer.length===0 && filteredGroup.length===0 && filteredProductList.length===0 && serachString===""? 
+               <div class="start-searching display-flex">
+                    <img src={Search_Icon_Blue} alt="" />
+                    <p class="style1">Start searching to display results.</p>
+                    <p class="style2">Search for any product, customer <br /> or group to display results.</p>
+                </div>:
+                <React.Fragment>
                 <div className="header">
                     <p><b>Results</b> ({serachCount} search results)</p>
                 </div>
@@ -602,9 +619,10 @@ const AdvancedSearch = (props) => {
                         </div>
                     </div> */}
                 </div>
+                </React.Fragment>}
             </div>
         </div>
-    </div></div>
+    </div></div >
 }
 
 export default AdvancedSearch 

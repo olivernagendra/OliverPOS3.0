@@ -49,7 +49,7 @@ const Checkout = (props) => {
     const [isShowPartialPayment, setisShowPartialPayment] = useState(false);
     const [balance, setbalance] = useState(0);
     const [paidAmount, setPaidAmount] = useState(0);
-    const [partialAmount, setPartialAmount] = useState(0);
+    const [partialAmount, setPartialAmount] = useState(null);
 
     const [checkList, setCheckList] = useState(JSON.parse(localStorage.getItem("CHECKLIST")));
     const [changeAmount, setChangeAmount] = useState(0);
@@ -1912,7 +1912,9 @@ const Checkout = (props) => {
             toggleStripeTerminalPayment();
         }
 
-        else { pay_amount(item.Code); }
+        else {
+            setPartialAmount(null);
+            pay_amount(item.Code); }
     }
 
     const placeParkLayAwayOrder = (status) => {
