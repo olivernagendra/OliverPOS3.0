@@ -24,7 +24,9 @@ import AdjustCreditpopup from "./AdjustCreditpopup";
 import Cusomercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const CustomerView = () => {
+  
   var orderCount = ''
   var OrderAmount = 0;
   var UID = get_UDid('UDID')
@@ -239,8 +241,6 @@ const CustomerView = () => {
     var scount = 0;
     var _filteredCustomer = customerlistdata
     ///Sort By Customer 
-    console.log("filterType",filterType)
-    
     if (filterType == 'emailforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
         if (a.Email < b.Email) { return -1; }
@@ -329,11 +329,43 @@ const CustomerView = () => {
   }
 
 
+
+
+  const addCustomerToSale = (cutomer_data) => {
+    var data = cutomer_data;
+    localStorage.setItem('AdCusDetail', JSON.stringify(data))
+    var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
+    if (list != null) {
+        const CheckoutList = {
+            ListItem: list.ListItem,
+            customerDetail: data ? data : [],
+            totalPrice: list.totalPrice,
+            discountCalculated: list.discountCalculated,
+            tax: list.tax,
+            subTotal: list.subTotal,
+            TaxId: list.TaxId,
+            TaxRate: list.TaxRate,
+            oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+            order_date: list.order_date,
+            order_id: list.order_id,
+            status: list.status,
+            showTaxStaus: list.showTaxStaus,
+            _wc_points_redeemed: list._wc_points_redeemed,
+            _wc_amount_redeemed: list._wc_amount_redeemed,
+            _wc_points_logged_redemption: list._wc_points_logged_redemption
+        }
+        localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+    }
+     navigate('/home')
   
+}
+
+
 
 
   return (
     <React.Fragment>
+      {customerAllEvant.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
       <div className="customer-view-wrapper">
         <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
         <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
@@ -544,7 +576,7 @@ const CustomerView = () => {
           <Cusomercreate isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
           <div className="footer">
             <button id="customerToTransactions">View Transactions</button>
-            <button id="addCustToSaleButton">Add To Sale</button>
+            <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
           </div>
         </div>
       </div>

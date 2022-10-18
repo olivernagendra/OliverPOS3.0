@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import STATUSES from "../../constants/apiStatus";
 import moment from 'moment';
 import Config from '../../Config'
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 
 const CashDrawerPaymentDetailList = () => {
     const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
@@ -32,7 +33,7 @@ const CashDrawerPaymentDetailList = () => {
 
     return (
         <>
-
+         {statusgetdetail == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
             {(iscashDrawerClosed == true) ? <>
                 <div className="register-action">
                     <div className="col fill left">

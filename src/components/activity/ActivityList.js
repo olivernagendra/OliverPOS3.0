@@ -76,11 +76,11 @@ const ActivityList = (props) => {
                                                 <div className="col">
                                                     {
                                                         (order.refunded_amount > 0) ?
-                                                        <p className="style3"> {parseFloat(order.total - order.refunded_amount) } 
-                                                         &nbsp;<del>{parseFloat(order.total)}</del> 
+                                                        <p className="style3"> {parseFloat(order.total - order.refunded_amount).toFixed(2) } 
+                                                         &nbsp;<del>{parseFloat(order.total).toFixed(2)}</del> 
                                                          </p>
                                                          : 
-                                                         <p className="style3"> {parseFloat(order.total)}</p>
+                                                         <p className="style3"> {parseFloat(order.total).toFixed(2)}</p>
                                                     }
                                                     <p className="style4">{order.time}</p>
                                                 </div>
