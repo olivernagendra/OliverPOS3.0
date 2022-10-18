@@ -140,13 +140,17 @@ const LeftNavBar = (props) => {
         //}
     }
     var appsList = []
+    var appDisplayCount = 0
     if (mostUsedApp && mostUsedApp.length > 0) {
         mostUsedApp.map(function (itemUsed, index) {
-            if (index < 3) {//only 3 item need to display
-                var app = allAppList.find(item => item.Id == itemUsed.app_id)
-                if (app)
-                    appsList.push(app);
+            // if (index < 3) {
+            var app = allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0)
+            if (app && appDisplayCount < 3)//only 3 item need to display
+            {
+                appsList.push(app);
+                appDisplayCount++
             }
+            // }
         });
     }
     //----------------------------**************----------------------------------------
