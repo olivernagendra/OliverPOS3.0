@@ -24,6 +24,7 @@ import {
   addCartDiscount, cartTaxes, addProductToCart, Notes, lockEnvironment, Environment, doParkSale, getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon, transactionApp, transactionStatus, DoParkSale
 } from './apps';
 import { productPriceUpdate, sendProductQuantity } from './apps/productApp';
+import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction'
 // var JsBarcode = require('jsbarcode');
 // var print_bar_code;
 // export const textToBase64Barcode = (text) => {
@@ -152,126 +153,6 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
     return appResponse;
   }
 }
-export const appReady = (whereToview, isbackgroudApp) => {
-  var clientDetails = localStorage.getItem('clientDetail') ?
-    JSON.parse(localStorage.getItem('clientDetail')) : 0
-  var client_guid = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.client_guid : ''
-
-  if (whereToview == 'ActivityView') {
-    // var pagesize = Config.key.ACTIVITY_PAGE_SIZE
-    // var UID = get_UDid('UDID');
-    // var pagno = 0;
-    //store.dispatch(activityActions.getOne(UID,pagesize,pagno));
-    setTimeout(() => {
-      const state = store.getState();
-      console.log("state", state)
-      if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
-        var _OrderId = state.single_Order_list.items.content.order_id;
-        var OliverReciptId = state.single_Order_list.items.content.OliverReciptId;
-        var _customerId = state.single_Order_list.items.content.customer_id;
-        var clientJSON = {
-          command: "appReady",
-          version: "1.0",
-          method: "get",
-          status: 200,
-          data:
-          {
-            OrderId: _OrderId,
-            WooCommerceId: _customerId,
-            clientGUID: client_guid,
-            view: whereToview,
-            privilege: clientDetails && clientDetails.user_role,
-            viewport: isMobileOnly == true ? "Mobile" : "desktop"
-          },
-          error: null
-        }
-        postmessage(clientJSON)
-      }
-    }, 1000);
-
-  } else if (whereToview == 'CheckoutView' || whereToview == 'RefundView' || whereToview == 'efundCompleteView') {
-    var clientJSON = {
-      command: "appReady",
-      version: "1.0",
-      method: "get",
-      status: 200,
-      data:
-      {
-        clientGUID: client_guid,
-        view: whereToview,
-        privilege: clientDetails && clientDetails.user_role,
-        viewport: isMobileOnly == true ? "Mobile" : "desktop"
-      },
-      error: null
-    }
-    postmessage(clientJSON)
-  } else if (whereToview == 'CustomerView') {
-    //var UID = get_UDid('UDID');
-    //store.dispatch(customerActions.getAllEvents(UID));
-    setTimeout(() => {
-      const state = store.getState();
-      console.log("state", state)
-      if (state.single_cutomer_list && state.single_cutomer_list.items && state.single_cutomer_list.items.content) {
-        var _CustomerId = state.single_cutomer_list.items.content.customerDetails.WPId;
-        var clientJSON = {
-          command: "appReady",
-          version: "1.0",
-          method: "get",
-          status: 200,
-          data:
-          {
-            CustomerId: _CustomerId,
-            clientGUID: client_guid,
-            view: whereToview,
-            privilege: clientDetails && clientDetails.user_role,
-            viewport: isMobileOnly == true ? "Mobile" : "desktop"
-          },
-          error: null
-        }
-        postmessage(clientJSON)
-      }
-    }, 1000);
-  } else if (whereToview == 'ProductView') {  // this is not in used. 
-    var clientJSON = {
-      command: "appReady",
-      version: "1.0",
-      method: "get",
-      status: 200,
-      data:
-      {
-        ProductId: 445667,
-        view: whereToview,
-        privilege: clientDetails && clientDetails.user_role,
-        viewport: isMobileOnly == true ? "Mobile" : "desktop"
-      },
-      error: null
-    }
-    postmessage(clientJSON)
-    console.log("clientJSON from shopview", clientJSON)
-  } else {  //home
-    var clientJSON = {
-      command: "appReady",
-      version: "1.0",
-      method: "get",
-      status: 200,
-      data:
-      {
-        view: whereToview,
-        privilege: clientDetails && clientDetails.user_role,
-        viewport: isMobileOnly == true ? "Mobile" : "desktop"
-      },
-      error: null
-    }
-    postmessage(clientJSON)
-    console.log("clientJSON from shopview", clientJSON)
-  }
-
-}
-// Product Detail end****************
-export const CloseExtension = () => {
-  //hideModal('common_ext_popup');
-
-}
 export const postmessage = (clientJSON) => {
   //var iframex = document.getElementsByTagName("iframe")[0].contentWindow;
   var iframex = undefined;
@@ -279,20 +160,35 @@ export const postmessage = (clientJSON) => {
     iframex = document.getElementById("commoniframe").contentWindow;
     if (!iframex)
       iframex = document.getElementById("iframeid").contentWindow;
-  } else if (document.getElementById("iframeid")) {
-    iframex = document.getElementById("iframeid").contentWindow;
   }
-  else if (document.getElementById("iframeViewSecond")) {
-    iframex = document.getElementById("iframeViewSecond").contentWindow;
-  }
+  // else if (document.getElementById("iframeid")) {
+  //   iframex = document.getElementById("iframeid").contentWindow;
+  // }
+  // else if (document.getElementById("iframeViewSecond")) {
+  //   iframex = document.getElementById("iframeViewSecond").contentWindow;
+  // }
 
-  console.log(iframex)
+  console.log("iframex", iframex)
   if (iframex) {
     iframex.postMessage(JSON.stringify(clientJSON), '*');
+
+    // ----------Set recent app call-------------------------
+    var app = null
+    var currentAppName = document.getElementById('app_Name');
+    var currentAppID = document.getElementById('app_Id');
+
+    if (currentAppID) {
+      app = {
+        "Id": currentAppID.innerText,
+        "Name": currentAppName.innerText
+      }
+      console.log("text", app)
+      if (app !== null) { updateRecentUsedApp(app, false, true) }
+    }
+    //-------------------------------------------------------
+
   }
-
 }
-
 const validateRequest = (RequestData) => {
 
   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -801,6 +697,128 @@ const validateRequest = (RequestData) => {
   }
   return { isValidationSuccess, clientJSON };
 }
+
+export const appReady = (whereToview, isbackgroudApp) => {
+  var clientDetails = localStorage.getItem('clientDetail') ?
+    JSON.parse(localStorage.getItem('clientDetail')) : 0
+  var client_guid = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.client_guid : ''
+
+  if (whereToview == 'ActivityView') {
+    // var pagesize = Config.key.ACTIVITY_PAGE_SIZE
+    // var UID = get_UDid('UDID');
+    // var pagno = 0;
+    //store.dispatch(activityActions.getOne(UID,pagesize,pagno));
+    setTimeout(() => {
+      const state = store.getState();
+      console.log("state", state)
+      if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
+        var _OrderId = state.single_Order_list.items.content.order_id;
+        var OliverReciptId = state.single_Order_list.items.content.OliverReciptId;
+        var _customerId = state.single_Order_list.items.content.customer_id;
+        var clientJSON = {
+          command: "appReady",
+          version: "1.0",
+          method: "get",
+          status: 200,
+          data:
+          {
+            OrderId: _OrderId,
+            WooCommerceId: _customerId,
+            clientGUID: client_guid,
+            view: whereToview,
+            privilege: clientDetails && clientDetails.user_role,
+            viewport: isMobileOnly == true ? "Mobile" : "desktop"
+          },
+          error: null
+        }
+        postmessage(clientJSON)
+      }
+    }, 1000);
+
+  } else if (whereToview == 'CheckoutView' || whereToview == 'RefundView' || whereToview == 'efundCompleteView') {
+    var clientJSON = {
+      command: "appReady",
+      version: "1.0",
+      method: "get",
+      status: 200,
+      data:
+      {
+        clientGUID: client_guid,
+        view: whereToview,
+        privilege: clientDetails && clientDetails.user_role,
+        viewport: isMobileOnly == true ? "Mobile" : "desktop"
+      },
+      error: null
+    }
+    postmessage(clientJSON)
+  } else if (whereToview == 'CustomerView') {
+    //var UID = get_UDid('UDID');
+    //store.dispatch(customerActions.getAllEvents(UID));
+    setTimeout(() => {
+      const state = store.getState();
+      console.log("state", state)
+      if (state.single_cutomer_list && state.single_cutomer_list.items && state.single_cutomer_list.items.content) {
+        var _CustomerId = state.single_cutomer_list.items.content.customerDetails.WPId;
+        var clientJSON = {
+          command: "appReady",
+          version: "1.0",
+          method: "get",
+          status: 200,
+          data:
+          {
+            CustomerId: _CustomerId,
+            clientGUID: client_guid,
+            view: whereToview,
+            privilege: clientDetails && clientDetails.user_role,
+            viewport: isMobileOnly == true ? "Mobile" : "desktop"
+          },
+          error: null
+        }
+        postmessage(clientJSON)
+      }
+    }, 1000);
+  } else if (whereToview == 'ProductView') {  // this is not in used. 
+    var clientJSON = {
+      command: "appReady",
+      version: "1.0",
+      method: "get",
+      status: 200,
+      data:
+      {
+        ProductId: 445667,
+        view: whereToview,
+        privilege: clientDetails && clientDetails.user_role,
+        viewport: isMobileOnly == true ? "Mobile" : "desktop"
+      },
+      error: null
+    }
+    postmessage(clientJSON)
+    console.log("clientJSON from shopview", clientJSON)
+  } else {  //home
+    var clientJSON = {
+      command: "appReady",
+      version: "1.0",
+      method: "get",
+      status: 200,
+      data:
+      {
+        view: whereToview,
+        privilege: clientDetails && clientDetails.user_role,
+        viewport: isMobileOnly == true ? "Mobile" : "desktop"
+      },
+      error: null
+    }
+    postmessage(clientJSON)
+    console.log("clientJSON from shopview", clientJSON)
+  }
+
+}
+// Product Detail end****************
+export const CloseExtension = () => {
+  //hideModal('common_ext_popup');
+
+}
+
 
 
 export const postClientExtensionResponse = (method, isSuccess, message, command = "Customers", data = "") => {

@@ -26,7 +26,7 @@ const Pin = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-
+            localStorage.setItem("recent_apps", [])
             fetchData()
         }
         return () => {
