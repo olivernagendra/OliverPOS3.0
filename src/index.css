@@ -357,3 +357,43 @@ code {
   .error{
 	color: red !important;
   }
+  .btn-disable
+  {
+	opacity: .5;
+  }
+  .subwindow-wrapper > .subwindow.discount-fee > .subwindow-body > .cart-discount
+  {
+	display: flex;
+  }
+  .strike-through
+  {
+	text-decoration: line-through;
+  }
+  
+/* @media (orientation: portrait), (max-width: 1193px) {}
+@media (max-width: 375px) {}
+@media (orientation: portrait) and (min-width: 960px) {}
+@media (orientation: landscape) and (min-width: 1193px) {}
+@media (orientation: landscape) and (min-width: 2048px) {}
+@media (min-width: 650px) and (max-width: 1193px) {}
+@media (min-width: 900px) and (max-width: 1193px) {}
+@media (min-width: 1920px) {}
+@media (min-width: 3840px) {} */
+
+/* .divider{
+	width: 100% !important;
+} */
+
+.idle-register-wrapper > header > .col > .divider-pin
+{width: 100% !important;}
+.pinpad > input[type="number"]
+{
+display: none;
+}
+/* @media (orientation: portrait), (max-width: 1193px)
+{ */
+.product-wrapper > .mod-product > .img-container {
+    display: flex !important;
+}
+/* } */
+.doCenter{text-align: center;}

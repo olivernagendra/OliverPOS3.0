@@ -2,18 +2,19 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useNavigate } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from 'react-google-login';
-import imglogo from '../../images/svg/Oliver-Horizontal.svg'
-import imgGoogle from '../../images/svg/google-logo.svg'
-import imgFaceBook from '../../images/svg/facebook-logo.svg'
-import imgApple from '../../images/svg/apple-logo.svg'
-import Checkmark from '../../images/svg/Checkmark.svg'
+import imglogo from '../../assets/images/svg/Oliver-Horizontal.svg'
+import imgGoogle from '../../assets/images/svg/google-logo.svg'
+import imgFaceBook from '../../assets/images/svg/facebook-logo.svg'
+import imgApple from '../../assets/images/svg/apple-logo.svg'
+import Checkmark from '../../assets/images/svg/Checkmark.svg'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { userLogin, userExternalLogin, GetUserProfileLogin } from '../login/loginSlice';
 import STATUSES from "../../constants/apiStatus";
 import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
-import $ from 'jquery'
+import { useIndexedDB } from 'react-indexed-db';
+// import $ from 'jquery'
 function Login() {
     var auth2 = ''
     const bridgDomain = "https://hub.oliverpos.com";
@@ -24,11 +25,27 @@ function Login() {
     const [password, setPassword] = useState("")
     const [loginError, setLoginError] = useState();
 
+    //Clear index db-----------------------------
+    var { clear } = useIndexedDB('products');
+    clear().then(() => {
+        console.log('All Clear products!');
+    });
+    var { clear } = useIndexedDB('customers');
+    clear().then(() => {
+        console.log('All Clear customers!');
+    });
+    var { clear } = useIndexedDB('modifiers');
+    clear().then(() => {
+        console.log('All Clear modifiers!');
+    });
+    //-------------------------------------------
 
     //It will clear all local storage items
     const clearLocalStorages = () => {
         localStorage.clear();
+
     }
+
 
 
     const dispatch = useDispatch();
@@ -67,13 +84,13 @@ function Login() {
         } else {
             if (!userEmail && !password) {
                 setLoginError('Email and Password is required');
-                $('#username').focus();
+               // $('#username').focus();
             } else if (!userEmail) {
                 setLoginError('Email is required');
-                $('#username').focus();
+                // $('#username').focus();
             } else {
                 setLoginError('Password is required');
-                $('#password').focus();
+               // $('#password').focus();
             }
         }
         e.preventDefault();
@@ -472,7 +489,7 @@ function Login() {
 
                 <button type="submit" id="appleid-signin" title="Log in using your Apple account"
                     data-color="black" data-mode="center-align" data-height="40" data-border="true" data-type="sign-in" data-border-radius="4"
-                    className="apple_login_btn">
+                    className="appleButton">
                     <div className="img-container" >
                         <img src={imgApple} alt="" />
                     </div>

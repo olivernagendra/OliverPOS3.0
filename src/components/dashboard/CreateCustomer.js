@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg';
-import Checkmark from '../../images/svg/Checkmark.svg';
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
+import Checkmark from '../../assets/images/svg/Checkmark.svg';
 import { customergetPage, customersave } from '../customer/CustomerSlice'
 import { get_UDid } from "../common/localSettings";
 import STATUSES from "../../constants/apiStatus";
 import { useIndexedDB } from 'react-indexed-db';
 import Config from '../../Config'
 const CreateCustomer = (props) => {
-  //  console.log("props",props.serachString)
     const navigate = useNavigate();
     const dispatch = useDispatch();
     var UID = get_UDid('UDID');
-
-    // LoadMore()
-    // function LoadMore(params) {
-    //     dispatch(customergetPage({"uid":UID,"pageSize":Config.key.CUSTOMER_PAGE_SIZE,"pageNumber":"0"}));
-    // }
-
 
 
     const initialValues = { fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", shippingCountry: "", email: "", };
@@ -26,6 +19,7 @@ const CreateCustomer = (props) => {
     const [errors, setErrors] = useState({});
     const [allCustomerList, setAllCustomerList] = useState([])
     const [phone, setPhone] = useState();
+   
 
     //  Customer GetPage Api response 
     const { customergetPagesdata, customergetPageserror, customergetPagesis_success, customergetPagesstatus } = useSelector((state) => state.customergetPage)
@@ -33,23 +27,10 @@ const CreateCustomer = (props) => {
 
     if (customergetPagesstatus === STATUSES.IDLE && customergetPagesis_success) {
         if (customergetPagesdata && customergetPagesdata.content && customergetPagesdata.content !== customergetPagesis_success) {
-            //   var custList=[];
-            //     customergetPagesdata.content && customergetPagesdata.content.Records.forEach(element => {
-            //         var ItemExit = false;
-            //         custList.map(item => {
-            //             if (item.WPId == element.WPId) {
-            //                 ItemExit = true;
-            //             }
-            //         })
-            //         if (ItemExit == false)
 
-            //             custList.push(element);
-            //     });
-            //     console.log("custList",custList)
-            // this.state.customerList = custList;
-            // this.setState({ customerList: custList, isCustomerListLoaded: false });
         }
     }
+
 
     const GetCustomerFromIDB = () => {
         useIndexedDB("customers").getAll().then((rows) => {
@@ -59,13 +40,9 @@ const CreateCustomer = (props) => {
 
 
 
-
-
-
     let useCancelled = false;
-    
     useEffect(() => {
-        console.log("useeffect work")
+        //console.log("useeffect work")
         if (useCancelled == false) {
             GetCustomerFromIDB()
             dispatch(customergetPage({ "uid": UID, "pageSize": Config.key.CUSTOMER_PAGE_SIZE, "pageNumber": "0" }));
@@ -77,19 +54,14 @@ const CreateCustomer = (props) => {
 
 
 
-
-
-
+        // hundle change phoneNumber
     const handleChangePhone = (e) => {
         const value = e.target.value.replace(/\D/g, "");
         setPhone(value);
-      };
-    
+    };
 
     const handleChange = (name, value) => {
-        // console.log("value",value)
-        // console.log("name",name)
-        console.log("props.serachString",props.serachString)
+        props.childEmail(props.serachString)
         setValues({
             ...values,
             [name]: value
@@ -112,7 +84,6 @@ const CreateCustomer = (props) => {
         } else {
             temp.email = "";
         }
-
         // // FIRST NAME
         // if (!values.fName && typeof values.fName !== 'undefined') {
         //     temp.fName =   "First name is required!";
@@ -129,18 +100,15 @@ const CreateCustomer = (props) => {
         // } else {
         //     temp.lName = "";
         // }
-
-
         setErrors({
             ...temp
         })
-
         if (values) {
             return Object.values(temp).every(x => x == "")
         }
     };
 
-   
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -174,24 +142,21 @@ const CreateCustomer = (props) => {
 
                 }
                 console.log("save", save)
-
                 //  dispatch(customersave(save, 'create',));
                 clearInputFeild()
-           
             }
         }
     };
 
 
-   const clearInputFeild = ()=>{
-    setTimeout(() => {
-
-        setValues({
-            WPId:"",fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", shippingCountry: "", email: "",phone:""
-        })
-    }, 500);
-       props.toggleCreateCustomer()
-   }
+    const clearInputFeild = () => {
+        setTimeout(() => {
+            setValues({
+                WPId: "", fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", shippingCountry: "", email: "", phone: ""
+            })
+        }, 500);
+        props.toggleCreateCustomer()
+    }
 
 
 
@@ -202,10 +167,7 @@ const CreateCustomer = (props) => {
         add(customerAdd).then(
             (key) => {
                 console.log("ID Generated: ", key);
-                //   let newState = Object.assign({}, state);
-                //   newState.id = key;
-                //   setState(newState);
-                //   history.goBack();
+
             },
             (error) => {
                 console.log(error);
@@ -218,7 +180,7 @@ const CreateCustomer = (props) => {
     const { status, data, error, is_success } = useSelector((state) => state.customersave)
     //console.log("status", status, "data", data, "error", error, "is_success", is_success)
     if (status == STATUSES.IDLE && is_success) {
-      //  console.log("success")
+        //  console.log("success")
         var customerAdd = data && data.content
         UpdateCustomerInIndexDB(UID, customerAdd)
 
@@ -244,19 +206,12 @@ const CreateCustomer = (props) => {
     // Close Button popup
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleCreateCustomer &&  props.toggleCreateCustomer();
+            props.toggleCreateCustomer && props.toggleCreateCustomer();
         }
         else {
             e.stopPropagation();
         }
     }
-
-    const falseInput = () => {
-        if (props.isShow == false) {
-
-        }
-    }
-
 
 
 
@@ -270,19 +225,19 @@ const CreateCustomer = (props) => {
                     </button>
                 </div>
                 <div className="subwindow-body">
-                    <form id="myform" autoComplete="off">
+                    {/* <form id="myform" autoComplete="off"> */}
                         <section id="contactInfoSection">
                             <p>Contact Information</p>
                             <div className="input-row">
                                 <div className="input-col">
                                     <label htmlFor="email">Email*</label>
-                                    <input type="email" id="email" placeholder="Enter Email" name='email' value={values.email} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                    <input type="email" id="email" placeholder="Enter Email" name='email' value={props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} />
                                     <p>{errors.email}</p>
                                 </div>
 
                                 <div className="input-col">
                                     <label htmlFor="tel">Phone Number</label>
-                                    <input id="tel" type="text" pattern='[0-9]{0,5}' autoComplete='off' maxLength={13} placeholder="Enter Phone Number" name='tel' value={phone} onChange={handleChangePhone}  />
+                                    <input id="tel" type="text" pattern='[0-9]{0,5}' autoComplete='off' maxLength={13} placeholder="Enter Phone Number" name='tel' value={phone} onChange={handleChangePhone} />
                                 </div>
                             </div>
                             <div className="input-row">
@@ -355,7 +310,7 @@ const CreateCustomer = (props) => {
                             <div className="input-row">
                                 <div className="input-col">
                                     <label htmlFor="shippingZipPostal">Zip/Postal Code</label>
-                                    <input type="text" id="shippingZipPostal" name='shippingZipPostal' value={values.shippingZipPostal} placeholder="Enter Zip/Postal Code" onChange={(e) => handleChange(e.target.name, e.target.value)} /> 
+                                    <input type="text" id="shippingZipPostal" name='shippingZipPostal' value={values.shippingZipPostal} placeholder="Enter Zip/Postal Code" onChange={(e) => handleChange(e.target.name, e.target.value)} />
                                 </div>
                                 <div className="input-col">
                                     <label htmlFor="shippingCity">City</label>
@@ -367,7 +322,11 @@ const CreateCustomer = (props) => {
                                 </div>
                             </div>
                         </section>
-                    </form>
+                    {/* </form> */}
+                    {/* <div class="button-row">
+						<button onClick={handleSubmit}>Create Customer</button>
+						<button>Create & Add to Cart</button>
+					</div> */}
                     <button onClick={handleSubmit}>Create Customer</button>
                 </div>
             </div>

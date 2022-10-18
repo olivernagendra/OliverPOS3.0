@@ -1,17 +1,18 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-//import Oliver_Icon_White from '../../images/svg/Oliver-Icon-White.svg'
-import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
-import WWW_Icon from '../../images/svg/WWW-Icon.svg'
-import CircledPlus_Icon_Blue from '../../images/svg/CircledPlus-Icon-Blue.svg'
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
+//import Oliver_Icon_White from '../../assets/images/svg/Oliver-Icon-White.svg'
+import AngledBracket_Right_Grey from '../../assets/images/svg/AngledBracket-Right-Grey.svg'
+import WWW_Icon from '../../assets/images/svg/WWW-Icon.svg'
+import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg'
 import { encode_UDid } from "../common/localSettings";
+import { userLogin } from '../login/loginSlice';
 
 const Site = () => {
 
-
+    const dispatch = useDispatch()
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
@@ -27,7 +28,11 @@ const Site = () => {
         }
     }, []);
 
-
+    const logout = () => {
+        dispatch(userLogin(null))
+        localStorage.clear()
+        navigate('/')
+    }
 
     const navigate = useNavigate();
     const handleSiteClick = (item) => {
@@ -43,9 +48,9 @@ const Site = () => {
     console.log("siteData", siteData)
     return <div className="choose-wrapper">
         <div className="choose-header">
-            <button id="backButton" onClick={() => navigate('/')}>
+            <button id="backButton" onClick={() => logout()}>
                 <img src={AngledBracket_Left_Blue} alt="" />
-              {LocalizedLanguage.logout}  
+                {LocalizedLanguage.logout}
             </button>
         </div>
         <div className="choose-body-default">

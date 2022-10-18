@@ -116,26 +116,26 @@ export const  initHomeFn=()=>{
     //     });
     // }
     
-    //App Launcher App Buttons
-    document.querySelectorAll(".app-launcher > .body > button").forEach((button) => {
-        button.addEventListener("click", (e) => {
-            navbarCloseAll();
-            iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
-            toggleSubwindow("iframe-popup");
-        });
-    });
+    // //App Launcher App Buttons
+    // document.querySelectorAll(".app-launcher > .body > button").forEach((button) => {
+    //     button.addEventListener("click", (e) => {
+    //         navbarCloseAll();
+    //         iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
+    //         toggleSubwindow("iframe-popup");
+    //     });
+    // });
     
-    //Navbar App Buttons
-    document.querySelectorAll(".navbar button.launcher.app").forEach((button) => {
-        button.addEventListener("click", (e) => {
-            if (document.getElementById("userInfoWrapper")) {
-                document.getElementById("userInfoWrapper").classList.add("hidden");
-            }
-            navbarCloseAll();
-            iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
-            toggleSubwindow("iframe-popup");
-        });
-    });
+    // //Navbar App Buttons
+    // document.querySelectorAll(".navbar button.launcher.app").forEach((button) => {
+    //     button.addEventListener("click", (e) => {
+    //         if (document.getElementById("userInfoWrapper")) {
+    //             document.getElementById("userInfoWrapper").classList.add("hidden");
+    //         }
+    //         navbarCloseAll();
+    //         iframeSetup(e.currentTarget, "./Placeholder_Iframe.html", "Author Name");
+    //         toggleSubwindow("iframe-popup");
+    //     });
+    // });
     
     //Mobile App Launcher
     if (document.getElementById("mobileAppsButton")) {
@@ -154,17 +154,17 @@ export const  initHomeFn=()=>{
     }
     
     //Tablet Link Launcher Button
-    if (document.getElementById("linkLauncherButton")) {
-        document.getElementById("linkLauncherButton").addEventListener("click", (e) => {
-            if (document.getElementById("userInfoWrapper")) {
-                document.getElementById("userInfoWrapper").classList.add("hidden");
-            }
-            document.getElementById("appLauncherWrapper").classList.add("hidden");
-            document.getElementById("appLauncherButton").classList.remove("filter");
-            document.getElementById("linkLauncherWrapper").classList.toggle("hidden");
-            e.currentTarget.classList.toggle("filter");
-        });
-    }
+    // if (document.getElementById("linkLauncherButton")) {
+    //     document.getElementById("linkLauncherButton").addEventListener("click", (e) => {
+    //         if (document.getElementById("userInfoWrapper")) {
+    //             document.getElementById("userInfoWrapper").classList.add("hidden");
+    //         }
+    //         document.getElementById("appLauncherWrapper").classList.add("hidden");
+    //         document.getElementById("appLauncherButton").classList.remove("filter");
+    //         document.getElementById("linkLauncherWrapper").classList.toggle("hidden");
+    //         e.currentTarget.classList.toggle("filter");
+    //     });
+    // }
     
     //Link Launcher Cover
     // if (document.getElementById("linkLauncherWrapper")) {
@@ -328,11 +328,11 @@ export const  initHomeFn=()=>{
     }
     
     //Notifications Button
-    if (document.getElementById("notificationsButton")) {
-        document.getElementById("notificationsButton").addEventListener("click", () => {
-            document.getElementById("notificationsWrapper").classList.toggle("hidden");
-        });
-    }
+    // if (document.getElementById("notificationsButton")) {
+    //     document.getElementById("notificationsButton").addEventListener("click", () => {
+    //         document.getElementById("notificationsWrapper").classList.toggle("hidden");
+    //     });
+    // }
     
     //Notifications Wrapper
     // if (document.getElementById("notificationsWrapper")) {
@@ -422,16 +422,16 @@ export const  initHomeFn=()=>{
         }
         document.querySelector(".navbar").classList.remove("open");
     }
-    let holdDownTimer,
-	hasFired = false,
-	currentProductButton = null, //For touch screen
-	touchMoved = false;
+    // let holdDownTimer,
+	// hasFired = false,
+	// currentProductButton = null, //For touch screen
+	// touchMoved = false;
 
 //Handles Product section buttons for touch devices
 //For each button there is a regular touch and then a touch and hold to be able to delete buttons
 
-// document.querySelectorAll(".products > button").forEach((button) => {
-// 	//Touch start
+//  document.querySelectorAll(".products > button").forEach((button) => {
+// // 	//Touch start
 // 	button.addEventListener("touchstart", (e) => {
 // 		touchMoved = false;
 // 		currentProductButton = e.currentTarget;
@@ -446,7 +446,7 @@ export const  initHomeFn=()=>{
 // 			}
 // 		}, 1000);
 // 	});
-// 	//Touch up
+// // 	//Touch up
 // 	button.addEventListener("touchend", (e) => {
 // 		clearTimeout(holdDownTimer);
 // 		if (!hasFired && !touchMoved) {

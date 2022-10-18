@@ -1,6 +1,7 @@
 import { get_UDid } from "../../common/localSettings";
 import moment from 'moment';
 import { getTaxCartProduct, getInclusiveTax, getExclusiveTax, typeOfTax } from "../../common/TaxSetting";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 function percentWiseDiscount(price, discount) {
     var discountAmount = (price * discount) / 100.00;
     return discountAmount;
@@ -22,12 +23,27 @@ function stockUpdateQuantity(cardData, data, product) {
         localStorage.setItem("CART_QTY", quantity);
     }
 }
-
+export const updateProductNote = (note) => {
+    var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
+    var isExist =false;
+    if (cartlist && cartlist.length > 0) {
+        cartlist.map(findId => {
+            if(findId.hasOwnProperty("pid") && findId.pid===note.pid)
+            {
+                findId.Title=note.Title;
+                isExist=true;
+            }
+        });
+        localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartlist));
+    }
+    return isExist;
+}
 export const addSimpleProducttoCart = (product, ticketFields = null) => {
     //const { dispatch, checkout_list, cartproductlist } = this.props;
     var cartproductlist = [];
     var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
-    if (cartlist.length > 0) {
+    var single_product = localStorage.getItem("SINGLE_PRODUCT") ? JSON.parse(localStorage.getItem("SINGLE_PRODUCT")) : null;
+    if (cartlist.length > 0 && !single_product) {
         cartlist.map(findId => {
             if (findId.product_id === product.WPID) {
                 product['after_discount'] = findId ? findId.after_discount : 0;
@@ -38,7 +54,32 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
                 product['new_product_discount_amount'] = findId ? findId.new_product_discount_amount : 0;
             }
         });
+    }
 
+    if (cartlist.length > 0 && single_product) {
+        cartlist.map(prdId => {
+            if (prdId.product_id === product.WPID) {
+                product['after_discount'] = single_product.after_discount;
+                product['product_discount_amount'] = single_product.product_discount_amount;
+                product['product_after_discount'] = single_product.product_after_discount;
+                product['new_product_discount_amount'] = single_product.new_product_discount_amount;
+                product['discount_amount'] = single_product.discount_amount;
+                product['discount_type'] = single_product.discount_type;
+                product['cart_after_discount'] = single_product.cart_after_discount;
+                product['cart_discount_amount'] = single_product.cart_discount_amount;
+            }
+        })
+    }
+    else if(single_product)
+    {
+            product['after_discount'] = single_product.after_discount;
+                product['product_discount_amount'] = single_product.product_discount_amount;
+                product['product_after_discount'] = single_product.product_after_discount;
+                product['new_product_discount_amount'] = single_product.new_product_discount_amount;
+                product['discount_amount'] = single_product.discount_amount;
+                product['discount_type'] = single_product.discount_type;
+                product['cart_after_discount'] = single_product.cart_after_discount;
+                product['cart_discount_amount'] = single_product.cart_discount_amount;
     }
     // var setQunatity = 1;
 
@@ -75,6 +116,10 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             new_product_discount_amount: product ? product.new_product_discount_amount : 0,
             TaxStatus: product ? product.TaxStatus : "",
             TaxClass: product ? product.TaxClass : '',
+            Type: product ? product.Type : '',
+        }
+        if (product.hasOwnProperty("pid")) {
+            data["pid"] = product.pid;
         }
         var qty = 0;
         cartproductlist.map(item => {
@@ -90,7 +135,16 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             else { product_is_exist = true; }
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {
-            cartlist.push(data);
+            //Added this code to replace the product at the existing position in the case of edit
+            if (product.hasOwnProperty("selectedIndex")) {
+                cartlist[product.selectedIndex] = data;
+            }
+            else
+            {
+                cartlist.push(data);
+            }
+         
+            //cartlist.push(data);
             //Android Call----------------------------
             var totalPrice = 0.0;
             cartlist && cartlist.map(item => {
@@ -101,7 +155,7 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             stockUpdateQuantity(cartlist, data, product)
             if ((!localStorage.getItem("APPLY_DEFAULT_TAX")) || localStorage.getItem("APPLY_DEFAULT_TAX") == null) {
                 // setTimeout(() => {
-                    addtoCartProduct(cartlist);
+                addtoCartProduct(cartlist);
                 // }, 400);
             } else {
                 addtoCartProduct(cartlist);
@@ -154,7 +208,15 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             return 'outofstock';
         }
         if (product_is_exist !== 'outofstock' && product_is_exist !== '0' && product_is_exist == true || product_is_exist == 'Unlimited') {
-            cartlist.push(data);
+            //Added this code to replace the product at the existing position in the case of edit
+            if (product.hasOwnProperty("selectedIndex")) {
+                cartlist[product.selectedIndex] = data;
+            }
+            else
+            {
+                cartlist.push(data);
+            }
+            // cartlist.push(data);
             //Android Call----------------------------
             var totalPrice = 0.0;
             cartlist && cartlist.map(item => {
@@ -364,7 +426,9 @@ export const addtoCartProduct = (cartproductlist) => {
             addons_meta_data: item.addons_meta_data ? item.addons_meta_data : "",
             psummary: item.psummary ? item.psummary : ''
         }
-
+        if (item.hasOwnProperty("pid")) {
+            _newITem["pid"] = item.pid;
+        }
         // set Price for productX from productX localstorage.
         var prodXData = localStorage.getItem("PRODUCTX_DATA") ? JSON.parse(localStorage.getItem("PRODUCTX_DATA")) : 0
         // cartproductlist && cartproductlist.map(pro => {
@@ -506,6 +570,7 @@ export const addtoCartProduct = (cartproductlist) => {
                     if (cart.discountType == 'Percentage') {
                         if (discount > 100) {
                             localStorage.removeItem("CART")
+                            console.log(LocalizedLanguage.discountMoreThenMsg)
                             //$('#no_discount').modal('show')
                         } else {
                             var incl_tax = 0
@@ -534,6 +599,7 @@ export const addtoCartProduct = (cartproductlist) => {
                         var new_discount = NumberWiseDiscount((totalPrice - totalCartProductDiscount), discount);
                         if (new_discount > 100) {
                             localStorage.removeItem("CART")
+                            console.log(LocalizedLanguage.discountMoreThenMsg)
                             // $('#no_discount').modal('show')
                         } else {
                             discount_amount_is = percentWiseDiscount(price, new_discount);
@@ -584,5 +650,142 @@ export const addtoCartProduct = (cartproductlist) => {
     localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartproductlist));
     return cartproductlist;
 
+}
+
+export const singleProductDiscount = (isProductX = false, productxQty = null, qty) => {
+    //var qty = $('#qualityUpdater').val() || 1;
+    var qty=1;
+    if (isProductX && isProductX == true && productxQty) {
+        qty = productxQty;
+    }
+    var product = localStorage.getItem("PRODUCT") ? JSON.parse(localStorage.getItem("PRODUCT")) : null
+    var product_list = localStorage.getItem("SINGLE_PRODUCT") ? JSON.parse(localStorage.getItem("SINGLE_PRODUCT")) : null
+    var product_after_discount = 0;
+    var single_product = null;
+    if (product !== null && product_list !== null) {
+        var product_id = 0;
+        var cart_after_discount = 0;
+
+        var cart_discount_amount = product_list.cart_discount_amount ? parseFloat(product_list.cart_discount_amount) : 0;
+        var price = 0;
+        var discount = parseFloat(product.discount_amount)
+        var Tax = parseFloat(product.Tax_rate);
+        var product_after_discount = 0;
+        var product_discount_amount = 0;
+        var discount_amount_is = 0;
+        var afterDiscount = 0;
+        var new_price = 0.00;
+        if (product_list.Type !== "variable") {
+            product_id = product_list.WPID ? product_list.WPID : product_list.product_id;;
+            single_product = product_list;
+        } else {
+            if (isProductX == false) {
+                var new_single_product = product_list.Variations && product_list.Variations.filter(item => item.WPID === product.Id);
+                single_product = new_single_product && new_single_product[0];
+                if (typeof single_product === "undefined") {
+                    single_product = product_list && product_list;
+                }
+                product_id = product_list.WPID ? product_list.WPID : product_list.product_id;
+            } else {
+                single_product = product_list && product_list;
+                product_id = product_list.WPID ? product_list.WPID : product_list.product_id;
+            }
+
+        }
+        // localStorage.removeItem("SINGLE_PRODUCT");
+        // localStorage.removeItem("PRODUCT")
+        price = single_product && typeof (single_product) !== undefined && single_product.Price ? single_product.Price : 0;
+        var TAX_CASE = typeOfTax();
+        if (product_id) {
+            price = parseFloat(price);
+            var isProdAddonsType = '';//CommonJs.checkForProductXAddons(product_id);// check for productX is Addons type products
+            if (price == 0) {
+                product_after_discount = 0;
+                product_discount_amount = 0;
+                new_price = 0.00;
+            } else {
+                if (product.discountType == 'Percentage') {
+                    if (discount > 100) {
+                        localStorage.removeItem("PRODUCT")
+                        localStorage.removeItem("SINGLE_PRODUCT")
+                        // alert('more than 100% discount not applicable');
+                        console.log(LocalizedLanguage.discountMoreThenMsg)
+                        //$('#no_discount').modal('show')
+                    } else {
+
+                        // var TAX_CASE = typeOfTax();
+                        var incl_tax = 0;
+                        var productDiscount = 0;
+                        productDiscount = percentWiseDiscount(price, discount);
+                        if (single_product.TaxStatus !== 'none') { //single_product.discount_amount !== 0 &&
+                            if (TAX_CASE == 'incl') {
+                                incl_tax = getInclusiveTax(single_product.Price, single_product.TaxClass)
+                                //item["incl_tax"] = incl_tax
+                                // productDiscount = percentWiseDiscount(price - incl_tax, discount);
+                                productDiscount = percentWiseDiscount(price, discount);
+
+                            } else {
+                                productDiscount = percentWiseDiscount(price, discount);
+                            }
+                        }
+
+                        // afterDiscount = (price - incl_tax - productDiscount) * (isProductX && isProductX==true ? qty:1);
+                        afterDiscount = (price - productDiscount) * (isProductX && isProductX == true ? qty : 1);
+                        discount_amount_is = productDiscount;
+                        //var _disc = percentWiseDiscount(price, discount);
+                        // product_after_discount = price - _disc;
+                        // product_discount_amount = _disc;
+                        product_after_discount = afterDiscount;
+                        product_discount_amount = discount_amount_is;
+                    }
+                } else {
+
+                    TAX_CASE = typeOfTax();
+                    var incl_tax_num = 0;
+                    var productDiscount = 0;
+                    if (single_product.discount_amount !== 0 && single_product.TaxStatus !== 'none') {
+                        if (TAX_CASE == 'incl') {
+                            incl_tax_num = getInclusiveTax(single_product.Price - discount, single_product.TaxClass)
+                            // productDiscount = percentWiseDiscount(price - incl_tax_num, discount);
+                        }
+                    }
+
+                    var discount_percent = NumberWiseDiscount(price * qty, discount)
+                    if (discount_percent > 100) {
+                        localStorage.removeItem("PRODUCT")
+                        localStorage.removeItem("SINGLE_PRODUCT")
+                        //$('#no_discount').modal('show')
+                        console.log(LocalizedLanguage.discountMoreThenMsg)
+                    } else {
+                        discount_amount_is = percentWiseDiscount(price * qty, discount_percent)
+                        afterDiscount = price * qty - discount_amount_is;
+                        if (isProdAddonsType && isProdAddonsType == true) {
+                            afterDiscount = price - incl_tax_num - discount_amount_is; // minus incl_tax_num for addons in case of number discount
+                        }
+                        product_after_discount = afterDiscount;
+                        product_discount_amount = parseFloat(discount_amount_is);
+                        var total_tax = afterDiscount + (afterDiscount * Tax / 100.00);
+                    }
+                }
+            }
+            if (single_product && single_product !== null) {
+                single_product["product_after_discount"] = parseFloat(product_after_discount)
+                single_product["product_discount_amount"] = parseFloat(product_discount_amount)
+                single_product["after_discount"] = afterDiscount
+                single_product["discount_amount"] = parseFloat(cart_discount_amount) + parseFloat(product_discount_amount);
+                single_product["discount_type"] = product.discountType ? product.discountType : 'Number'
+                single_product["new_product_discount_amount"] = discount
+
+                localStorage.setItem("SINGLE_PRODUCT", JSON.stringify(single_product))
+            }
+
+        }
+    }
+    // return dispatch => {
+    //     dispatch(request());
+    //     dispatch(success(single_product));
+    // };
+    // function request() { return { type: cartProductConstants.PRODUCT_SINGLE_ADD_REQUEST } }
+    // function success(single_product) { return { type: cartProductConstants.PRODUCT_SINGLE_ADD_SUCCESS, single_product } }
 }
 

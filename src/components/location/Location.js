@@ -1,34 +1,51 @@
-import React, {  useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
-import Store_Icon_White from '../../images/svg/Store-Icon-White.svg'
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
+import AngledBracket_Right_Grey from '../../assets/images/svg/AngledBracket-Right-Grey.svg'
+import Store_Icon_White from '../../assets/images/svg/Store-Icon-White.svg'
 import { location } from './locationSlice';
+
 import { get_UDid, get_userName } from '../common/localSettings';
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { register } from "../register/registerSlice";
 const Location = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [isNoRegister, setisNoRegister] = useState(false);
+    const [isLoading ,setisLoading] = useState(false);
     var decodedString = localStorage.getItem('UDID');
     var decod = decodedString ? atob(decodedString) : '';
     var UDID = decod;
     var userId = localStorage.getItem('userId') ? localStorage.getItem('userId') : 0;
 
-    const { status, data, error, is_success } = useSelector((state) => state.location)
+    const { status, data, error, is_success } = useSelector((state) => state.location);
+
+    const [respRegister] = useSelector((state) => [state.register]);
     // console.log("status", status, "data", data, "error", error, "is_success", is_success)
 
-    if (status == STATUSES.error) {
-        console.log(error)
-    }
-    if (status == STATUSES.IDLE && is_success) {
-        // console.log("data----->" + data)
-    }
+    useEffect(() => {
+        if (respRegister.status == STATUSES.error) {
+            console.log(error)
+        }
+        if (respRegister.status == STATUSES.IDLE && respRegister.is_success && respRegister.data && isLoading===true) {
+            setisLoading(false);
+            if (respRegister.data.content && respRegister.data.content.length > 0) {
+                setisNoRegister(false)
+                dispatch(register(null));
+                navigate('/register')
+            }
+            else if (respRegister.data.content && respRegister.data.content.length == 0 && isNoRegister === false) {
+                setisNoRegister(true)
+                console.log("data----->" + JSON.stringify(respRegister.data))
+            }
+
+        }
+    }, [respRegister]);
     useEffect(() => {
         dispatch(location({ "udid": UDID, "userId": userId }));
-
     }, []);
 
     const handleSubmit = (item) => {
@@ -38,18 +55,20 @@ const Location = () => {
         localStorage.setItem(`last_login_location_id_${getudid}`, item.id);
         localStorage.setItem(`last_login_location_name_${getudid}`, item.name);
         localStorage.setItem('WarehouseId', item.warehouse_id);
-        if (item.id) {
-            navigate('/register')
-        }
+        setisLoading(true);
+        dispatch(register({ "id": item.id }));
+        // if (item.id) {
+        //     navigate('/register')
+        // }
     }
     // if (status == STATUSES.LOADING) {
     //     return <div> Loading... </div>
     // }
-    return <React.Fragment>{status == STATUSES.LOADING?<LoadingModal></LoadingModal>:null}<div className="choose-wrapper">
+    return <React.Fragment>{status == STATUSES.LOADING || respRegister.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}<div className="choose-wrapper">
         <div className="choose-header">
-            <button id="backButton" onClick={() => window.location = "/site"}>
+            <button id="backButton" onClick={() => navigate('/site')}>
                 <img src={AngledBracket_Left_Blue} alt="" />
-            {LocalizedLanguage.back}
+                {LocalizedLanguage.back}
             </button>
             <p>{get_userName()}</p>
         </div>
@@ -104,8 +123,9 @@ const Location = () => {
                     <img src={AngledBracket_Right_Grey} alt="" />
                     <div className="fake-button background-blue">Select</div>
                 </button> */}
-            </div>
+            </div> {isNoRegister === true && <p className="error" style={{ fontSize: "unset" }} >{"No register found for selected location"} </p>}
         </div>
-    </div></React.Fragment> 
+    </div>
+    </React.Fragment>
 }
 export default Location

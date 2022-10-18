@@ -1,0 +1,385 @@
+<html>
+
+
+<body>
+
+    <div> 
+         <h1>TEST COMMANDS</h1>
+        <div>
+<table>
+<tr style="vertical-align:top;">
+    <td width="40%">
+        <button id="ClientInfoGet">ClientInfo(Get)</button></br>
+        <button id="OrderStatusGet">OrderStatus(Get)</button></br></br>
+        <button id="ParkSaleGet">ParkSale(Get)</button></br>
+        <button id="ParkSalePost">ParkSale(Post)</button></br></br>
+        <button id="CustomFeeGet">CustomFee(Get)</button>   </br>
+        <button id="CustomFeePost">CustomFee(Post)</button></br>
+        <button id="CustomFeePut">CustomFee(Put)</button></br>
+   
+        <button id="CustomFeeDelete">CustomFee(Delete)</button></br>
+        <button id="CustomFeeDeleteAll">CustomFee(Delete All)</button></br></br>
+
+        <button id="btnPayAmountGet">Transaction(get)</button>     </br>       
+   
+         <button id="btnPayAmountPost">Transaction(post)</button> </br></br>
+    
+          <button id="btnTransactionStausGet">TransactionStaus(get)</button>    </br>        
+   
+         <button id="btnTransactionStausPut">TransactionStaus(put)</button> </br> </br>
+         <button id="ReceiptDataGet">ReceiptData(Get)</button> </br> </br>
+
+         <button id="getCustomerDetail" >Get Cutomer Detail</button> </br> </br>
+
+
+         <button id="btnGetTax" >Get Tax</button> </br> </br>
+         <button id="btnGetNotes" >Note (get)</button> </br>
+         <button id="btnPostNotes" >Notes(Post)</button> </br>
+         <button id="btnPutNotes" >Notes(put)</button> </br>
+         <button id="btnDeleteNotes" >Notes(delete)</button> </br>
+      
+         
+    </td>
+
+    <td width="60%" align="top" > Request</br>
+        <textarea id="dvRequest" name="w3review" rows="10" cols="40"></textarea>
+        <!-- <div id="dvRequest" style="border: solid;border-color: gray; height: 200px;width:auto;text-align: left"></div>
+       --> 
+    </br> </br>
+        <button id="btnSendREquest">Click to Send Request</button> 
+    </br>
+    </br>
+    <div id="dvResponse" style="border-style: ridge; min-height: 150;"></div>
+    </td>
+       
+</tr>
+
+</tr>
+</table>
+</div>
+</div>
+  
+   
+    <script>
+
+        //Listen for message from Oliver POS 
+        var msgData = ''
+        var jsonMsg=""
+        setTimeout(() => {
+             jsonMsg = {
+                command: 'appReady',
+                version:"1.0",
+                method: 'get'
+            }
+           
+            window.parent.postMessage(jsonMsg, '*');
+            setRequest();
+
+          //  document.getElementById('dvRequest').innerText =  readyExtensionData;
+        }, 1000);
+        //----------------------------------------
+
+        window.addEventListener('message', function (e) {
+            msgData = JSON.parse(e.data);
+            console.log("Message from Oliver POS:", msgData)
+           // document.getElementById('dvResponse').innerText = "";
+            document.getElementById('dvResponse').innerText = JSON.stringify(msgData,undefined,2);
+
+        }, false);
+
+
+        var btnCartValueGet = document.getElementById('CustomFeeGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                command: "CustomFee",
+                version:"2.0",
+                method: "get",
+                }
+                setRequest();
+
+        });
+
+        var btnCartValueGet = document.getElementById('ParkSaleGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                command: "ParkSale",
+                version:"2.0",
+                method: "get",
+                wc_order_no: 8647 //document.getElementById('txtInput').value
+                }
+                setRequest()
+
+        });
+        var btnCartValueGet = document.getElementById('ParkSalePost');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                command: "ParkSale",
+                version:"2.0",
+                method: "post",
+                }
+                setRequest()
+
+        });
+        var btnCartValueGet = document.getElementById('ReceiptDataGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                command: "ReceiptData",
+                version:"2.0",
+                method: "get",
+                }
+                setRequest()
+
+        });
+        var btnCartValueGet = document.getElementById('CustomFeePost');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                "command": "CustomFee",
+                "method": "post",
+                "version": 2.0,
+                "data": {
+                    "name": "Example Fee",
+                    "amount": 200,
+                    "is_taxable": true
+                }
+                }
+                setRequest()
+
+        });
+
+        var btnCartValueGet = document.getElementById('CustomFeePut');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                "command": "CustomFee",
+                "method": "put",
+                "version": 2.0,
+                "data": {
+                "name": "Example Fee",
+                "amount": 350
+                }
+                }
+                setRequest()
+        });
+        var btnCartValueGet = document.getElementById('CustomFeeDelete');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                "command": "CustomFee",
+                "method": "delete",
+                "version": 2.0,
+                "name":"Example Fee"
+                }
+                setRequest()
+        });
+        var btnCartValueGet = document.getElementById('CustomFeeDeleteAll');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                "command": "CustomFee",
+                "method": "delete",
+                "version": 2.0,
+                }
+                setRequest()
+
+        });
+
+        var btnCartValueGet = document.getElementById('ClientInfoGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                command: "ClientInfo",
+                version:"2.0",
+                method: "get",
+                }
+                setRequest()
+
+        });
+
+        var btnCartValueGet = document.getElementById('OrderStatusGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                command: "OrderStatus",
+                version:"2.0",
+                method: "get",
+                }
+                setRequest()
+           // window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+        });
+
+        //get payment request-----------
+        var btnPayAmountGet = document.getElementById('btnPayAmountGet');
+                btnPayAmountGet.addEventListener('click', function (e) {
+
+               jsonMsg = {
+                    "command": "Transaction",
+                    "method": "get",
+                    "version": "2.0",
+                    "processor": "cash", // [optional, case-sensitive],
+                    "transaction_type": "sale" // [optional],
+                }
+                setRequest()
+            });
+
+          //Send payment request-----------
+          var btnPayAmountPost = document.getElementById('btnPayAmountPost');
+          btnPayAmountPost.addEventListener('click', function (e) {
+
+           jsonMsg = {
+                "command": "Transaction",
+                "method": "post",
+                "version": "2.0",
+                "data": {
+                        "processor": "fortispay",
+                        "amount": 4000,
+                        "transaction_id": "64224", //[must be string]
+                        "emv_data": {//[optional]
+                                        "AC": "400012531",
+                                        "AID": "a000532114",
+                                        "AIDNAME": "VISA Debit/Credit",
+                                        "APPLAB": "VISA Credit",
+                            }
+                }
+            }
+            setRequest()
+
+        });
+ //TrnsactionStaus request-----------
+ var btnTransactionStausGet = document.getElementById('btnTransactionStausGet');
+        btnTransactionStausGet.addEventListener('click', function (e) {
+
+           jsonMsg = {
+                "command": "TransactionStatus",
+                "method": "get",
+                "version": "2.0",
+               
+            }
+            setRequest()
+        });
+
+        var btnTransactionStausPut = document.getElementById('btnTransactionStausPut');
+        btnTransactionStausPut.addEventListener('click', function (e) {
+
+           jsonMsg = {
+                "command": "TransactionStatus",
+                "method": "put",
+                "version": "2.0",
+                "data": {
+                         "transaction_status": "cancel"
+                    }
+            }
+            setRequest()
+        });
+
+
+        var btnSendREquest = document.getElementById('btnSendREquest');
+        btnSendREquest.addEventListener('click', function (e) {
+            document.getElementById('dvResponse').value =""
+                var  requestData= document.getElementById('dvRequest').value;
+        //    jsonMsg = {
+        //         "command": "TransactionStatus",
+        //         "method": "put",
+        //         "version": "2.0",
+        //         "data": {
+        //                  "transaction_status": "void_sale"
+        //             }
+        //     }
+            //document.getElementById('dvRequest').innerText = JSON.stringify(jsonMsg);
+            console.log('------send btn clicked----', requestData);
+            window.parent.postMessage(JSON.stringify( JSON.parse(requestData)), '*');
+
+        });
+        //CustomerDetails Button click event-----------
+        var getCutomerButton = document.getElementById('getCustomerDetail');
+                getCutomerButton.addEventListener('click', function (e) {
+                   
+                     jsonMsg = {
+                        command: "CustomerDetails",
+                        version:"1.0",
+                        method: "get",
+                        email: "Test5555@gmail.com"
+                    }
+                    setRequest()
+                    // document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+                    // console.log('------get btn clicked----', jsonMsg);
+                    // window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+                });
+                var btnGetTax = document.getElementById('btnGetTax');
+                btnGetTax.addEventListener('click', function (e) {                   
+                     jsonMsg = {
+                        command: "CartTaxes",
+                        method: "get",
+                        version:" 2.0",                        
+                    }
+                    setRequest()
+                    // document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+                    // console.log('------get btn clicked----', jsonMsg);
+                    // window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+                });
+                var btnGetNotes = document.getElementById('btnGetNotes');
+                btnGetNotes.addEventListener('click', function (e) {                   
+                     jsonMsg = {
+                        command: "Notes",
+                        method: "get",
+                        version:" 2.0",  
+                        note_id:"bfriday",                      
+                    }
+                    setRequest()
+                    // document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+                    // console.log('------get btn clicked----', jsonMsg);
+                    // window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+                });
+                var btnPostNotes = document.getElementById('btnPostNotes');
+                btnPostNotes.addEventListener('click', function (e) {                   
+                     jsonMsg = {
+                        command: "Notes",
+                        method: "post",
+                        version:" 2.0",    
+                        note_id:"bfriday",
+                        contents:"Happy black Friday"                 
+                    }
+                    setRequest()
+                    // document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+                    // console.log('------get btn clicked----', jsonMsg);
+                    // window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+                });
+                var btnDeleteNotes = document.getElementById('btnDeleteNotes');
+                btnDeleteNotes.addEventListener('click', function (e) {                   
+                     jsonMsg = {
+                        command: "Notes",
+                        method: "delete",
+                        version:" 2.0",    
+                        note_id:"bfriday",
+                               
+                    }
+                    setRequest()
+                    // document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+                    // console.log('------get btn clicked----', jsonMsg);
+                    // window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+                });
+                var btnPutNotes = document.getElementById('btnPutNotes');
+                btnPutNotes.addEventListener('click', function (e) {                   
+                     jsonMsg = {
+                        command: "Notes",
+                        method: "put",
+                        version:" 2.0",    
+                        note_id:"bfriday",
+                        contents:"updated Happy black Friday"                 
+                    }
+                    setRequest()
+                    // document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+                    // console.log('------get btn clicked----', jsonMsg);
+                    // window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+                });
+                
+       function setRequest(){
+        document.getElementById('dvResponse').innerHTML =""
+            document.getElementById('dvRequest').value = JSON.stringify(jsonMsg,undefined,4);
+            console.log('------get btn clicked----', jsonMsg);
+        }
+    </script>
+
+</body>
+
+</html>

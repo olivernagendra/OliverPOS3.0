@@ -27,12 +27,23 @@ import { tile } from './tiles/tileSlice';
 import Product from "./product/Product";
 import { product } from "./product/productSlice";
 import { userList } from "../common/commonAPIs/userSlice";
+import { discount } from "../common/commonAPIs/discountSlice";
+import { getExtensions, getPaymentTypeName } from "../checkout/checkoutSlice";
 import { getRates, isMultipleTaxSupport, getTaxRateList } from "../common/commonAPIs/taxSlice";
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
 import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
 import TaxList from "./TaxList";
+import MsgPopup from "../common/commonComponents/MsgPopup";
+import { popupMessage } from "../common/commonAPIs/messageSlice";
+import { useNavigate } from "react-router-dom";
+import CommonModuleJS from "../../settings/CommonModuleJS";
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import { callProductXWindow } from "../../settings/CommonFunctionProductX";
+import { getInventory } from "./slices/inventorySlice";
+import { getDetails } from "../cashmanagement/CashmanagementSlice";
+import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -56,22 +67,36 @@ const Home = () => {
     const [isOutOfStock, setisOutOfStock] = useState(false);
     const [isShowCreateCustomer, setisShowCreateCustomer] = useState(false);
     const [variationProduct, setVariationProduct] = useState(null);
+    const [searchSringCreate, setsearchSringCreate] = useState('')
     const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
     const [isSelectDiscountBtn, setisSelectDiscountBtn] = useState(false);
     const [isShowTaxList, setisShowTaxList] = useState(false);
-
-
-
+    const [isShowMsg, setisShowMsg] = useState(false);
+    const [msgTitle, setmsgTitle] = useState('');
+    const [msgBody, setmsgBody] = useState('');
+    const [productxItem, setProductxItem] = useState('');
+    const navigate = useNavigate()
+    var Cash_Management_ID = localStorage.getItem('Cash_Management_ID')
     const dispatch = useDispatch();
     useEffect(() => {
         fetchData();
     }, []);
 
+    const [resGetRates, respIsMultipleTaxSupport] = useSelector((state) => [state.getRates, state.isMultipleTaxSupport])
     useEffect(() => {
-        var multiple_tax_support = localStorage.getItem("multiple_tax_support") ? JSON.parse(localStorage.getItem("multiple_tax_support")) : false
-        var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
-        getTax(multiple_tax_support, get_tax_rates);
-    }, []);
+        if ((resGetRates && resGetRates.status == STATUSES.IDLE && resGetRates.is_success) && (respIsMultipleTaxSupport && respIsMultipleTaxSupport.status == STATUSES.IDLE && respIsMultipleTaxSupport.is_success)) {
+            getTax(respIsMultipleTaxSupport.data.content, resGetRates.data.content);
+        }
+    }, [resGetRates, respIsMultipleTaxSupport]);
+    // useEffect(() => {
+    //     var multiple_tax_support = localStorage.getItem("multiple_tax_support") ? JSON.parse(localStorage.getItem("multiple_tax_support")) : false
+    //     var get_tax_rates = localStorage.getItem("TAXT_RATE_LIST") ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : [];
+    //     getTax(multiple_tax_support, get_tax_rates);
+    // }, []);
+
+    if (!localStorage.getItem('user')) {
+        navigate('/pin')
+    }
 
     const getFavourites = () => {
         var regId = localStorage.getItem('register');
@@ -92,15 +117,26 @@ const Home = () => {
         dispatch(getRates());
         dispatch(isMultipleTaxSupport());
         dispatch(getTaxRateList());
-
+        dispatch(discount());
+        dispatch(getExtensions());
+        dispatch(getPaymentTypeName());
+        dispatch(getDetails(Cash_Management_ID));
         getFavourites();
-        var locationId = localStorage.getItem('Location')
+        var locationId = localStorage.getItem('Location');
+        dispatch(getCloudPrinters(locationId));
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
         if (user_ && user_.group_sales && user_.group_sales !== null && user_.group_sales !== "" && user_.group_sales !== "undefined") {
             dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
         }
     }
-
+    // Set First time CashManagment Datain localStore
+    const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
+    const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
+    useEffect(() => {
+        if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
+            localStorage.setItem("Cash_Management_Data", JSON.stringify(cashDrawerAllDetails.getdetail && getdetail.content));
+        }
+    }, [cashDrawerAllDetails]);
 
     // useEffect(() => {
     //     initFn();
@@ -128,20 +164,80 @@ const Home = () => {
     // return   
     //  <Product></Product>
     // {isShowPopups==true? <Product></Product>:
-    const editPopUp = async (item) => {
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+    // const editPopUp = async (item) => {
+    //     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
 
-        // setSelProduct(_item)
-        var _product = getTaxAllProduct([_item])
-        setSelProduct(_product[0]);
-        setisShowPopups(true)
-    }
-    const openPopUp = async (item) => {
-        updateVariationProduct(null);
-        var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
-        var _product = getTaxAllProduct([_item])
-        setSelProduct(_product[0]);
-        setisShowPopups(true)
+    //     // setSelProduct(_item)
+    //     var _product = getTaxAllProduct([_item])
+    //     setSelProduct(_product[0]);
+    //     setisShowPopups(true)
+    // }
+    // useEffect(() => {
+    //     toggleiFrameWindow();
+    // }, [productxLink]);
+    const openPopUp = async (item, index = null) => {
+
+        let type = item.Type;
+
+        var taglist = item.Tags ? item.Tags !== "" ? item.Tags.split(",") : null : null;
+        if (taglist && (taglist !== null && taglist.includes('oliver_produt_x') == true) &&
+            (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal()
+                == true) && item !== null && item.ParamLink !== "" && item.ParamLink
+            !== "False" && item.ParamLink !== null) {
+            console.log("product x with tag--" + item.ParamLink)
+            setProductxItem(item);
+            //toggleiFrameWindow();
+            //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
+        }
+        else
+            if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+                //alert(LocalizedLanguage.productxOutOfStock);
+                var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
+                dispatch(popupMessage(data));
+            }
+            else
+                if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
+                    console.log("product x---" + item.ParamLink)
+
+                    //  var windowCloseEv = callProductXWindow(item);
+                    //     window.addEventListener('message', function (e) {
+                    //         var data = e && e.data;
+                    //         if (typeof data == 'string' && data !== "") {
+                    //             console.log(data);
+                    //             //compositeSwitchCases(JSON.parse(data))
+                    //         }
+                    //     })
+                    //+"?wopen='childwindow"
+                    setProductxItem(item);
+                    toggleiFrameWindow();
+                    //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
+                }
+                else {
+                    updateVariationProduct(null);
+                    var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+                    var _product = getTaxAllProduct([_item])
+                    _product[0]["quantity"] = item.quantity;
+                    if (item.hasOwnProperty("selectedOptions")) {
+                        _product[0]["selectedOptions"] = item.selectedOptions;
+
+                    }
+                    if (index != null) {
+                        _product[0]["selectedIndex"] = index;
+                    }
+                    if (item) {
+                        _product[0]['after_discount'] = item.after_discount ? item.after_discount : 0;
+                        _product[0]['discount_amount'] = item.discount_amount ? item.discount_amount : 0;
+                        _product[0]['product_after_discount'] = item.product_after_discount ? item.product_after_discount : 0;
+                        _product[0]['product_discount_amount'] = item.product_discount_amount ? item.product_discount_amount : 0;
+                        _product[0]['discount_type'] = item.discount_type ? item.discount_type : "";
+                        _product[0]['new_product_discount_amount'] = item.new_product_discount_amount ? item.new_product_discount_amount : 0;
+                        _product[0]['cart_after_discount'] = item.cart_after_discount ? item.cart_after_discount : 0;
+                        _product[0]['cart_discount_amount'] = item.cart_discount_amount ? item.cart_discount_amount : 0;
+                    }
+                    setSelProduct(_product[0]);
+                    setisShowPopups(true);
+                    dispatch(getInventory(item.WPID)); // To fetch latest inventory
+                }
     }
     const closePopUp = () => {
         setisShowPopups(false);
@@ -156,18 +252,29 @@ const Home = () => {
     //     setisShowSwitchUser(!isShowSwitchUser)
     // }
     const toggleOrderNote = () => {
+        setisShowOptionPage(false)
         setisShowOrderNote(!isShowOrderNote)
     }
     const toggleCartDiscount = () => {
+        // if (CommonModuleJS.permissionsForDiscount() == false) {
+        //     alert(LocalizedLanguage.discountPermissionerror);
+        // }
+        // else
+        // {
+        setisShowOptionPage(false)
         setisShowCartDiscount(!isShowCartDiscount)
+        //}
+
     }
     const toggleEditCartDiscount = () => {
+        setisShowOptionPage(false)
         setisSelectDiscountBtn(true);
         setisShowCartDiscount(!isShowCartDiscount)
 
     }
     const toggleNotifications = () => {
         setisShowNotifications(!isShowNotifications)
+
     }
 
     const toggleAdvancedSearch = () => {
@@ -195,24 +302,47 @@ const Home = () => {
     const toggleOutOfStock = () => {
         setisOutOfStock(!isOutOfStock)
     }
-    const toggleCreateCustomer = () => {
+    const toggleCreateCustomer = (serachString) => {
         setisShowCreateCustomer(!isShowCreateCustomer)
+        //console.log("serachString",serachString)
+        setsearchSringCreate(serachString)
     }
+    const parentEmail = (data) => {
+        setsearchSringCreate(data)
+    }
+
+
+
     const toggleShowMobLeftNav = () => {
         setisShowMobLeftNav(!isShowMobLeftNav)
     }
     const toggleSelectDiscountBtn = () => {
         setisSelectDiscountBtn(!isSelectDiscountBtn)
     }
+    const toggleMsgPopup = () => {
+        setisShowMsg(!isShowMsg)
+    }
     const toggleTaxList = () => {
 
         // var subscriptionClientDetail = localStorage.getItem('clientDetail') ? JSON.parse(localStorage.getItem('clientDetail')) : '';
         // if (subscriptionClientDetail && subscriptionClientDetail.subscription_detail && subscriptionClientDetail.subscription_detail.subscription_type !== "oliverpos-free") {
-            setisShowTaxList(!isShowTaxList)
+        setisShowTaxList(!isShowTaxList)
         // }
         // else {
         //     alert('This "Feature" is not included in your plan! ;In order to upgrade please go to the Oliver HUB')
         // }
+    }
+    const clearDeleteTileBtn = (e) => {
+        if (!e.target.classList.contains("remove-state") && !e.target.classList.contains("remove-cover")) {
+            const tile_remove_cover = document.querySelectorAll('.remove-cover');
+            tile_remove_cover && tile_remove_cover.forEach(cvr => {
+                cvr.classList.add('hide');
+            });
+            const tile_remove_state = document.querySelectorAll('.remove-state');
+            tile_remove_state && tile_remove_state.forEach(st => {
+                st.classList.remove('remove-state');
+            });
+        }
     }
     const getTax = (multiple_tax_support, get_tax_rates) => {
         if (multiple_tax_support && multiple_tax_support == true) {
@@ -339,27 +469,35 @@ const Home = () => {
             }
         }
     }
-    const addNote = (e) => {
-        console.log("----order note-----" + e);
-        toggleOrderNote()
-    }
-
 
     // It is refreshing the tile list from server when a new tile is added
-    const [resAddTile] = useSelector((state) => [state.addTile])
+    const [resAddTile, resdeletTile] = useSelector((state) => [state.addTile, state.deletTile])
     useEffect(() => {
         if (resAddTile && resAddTile.status == STATUSES.IDLE && resAddTile.is_success) {
             getFavourites && getFavourites();
-            //toggleAddTitle();
         }
-    }, [resAddTile]);
+        if (resdeletTile && resdeletTile.status == STATUSES.IDLE && resdeletTile.is_success) {
+            getFavourites && getFavourites();
+        }
+    }, [resAddTile, resdeletTile]);
 
-    const [resProduct,respupdateTaxRateList] = useSelector((state) => [state.product,state.updateTaxRateList])
+    const [resProduct, respupdateTaxRateList] = useSelector((state) => [state.product, state.updateTaxRateList])
     useEffect(() => {
         if (respupdateTaxRateList && respupdateTaxRateList.status == STATUSES.IDLE && respupdateTaxRateList.is_success) {
             getTax();
         }
     }, [respupdateTaxRateList]);
+
+    const [respopupMessage] = useSelector((state) => [state.popupMessage])
+    useEffect(() => {
+        if (respopupMessage && respopupMessage.status == STATUSES.IDLE && respopupMessage.is_success && respopupMessage.data) {
+            toggleMsgPopup(true);
+            setmsgBody(respopupMessage.data.msg);
+            setmsgTitle(respopupMessage.data.title);
+            dispatch(popupMessage(null));
+        }
+    }, [respopupMessage]);
+
     useEffect(() => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
@@ -369,10 +507,12 @@ const Home = () => {
     }, [resProduct]);
 
 
+
     return (
         <React.Fragment>
-            <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product>
-            <div className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
+            {isShowPopups === true ?
+                <Product variationProduct={variationProduct} updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} closePopUp={closePopUp} selProduct={selProduct} isShowPopups={isShowPopups} toggleAppLauncher={toggleAppLauncher}></Product> : null}
+            <div onClick={(e) => clearDeleteTileBtn(e)} className={isShowPopups == true ? "homepage-wrapper hide" : "homepage-wrapper"} /*style={{ display: isShowPopups == false ? "grid" : "none" }}*/>
                 {/* left nav bar */}
                 {/* top header */}
                 {/* prodct list/item list */}
@@ -383,9 +523,9 @@ const Home = () => {
                     toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
                 <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
                 <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
-                <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
-                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle}></TileList>
-                <CartList listItem={listItem} editPopUp={editPopUp} toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
+                <IframeWindow product={productxItem} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
+                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
+                <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} /*editPopUp={editPopUp}*/ toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 
 
                 {/* top naviagtion bar */}
@@ -396,22 +536,24 @@ const Home = () => {
                 {/* <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo> */}
                 {/* <AppLauncher></AppLauncher> */}
                 {/* <LinkLauncher></LinkLauncher> */}
-                <Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications>
+                {isShowNotifications === true ? <Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications> : null}
                 <div id="navCover" className="nav-cover"></div>
             </div>
             {/* <div className="subwindow-wrapper"> */}
 
-            <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList>
+            {isShowTaxList === true ? <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList> : null}
             <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
             <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
-            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} addNote={addNote}></OrderNote>
+            <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
-            <AdvancedSearch toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} isShow={isShowAdvancedSearch} toggleAdvancedSearch={toggleAdvancedSearch}></AdvancedSearch>
-            <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
+            {isShowAdvancedSearch === true ? <AdvancedSearch isShow={isShowAdvancedSearch} toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch> : null}
+            {/* <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
+            <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
+            <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
             {/* iframe subview */}
             {/* create customer */}
             {/* cart discount */}

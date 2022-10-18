@@ -12,6 +12,11 @@ export const get_UDid = (UDID) => {
   return getudid;
 }
 
+export const getShopName = () => {
+  var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+  return client && client.subscription_detail ? client.subscription_detail.company_name : "";
+
+}
 export const get_regName = () => {
   return localStorage.getItem('registerName') ? localStorage.getItem('registerName') : ''
 }
@@ -23,7 +28,7 @@ export const get_locName = () => {
 }
 
 export const get_userName = () => {
-  var user = localStorage.getItem('user') ?JSON.parse(localStorage.getItem('user')) : '';
+  var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : '';
   return user != "" ? user.display_name : '';
   //return localStorage.getItem('user_full_name') ? localStorage.getItem('user_full_name') : ''
 }
@@ -32,13 +37,14 @@ export const get_userId = () => {
 }
 
 export const get_customerName = () => {
-  var customer= localStorage.getItem('AdCusDetail') ? JSON.parse(localStorage.getItem('AdCusDetail')) : null;
-  if(customer!=null)
-  {
-    return {"Name":customer.FirstName +" "+customer.LastName,"Email":customer.Email}
+  var customer = localStorage.getItem('AdCusDetail') ? JSON.parse(localStorage.getItem('AdCusDetail')) : null;
+  if (customer != null) {
+    var name = customer.FirstName + " " + customer.LastName;
+    if (name.trim() == "") { name = customer.Email }
+    return { "Name": name, "Email": customer.Email }
   }
   else
-  return null;
+    return null;
 }
 /*------------------ array ----------------------*/
 export const chunkArray = (myArray, chunk_size) => {

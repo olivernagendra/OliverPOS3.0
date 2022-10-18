@@ -8,16 +8,66 @@ import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import STATUSES from "../../constants/apiStatus";
 import CashDrawerPaymentDetailList from './CashDrawerPaymentDetailList'
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
+import AddRemoveCashPopup from './AddRemoveCashPopup'
+import { useNavigate } from "react-router-dom";
+import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg';
+import AppLauncher from "../common/commonComponents/AppLauncher";
 function Cashmanagement() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   var registerId = localStorage.getItem('register');
   var current_date = moment().format(Config.key.DATE_FORMAT);
+
+  const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
+  const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
+  const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+  const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
+  const [isMobileNav, setisMobileNav] = useState(false);
+  const [cashPopUpOpen, setcashPopUpOpen] = useState(false)
+  const [popupstatus, setpopupstatus] = useState('')
+  const [addremoveCash, setaddremoveCash] = useState(true)
+  const [isMobileList, setisMobileList] = useState(false)
+  const [CashDrawerPaymentDetail, setcashDrawerDetailData] = useState([])
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
 
+  const HundleCashPopup = (status) => {
+    setcashPopUpOpen(true)
+    setpopupstatus(status)
+  }
+  const HundlePOpupClose = () => {
+    setcashPopUpOpen(false)
+  }
 
+
+  const toggleMobileNav = () => {
+    setisMobileNav(!isMobileNav)
+    setisShowMobLeftNav(!isShowMobLeftNav)
+  }
+  const toggleLinkLauncher = () => {
+    setisShowLinkLauncher(!isShowLinkLauncher)
+    setisShowAppLauncher(false)
+  }
+
+  const toggleAppLauncher = () => {
+    setisShowAppLauncher(!isShowAppLauncher)
+    setisShowLinkLauncher(false)
+  }
+  const toggleiFrameWindow = () => {
+    setisShowiFrameWindow(!isShowiFrameWindow)
+  }
+  const toggleListWrapp = () => {
+    setisMobileList(!isMobileList)
+  }
+
+
+  if (!localStorage.getItem('user')) {
+    navigate('/pin')
+  }
   const getCashDrawerPaymentDetail = (OrderId, index) => {
+    toggleListWrapp()
     dispatch(getDetails(OrderId));
   }
 
@@ -41,6 +91,13 @@ function Cashmanagement() {
 
     }
   }
+
+
+
+
+
+
+
 
   let useCancelled = false;
   useEffect(() => {
@@ -97,21 +154,21 @@ function Cashmanagement() {
 
 
   const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
-  if (statusgetdetail === STATUSES.IDLE && is_successgetdetail) {
+  const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
+  useEffect(() => {
+    if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
+      setcashDrawerDetailData(cashDrawerAllDetails.getdetail && getdetail.content);
+    }
+  }, [cashDrawerAllDetails]);
 
-    var CashDrawerPaymentDetail = getdetail && getdetail.content
-  }
+
 
   if (callDetailApiOnLoad === true && firstRecordId !== "") {
-
     setCallDetailApiOnLoad(false)
     getCashDrawerPaymentDetail(firstRecordId);
     firstRecordId = ""
 
   }
-
-
-
 
   var _balance = 0;
   if (CashDrawerPaymentDetail) {
@@ -125,88 +182,120 @@ function Cashmanagement() {
   var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
   var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
+  var localCashData = localStorage.getItem("Cash_Management_Data") ? JSON.parse(localStorage.getItem("Cash_Management_Data")) : '';
+
   return (
     <>
-      <div className="cash-management-wrapper">
-        <LeftNavBar></LeftNavBar>
-        <div className="cm-header">
+      <React.Fragment>
+        <div className="cash-management-wrapper">
+          <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+          <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
+
+          <div className="mobile-cm-header">
+            <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""} >
+              <img src="" alt="" />
+            </button>
+            <p>Cash Management</p>
+            <button id="mobileAppsButton" onClick={() => toggleAppLauncher()}>
+              <img src={Oliver_Icon_BaseBlue} alt="" />
+            </button>
+          </div>
+
+          {/* <div className="cm-header">
           <button id="mobileNavToggle">
             <img src="" alt="" />
           </button>
           <p>Cash Management</p>
-        </div>
-        <div className="cm-register-view">
-          {((!allCashRecords) || allCashRecords.length == 0) ? <>
-            {/* <div>loading...</div> */}
-            <LoadingSmallModal></LoadingSmallModal>
-          </> :
-            <>
-              <button className="no-transform">
-                <p className="style1"> {CashDrawerPaymentDetail && !CashDrawerPaymentDetail.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
-                <div className="row">
-                  <p className="style2">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  {/* <p className="style3 green">OPEN</p> */}
-                </div>
-                <p className="style4">User: {CashDrawerPaymentDetail && CashDrawerPaymentDetail.SalePersonName}</p>
-              </button>
-              <div className="prev-registers">
+        </div> */}
+          <div className="cm-list">
+            <div className="cm-list-header">
+              <p className="desktop">Cash Management</p>
+              <p className="mobile">Transaction History</p>
+            </div>
+            <div className="cm-list-body">
+              {((!allCashRecords) || allCashRecords.length == 0) ? <>
+                {/* <div>loading...</div> */}
+                <LoadingSmallModal></LoadingSmallModal>
+              </> :
+                <>
+                  <button className="current-register no-transform selected">
+                    <p className="style1"> {localCashData && !localCashData.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
+                    <div className="text-row">
+                      <p>{localCashData && localCashData.RegisterName}</p>
+                      <p className="open"> {localCashData && !localCashData.ClosedTime ? "OPEN" : "Closed "} </p>
+                      {/* <p className="smobile-fake-button">OPEN</p> */}
+                    </div>
+                    <p className="style2">User: {localCashData && localCashData.SalePersonName}</p>
+                    <div className="mobile-fake-button">{localCashData && !localCashData.ClosedTime ? "OPEN" : "Closed "} </div>
+                  </button>
+                  {/* <div className="prev-registers"> */}
 
-                {
-                  orders && ordersDate && ordersDate.map((getDate, index) => {
-                    return (<> <div className="category">   {current_date == getDate ? 'Today' : getDate} </div>
-                      {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
-                        return (
+                  {
+                    orders && ordersDate && ordersDate.map((getDate, index) => {
+                      return (<React.Fragment> <div className="date"><p>{current_date == getDate ? 'Today' : getDate} </p></div>
+                        {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
+                          return (
+                            <button className="other-register no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
+                              <div className="row">
+                                <p className="style1">{order.RegisterName}</p>
 
+                                <p className="style2">{!order.ClosedTime ? " OPEN " : "  CLOSED  " + order.ClosedTime}  </p>
+                              </div>
+                              <div className="row">
+                                <p className="style2">User:   {order.SalePersonName}</p>
+                                <p className="style2">{order.OpenTime}</p>
+                              </div>
+                            </button>
+                          )
+                        })
+                        }
 
-                          <button className="no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
-                            <div className="row">
-                              <p className="style1"> {order.RegisterName}</p>
-                              <p className="style2">  {!order.ClosedTime ? "OPEN" : "Closed " + order.ClosedTime}</p>
-                            </div>
-                            <div className="row">
-                              <p className="style2">User: {order.SalePersonName}</p>
-                              <p className="style2">{order.OpenTime}</p>
-                            </div>
-                          </button>
-                        )
-                      })
-                      }
-
-                    </>)
-                  })}
-              </div>
-            </>
-          }
-        </div>
-        <div className="cm-detailed-view">
-          <div className="detailed-header">
-            <p>Transaction History</p>
-            <div className="outer-group">
-              <div className="inner-group">
-                <div className="row">
-                  <p className="style1">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                  <p className="style2 green">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
-                </div>
-                <p className="style3">{Status === "Open"
-                  ? _openDateTime : _openDateTime + " to " + _closeDateTime} </p>
-              </div>
-              <div className="inner-group">
-                <p className="style1">Cash Drawer Ending Balance</p>
-                <p className="style4">{_balance}</p>
-              </div>
-              <button>Print History</button>
+                      </React.Fragment>)
+                    })}
+                  {/* </div> */}
+                </>
+              }
             </div>
           </div>
-          <div className="detailed-body">
-            <CashDrawerPaymentDetailList />
+
+          <div className={isMobileList === true ? "cm-detailed open " : "cm-detailed"}>
+            <div className="detailed-header-mobile">
+              <div id="mobileDetailedExit" onClick={toggleListWrapp}   >
+                <img src={AngledBracket_Left_Blue} alt="" />
+                Go Back
+              </div>
+            </div>
+            <div className="cm-detailed-header">
+              <p>Transaction History</p>
+              <div className="row">
+                <div className="col">
+                  <div className="text-row">
+                    <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
+                    <p className="open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
+                  </div>
+                  <p className="style1">{Status === "Open"
+                    ? _openDateTime : _openDateTime + " to " + _closeDateTime} </p>
+                </div>
+                <div className="col">
+                  <p className="style1 mobile-difference">Cash Drawer Ending Balance</p>
+                  <p className="style2">{_balance}</p>
+                </div>
+                <button>Print History</button>
+              </div>
+            </div>
+            <div className="cm-detailed-body">
+              <CashDrawerPaymentDetailList />
+
+            </div>
+            <div className="cm-detailed-footer">
+              <button onClick={() => HundleCashPopup('remove')}> Remove Cash</button>
+              <button onClick={() => HundleCashPopup('add')}  >Add Cash  </button>
+            </div>
 
           </div>
-          <div className="detailed-footer">
-            <button>Remove Cash</button>
-            <button>Add Cash</button>
-          </div>
         </div>
-      </div>
+        <AddRemoveCashPopup popupstatus={popupstatus} isShow={cashPopUpOpen} drawerBalance={_balance} HundlePOpupClose={HundlePOpupClose} />
+      </React.Fragment>
     </>
   )
 }

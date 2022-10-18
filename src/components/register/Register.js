@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import AngledBracket_Left_Blue from '../../images/svg/AngledBracket-Left-Blue.svg'
-import AngledBracket_Right_Grey from '../../images/svg/AngledBracket-Right-Grey.svg'
-import Register_Icon_White from '../../images/svg/Register-Icon-White.svg'
-import Kiosk_Icon_White from '../../images/svg/Kiosk-Icon-White.svg'
-import X_Icon_DarkBlue from '../../images/svg/X-Icon-DarkBlue.svg'
+import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
+import AngledBracket_Right_Grey from '../../assets/images/svg/AngledBracket-Right-Grey.svg'
+import Register_Icon_White from '../../assets/images/svg/Register-Icon-White.svg'
+import Kiosk_Icon_White from '../../assets/images/svg/Kiosk-Icon-White.svg'
+import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg'
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 
 import STATUSES from "../../constants/apiStatus";
@@ -16,11 +16,16 @@ import { toggleSubwindow } from "../common/EventFunctions";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
+    const [isShowTakeOver, setisShowTakeOver] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     var registers = [];
     var self_registers = [];
     var firebase_registers = [];
+
+    const toggleShowTakeOver = () => {
+        setisShowTakeOver(!isShowTakeOver)
+    }
 
     const [respRegister, respFirebaseRegisters] = useSelector((state) => [state.register, state.firebaseRegister])
 
@@ -67,14 +72,17 @@ const Register = () => {
                 navigate('/pin');
             }
         }
-        else
-            toggleSubwindow("takeover-register");
+        else {
+            toggleShowTakeOver();
+        }
+        //toggleSubwindow("takeover-register");
     }
     const openRegister = () => {
         var result = false;
+        var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
         var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
         var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-        if (isDrawerOpen == "false" && client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true) {
+        if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
             result = true;
         }
         return result;
@@ -96,11 +104,12 @@ const Register = () => {
             {respRegister.status !== STATUSES.LOADING &&
                 <div className="choose-wrapper">
                     <div className="choose-header">
-                        <button id="backButton" onClick={() => window.location = "/location"} >
+                        <button id="backButton" onClick={() => navigate('/location')} >
                             <img src={AngledBracket_Left_Blue} alt="" />
                             {LocalizedLanguage.back}
                         </button>
-                        <p>{get_userName() + " - " + get_locName()}</p>
+                        <p>{get_locName()}</p>
+                        {/* get_userName() + " - " +  */}
                     </div>
                     <div className="choose-body-default">
                         <p>{LocalizedLanguage.registerdevice}</p>
@@ -133,7 +142,7 @@ const Register = () => {
                                                 <React.Fragment><img src={AngledBracket_Right_Grey} alt="" />
                                                     <div className="fake-button background-blue">{LocalizedLanguage.select}</div></React.Fragment>
                                                 : <React.Fragment>
-                                                    <img src={AngledBracket_Right_Grey} alt="" />
+                                                    <img src={AngledBracket_Right_Grey} alt="" onClick={() => toggleShowTakeOver()} />
                                                     <div className="fake-button background-blue">{LocalizedLanguage.takeover}</div></React.Fragment>}
                                         </button>
 
@@ -161,11 +170,11 @@ const Register = () => {
                     </div>
                 </div>
             }
-            <div className="subwindow-wrapper hidden">
-                <div className="subwindow takeover-register">
+            <div className={isShowTakeOver ? "subwindow-wrapper" : "subwindow-wrapper hidden"}>
+                <div className={isShowTakeOver ? "subwindow takeover-register current" : "subwindow takeover-register"}>
                     <div className="subwindow-header">
                         <p>Take Over Register</p>
-                        <button className="close-subwindow" >
+                        <button className="close-subwindow" onClick={() => toggleShowTakeOver()}>
                             {/* onClick={() => toggleSubwindow()} */}
                             <img src={X_Icon_DarkBlue} alt="" />
                         </button>
@@ -178,7 +187,7 @@ const Register = () => {
                             This action will kick out the current user.
                         </p>
                         <button id="takeoverRegister" onClick={() => takeOver()}>Take Over</button>
-                        <button id="cancelTakeover" >Cancel</button>
+                        <button id="cancelTakeover" onClick={() => toggleShowTakeOver()}>Cancel</button>
                         {/* onClick={() => toggleSubwindow()} */}
                         <div className="auto-margin-bottom"></div>
                     </div>

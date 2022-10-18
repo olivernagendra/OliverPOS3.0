@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { cashRecordsAPI ,getDetailsAPI ,openRegisterAPI ,closeRegisterAPI,SaveClosingNoteAPI ,GetOpenRegisterAPI } from './CashManagementAPI'
+import { cashRecordsAPI ,getDetailsAPI ,openRegisterAPI ,closeRegisterAPI,SaveClosingNoteAPI ,GetOpenRegisterAPI,addRemoveCashAPI } from './CashManagementAPI'
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -9,6 +9,23 @@ const initialState = {
   "error":'',
   "is_success":false
 };
+
+
+export const addRemoveCash = createAsyncThunk(
+  'addRemoveCashmanagement/addRemoveCashAPI',
+  async (parameter,{rejectWithValue}) => {  
+   
+   try {
+     const response = await addRemoveCashAPI(parameter);
+          return response;
+   } catch (err) {
+    return rejectWithValue(err.response.data)
+  }
+         
+  }
+);
+
+
 
 
 
@@ -358,8 +375,6 @@ export const CashmanagementSecondSlice = createSlice({
       })
   },
 });
-
-
  export const {  } = GetOpenRegisterSlice.actions;
 
 
@@ -368,5 +383,39 @@ export const CashmanagementSecondSlice = createSlice({
 
 
 
+ 
 
-  export default {CashmanagementSlice,CashmanagementSecondSlice,CashmanagementThirdSlice ,CashmanagementFourthSlice ,CashmanagementFifthSlice ,GetOpenRegisterSlice};
+ export const addRemoveCashSlice = createSlice({
+  name: 'addRemoveCashmanagement',
+  initialState,
+  reducers: { 
+   
+  },
+  extraReducers: (builder) => {    
+    builder   
+      .addCase(addRemoveCash.pending, (state) => {
+        state.statuscashpopup = STATUSES.LOADING;
+        state.datacashpopup="";
+        state.errorcashpopup="";
+        state.is_successcashpopup=false;
+      })
+      .addCase(addRemoveCash.fulfilled, (state, action) => {       
+          state.statuscashpopup = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
+          state.datacashpopup=(action.payload && action.payload.is_success==true ?action.payload:"");  
+          state.errorcashpopup=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
+          state.is_successcashpopup=action.payload && action.payload.is_success==true? true: false;      
+      })
+      .addCase(addRemoveCash.rejected, (state,action) => {
+        state.statuscashpopup = STATUSES.IDLE;
+        state.datacashpopup="";
+        state.errorcashpopup = action.error;
+        state.is_successcashpopup=false;
+      })
+  },
+});
+ export const {  } = addRemoveCashSlice.actions;
+
+
+
+
+  export default {CashmanagementSlice,CashmanagementSecondSlice,CashmanagementThirdSlice ,CashmanagementFourthSlice ,CashmanagementFifthSlice ,GetOpenRegisterSlice,addRemoveCashSlice};

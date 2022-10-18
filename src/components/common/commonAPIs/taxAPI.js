@@ -46,9 +46,9 @@ export function getRatesAPI() {
     //return serverRequest.clientServiceRequest('POST', `/Tax/Search?UDID=${UDID}&loc_country=${loc_country}&loc_country_state=${loc_country_state}&loc_city=${loc_city}&loc_postcode=${loc_postcode}&loc_address_1=${loc_address_1}`, '')
     return serverRequest.clientServiceRequest('POST', `/Tax/Search`, { UDID, loc_country, loc_country_state, loc_city, loc_postcode, loc_address_1 })
         .then(res => {
-            if (res && res.is_success && res.is_success === true && res.content) {
-                localStorage.setItem("TAXT_RATE_LIST", JSON.stringify(res.content))
-            }
+            // if (res && res.is_success && res.is_success === true && res.content) {
+            //     localStorage.setItem("TAXT_RATE_LIST", JSON.stringify(res.content))
+            // }
             return res
         }).catch(error => {
             return error
@@ -58,9 +58,9 @@ export function getRatesAPI() {
 export function getIsMultipleTaxSupportAPI() {
     return serverRequest.clientServiceRequest('GET', `/Tax/IsSupportMultipe`)
         .then(res => {
-            if (res && res.is_success && res.is_success === true && res.content) {
-                localStorage.setItem("multiple_tax_support", JSON.stringify(res.content))
-            }
+            // if (res && res.is_success && res.is_success === true && res.content) {
+            //     localStorage.setItem("multiple_tax_support", JSON.stringify(res.content))
+            // }
             return res
         }).catch(error => {
             return error
@@ -84,9 +84,11 @@ export function getTaxRateListAPI() {
 }
 
 export function updateTaxRateListAPI(updatetaxlist) {
+    localStorage.setItem('TAXT_RATE_LIST',JSON.stringify(updatetaxlist))
     return updatetaxlist;
 }
 export function selectedTaxListAPI(selectetaxlist) {
+    localStorage.setItem('SELECTED_TAX',JSON.stringify(selectetaxlist))
     return selectetaxlist;
 }
 

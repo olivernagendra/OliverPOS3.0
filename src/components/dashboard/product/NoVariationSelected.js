@@ -1,5 +1,5 @@
 import React from "react";
-// import NoVariationsSelected from '../../../images/svg/NoVariationsSelected.svg';
+// import NoVariationsSelected from '../../../assets/images/svg/NoVariationsSelected.svg';
 const NoVariationSelected = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {

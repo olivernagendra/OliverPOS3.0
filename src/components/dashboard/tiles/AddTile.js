@@ -1,29 +1,34 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useIndexedDB } from 'react-indexed-db';
-import X_Icon_DarkBlue from '../../../images/svg/X-Icon-DarkBlue.svg';
+import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
 import { AddItemType } from "../../common/EventFunctions";
 import { addTile, tile } from '../tiles/tileSlice';
 import { get_regId, get_UDid, get_userId } from "../../common/localSettings";
 import STATUSES from "../../../constants/apiStatus";
 // import { initDropDown } from "../../common/commonFunctions/tileFn";
 import { LoadingModal } from "../../common/commonComponents/LoadingModal";
-
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
 function encodeHtml(txt) {
     //return $('<textarea />').html(txt).text();
 }
 const AddTile = (props) => {
-    const { status, data, error, is_success } = useSelector((state) => state.tile)
+    // const { status, data, error, is_success } = useSelector((state) => state.tile)
     // const [respAddTile] = useSelector((state) => [state.AddTile])
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
+    const { getAll } = useIndexedDB("products");
     const [categoryList, setcategoryList] = useState([]);
     const [attributeList, setattributeList] = useState([]);
     // const [allProductList, setAllProductList] = useState([])
     // const [parentProductList, setParentProductList] = useState([])
-    const [product_List, setProduct_List] = useState([])
+    // const [product_List, setProduct_List] = useState([])
     const [filterList, setfilterList] = useState([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
+    const [isLoading, setIsLoading] = useState(false);
+    const [tileList, settileList] = useState([]);
+    const [tileColor, setTileColor] = useState('');
+    const [serachString, setSerachString] = useState('');
+    const [tileToAdd, settileToAdd] = useState('');
+    const [respAttribute, respCategory,respTile] = useSelector((state) => [state.attribute, state.category,state.tile])
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -38,12 +43,17 @@ const AddTile = (props) => {
             var _categoryList = respCategory.data.content;
             setcategoryList(_categoryList)
         }
+        if (respTile.is_success === true && respTile.data && respTile.data.content != null) {
+            var _tileList = respTile.data.content;
+            settileList(_tileList)
+        }
     }
     // It is refreshing the tile list from server when a new tile is added
     const [resAddTile] = useSelector((state) => [state.addTile])
     useEffect(() => {
         if (isLoading===true && resAddTile && resAddTile.status == STATUSES.IDLE && (resAddTile.is_success===true || resAddTile.is_success===false)) {
             setIsLoading(false);
+            setSerachString('');
             props.toggleAddTitle();
         }
     }, [resAddTile]);
@@ -80,11 +90,32 @@ const AddTile = (props) => {
         return results;
     };
 
+    const AddTile=(item,index)=>
+    {
+        switch (item.type) {
+            case "product":
+                setSerachString(item.Title);
+                break;
+            case "category":
+                setSerachString(item.Value);
+                break;
+            case "attribute":
+                setSerachString(item.Description);
+                break;
+            default:
+                break;
+        }
+        setfilterList([]);
+        settileToAdd(item);
+    }
     const filterProduct = (e) => {
+        
         console.log(e.target.value)
         var value = e.target.value.trim().toLowerCase();
+        setSerachString(value);
         var _filteredData = [];
         if (value != "") {
+            
             var fCList = recursivelyFindKeyValue('', value, categoryList, 0);
             var fAList = recursivelyFindKeyValue('', value, attributeList, 0);
             if (fCList && fCList.length > 0) {
@@ -99,7 +130,7 @@ const AddTile = (props) => {
             }
             //   var fPList=  recursivelyFindKeyValue('',e.target.value,product_List,0)
             getAll().then((rows) => {
-                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value));
+                var fPList = rows.filter(a => a.Title && a.Title.toLowerCase().includes(value) && a.ParentId===0);
                 if (fPList && fPList.length > 0) {
                     fPList = AddItemType(fPList, "product");
                     // _filteredData.concat(fPList);
@@ -124,15 +155,14 @@ const AddTile = (props) => {
         // }
     }
     const submitChanges = (id, type, slug) => {
-        
-        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0 }
+        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0,"Color": tileColor }
         dispatch(addTile(param));
     }
     
     const addToFavourite = (item, pos) => {
         // console.log(JSON.stringify(item));
         // return;
-        var favList = data && data.content;
+        var favList = tileList;
         var type = item.type;
         var id = '';
         var slug = '';
@@ -190,9 +220,10 @@ const AddTile = (props) => {
             submitChanges(id, type, slug)
 
         } else {
-            if (item.type) { //apply check to protect msg display if no item selected and click on save button
-                alert("alreadyExsist");
-
+            if (isExist==true) { //apply check to protect msg display if no item selected and click on save button
+                // alert("alreadyExsist");
+                var data ={title:"",msg:"Item already exist",is_success:true}
+                dispatch(popupMessage(data));
             }
         }
 
@@ -200,26 +231,32 @@ const AddTile = (props) => {
 
     // console.log("---respAttribute----"+respAttribute)
 
-    const getProductFromIDB = () => {
-        getAll().then((rows) => {
-            setProduct_List(rows ? rows : []);
-        });
+    // const getProductFromIDB = () => {
+    //     getAll().then((rows) => {
+    //         setProduct_List(rows ? rows : []);
+    //     });
 
-    }
-    let useCancelled = false;
-    useEffect(() => {
-        if (useCancelled == false) {
-            getProductFromIDB()
-        }
-        return () => {
-            useCancelled = true;
-        }
-    }, []);
+    // }
+    // let useCancelled = false;
+    // useEffect(() => {
+    //     if (useCancelled == false) {
+    //         getProductFromIDB()
+    //     }
+    //     return () => {
+    //         useCancelled = true;
+    //     }
+    // }, []);
 
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+            setSerachString('');
             props.toggleAddTitle();
         }
+    }
+    const closePopUp=()=>
+    {
+        setSerachString('');
+        props.toggleAddTitle();
     }
     return (
     <React.Fragment>
@@ -228,7 +265,7 @@ const AddTile = (props) => {
         <div className={props.isShow === true ? "subwindow add-tile current" : "subwindow add-tile"}>
             <div className="subwindow-header">
                 <p>Add Tile</p>
-                <button className="close-subwindow" onClick={() => props.toggleAddTitle()}>
+                <button className="close-subwindow" onClick={() =>closePopUp() }>
                     <img src={X_Icon_DarkBlue} alt="" />
                 </button>
             </div>
@@ -239,8 +276,24 @@ const AddTile = (props) => {
                     <input type="search" id="product_search_field_pro" className=""  name="search" onChange={() => filterProduct()}
                         autoComplete="off"  placeholder="Search for Tag/Category/Attributes/Product"/>
 </div> */}
-                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" onChange={filterProduct} />
-                <ul>
+                <div className={filterList && filterList.length > 0?"dropdown-search open":"dropdown-search"}>
+                <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autocomplete="off"/>
+                <div className="option-container">
+                            {filterList && filterList.length > 0 && filterList.map(item => {
+                        switch (item.type) {
+                            case "product":
+                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Title}</div>
+                            case "category":
+                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Value}</div>
+                            case "attribute":
+                                return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Description}</div>
+                            default:
+                                return ''
+                        }
+
+                    })}
+                </div></div>
+                {/* <ul>
                     {filterList && filterList.length > 0 && filterList.map(item => {
                         switch (item.type) {
                             case "product":
@@ -253,7 +306,7 @@ const AddTile = (props) => {
                                 return ''
                         }
 
-                    })}</ul>
+                    })}</ul> */}
                 <p>Select the tile color</p>
                 <div className="radio-group">
                     {/* {
@@ -262,40 +315,40 @@ const AddTile = (props) => {
                             <p>{c.name}</p>
                         })
                 } */}
-                    <label>
+                    <label onClick={()=>setTileColor('violet')}>
                         <input type="radio" id="violet" name="tile-color" value="violet" />
                         <div className="custom-radio-button background-violet"></div>
                     </label>
-                    <label>
+                    <label onClick={()=>setTileColor('blue')}>
                         <input type="radio" id="blue" name="tile-color" value="blue" />
                         <div className="custom-radio-button background-blue"></div>
                     </label>
-                    <label>
+                    <label onClick={()=>setTileColor('cyan')}>
                         <input type="radio" id="cyan" name="tile-color" value="cyan" />
                         <div className="custom-radio-button background-cyan"></div>
                     </label>
-                    <label>
+                    <label onClick={()=>setTileColor('teal')}>
                         <input type="radio" id="teal" name="tile-color" value="teal" />
                         <div className="custom-radio-button background-teal"></div>
                     </label>
-                    <label>
+                    <label onClick={()=>setTileColor('lime')}>
                         <input type="radio" id="lime" name="tile-color" value="lime" />
                         <div className="custom-radio-button background-lime"></div>
                     </label>
-                    <label>
+                    <label onClick={()=>setTileColor('yellow')}>
                         <input type="radio" id="yellow" name="tile-color" value="yellow" />
                         <div className="custom-radio-button background-yellow"></div>
                     </label>
-                    <label>
+                    <label onClick={()=>setTileColor('coral')}>
                         <input type="radio" id="coral" name="tile-color" value="coral" />
                         <div className="custom-radio-button background-coral"></div>
                     </label>
-                    <label>
+                    <label onClick={()=>setTileColor('red')}>
                         <input type="radio" id="red" name="tile-color" value="red" />
                         <div className="custom-radio-button background-red"></div>
                     </label>
                 </div>
-                <button>Add Tile</button>
+                <button onClick={()=>addToFavourite(tileToAdd,0)}>Add Tile</button>
                 <div className="auto-margin-bottom"></div>
             </div>
         </div></div>{isLoading===true?<LoadingModal></LoadingModal>:null}</React.Fragment>)
