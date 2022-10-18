@@ -280,10 +280,10 @@ const PinPad = React.memo(props => {
         isloading == true && setIsloading(false)
     }
     return <React.Fragment>
-        {(status === STATUSES.ERROR && <div>{error}</div>)}
-        <p>{LocalizedLanguage.enteryouruserid}</p>
-
-        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue" }} onChange={handle} onKeyDown={handleBack}  autoComplete="off" />
+        {/* {(status === STATUSES.ERROR && <div>{error}</div>)} */}
+        <p class="style2">{LocalizedLanguage.enteryouruserid}</p>
+        <div class={status === STATUSES.ERROR ?"error-message":"error-message hide"}>Invalid user ID. Please try again.</div>
+        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue", display:"none" }} onChange={handle} onKeyDown={handleBack}  autoComplete="off" />
         <div className="pinpad">
 
             {hasPin !== "true" && <ShowCreatePin />}
@@ -293,7 +293,7 @@ const PinPad = React.memo(props => {
             <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" />
 
         </div>
-        {(status === STATUSES.ERROR && <p className="error border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" >{error} </p>)}
+        {/* {(status === STATUSES.ERROR && <p className="error border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" >{error} </p>)} */}
     </React.Fragment>
 })
 
