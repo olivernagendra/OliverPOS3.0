@@ -255,7 +255,145 @@ const ActivityView = () => {
     }, [AllActivityList]);
 
 
-
+    useEffect(() => {
+        document.querySelectorAll(".date-selector-wrapper > button").forEach((button) => {
+            button.addEventListener("click", (e) => {
+                let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
+                let openDateSelector = document.querySelector(".date-selector.open");
+                if (openDateSelector) {
+                    openDateSelector.classList.remove("open");
+                }
+                if (currentDateSelector != openDateSelector) {
+                    initCalendarDate(new Date(), currentDateSelector);
+                    currentDateSelector.classList.add("open");
+                }
+            });
+        });
+        
+        let monthTranslate = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        function initCalendarDate(date, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button class="raise-level">${
+                monthTranslate[date.getMonth()]
+            } ${date.getFullYear()}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="day-row"><div class="day">Su</div><div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                let monthYear = e.currentTarget.nextElementSibling.innerHTML.split(" ");
+                let monthIndex = monthTranslate.indexOf(monthYear[0]) - 1;
+                if (monthIndex == -1) {
+                    monthIndex = 11;
+                    monthYear[1]--;
+                }
+                initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
+                initCalendarMonths(parseInt(e.currentTarget.innerHTML.split(" ")[1]), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                let monthYear = e.currentTarget.previousElementSibling.innerHTML.split(" ");
+                let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
+                if (monthIndex == 12) {
+                    monthIndex = 0;
+                    monthYear[1]++;
+                }
+                initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
+            });
+            let daysInCurrentMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+            let dayIndex = 1;
+            let nextMonthIndex = 1;
+            let daysInLastMonth = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+            let firstWeekday = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
+            let dateArray = [];
+            for (let i = 0; i < 42; i++) {
+                if (firstWeekday > -1) {
+                    dateArray.push(daysInLastMonth - firstWeekday);
+                    firstWeekday--;
+                } else if (dayIndex <= daysInCurrentMonth) {
+                    dateArray.push(dayIndex);
+                    dayIndex++;
+                } else {
+                    dateArray.push(nextMonthIndex);
+                    nextMonthIndex++;
+                }
+            }
+            let isDisabled = true;
+            for (let i = 0; i < 6; i++) {
+                let dateRow = document.createElement("div");
+                dateRow.classList.add("date-row");
+                for (let j = 0; j < 7; j++) {
+                    let cell = document.createElement("button");
+                    cell.classList.add("cell");
+                    let dateContent = dateArray[i * 7 + j];
+                    if (dateContent == 1) {
+                        isDisabled = !isDisabled;
+                    }
+                    // console.log(dateContent)
+                    cell.textContent = dateContent;
+                    cell.disabled = isDisabled;
+                    cell.addEventListener("click", (e) => {
+                        let currentSelector = e.currentTarget.parentNode.parentNode;
+                        let monthYear = currentSelector.firstElementChild.children[1].innerHTML.split(" ");
+                        let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
+                        currentSelector.parentNode.querySelector("input").value = `${
+                            e.currentTarget.innerHTML.length == 2 ? e.currentTarget.innerHTML : "0" + e.currentTarget.innerHTML
+                        }/${monthIndex.toString().length == 2 ? monthIndex : "0" + monthIndex}/${monthYear[1]}`;
+                        currentSelector.classList.remove("open");
+                    });
+                    dateRow.appendChild(cell);
+                }
+                dateSelector.appendChild(dateRow);
+            }
+        }
+        
+        function initCalendarMonths(year, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button>${year}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="month-row"><button class="cell">January</button><button class="cell">February</button><button class="cell">March</button></div><div class="month-row"><button class="cell">April</button><button class="cell">May</button><button class="cell">June</button></div><div class="month-row"><button class="cell">July</button><button class="cell">August</button><button class="cell">September</button></div><div class="month-row"><button class="cell">October</button><button class="cell">Novemeber</button><button class="cell">December</button></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                e.currentTarget.nextElementSibling.innerHTML = parseInt(e.currentTarget.nextElementSibling.innerHTML) - 1;
+            });
+            dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                e.currentTarget.previousElementSibling.innerHTML = parseInt(e.currentTarget.previousElementSibling.innerHTML) + 1;
+            });
+            dateSelector.querySelectorAll(".month-row > button.cell").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    let dateSelector = e.currentTarget.parentNode.parentNode;
+                    initCalendarDate(
+                        new Date(parseInt(dateSelector.firstElementChild.children[1].innerHTML), monthTranslate.indexOf(e.currentTarget.innerHTML), 1),
+                        dateSelector
+                    );
+                });
+            });
+        }
+        
+        function initCalendarYears(startYear, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><div>${startYear} - ${
+                startYear + 11
+            }</div><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="year-row"><button class="cell">${startYear}</button><button class="cell">${
+                startYear + 1
+            }</button><button class="cell">${startYear + 2}</button></div><div class="year-row"><button class="cell">${
+                startYear + 3
+            }</button><button class="cell">${startYear + 4}</button><button class="cell">${
+                startYear + 5
+            }</button></div><div class="year-row"><button class="cell">${startYear + 6}</button><button class="cell">${
+                startYear + 7
+            }</button><button class="cell">${startYear + 8}</button></div><div class="year-row"><button class="cell">${
+                startYear + 9
+            }</button><button class="cell">${startYear + 10}</button><button class="cell">${startYear + 11}</button></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.nextElementSibling.innerHTML.split(" - ")[0]) - 12, e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.previousElementSibling.innerHTML.split(" - ")[1]) + 1, e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.querySelectorAll(".year-row > button.cell").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    initCalendarMonths(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
+                });
+            });
+        }
+        
+    }, []);
 
     const sortByList = (filterType, FilterValue) => {
         SetSortByValueName(FilterValue)
@@ -505,7 +643,7 @@ const ActivityView = () => {
                         <img src="../assets/images/svg/FilterCollapseIcon.svg" alt="" />
 
                         <div id="sortCurrent" className="sort-current"  >
-                            <img src={FilterArrowUp} alt="" />
+                            <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />
                             <p>{sortbyvaluename}</p>
                         </div>
 

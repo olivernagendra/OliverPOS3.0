@@ -26,7 +26,7 @@ import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const CustomerView = () => {
-  
+
   var orderCount = ''
   var OrderAmount = 0;
   var UID = get_UDid('UDID')
@@ -150,7 +150,7 @@ const CustomerView = () => {
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
-      
+
     }
     return () => {
       useCancelled1 = true;
@@ -198,7 +198,7 @@ const CustomerView = () => {
     })
     orderCount = eventCollection.filter(x => x.eventtype == "New Order")
     //Order Total Amount 
-   // console.log("eventCollection",eventCollection)
+    // console.log("eventCollection",eventCollection)
     for (let index = 0; index < orderCount.length; index++) {
       if (orderCount[index].amount && orderCount[index].amount != 0) {
         OrderAmount += parseInt(orderCount[index].amount++);
@@ -211,7 +211,7 @@ const CustomerView = () => {
 
 
 
-      /// Customer render List Click Function
+  /// Customer render List Click Function
   const activeClass = (item, index) => {
     var UID = get_UDid('UDID');
     if (item && item.WPId !== '') {
@@ -224,11 +224,11 @@ const CustomerView = () => {
   }
 
   const sortByList = (filterType, FilterValue) => {
-      setFilterType(filterType);
-      SetSortByValueName(FilterValue)
+    setFilterType(filterType);
+    SetSortByValueName(FilterValue)
   }
 
-  
+
 
 
 
@@ -258,7 +258,7 @@ const CustomerView = () => {
       });
     }
 
-    
+
     if (filterType == 'firstnameforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
         if (a.FirstName < b.FirstName) { return -1; }
@@ -293,7 +293,7 @@ const CustomerView = () => {
       });
     }
 
-  
+
 
     // Search in Customer
     if (FirstName !== '') {
@@ -318,8 +318,8 @@ const CustomerView = () => {
     }
     setFilteredCustomer(_filteredCustomer);
     scount += _filteredCustomer.length;
-   // console.log("_filteredCustomer", _filteredCustomer)
-   // console.log("customer count", scount)
+    // console.log("_filteredCustomer", _filteredCustomer)
+    // console.log("customer count", scount)
   }
 
   const updateSomething = (customer_Id) => {
@@ -336,29 +336,29 @@ const CustomerView = () => {
     localStorage.setItem('AdCusDetail', JSON.stringify(data))
     var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
     if (list != null) {
-        const CheckoutList = {
-            ListItem: list.ListItem,
-            customerDetail: data ? data : [],
-            totalPrice: list.totalPrice,
-            discountCalculated: list.discountCalculated,
-            tax: list.tax,
-            subTotal: list.subTotal,
-            TaxId: list.TaxId,
-            TaxRate: list.TaxRate,
-            oliver_pos_receipt_id: list.oliver_pos_receipt_id,
-            order_date: list.order_date,
-            order_id: list.order_id,
-            status: list.status,
-            showTaxStaus: list.showTaxStaus,
-            _wc_points_redeemed: list._wc_points_redeemed,
-            _wc_amount_redeemed: list._wc_amount_redeemed,
-            _wc_points_logged_redemption: list._wc_points_logged_redemption
-        }
-        localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+      const CheckoutList = {
+        ListItem: list.ListItem,
+        customerDetail: data ? data : [],
+        totalPrice: list.totalPrice,
+        discountCalculated: list.discountCalculated,
+        tax: list.tax,
+        subTotal: list.subTotal,
+        TaxId: list.TaxId,
+        TaxRate: list.TaxRate,
+        oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+        order_date: list.order_date,
+        order_id: list.order_id,
+        status: list.status,
+        showTaxStaus: list.showTaxStaus,
+        _wc_points_redeemed: list._wc_points_redeemed,
+        _wc_amount_redeemed: list._wc_amount_redeemed,
+        _wc_points_logged_redemption: list._wc_points_logged_redemption
+      }
+      localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
     }
-     navigate('/home')
-  
-}
+    navigate('/home')
+
+  }
 
 
 
@@ -415,33 +415,33 @@ const CustomerView = () => {
               <input type="text" id="filterType" />
               <img src={FilterCollapseIcon} alt="" />
               <div id="sortCurrent" className="sort-current">
-                <img src={FilterArrowUp} alt="" />
+                <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>
               </div>
 
 
-              
-              <div  onClick={(e) => sortByList("firstnameforward","FirstName")}  className="sort-option" >
+
+              <div onClick={(e) => sortByList("firstnameforward", "FirstName")} className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
                 <p>FirstName</p>
               </div>
-              <div  onClick={(e) => sortByList("firstnamebackward","FirstName")}  className="sort-option" >
+              <div onClick={(e) => sortByList("firstnamebackward", "FirstName")} className="sort-option" >
                 <img src={FilterArrowDown} alt="" />
                 <p>FirstName</p>
               </div>
-              <div  onClick={(e) => sortByList("emailforward","Email")} className="sort-option" >
+              <div onClick={(e) => sortByList("emailforward", "Email")} className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={(e) => sortByList("emailbackward","Email")}className="sort-option">
+              <div onClick={(e) => sortByList("emailbackward", "Email")} className="sort-option">
                 <img src={FilterArrowDown} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={(e) => sortByList("lastnameforward","LastName")} className="sort-option" data-value="emailAsc">
+              <div onClick={(e) => sortByList("lastnameforward", "LastName")} className="sort-option" data-value="emailAsc">
                 <img src={FilterArrowUp} alt="" />
                 <p>LastName</p>
               </div>
-              <div onClick={(e) => sortByList("lastnamebackward","LastName")} className="sort-option">
+              <div onClick={(e) => sortByList("lastnamebackward", "LastName")} className="sort-option">
                 <img src={FilterArrowDown} alt="" />
                 <p>lastName</p>
               </div>
