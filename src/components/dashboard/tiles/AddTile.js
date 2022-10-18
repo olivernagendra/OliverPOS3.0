@@ -26,7 +26,7 @@ const AddTile = (props) => {
     const [filterList, setfilterList] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [tileList, settileList] = useState([]);
-    const [tileColor, setTileColor] = useState('');
+    const [tileColor, setTileColor] = useState('#2797e8');
     const [serachString, setSerachString] = useState('');
     const [tileToAdd, settileToAdd] = useState('');
     const [isShowCanelBtn, setisShowCanelBtn] = useState(false);
@@ -157,7 +157,7 @@ const AddTile = (props) => {
         // }
     }
     const submitChanges = (id, type, slug) => {
-        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0, "Color": tileColor }
+        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0, "TileColor": tileColor ,"TextColor":"#FFFFFF"}
         dispatch(addTile(param));
     }
 

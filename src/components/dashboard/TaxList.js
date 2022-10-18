@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
+import Checkmark from '../../assets/images/svg/Checkmark.svg';
+
 import { AddAttribute } from "../common/EventFunctions";
 import { product } from "./product/productSlice";
 import { addtoCartProduct } from "./product/productLogic";
@@ -372,16 +374,13 @@ const TaxList = (props) => {
                             <p> {item.TaxRate}</p>
                             <p> {item.Country}</p>
                             <p> {item.State}</p>
-                            <div className="radio-container">
-                                <label>
-
-                                    <input type="radio" id={`tax_${item.TaxId}`} name={`tax_${item.TaxId}`} value={item.TaxRate} onClick={() => handleChange(item.TaxId)} checked={item.hasOwnProperty("check_is") && item.check_is == true ? true : false} />
-                                    <div className="custom-radio">
+                                <label className="checkbox-wrapper">
+                                    <input type="checkbox" id={`tax_${item.TaxId}`} name={`tax_${item.TaxId}`} value={item.TaxRate} onClick={() => handleChange(item.TaxId)} checked={item.hasOwnProperty("check_is") && item.check_is == true ? true : false} />
+                                    <div className="custom-checkbox">
                                         <div className="dot"></div>
+                                        <img src={Checkmark} alt="" />
                                     </div>
                                 </label>
-                            </div>
-                            
                         </div>)
                     })
                     }
