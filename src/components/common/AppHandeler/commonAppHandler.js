@@ -21,10 +21,10 @@ import {
   DataToReceipt, PrintReceiptWithAppData,
   handleCartValue, handleCart,
   sendCustomerDetail, HandleCustomer, CustomerToSale, retrieveCustomerInSale,
-  addCartDiscount, cartTaxes, addProductToCart, Notes, lockEnvironment, Environment, doParkSale, getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon, transactionApp, transactionStatus, DoParkSale
+  addCartDiscount, cartTaxes, Notes, lockEnvironment, Environment, doParkSale, getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon, transactionApp, transactionStatus, DoParkSale, AddProductToCart
 } from './apps';
 import { productPriceUpdate, sendProductQuantity } from './apps/productApp';
-import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction'
+import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
 // var JsBarcode = require('jsbarcode');
 // var print_bar_code;
 // export const textToBase64Barcode = (text) => {
@@ -45,11 +45,13 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
   console.log("jsonMsg", jsonMsg)
   console.log("clientEvent", clientEvent)
   var appResponse = '';
+
+
   if (clientEvent && clientEvent !== '') {
     // console.log("clientEvent", jsonMsg)
     //this.setState({ showNewAppExtension:true})
     switch (clientEvent) {
-      case ("appReady").toLowerCase():
+      case ("appReady").toLowerCase():  //working
         appReady(whereToview, isbackgroudApp, isbackgroudApp)
         break;
       case ("DataToReceipt").toLowerCase():
@@ -93,7 +95,7 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
         appResponse = cartTaxes(jsonMsg, isbackgroudApp)
         break
       case ("addProductToCart").toLowerCase():
-        appResponse = addProductToCart(jsonMsg, isbackgroudApp, whereToview)
+        appResponse = AddProductToCart(jsonMsg, isbackgroudApp, whereToview)
         break
       case ("Notes").toLowerCase():
         appResponse = Notes(jsonMsg, isbackgroudApp, whereToview)

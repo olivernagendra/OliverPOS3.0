@@ -38,12 +38,12 @@ export const CheckAppDisplayInView = (viewManagement, view = null) => {
     }
     // }, [page]);
 
-    //  console.log("page", page)
+    console.log("page", page, viewManagement)
     var returnRes = false;
     viewManagement && viewManagement !== [] && viewManagement.map((type, ind) => {
         // isUrlImg = ext.logo ? (ext.logo.match(/\.(jpeg|jpg|gif|png|svg|TIFF|PSD|AI)$/) != null) : false // check if logo url is full imge url
         // ext_logo = ext.logo && isUrlImg ? ext.logo : ext_default_logo // set default ulogo in case logo not exist
-        if (type && type.ViewSlug == page || page == "home")
+        if (type && type.ViewSlug.toLowerCase() == page.toLowerCase())
             returnRes = true
     })
     return returnRes;

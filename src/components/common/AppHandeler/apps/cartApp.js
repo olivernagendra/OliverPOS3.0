@@ -10,6 +10,7 @@ import { get_UDid } from "../../localSettings";
 import moment from "moment";
 import Config from '../../../../Config'
 import { useIndexedDB } from "react-indexed-db";
+
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 export const textToBase64Barcode = (text) => {
@@ -418,8 +419,8 @@ export const cartTaxes = (RequestData, isbackgroudApp) => {
     }
 }
 
-export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
-
+export function AddProductToCart(RequestData, isbackgroudApp, whereToview) {
+    const { getByID: getProductByID, getAll: getAllProducts } = useIndexedDB("products");
     if (whereToview !== 'CheckoutView') {
         return;
     }
@@ -433,7 +434,7 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
 
 
     //check the requested product exist into the index DB 
-    var item;
+    //var item;
 
     // var idbKeyval = FetchIndexDB.fetchIndexDb();
 
@@ -452,6 +453,10 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
     //     }
     //   }
     // });
+    var item = getProductByID(RequestData.product_id).then((row) => {
+        return row;
+    });
+
     setTimeout(() => {
 
         if (item) {
@@ -463,7 +468,7 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
             cartproductlist.push(item)
 
             //store.dispatch(cartProductActions.addtoCartProduct(cartproductlist));
-
+            addCartProductAction(cartproductlist)
 
 
             setTimeout(() => {
@@ -526,7 +531,7 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
     }, 100);
 
 
-    return "app-modificaiton-external"
+    //return "app-modificaiton-external"
 }
 export const Notes = (RequestData, isbackgroudApp, whereToview) => {
     var clientJSON = ""
