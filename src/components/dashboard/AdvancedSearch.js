@@ -7,6 +7,8 @@ import ViewIcon from '../../assets/images/svg/ViewIcon.svg';
 import Add_Icon_White from '../../assets/images/svg/Add-Icon-White.svg';
 import Transactions_Icon_White from '../../assets/images/svg/Transactions-Icon-White.svg';
 import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg';
+import Search_Icon_Blue from '../../assets/images/svg/Search-Icon-Blue.svg';
+import AdvancedSearchCancelIcon from '../../assets/images/svg/AdvancedSearchCancelIcon.svg';
 
 import { useIndexedDB } from 'react-indexed-db';
 import { AddItemType } from "../common/EventFunctions";
@@ -52,13 +54,18 @@ const AdvancedSearch = (props) => {
             let _allp = allProdcuts;
             // if (_allp && _allp.length > 10) { _allp = _allp.slice(0, 10); }
             setAllProductList(_allp);
-            setFilteredProductList(_allp ? _allp : []);
+            //setFilteredProductList(_allp ? _allp : []);
             setSerachCount(_allp.length);
             setSerachCount(_allp.length + allCustomerList.length + filteredGroup.length);
         });
     }
     const handleSearch = (event) => {
         let value = event.target.value;
+        if (value === "") {
+            setFilteredCustomer([]);
+            setFilteredProductList([]);
+            setFilteredGroup([]);
+        }
         setSerachString(value)
     }
     const SetFilter = (ftype) => {
@@ -170,6 +177,7 @@ const AdvancedSearch = (props) => {
     }
     const productDataSearch = (item1) => {
         if (item1 == '') {
+            return;
             if (filterType === "product" || filterType === "customer" || filterType === "group" || filterType === "all") {
                 if (filterType === "product") {
 
@@ -376,13 +384,25 @@ const AdvancedSearch = (props) => {
         setSerachString('');
         props.toggleAdvancedSearch();
     }
+    const clearSearch = () => {
+        setSerachString('');
+        setFilteredCustomer([]);
+        setFilteredProductList([]);
+        setFilteredGroup([]);
+    }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
             <button className="close-subwindow" onClick={() => closePopUp()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} />
+            <div class="input-wrapper" id="advSearchInputWrapper">
+                <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off" />
+                <img src={Search_Icon_Blue} alt="" id="advSearchInputIcon" />
+                <button id="advSearchInputCancel" onClick={() => clearSearch()}>
+                    <img src={AdvancedSearchCancelIcon} alt="" />
+                </button>
+            </div>
         </div>
         <div className="subwindow-body">
             <div className="left-col">
@@ -425,7 +445,7 @@ const AdvancedSearch = (props) => {
                 <p>Recent Searches</p>
                 <div className="recent-searches">
                     {searchHistory && searchHistory.map(s => {
-                        return (<a href="#" onClick={() => setSerachString(s)}>{s}</a>)
+                        return (<a key={s} href="#" onClick={() => setSerachString(s)}>{s}</a>)
                     })}
                     {/* <a href="#">Sam Moss</a>
                         <a href="#">Graphic T-Shirts</a>
@@ -436,25 +456,33 @@ const AdvancedSearch = (props) => {
                 </div>
             </div>
             <div className="right-col">
-                <div className="header">
-                    <p><b>Results</b> ({serachCount} search results)</p>
-                </div>
-                <div className="body">
-                    <div className="no-results">
-                        <p className="style1">No results found.</p>
-                        <p className="style2">
-                            Sorry, your search did not match any results. <br />
-                            Try double checking your spelling or <br />
-                            searching for a similar product.
-                        </p>
-                        <div className="divider"></div>
-                        <p className="style2">Customer not found? Try creating a new customer:</p>
-                        <button onClick={() => props.toggleCreateCustomer(serachString)}  >
-                            <img src={CircledPlus_Icon_Blue} alt="" />
-                            Create New Customer
-                        </button>
-                    </div>
-                    {/* <div className="search-result customer">
+                {/* Will only appear if right col is empty besides start-searching element  */}
+                {filteredCustomer.length === 0 && filteredGroup.length === 0 && filteredProductList.length === 0 && serachString === "" ?
+                    <div class="start-searching display-flex">
+                        <img src={Search_Icon_Blue} alt="" />
+                        <p class="style1">Start searching to display results.</p>
+                        <p class="style2">Search for any product, customer <br /> or group to display results.</p>
+                    </div> :
+                    <React.Fragment>
+                        <div className="header">
+                            <p><b>Results</b> ({serachCount} search results)</p>
+                        </div>
+                        <div className="body">
+                            <div className="no-results">
+                                <p className="style1">No results found.</p>
+                                <p className="style2">
+                                    Sorry, your search did not match any results. <br />
+                                    Try double checking your spelling or <br />
+                                    searching for a similar product.
+                                </p>
+                                <div className="divider"></div>
+                                <p className="style2">Customer not found? Try creating a new customer:</p>
+                                <button onClick={() => props.toggleCreateCustomer(serachString)}  >
+                                    <img src={CircledPlus_Icon_Blue} alt="" />
+                                    Create New Customer
+                                </button>
+                            </div>
+                            {/* <div className="search-result customer">
                         <div className="col">
                             <p className="style1">Customer</p>
                             <p className="style2">Freddy Mercury</p>
@@ -477,86 +505,86 @@ const AdvancedSearch = (props) => {
                         </div>
                     </div> */}
 
-                    {
-                        filteredProductList && filteredProductList.map((item, index) => {
-                            return <div className="search-result product" key={item.WPID}>
-                                <div className="col">
-                                    {/* <p className="style1">Product</p>
+                            {
+                                filteredProductList && filteredProductList.map((item, index) => {
+                                    return <div className="search-result product" key={item.WPID}>
+                                        <div className="col">
+                                            {/* <p className="style1">Product</p>
                             <p className="style2">Funky Fresh White Sneakers long name to get cut off</p>
                             <p className="style3">Funky Shoe Co.</p>
                             <p className="style3">$34.55</p>
                             <p className="style3">SKU# 1386425547424579201546</p> */}
-                                    <p className="style1">Product</p>
-                                    <p className="style2">{item.Title}</p>
-                                    {/* <p className="style3">Funky Shoe Co.</p> */}
-                                    <p className="style3">${item.Price}</p>
-                                    <p className="style3">SKU#{item.Sku}</p>
-                                </div>
-                                <div className="row">
-                                    <button className="search-view" onClick={() => viewProduct(item)}>
-                                        <img src={ViewIcon} alt="" />
-                                        View
-                                    </button>
-                                    <button className="search-add-to-sale" onClick={() => item.Type != "simple" ? viewProduct(item) : addToCart(item)}>
-                                        <img src={Add_Icon_White} alt="" />
-                                        Add to Sale
-                                    </button>
-                                </div>
-                            </div>
-                        })
-                    }
-                    {
-                        filteredCustomer && filteredCustomer.map((item, index) => {
-                            return <div className="search-result customer" key={item.Email + "_" + index}>
-                                <div className="col">
-                                    <p className="style1">Customer</p>
-                                    <p className="style2">{item.FirstName + " " + item.LastName}</p>
-                                    <p className="style3">{item.Email}</p>
-                                    <p className="style3">{item.Contact}</p>
-                                </div>
-                                <div className="row">
-                                    <button className="search-view">
-                                        <img src={ViewIcon} alt="" />
-                                        View
-                                    </button>
-                                    <button className="search-transactions">
-                                        <img src={Transactions_Icon_White} alt="" />
-                                        Transactions
-                                    </button>
-                                    <button className="search-add-to-sale" onClick={() => addCustomerToSale(item)}>
-                                        <img src={Add_Icon_White} alt="" />
-                                        Add to Sale
-                                    </button>
-                                </div>
-                            </div>
-                        })}
-                    {
-                        filteredGroup && filteredGroup.map((item, index) => {
-                            return <div className="search-result group">
-                                <div className="col">
-                                    <p className="style1">{item.GroupName}</p>
-                                    <p className="style2">{item.Label}</p>
-                                    <p className="style3">Party of 6</p>
-                                    <p className="style3">Server: Freddy Mercury</p>
-                                    <p className="style3">Order total: $223.45</p>
-                                </div>
-                                <div className="row">
-                                    <button className="search-view">
-                                        <img src={ViewIcon} alt="" />
-                                        View
-                                    </button>
-                                    <button className="search-transactions">
-                                        <img src={Transactions_Icon_White} alt="" />
-                                        Transactions
-                                    </button>
-                                    <button className="search-add-to-sale">
-                                        <img src={Add_Icon_White} alt="" />
-                                        Add to Sale
-                                    </button>
-                                </div>
-                            </div>
-                        })}
-                    {/* <div className="search-result group">
+                                            <p className="style1">Product</p>
+                                            <p className="style2">{item.Title}</p>
+                                            {/* <p className="style3">Funky Shoe Co.</p> */}
+                                            <p className="style3">${item.Price}</p>
+                                            <p className="style3">SKU#{item.Sku}</p>
+                                        </div>
+                                        <div className="row">
+                                            <button className="search-view" onClick={() => viewProduct(item)}>
+                                                <img src={ViewIcon} alt="" />
+                                                View
+                                            </button>
+                                            <button className="search-add-to-sale" onClick={() => item.Type != "simple" ? viewProduct(item) : addToCart(item)}>
+                                                <img src={Add_Icon_White} alt="" />
+                                                Add to Sale
+                                            </button>
+                                        </div>
+                                    </div>
+                                })
+                            }
+                            {
+                                filteredCustomer && filteredCustomer.map((item, index) => {
+                                    return <div className="search-result customer" key={item.Email + "_" + index}>
+                                        <div className="col">
+                                            <p className="style1">Customer</p>
+                                            <p className="style2">{item.FirstName + " " + item.LastName}</p>
+                                            <p className="style3">{item.Email}</p>
+                                            <p className="style3">{item.Contact}</p>
+                                        </div>
+                                        <div className="row">
+                                            <button className="search-view">
+                                                <img src={ViewIcon} alt="" />
+                                                View
+                                            </button>
+                                            <button className="search-transactions">
+                                                <img src={Transactions_Icon_White} alt="" />
+                                                Transactions
+                                            </button>
+                                            <button className="search-add-to-sale" onClick={() => addCustomerToSale(item)}>
+                                                <img src={Add_Icon_White} alt="" />
+                                                Add to Sale
+                                            </button>
+                                        </div>
+                                    </div>
+                                })}
+                            {
+                                filteredGroup && filteredGroup.map((item, index) => {
+                                    return <div className="search-result group">
+                                        <div className="col">
+                                            <p className="style1">{item.GroupName}</p>
+                                            <p className="style2">{item.Label}</p>
+                                            <p className="style3">Party of 6</p>
+                                            <p className="style3">Server: Freddy Mercury</p>
+                                            <p className="style3">Order total: $223.45</p>
+                                        </div>
+                                        <div className="row">
+                                            <button className="search-view">
+                                                <img src={ViewIcon} alt="" />
+                                                View
+                                            </button>
+                                            <button className="search-transactions">
+                                                <img src={Transactions_Icon_White} alt="" />
+                                                Transactions
+                                            </button>
+                                            <button className="search-add-to-sale">
+                                                <img src={Add_Icon_White} alt="" />
+                                                Add to Sale
+                                            </button>
+                                        </div>
+                                    </div>
+                                })}
+                            {/* <div className="search-result group">
                         <div className="col">
                             <p className="style1">Group</p>
                             <p className="style2">Moss Party (Table 5)</p>
@@ -601,10 +629,11 @@ const AdvancedSearch = (props) => {
                             </button>
                         </div>
                     </div> */}
-                </div>
+                        </div>
+                    </React.Fragment>}
             </div>
         </div>
-    </div></div>
+    </div></div >
 }
 
 export default AdvancedSearch 

@@ -4,6 +4,7 @@ import { get_UDid } from '../common/localSettings';
 import moment from 'moment';
 import ActiveUser from '../../settings/ActiveUser';
 import Config from '../../Config';
+import { handleAppEvent } from '../common/AppHandeler/commonAppHandler';
 export function checkStockAPI(cartlist) {
     var items = [];
     var data;
@@ -105,7 +106,7 @@ export function saveAPI(shopOrder, path, updatedBy = "") {
                 }
                 //if parked by extension app, it is returning temp order id to the app 
                 if (updatedBy == "byExtApp") {
-                    //handleAppEvent({method:"post",command:"ParkSale",tempOrderId:shop_order.content?shop_order.content.tempOrderId:0},null);
+                    handleAppEvent({ method: "post", command: "ParkSale", tempOrderId: shop_order.content ? shop_order.content.tempOrderId : 0 }, null);
                 }
 
                 //dispatch(success(shop_order));
@@ -326,7 +327,7 @@ export function checkTempOrderSyncAPI(tempOrderId) {
         });
 
 }
-export function checkTempOrderStatusAPI( tempOrderId) {
+export function checkTempOrderStatusAPI(tempOrderId) {
     var notificationLimit = Config.key.NOTIFICATION_LIMIT;
     return serverRequest.clientServiceRequest('GET', `/orders/Status?OrderId=${tempOrderId}`, '')
         .then(order_status => {

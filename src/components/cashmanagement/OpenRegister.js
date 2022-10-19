@@ -12,7 +12,7 @@ import { openRegister } from './CashmanagementSlice'
 import moment from 'moment';
 import STATUSES from "../../constants/apiStatus";
 import { initOpenRegisterFn } from "../common/commonFunctions/openRegisterFn"
-
+import LogoutConfirm from "../common/commonComponents/LogoutConfirm";
 const OpenRegister = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -21,6 +21,11 @@ const OpenRegister = () => {
     const [toggle, settoggle] = useState(false)
     const [togglePin, settogglePin] = useState(false)
     const [isAmountEntered, setIsAmountEntered] = useState(false);
+
+    const [isShowLogoutConfirm, setisShowLogoutConfirm] = useState(false)
+    const toggleLogoutConfirm = () => {
+        setisShowLogoutConfirm(!isShowLogoutConfirm)
+    }
 
     const hundleToggle = () => {
         settoggle(true)
@@ -110,11 +115,11 @@ const OpenRegister = () => {
     }, []);
 
     return <React.Fragment><div className="open-register-wrapper">
-        <button id="cancel" onClick={()=>navigate('/register')}>
+        <button id="cancel" onClick={() => navigate('/register')}>
             <img src={AngledBracket_Left_White} alt="" />
             Cancel
         </button>
-        <button id="logout" onClick={() => navigate('/')} className={toggle == true ?"hidden":""}>
+        <button id="logout-landscape" onClick={() => toggleLogoutConfirm()} className={toggle == true ? "hidden" : ""}>
             <img src={LogOut_Icon_White} alt="" />
             Log Out
         </button>
@@ -161,7 +166,10 @@ const OpenRegister = () => {
 
             <div className="auto-margin-bottom"></div>
         </main>
-
+        <button id="logout-mobile" onClick={() => toggleLogoutConfirm()}>
+            <img src={LogOut_Icon_White} alt="" />
+            Log Out
+        </button>
 
     </div>
         {/* // <div className="logout-confirmation-wrapper hidden">
@@ -178,6 +186,7 @@ const OpenRegister = () => {
         //     <button id="logoutCancel">Cancel</button>
         //     <div className="auto-margin-bottom"></div>
         // </div> */}
+        {isShowLogoutConfirm===true?<LogoutConfirm isShow={isShowLogoutConfirm} toggleLogoutConfirm={toggleLogoutConfirm}></LogoutConfirm>:null}
     </React.Fragment>
 
 

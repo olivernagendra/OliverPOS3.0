@@ -10,6 +10,9 @@ import CircledPlus_White from '../../../assets/images/svg/CircledPlus-White.svg'
 import NoVariationDisplay from '../../../assets/images/svg/NoVariationDisplay.svg';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 import Product_OutOfStock from '../../../assets/images/svg/ProductOutOfStock.svg';
+import Checkout_Minus from '../../../assets/images/svg/Checkout-Minus.svg';
+import Checkout_Plus from '../../../assets/images/svg/Checkout-Plus.svg';
+
 import Pencil from '../../../assets/images/svg/Pencil.svg';
 import RefreshGrey from '../../../assets/images/svg/RefreshGrey.svg';
 // import Shoes from '../../../assets/images/Temp/Shoes.png';
@@ -28,7 +31,7 @@ import ProductDiscount from "./ProductDiscount";
 import AdjustInventory from "./AdjustInventory";
 import NoVariationSelected from "./NoVariationSelected";
 import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
-import { addSimpleProducttoCart, updateProductNote } from './productLogic';
+import { addSimpleProducttoCart, updateProductNote, addtoCartProduct } from './productLogic';
 import { getTaxAllProduct, getSettingCase, cartPriceWithTax } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
@@ -108,30 +111,25 @@ const Product = (props) => {
         if (currentWareHouseDetail && currentWareHouseDetail.hasOwnProperty("Quantity")) {
 
             var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
-            var _stockStatus=_product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? LocalizedLanguage.outOfStock :
+            var _stockStatus = _product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? LocalizedLanguage.outOfStock :
                 (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? LocalizedLanguage.unlimited : (typeof _product.StockQuantity != 'undefined') && currentWareHouseDetail.Quantity != '' ? currentWareHouseDetail.Quantity : 0
             ) : 0;
-             if(typeof _stockStatus==="string")
-             {
+            if (typeof _stockStatus === "string") {
                 setStockStatusInOut(_stockStatus);
-             }
-             else
-             {
+            }
+            else {
                 setStockStatusInOut("In Stock");
-             }
+            }
 
             setVariationStockQunatity(currentWareHouseDetail.Quantity)
-            if(currentWareHouseDetail.Quantity==0)
-            {
+            if (currentWareHouseDetail.Quantity == 0) {
                 setProductQty(0);
             }
-            else
-            {
-                if(productQty==0)
-                {setProductQty(1);}
+            else {
+                if (productQty == 0) { setProductQty(1); }
             }
             // console.log("product Qty", currentWareHouseDetail.Quantity)
-             //console.log("sel _stockStatus--", _stockStatus)
+            //console.log("sel _stockStatus--", _stockStatus)
         }
     }, [inventoryStatus])
     const toggleProductNote = () => {
@@ -540,13 +538,13 @@ const Product = (props) => {
             // closeModifier();
         }, 300);
     }
-    const addModifierAsCustomFee = () => {
-
+    const addModifierAsCustomFee = (_selectedModifiers) => {
+        var _saveSelectedModifiers = _selectedModifiers;
         var tax_is = props.selProduct; //this.props.getVariationProductData && getVariatioModalProduct(this.props.single_product ? this.props.single_product : this.state.variationfound ? this.state.variationfound : this.props.getVariationProductData, this.state.variationDefaultQunatity);
         var product_price = props.selProduct.Price;//getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? tax_is && cartPriceWithTax(tax_is.old_price, getSettingCase(), tax_is.TaxClass) : getSettingCase() == 6 ? tax_is && tax_is.old_price : tax_is && tax_is.old_price;
         // console.log("---product_price---" + product_price);
         var _data = [];
-        saveSelectedModifiers && saveSelectedModifiers.map(m => {
+        _saveSelectedModifiers && _saveSelectedModifiers.map(m => {
             if (m.is_active == true) {
                 var _summary = "";
                 var _sum = 0;
@@ -575,7 +573,16 @@ const Product = (props) => {
             }
         })
         if (_data && _data.length > 0) {
-            setCustomFeeModifiers(_data)
+            var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : []
+            cartlist = cartlist == null ? [] : cartlist;
+            cartlist = cartlist.concat(_data);
+            addtoCartProduct(cartlist);
+            // cartlist.push(data)
+            // _data.map(m=>{
+            //     addSimpleProducttoCart(m);
+            // })
+
+            // setCustomFeeModifiers(_data)
         }
         //this.setState({ CustomFee_Modifiers: _data });
         //console.log("----modifier as custom fee----" + JSON.stringify(_data));
@@ -895,7 +902,12 @@ const Product = (props) => {
                     }
                     console.log("----product note---" + note);
                 }
-                if (customFeeModifiers && customFeeModifiers.length > 0) {
+                if (selectedModifiers && selectedModifiers.length > 0) {
+
+                    addModifierAsCustomFee(selectedModifiers);
+                    // customFeeModifiers.map(m=>{
+                    //     addSimpleProducttoCart(m);
+                    // })
                     //cartItemList= cartItemList.concat(this.state.CustomFee_Modifiers);
                 }
                 if (result !== 'outofstock') {
@@ -1104,7 +1116,7 @@ const Product = (props) => {
                                 : <div className='noAttribute'></div>}
                         {productModifiers && productModifiers.length > 0 ? <div className="row">
                             <p>Select Modifier</p>
-                        </div> : null} <div onChange={onChangeValue}>
+                        </div> : null} <React.Fragment onChange={onChangeValue}>
                             {
                                 productModifiers && productModifiers.map(mod => {
                                     var gpid = (mod.Title).replace(/ /g, "_");
@@ -1114,13 +1126,13 @@ const Product = (props) => {
                                             return (
                                                 <React.Fragment>
                                                     <p>{mod.Title}</p>
-                                                    <div className="radio-group">{
+                                                    <div className="radio-group" onChange={onChangeValue}>{
                                                         mod.modifierFields && mod.modifierFields.map(mf => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                                 return (
                                                                     <label>
-                                                                        <input type="checkbox" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                        <input type="radio" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
                                                                         <div className="custom-radio">
                                                                             <p>{efm.Name}</p>
                                                                         </div>
@@ -1139,8 +1151,27 @@ const Product = (props) => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
                                                                 return (<React.Fragment>
-                                                                    <p className="label">{efm.Name}</p>
-                                                                    <div className="row">
+                                                                    <div className="main-row" onChange={onChangeValue}>
+                                                                    <div class="input-col1" >
+                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
+                                                                       
+                                                                   
+                                                                        
+                                                                        {/* <div className="text-group">
+                                                                            <p className="label">{efm.Name}</p>
+                                                                        </div> */}
+                                                                        <div className="increment-input">
+                                                                            <button onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                <img src={Checkout_Minus} alt="" />
+                                                                            </button>
+                                                                            <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                            <button id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                <img src={Checkout_Plus} alt="" />
+                                                                            </button>
+                                                                        </div>
+                                                                       
+                                                                        </div><div> <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
+                                                                    {/* <div className="row" onChange={onChangeValue}>
                                                                         <div className="increment-input">
                                                                             <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
                                                                                 <svg width={16} height={2} viewBox="0 0 16 2">
@@ -1155,7 +1186,7 @@ const Product = (props) => {
                                                                             </div>
                                                                         </div>
                                                                         <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div>
+                                                                    </div> */}
                                                                 </React.Fragment>)
                                                             }))
                                                         })
@@ -1166,7 +1197,7 @@ const Product = (props) => {
                                             return (
                                                 <React.Fragment>
                                                     <p >{mod.Title}</p>
-                                                    <div className="radio-group">{
+                                                    <div className="radio-group" onChange={onChangeValue}>{
                                                         mod.modifierFields && mod.modifierFields.map(mf => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
@@ -1187,15 +1218,24 @@ const Product = (props) => {
                                                 <React.Fragment>
                                                     <p className="labelTitle">{mod.Title}</p>
                                                     {
+
+
                                                         mod.modifierFields && mod.modifierFields.map(mf => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name).replace(/ /g, "_");
                                                                 return (<React.Fragment>
-                                                                    <p className="label">{efm.Name}</p>
-                                                                    <div className="row">
+                                                                    <div className="main-row" onChange={onChangeValue}>
+                                                                    <div class="input-col" >
+                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
+                                                                        <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                       
+                                                                    </div>
+                                                                    <div class="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
+                                                                    {/* <p className="label">{efm.Name}</p>
+                                                                    <div className="row" onChange={onChangeValue}>
                                                                         <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
                                                                         <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div>
+                                                                    </div> */}
                                                                 </React.Fragment>)
                                                             }))
                                                         })
@@ -1206,7 +1246,7 @@ const Product = (props) => {
                                             break;
                                     }
                                 })
-                            }</div>
+                            }</React.Fragment>
                     </div>
                     <div className="detailed-product">
                         <div className="row">

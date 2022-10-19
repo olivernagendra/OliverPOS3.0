@@ -25,7 +25,9 @@ import Cusomercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const CustomerView = () => {
+
   var orderCount = ''
   var OrderAmount = 0;
   var UID = get_UDid('UDID')
@@ -56,6 +58,7 @@ const CustomerView = () => {
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
   const [toggleList, setToggleList] = useState(false)
+  const [sortbyvaluename, SetSortByValueName] = useState('FirstName')
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
@@ -227,10 +230,14 @@ const CustomerView = () => {
 
   }
 
-
-  const SetFilter = (ftype) => {
-    setFilterType(ftype);
+  const sortByList = (filterType, FilterValue) => {
+    setFilterType(filterType);
+    SetSortByValueName(FilterValue)
   }
+
+
+
+
 
   useEffect(() => {
     productDataSearch();
@@ -241,33 +248,14 @@ const CustomerView = () => {
     var scount = 0;
     var _filteredCustomer = customerlistdata
     ///Sort By Customer 
-    if (filterType == 'All-') {
-      _filteredCustomer = customerlistdata
-    }
-    if (filterType == 'LastName-') {
-      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-        if (a.LastName < b.LastName) { return -1; }
-        if (a.LastName > b.LastName) { return 1; }
-        return 0;
-      })
-    }
-    if (filterType == 'Email-') {
+    if (filterType == 'emailforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
         if (a.Email < b.Email) { return -1; }
         if (a.Email > b.Email) { return 1; }
         return 0;
       })
     }
-    if (filterType.toLowerCase() == 'lastname') {
-      _filteredCustomer = _filteredCustomer.sort((a, b) => {
-        if (a.LastName > b.LastName)
-          return -1;
-        if (a.LastName < b.LastName)
-          return 1;
-        return 0;
-      });
-    }
-    if (filterType.toLowerCase() == 'email') {
+    if (filterType.toLowerCase() == 'emailbackward') {
       _filteredCustomer = _filteredCustomer.sort((a, b) => {
         if (a.Email > b.Email)
           return -1;
@@ -276,6 +264,43 @@ const CustomerView = () => {
         return 0;
       });
     }
+
+
+    if (filterType == 'firstnameforward') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.FirstName < b.FirstName) { return -1; }
+        if (a.FirstName > b.FirstName) { return 1; }
+        return 0;
+      })
+    }
+    if (filterType.toLowerCase() == 'firstnamebackward') {
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.FirstName > b.FirstName)
+          return -1;
+        if (a.FirstName < b.FirstName)
+          return 1;
+        return 0;
+      });
+    }
+
+    if (filterType == 'lastnameforward') {
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        if (a.LastName < b.LastName) { return -1; }
+        if (a.LastName > b.LastName) { return 1; }
+        return 0;
+      })
+    }
+    if (filterType.toLowerCase() == 'lastnamebackward') {
+      _filteredCustomer = _filteredCustomer.sort((a, b) => {
+        if (a.LastName > b.LastName)
+          return -1;
+        if (a.LastName < b.LastName)
+          return 1;
+        return 0;
+      });
+    }
+
+
 
     // Search in Customer
     if (FirstName !== '') {
@@ -313,9 +338,41 @@ const CustomerView = () => {
 
 
 
+  const addCustomerToSale = (cutomer_data) => {
+    var data = cutomer_data;
+    localStorage.setItem('AdCusDetail', JSON.stringify(data))
+    var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
+    if (list != null) {
+      const CheckoutList = {
+        ListItem: list.ListItem,
+        customerDetail: data ? data : [],
+        totalPrice: list.totalPrice,
+        discountCalculated: list.discountCalculated,
+        tax: list.tax,
+        subTotal: list.subTotal,
+        TaxId: list.TaxId,
+        TaxRate: list.TaxRate,
+        oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+        order_date: list.order_date,
+        order_id: list.order_id,
+        status: list.status,
+        showTaxStaus: list.showTaxStaus,
+        _wc_points_redeemed: list._wc_points_redeemed,
+        _wc_amount_redeemed: list._wc_amount_redeemed,
+        _wc_points_logged_redemption: list._wc_points_logged_redemption
+      }
+      localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+    }
+    navigate('/home')
+
+  }
+
+
+
 
   return (
     <React.Fragment>
+      {customerAllEvant.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
       <div className="customer-view-wrapper">
         <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
         <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
@@ -341,7 +398,7 @@ const CustomerView = () => {
               <img src={PlusSign} alt="" />
             </button>
             <button id="mobileCVExitSearch" onClick={CustomerSearchMobi}>
-              <img src="../assets/images/SVG/AngledBracket-Left-Blue.svg" alt="" />
+              <img src={AngledBracketBlueleft} alt="" />
               Go Back
             </button>
             <p className="mobile-only">Search for Customer</p>
@@ -365,26 +422,33 @@ const CustomerView = () => {
               <input type="text" id="filterType" />
               <img src={FilterCollapseIcon} alt="" />
               <div id="sortCurrent" className="sort-current">
-                <img src={FilterArrowUp} alt="" />
-                <p>{filterType}</p>
+                <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
+                <p>{sortbyvaluename}</p>
               </div>
-              <div onClick={() => SetFilter('All-')} className="sort-option" data-value="emailAsc">
+
+
+
+              <div onClick={(e) => sortByList("firstnameforward", "FirstName")} className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
-                <p>all</p>
+                <p>FirstName</p>
               </div>
-              <div onClick={() => SetFilter('Email-')} className="sort-option" data-value="emailAsc">
+              <div onClick={(e) => sortByList("firstnamebackward", "FirstName")} className="sort-option" >
+                <img src={FilterArrowDown} alt="" />
+                <p>FirstName</p>
+              </div>
+              <div onClick={(e) => sortByList("emailforward", "Email")} className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={() => SetFilter('LastName-')} className="sort-option" data-value="lastname">
-                <img src={FilterArrowUp} alt="" />
-                <p>lastName</p>
-              </div>
-              <div onClick={() => SetFilter('email')} className="sort-option" data-value="emailAsc">
+              <div onClick={(e) => sortByList("emailbackward", "Email")} className="sort-option">
                 <img src={FilterArrowDown} alt="" />
                 <p>Email</p>
               </div>
-              <div onClick={() => SetFilter('lastname')} className="sort-option" data-value="lastname">
+              <div onClick={(e) => sortByList("lastnameforward", "LastName")} className="sort-option" data-value="emailAsc">
+                <img src={FilterArrowUp} alt="" />
+                <p>LastName</p>
+              </div>
+              <div onClick={(e) => sortByList("lastnamebackward", "LastName")} className="sort-option">
                 <img src={FilterArrowDown} alt="" />
                 <p>lastName</p>
               </div>
@@ -520,7 +584,7 @@ const CustomerView = () => {
           <Cusomercreate isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
           <div className="footer">
             <button id="customerToTransactions">View Transactions</button>
-            <button id="addCustToSaleButton">Add To Sale</button>
+            <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
           </div>
         </div>
       </div>

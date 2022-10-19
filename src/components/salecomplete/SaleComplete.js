@@ -10,7 +10,7 @@ import QuoteApp_Icon from '../../assets/images/Temp/QuoteApp_Icon.png';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
-import {getTotalTaxByName} from  "../common/TaxSetting";
+import { getTotalTaxByName } from "../common/TaxSetting";
 // import { product } from "../dashboard/product/productSlice";
 // import { addtoCartProduct } from "../dashboard/product/productLogic";
 import { PrintPage } from "../common/PrintPage";
@@ -23,6 +23,8 @@ import moment from "moment";
 import { isSafari } from "react-device-detect";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import STATUSES from "../../constants/apiStatus";
+var JsBarcode = require('jsbarcode');
+var print_bar_code;
 const SaleComplete = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -30,16 +32,20 @@ const SaleComplete = () => {
     const [isRemember, setisRemember] = useState(false);
     const [changeAmount, setChangeAmount] = useState(0);
     const [paymentAmount, setPaymentAmount] = useState(0);
-    const [custEmail,setCustEmail]=useState('');
-    const [isLoading,setIsLoading]=useState(false);
+    const [custEmail, setCustEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [tempOrder_Id, setTempOrder_Id] = useState(localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '')
     useEffect(() => {
         printdetails();
-    });
-    const newSale=()=>
-    {
+        // var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
+        // if ((!ActiveUser.key.isSelfcheckout || ActiveUser.key.isSelfcheckout === false) && checkPrintreciept && checkPrintreciept == true) {
+        //     printReceipt();
+        // }
+    }, [changeAmount, paymentAmount]);
+    const newSale = () => {
         localStorage.removeItem('CARD_PRODUCT_LIST');
         localStorage.removeItem('GTM_ORDER');
-       
+
         localStorage.removeItem('ORDER_ID');
         localStorage.removeItem('CHECKLIST');
         localStorage.removeItem('oliver_order_payments');
@@ -58,7 +64,7 @@ const SaleComplete = () => {
         localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
         localStorage.removeItem('PrintCHECKLIST');
 
-       // dispatch(addtoCartProduct(null));
+        // dispatch(addtoCartProduct(null));
         navigate('/home');
     }
     const toggleShowEndSession = () => {
@@ -67,16 +73,18 @@ const SaleComplete = () => {
     const toggleisRemember = () => {
         setisRemember(!isRemember);
     }
-    // const textToBase64Barcode=(text)=> {
-    //     var canvas = document.createElement("canvas");
-    //     JsBarcode(canvas, text, {
-    //         format: "CODE39", displayValue: false, width: 1,
-    //         height: 30,
-    //     });
-    //     print_bar_code = canvas.toDataURL("image/png");
-    //     return print_bar_code;
-    // }
-    const printdetails=()=> {
+    const textToBase64Barcode = (text) => {
+        if (text != "" && typeof text != "undefined") {
+            var canvas = document.createElement("canvas");
+            JsBarcode(canvas, text, {
+                format: "CODE39", displayValue: false, width: 1,
+                height: 30,
+            });
+            print_bar_code = canvas.toDataURL("image/png");
+        }
+        return print_bar_code;
+    }
+    const printdetails = () => {
 
         var ListItem = new Array();
         var _typeOfTax = typeOfTax()
@@ -84,12 +92,12 @@ const SaleComplete = () => {
         var PrintDetails = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : null;
 
         if (PrintDetails && PrintDetails !== null) {
-                PrintDetails.order_meta&& PrintDetails.order_meta.map((meta) => {
-                    if (meta._order_oliverpos_cash_change) {
-                        setChangeAmount(meta._order_oliverpos_cash_change.change);
-                        setPaymentAmount(meta._order_oliverpos_cash_change.cashPayment);
-                    }
-                  })
+            PrintDetails.order_meta && PrintDetails.order_meta.map((meta) => {
+                if (meta._order_oliverpos_cash_change) {
+                    setChangeAmount(meta._order_oliverpos_cash_change.change);
+                    setPaymentAmount(meta._order_oliverpos_cash_change.cashPayment);
+                }
+            })
             if (PrintDetails && PrintDetails.productx_line_items && PrintDetails.productx_line_items !== null && PrintDetails.productx_line_items.length > 0) {
                 PrintDetails.productx_line_items.map(item => {
                     ListItem.push({
@@ -171,7 +179,7 @@ const SaleComplete = () => {
         }
 
         if (PrintDetails && PrintDetails.customer_email != "") {
-           setCustEmail(PrintDetails.customer_email );
+            setCustEmail(PrintDetails.customer_email);
             //PrintDetails && PrintDetails.billing_address && PrintDetails.billing_address.map(item => { 
             PrintDetails && PrintDetails.shipping_address && PrintDetails.shipping_address.map(item => {
                 addcust = {
@@ -258,12 +266,12 @@ const SaleComplete = () => {
             redeemedPoints: redeemedPointsToPrint ? redeemedPointsToPrint : 0,
             redeemedAmountToPrint: redeemedAmountToPrint ? redeemedAmountToPrint : 0,
             meta_datas: PrintDetails && PrintDetails.order_meta,
-            _currentTime: PrintDetails._currentTime?PrintDetails._currentTime:''
+            _currentTime: (PrintDetails._currentTime && PrintDetails._currentTime != null && typeof PrintDetails._currentTime != "undefined") ? PrintDetails._currentTime : ''
         }
         localStorage.setItem("PrintCHECKLIST", JSON.stringify(CheckoutList));
         //localStorage.removeItem("CHECKLIST");
     }
-	const printReceipt=(appResponse = undefined)=> {
+    const printReceipt = (appResponse = undefined) => {
         var type = 'completecheckout';
         var address;
         var site_name;
@@ -306,16 +314,14 @@ const SaleComplete = () => {
         if (checkList && checkList != "") {
             findTicketInfo = checkList.ListItem.find(findTicketInfo => (findTicketInfo.ticket_info && findTicketInfo.ticket_info.length > 0))
         }
-      
+
         if (tempOrderId) {
             setTimeout(function () {
                 var getPdfdateTime = ''; var isTotalRefund = ''; var cash_rounding_amount = '';
-                // console.log("Checklst", checkList);
                 if (ActiveUser.key.isSelfcheckout == true) {
-                    //PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, textToBase64Barcode(tempOrderId), orderList, type, productxList, AllProductList, TotalTaxByName, appResponse)
+                    PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, textToBase64Barcode(tempOrderId), orderList, type, productxList, AllProductList, TotalTaxByName, appResponse)
                 }
                 else {
-					var print_bar_code="";
                     PrintPage.PrintElem(checkList, getPdfdateTime = '', isTotalRefund = '', cash_rounding_amount = cash_rounding_total, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, 0, appResponse)
                 }
                 if (ActiveUser.key.isSelfcheckout == true) {
@@ -331,7 +337,7 @@ const SaleComplete = () => {
             }
         }
     }
-    const sendMail=()=> {
+    const sendMail = () => {
         //var udid = get_UDid();
         var order_id = localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '';//$("#order-id").val();
         var email_id = custEmail;
@@ -361,7 +367,7 @@ const SaleComplete = () => {
             }
         } else {
             //this.setState({ IsEmailExist: true })
-            
+
             if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email_id)) {
                 setIsLoading(true);
                 // this.setState({
@@ -370,17 +376,17 @@ const SaleComplete = () => {
                 // })
                 // if ($(".checkmark").hasClass("isCheck")) {
                 // save new customer on sale complete
-                dispatch(saveCustomerToTempOrder({order_id:order_id,email_id:email_id}))
+                dispatch(saveCustomerToTempOrder({ order_id: order_id, email_id: email_id }))
                 // Add into notfication list ----------------------------------------
                 // Create localstorage to store temporary orders--------------------------
-               // $("#btnSubmit").attr("disabled", true);
+                // $("#btnSubmit").attr("disabled", true);
                 var TempOrders = [];
                 if (localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`)) {
                     TempOrders = JSON.parse(localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`));
                 }
                 TempOrders.push({ "TempOrderID": order_id, "Status": "false", "Index": TempOrders.length, "OrderID": 0, 'order_status': "completed", 'date': moment().format(Config.key.NOTIFICATION_FORMAT), 'Sync_Count': 0, 'new_customer_email': email_id, 'isCustomerEmail_send': false });
                 localStorage.setItem(`TempOrders_${ActiveUser.key.Email}`, JSON.stringify(TempOrders));
-               //$("#btnSendEmail").attr("readonly", true);
+                //$("#btnSendEmail").attr("readonly", true);
                 // this.clear();
             } else {
                 setIsLoading(false);
@@ -394,68 +400,71 @@ const SaleComplete = () => {
     }
     const [respSaveCustomerToTempOrder] = useSelector((state) => [state.saveCustomerToTempOrder])
     useEffect(() => {
-        if ((respSaveCustomerToTempOrder && respSaveCustomerToTempOrder.status == STATUSES.IDLE && respSaveCustomerToTempOrder.is_success && isLoading===true) ) {
-            
+        if ((respSaveCustomerToTempOrder && respSaveCustomerToTempOrder.status == STATUSES.IDLE && respSaveCustomerToTempOrder.is_success && isLoading === true)) {
+
             setIsLoading(false);
             alert("mail send successfully");
             setCustEmail('');
         }
-    }, [respSaveCustomerToTempOrder,isLoading]);
+    }, [respSaveCustomerToTempOrder, isLoading]);
 
-    var checkList = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
+    //var checkList = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
     return (
         <React.Fragment>
             <div className="sale-complete-wrapper">
-			<div className="main">
-				<img src={Sale_Complete} alt="" />
-				{changeAmount!=0?<div className="change-container">
-					<p className="style1">Change: ${parseFloat(changeAmount).toFixed(2)}</p>
-					<p className="style2">Out of ${parseFloat(paymentAmount).toFixed(2)}</p>
-				</div>:null}
-				<label className="email-label">
-					<input type="email" placeholder="Enter email address here" defaultValue={custEmail} onChange={e => setCustEmail(e.target.value)} />
-					<button onClick={()=>sendMail()}>{LocalizedLanguage.emailReceipt}</button>
-				</label>
-				<label className="checkbox-label">
-					Remember this customer?
-					<input type="checkbox" checked={isRemember===true?true:false} onClick={()=>toggleisRemember()}/>
-					<div className="custom-checkbox">
-						<img src={Checkmark} alt="" />
-					</div>
-				</label>
-				<button onClick={()=>printReceipt()}>{LocalizedLanguage.printReceipt}</button>
-				<button id="emailSubwindowButton">{LocalizedLanguage.emailReceipt}</button>
-			</div>
-			<div className="footer">
-				<div className="button-container">
-					<button id="endSession" onClick={()=>toggleShowEndSession()}>
-						<img src={LogOut_Icon_White} alt="" />
-						End Session
-					</button>
-				</div>
-				<div className="app-container">
-					<button>
-						<img src={spongebob_squarepants_2} alt="" />
-					</button>
-					<button>
-						<img src={Google_Calendar_Icon} alt="" />
-					</button>
-					<button>
-						<img src={DYMO_Icon} alt="" />
-					</button>
-					<button>
-						<img src={QuoteApp_Icon} alt="" />
-					</button>
-					<button>
-						<img src={QuoteApp_Icon} alt="" />
-					</button>
-				</div>
-				<div className="button-container" onClick={()=>newSale()}>
-					<button id="newSale">{LocalizedLanguage.newSale}</button>
-				</div>
-			</div>
-		</div>
-        <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
+                <div className="main">
+                    <div style={{ display: 'none' }} >
+                        <img src={textToBase64Barcode(tempOrder_Id)} />
+                    </div>
+                    <img src={Sale_Complete} alt="" />
+                    {changeAmount != 0 ? <div className="change-container">
+                        <p className="style1">Change: ${parseFloat(changeAmount).toFixed(2)}</p>
+                        <p className="style2">Out of ${parseFloat(paymentAmount).toFixed(2)}</p>
+                    </div> : null}
+                    <label className="email-label">
+                        <input type="email" placeholder="Enter email address here" defaultValue={custEmail} onChange={e => setCustEmail(e.target.value)} />
+                        <button onClick={() => sendMail()}>{LocalizedLanguage.emailReceipt}</button>
+                    </label>
+                    <label className="checkbox-label">
+                        Remember this customer?
+                        <input type="checkbox" defaultChecked={isRemember === true ? true : false} onClick={() => toggleisRemember()} />
+                        <div className="custom-checkbox">
+                            <img src={Checkmark} alt="" />
+                        </div>
+                    </label>
+                    <button onClick={() => printReceipt()}>{LocalizedLanguage.printReceipt}</button>
+                    <button id="emailSubwindowButton">{LocalizedLanguage.emailReceipt}</button>
+                </div>
+                <div className="footer">
+                    <div className="button-container">
+                        <button id="endSession" onClick={() => toggleShowEndSession()}>
+                            <img src={LogOut_Icon_White} alt="" />
+                            End Session
+                        </button>
+                    </div>
+                    <div className="app-container">
+                        <button>
+                            <img src={spongebob_squarepants_2} alt="" />
+                        </button>
+                        <button>
+                            <img src={Google_Calendar_Icon} alt="" />
+                        </button>
+                        <button>
+                            <img src={DYMO_Icon} alt="" />
+                        </button>
+                        <button>
+                            <img src={QuoteApp_Icon} alt="" />
+                        </button>
+                        <button>
+                            <img src={QuoteApp_Icon} alt="" />
+                        </button>
+                    </div>
+                    <div className="button-container" onClick={() => newSale()}>
+                        <button id="newSale">{LocalizedLanguage.newSale}</button>
+                    </div>
+                </div>
+            </div>
+            <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
         </React.Fragment>)
     // }
 

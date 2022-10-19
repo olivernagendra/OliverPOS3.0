@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
 import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg';
 import AppLauncher from "../common/commonComponents/AppLauncher";
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 function Cashmanagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -183,15 +184,16 @@ function Cashmanagement() {
   var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
   var localCashData = localStorage.getItem("Cash_Management_Data") ? JSON.parse(localStorage.getItem("Cash_Management_Data")) : '';
-  
+
   return (
     <>
       <React.Fragment>
+      {status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
         <div className="cash-management-wrapper">
           <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
           <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
 
-          <div class="mobile-cm-header">
+          <div className="mobile-cm-header">
             <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""} >
               <img src="" alt="" />
             </button>

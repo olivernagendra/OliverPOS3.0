@@ -15,7 +15,8 @@ import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import { get_customerName } from "../../common/localSettings";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { useIndexedDB } from 'react-indexed-db';
-import { NumericFormat } from 'react-number-format'
+import { NumericFormat } from 'react-number-format';
+import { paymentAmount } from "../../checkout/checkoutSlice";
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const CartList = (props) => {
     const [discount, setDiscount] = useState(0.00);
     const [total, setTotal] = useState(0.00);
     const [taxRate, setTaxRate] = useState(0.00);
-    const [checkoutData, setCheckoutData] = useState(0.00);
+    const [checkoutData, setCheckoutData] = useState(false);
     const [updateProductStatus, setUpdateProductStatus] = useState(false)
     const [checkseatStatus, setCheckseatStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -487,26 +488,29 @@ const CartList = (props) => {
                 } else {
                     IsExist = true;
                 }
-                // if (nextProps.cartproductlist) {
-                //     nextProps.cartproductlist && nextProps.cartproductlist.map(ticketInfo => {
-                //         if (ticketInfo.ticket_info && ticketInfo.ticket_info.length > 0 && ticketInfo.ticket_info !== "[]") {
-                //             CHECKLIST && CHECKLIST.ListItem.map(findId => {
-                //                 if (findId.ticket_info && findId.ticket_info.length > 0) {
-                //                     findId.ticket_info.map(chart_Id => {
-                //                         var chart_id = chart_Id && chart_Id.chart_id ? chart_Id.chart_id : null;
-                //                         if (chart_id) {
-                //                             IsExsitTicket = true;
-                //                         }
-                //                     })
-                //                 }
-                //             })
-                //         }
-                //     })
-                // }
+                var CHECKLIST = localStorage.getItem("CHECKLIST") ? JSON.parse(localStorage.getItem("CHECKLIST")) : null;
+                var cartproductlist= localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : null;
+                if (cartproductlist) {
+                    cartproductlist && cartproductlist.map(ticketInfo => {
+                        if (ticketInfo.ticket_info && ticketInfo.ticket_info.length > 0 && ticketInfo.ticket_info !== "[]") {
+                            CHECKLIST && CHECKLIST.ListItem.map(findId => {
+                                if (findId.ticket_info && findId.ticket_info.length > 0) {
+                                    findId.ticket_info.map(chart_Id => {
+                                        var chart_id = chart_Id && chart_Id.chart_id ? chart_Id.chart_id : null;
+                                        if (chart_id) {
+                                            IsExsitTicket = true;
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                }
 
                 if (IsExist === true && IsExsitTicket === false && checkseatStatus == false && checkoutData == false) {
                     localStorage.removeItem("oliver_order_payments");
-                    localStorage.removeItem("VOID_SALE")
+                    localStorage.removeItem("VOID_SALE");
+                    dispatch(paymentAmount(null));
                     navigate('/checkout');
                 }
                 setUpdateProductStatus(true);
@@ -791,12 +795,12 @@ const CartList = (props) => {
                         </div>
                     </div>
                     <div className="checkout-container">
-                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
                     </div>
                 </div>
             </div>
             <div className="mobile-homepage-footer">
-                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
             </div>
         </React.Fragment>)
 }

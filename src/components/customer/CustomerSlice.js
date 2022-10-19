@@ -222,7 +222,7 @@ export const CustomerUpdateSlice = createSlice({
           state.error="";
           state.is_success=false;
         })
-        .addCase(customergetPage.fulfilled, (state, action) => {       
+        .addCase(customergetPage.fulfilled, (state, action) => {  
             state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
             state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
             state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;

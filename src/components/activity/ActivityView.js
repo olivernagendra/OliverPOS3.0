@@ -1,13 +1,66 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
+import ClearCart from '../../assets/images/svg/ClearCart-Icon.svg'
+import OliverIconBaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg'
+import DropdownArrow from '../../assets/images/svg/DropdownArrow.svg'
+import calendar from '../../assets/images/svg/calendar.svg'
+//import Select from 'react-select'
+import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
+import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
+import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
+import FilterCollapseIcon from '../../assets/images/svg/FilterCollapseIcon.svg'
+import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
+import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
+import PlusSign from '../../assets/images/svg/PlusSign.svg'
+import { useNavigate } from 'react-router-dom';
+import { get_UDid } from '../common/localSettings';
+import moment from 'moment';
+import STATUSES from "../../constants/apiStatus";
+import { LoadingSmallModal } from '../common/commonComponents/LoadingSmallModal'
+import AppLauncher from "../common/commonComponents/AppLauncher";
+import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { activityRecords, getDetail, getFilteredActivities } from './ActivitySlice'
+import Config from '../../Config'
+import ActivityList from "./ActivityList";
+import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
+import ActivityOrderDetail from "./ActivityOrderDetail";
+import ActivityOrderList from "./ActivityOrderList";
+import { ActivityFooter } from "./ActivityFooter";
+
 const ActivityView = () => {
 
+    const [AllActivityList, setAllActivityList] = useState([])
+    const [updateActivityId, setupdateActivityId] = useState('')
+    const [SelectedTypes, setSelectedTypes] = useState('')
+    const [FilteredActivityList, setFilteredActivityList] = useState('')
+    const [selectedOption, setSelectedOption] = useState('')
+    const [sortbyvaluename, SetSortByValueName] = useState('Date')
+    const [emailnamephone, setEmailNamePhone] = useState('')
+    const [pricefrom, setPriceFrom] = useState('')
+    const [priceto, setPriceTo] = useState('')
+    const [filterByPlatform, setFilterByPlatform] = useState('')
+    const [filterByStatus, setFilterByStatus] = useState('')
+    const [isloader, setSmallLoader] = useState(true)
+    const [getPdfdateTime, setGetPdfdateTime] = useState('')
+
+    const [filterByUser, setfilterByUser] = useState('')
+    const [selectuserfilter, setSelectuserFilter] = useState('')
+    // Toggle State------------
+    const [isEmployeeWrapper, setEmployeeToggle] = useState(false)
+    const [salepersonWrapper, setSalePersontoggle] = useState(false)
+    const [isSelectStatus, setSelectStatus] = useState(false)
     const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
     const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
     const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
-
+    const [isCvmobile, setCvmobile] = useState(false)
     const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
+    const [isMobileNav, setisMobileNav] = useState(false);
+    const [isSortWrapper, setSortWrapper] = useState(false)
+    const [responsiveCusList, setResponsiveCusList] = useState(false)
 
+    // All TOGGLE 
     const toggleAppLauncher = () => {
         setisShowAppLauncher(!isShowAppLauncher)
         setisShowLinkLauncher(false)
@@ -16,482 +69,621 @@ const ActivityView = () => {
         setisShowLinkLauncher(!isShowLinkLauncher)
         setisShowAppLauncher(false)
     }
-
     const toggleiFrameWindow = () => {
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
-    // const toggleOptionPage = () => {
-    //     setisShowOptionPage(!isShowOptionPage)
-    // }
-    // const toggleOutOfStock = () => {
-    //     setisOutOfStock(!isOutOfStock)
-    // }
-    // const toggleCreateCustomer = () => {
-    //     setisShowCreateCustomer(!isShowCreateCustomer)
-    // }
-    // const toggleShowMobLeftNav = () => {
-    //     setisShowMobLeftNav(!isShowMobLeftNav)
-    // }
-    // const toggleSelectDiscountBtn = () => {
-    //     setisSelectDiscountBtn(!isSelectDiscountBtn)
-    // }
-    // const toggleMsgPopup = () => {
-    //     setisShowMsg(!isShowMsg)
-    // }
+    const toggleMobileNav = () => {
+        setisMobileNav(!isMobileNav)
+        setisShowMobLeftNav(!isShowMobLeftNav)
+    }
+    const mobileTransactionsSearch = () => {
+        setCvmobile(!isCvmobile)
+    }
+
+    const toggleSortWrapp = () => {
+        setSortWrapper(!isSortWrapper)
+    }
+
+    const toggleStatus = () => {
+        setSelectStatus(!isSelectStatus)
+    }
+    const toggleSaleperson = () => {
+        setSalePersontoggle(!salepersonWrapper)
+    }
+    const toggleEmployee = () => {
+        setEmployeeToggle(!isEmployeeWrapper)
+    }
+    const toggleResponsiveList = () => {
+        setResponsiveCusList(!responsiveCusList)
+    }
+
+
+    // -------------------------------------------------------
+    const dispatch = useDispatch();
+
+
+
+
+
+
+
+    /// GET ALL PAGE API FIRST TIME CALL___
+    let useCancelled = false;
+    useEffect(() => {
+        if (useCancelled == false) {
+            reload()
+        }
+        return () => {
+            useCancelled = true;
+        }
+    }, []);
+
+    const reload = (pagno) => {
+        var UID = get_UDid('UDID')
+        var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
+        dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": 1 }));
+    }
+
+    // set all Activity List response from record Api
+    const [activityAllDetails] = useSelector((state) => [state.activityRecords])
+    useEffect(() => {
+        if (activityAllDetails && activityAllDetails.data.length > 0) {
+            setAllActivityList(activityAllDetails.data);
+        }
+    }, [activityAllDetails]);
+
+
+    // --Set Filter response from filter Api
+    const [activityfilter] = useSelector((state) => [state.getFilteredActivities])
+    useEffect(() => {
+        //  console.log("activityfilter", activityfilter)
+        if (activityfilter && activityfilter.data.length > 0) {
+            setAllActivityList(activityfilter.data);
+            setSmallLoader(false)
+        }
+    }, [activityfilter]);
+
+
+
+
+
+    useEffect(() => {
+        ActivityDataSearch();
+    }, [SelectedTypes, AllActivityList]);
+
+    // Sort By-------
+    const ActivityDataSearch = () => {
+        var scount = 0;
+        var _filteredActivity = AllActivityList
+        //Highest to lowest
+        if (SelectedTypes == 'amountAsc') {
+            _filteredActivity = _filteredActivity.slice().sort((a, b) => b.total - a.total)
+        }
+        // Lowest to highest
+        if (SelectedTypes == 'amountDesc') {
+            _filteredActivity = _filteredActivity.slice().sort((a, b) => a.total - b.total)
+        }
+
+        // // Date Ascending order
+        if (SelectedTypes == 'dateAsc') {
+            _filteredActivity = _filteredActivity.slice().sort(function (a, b) {
+                return new Date(b.date) - new Date(a.date);
+            });
+        }
+        // // Date Desending Order
+        if (SelectedTypes == 'dateDesc') {
+            _filteredActivity = _filteredActivity.slice().sort(function (a, b) {
+                return new Date(a.date) - new Date(b.date);
+            });
+        }
+        setFilteredActivityList(_filteredActivity);
+        scount += _filteredActivity.length;
+        // console.log("_filteredActivity", _filteredActivity)
+        // console.log("customer count", scount)
+    }
+
+
+
+
+
+
+    // Filter activity list Accourding To Date
+    var getDistinctActivity = {};
+    var _activity = FilteredActivityList;
+    _activity && _activity.map(item => {
+        var dateKey = FormateDateAndTime.formatDateAndTime(item.date_time && item.date_time !== undefined ? item.date_time : item.CreatedDate, item.time_zone);
+        if (!getDistinctActivity.hasOwnProperty(dateKey)) {
+            getDistinctActivity[dateKey] = new Array(item);
+        } else {
+            if (typeof getDistinctActivity[dateKey] !== 'undefined' && getDistinctActivity[dateKey].length > 0) {
+                getDistinctActivity[dateKey].push(item)
+            }
+        }
+    })
+    //  console.log("getDistinctActivity", getDistinctActivity)
+    //---------------------------------------------------
+
+
+    /// Click By Activity List Components
+    const activeClass = (item, index, isMobileClicked) => {
+        var _item = JSON.stringify(item);
+        if ((item.order_id == localStorage.getItem("CUSTOMER_TO_OrderId") || item.order_id == localStorage.getItem("CUSTOMER_TO_ACTVITY"))) {
+
+        } else {
+            localStorage.removeItem("CUSTOMER_TO_ACTVITY")
+            //  this.setState({ custActive: false, common_Msg: '' })
+            localStorage.removeItem("CUSTOMER_TO_OrderId");
+            //   $(".activity-order").removeClass("table-primary-label");
+            //  $(`#activity-order-${index}`).addClass("table-primary-label");
+            var mydate = new Date(item.date);
+            var getPdfdate = (mydate.getMonth() + 1) + '/' + mydate.getDate() + '/' + mydate.getFullYear() + ' ' + item.time;
+            var itemCreatedDate = FormateDateAndTime.formatDateAndTime(item.date_time, item.time_zone)
+            setupdateActivityId(item.order_id)
+            setGetPdfdateTime(getPdfdate)
+            // this.setState({
+            //     active: index,
+            //     CreatedDate: itemCreatedDate,
+            //     getPdfdateTime: getPdfdate,
+            //     pushInactivityBuffer: false
+            // })
+            var UID = get_UDid('UDID');
+            if (item.order_id) {
+                dispatch(getDetail(item.order_id, UID));
+            }
+            setResponsiveCusList(!responsiveCusList)
+            //this.props.dispatch(checkoutActions.getOrderReceipt());
+            // $(".button_with_checkbox input").prop("checked", false);
+        }
+    }
+
+
+    // First Time  activityDetails API Call
+    let useCancelled1 = false;
+    useEffect(() => {
+        var UID = get_UDid('UDID');
+        var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
+        setupdateActivityId(customer_to_activity_id)
+        // console.log("customer_to_activity_id",customer_to_activity_id)
+        if (useCancelled1 == false) {
+            if (customer_to_activity_id) {
+                dispatch(getDetail(customer_to_activity_id, UID));
+            }
+        }
+        return () => {
+            useCancelled1 = true;
+        }
+    }, [AllActivityList]);
+
+
+    useEffect(() => {
+        document.querySelectorAll(".date-selector-wrapper > button").forEach((button) => {
+            button.addEventListener("click", (e) => {
+                let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
+                let openDateSelector = document.querySelector(".date-selector.open");
+                if (openDateSelector) {
+                    openDateSelector.classList.remove("open");
+                }
+                if (currentDateSelector != openDateSelector) {
+                    initCalendarDate(new Date(), currentDateSelector);
+                    currentDateSelector.classList.add("open");
+                }
+            });
+        });
+        
+        let monthTranslate = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        function initCalendarDate(date, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button class="raise-level">${
+                monthTranslate[date.getMonth()]
+            } ${date.getFullYear()}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="day-row"><div class="day">Su</div><div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                let monthYear = e.currentTarget.nextElementSibling.innerHTML.split(" ");
+                let monthIndex = monthTranslate.indexOf(monthYear[0]) - 1;
+                if (monthIndex == -1) {
+                    monthIndex = 11;
+                    monthYear[1]--;
+                }
+                initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
+                initCalendarMonths(parseInt(e.currentTarget.innerHTML.split(" ")[1]), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                let monthYear = e.currentTarget.previousElementSibling.innerHTML.split(" ");
+                let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
+                if (monthIndex == 12) {
+                    monthIndex = 0;
+                    monthYear[1]++;
+                }
+                initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
+            });
+            let daysInCurrentMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+            let dayIndex = 1;
+            let nextMonthIndex = 1;
+            let daysInLastMonth = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+            let firstWeekday = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
+            let dateArray = [];
+            for (let i = 0; i < 42; i++) {
+                if (firstWeekday > -1) {
+                    dateArray.push(daysInLastMonth - firstWeekday);
+                    firstWeekday--;
+                } else if (dayIndex <= daysInCurrentMonth) {
+                    dateArray.push(dayIndex);
+                    dayIndex++;
+                } else {
+                    dateArray.push(nextMonthIndex);
+                    nextMonthIndex++;
+                }
+            }
+            let isDisabled = true;
+            for (let i = 0; i < 6; i++) {
+                let dateRow = document.createElement("div");
+                dateRow.classList.add("date-row");
+                for (let j = 0; j < 7; j++) {
+                    let cell = document.createElement("button");
+                    cell.classList.add("cell");
+                    let dateContent = dateArray[i * 7 + j];
+                    if (dateContent == 1) {
+                        isDisabled = !isDisabled;
+                    }
+                    // console.log(dateContent)
+                    cell.textContent = dateContent;
+                    cell.disabled = isDisabled;
+                    cell.addEventListener("click", (e) => {
+                        let currentSelector = e.currentTarget.parentNode.parentNode;
+                        let monthYear = currentSelector.firstElementChild.children[1].innerHTML.split(" ");
+                        let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
+                        currentSelector.parentNode.querySelector("input").value = `${
+                            e.currentTarget.innerHTML.length == 2 ? e.currentTarget.innerHTML : "0" + e.currentTarget.innerHTML
+                        }/${monthIndex.toString().length == 2 ? monthIndex : "0" + monthIndex}/${monthYear[1]}`;
+                        currentSelector.classList.remove("open");
+                    });
+                    dateRow.appendChild(cell);
+                }
+                dateSelector.appendChild(dateRow);
+            }
+        }
+        
+        function initCalendarMonths(year, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button>${year}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="month-row"><button class="cell">January</button><button class="cell">February</button><button class="cell">March</button></div><div class="month-row"><button class="cell">April</button><button class="cell">May</button><button class="cell">June</button></div><div class="month-row"><button class="cell">July</button><button class="cell">August</button><button class="cell">September</button></div><div class="month-row"><button class="cell">October</button><button class="cell">Novemeber</button><button class="cell">December</button></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                e.currentTarget.nextElementSibling.innerHTML = parseInt(e.currentTarget.nextElementSibling.innerHTML) - 1;
+            });
+            dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                e.currentTarget.previousElementSibling.innerHTML = parseInt(e.currentTarget.previousElementSibling.innerHTML) + 1;
+            });
+            dateSelector.querySelectorAll(".month-row > button.cell").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    let dateSelector = e.currentTarget.parentNode.parentNode;
+                    initCalendarDate(
+                        new Date(parseInt(dateSelector.firstElementChild.children[1].innerHTML), monthTranslate.indexOf(e.currentTarget.innerHTML), 1),
+                        dateSelector
+                    );
+                });
+            });
+        }
+        
+        function initCalendarYears(startYear, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><div>${startYear} - ${
+                startYear + 11
+            }</div><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="year-row"><button class="cell">${startYear}</button><button class="cell">${
+                startYear + 1
+            }</button><button class="cell">${startYear + 2}</button></div><div class="year-row"><button class="cell">${
+                startYear + 3
+            }</button><button class="cell">${startYear + 4}</button><button class="cell">${
+                startYear + 5
+            }</button></div><div class="year-row"><button class="cell">${startYear + 6}</button><button class="cell">${
+                startYear + 7
+            }</button><button class="cell">${startYear + 8}</button></div><div class="year-row"><button class="cell">${
+                startYear + 9
+            }</button><button class="cell">${startYear + 10}</button><button class="cell">${startYear + 11}</button></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.nextElementSibling.innerHTML.split(" - ")[0]) - 12, e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.previousElementSibling.innerHTML.split(" - ")[1]) + 1, e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.querySelectorAll(".year-row > button.cell").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    initCalendarMonths(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
+                });
+            });
+        }
+        
+    }, []);
+
+    const sortByList = (filterType, FilterValue) => {
+        SetSortByValueName(FilterValue)
+        setSelectedTypes(filterType);
+    }
+
+    // filter All Function 
+    const SetFilterStatus = (filterType, FilterValue, label) => {
+        if (filterType == 'status') {
+            setFilterByStatus(FilterValue)
+        }
+    }
+    const SetFilterPlatform = (filterType, FilterValue, label) => {
+        if (filterType == 'platform') {
+            setFilterByPlatform(FilterValue)
+        }
+    }
+    const SetFilterUser = (filterType, FilterValue, label) => {
+        if (filterType == 'user') {
+            if (FilterValue !== "") {
+                setfilterByUser(FilterValue)
+                setSelectuserFilter(label)
+            }
+        }
+    }
+    //-----------------------
+
+
+
+    // Filter Submit Btn
+    const applyServerFilter = () => {
+        var UID = get_UDid('UDID');
+        var pagesize = Config.key.ACTIVITY_PAGE_SIZE
+        // var fromdate = document.getElementById("txtfromdate");
+        // var txttodate = document.getElementById("txttodate");
+        //  var txtSearch = $("#search-orders").val();
+        // var _startdate = fromdate && fromdate.value !== "" ? new Date(fromdate.value) : "";
+        // var _enddate = txttodate && txttodate.value !== "" ? new Date(txttodate.value) : "";
+        var s_dd = 0;
+        var s_mm = 0;
+        var s_yy = 0;
+        var e_dd = 0;
+        var e_mm = 0;
+        var e_yy = 0;
+        // if (_startdate && _startdate !== "") {
+        //     s_dd = _startdate.getDate();
+        //     s_mm = _startdate.getMonth() + 1;
+        //     s_yy = _startdate.getFullYear();
+        // }
+        // if (_enddate && _enddate !== "") {
+        //     e_dd = _enddate.getDate();
+        //     e_mm = _enddate.getMonth() + 1;
+        //     e_yy = _enddate.getFullYear();
+        // }
+
+        var _filterParameter = {
+            "PageSize": pagesize,
+            "PageNumber": 0,
+            "isSearch": "true",
+            "udid": UID,
+            "plateform": filterByPlatform,
+            "status": filterByStatus,
+            "userId": filterByUser,
+            // "SatrtDay": s_dd,
+            // "SatrtMonth": s_mm,
+            // "SatrtYear": s_yy,
+            // "EndDay": e_dd,
+            // "EndMonth": e_mm,
+            // "EndYear": e_yy,
+            "searchVal": emailnamephone,
+            //"groupSlug": this.state.filterByGroupList,
+
+        };
+        dispatch(getFilteredActivities(_filterParameter));
+        //Display List
+        // var dvFilter = document.getElementById("activityFilter");
+        // if ((dvFilter || (txtSearch && txtSearch !== '')) && isMobileOnly !== true) {
+        //     dvFilter.style.display = "none"
+        //     this.setState({ filterButtonText: LocalizedLanguage.cancel });
+        // }
+    }
+
+
+    const PrintClick = () => {
+
+    }
+
+    const clearFilter = () => {
+        setfilterByUser("")
+        setFilterByStatus("")
+        setFilterByPlatform("")
+    }
+
+    // console.log("filterByPlatform",filterByPlatform)
+    // console.log("filterByStatus",filterByStatus)
+    // console.log("filterByUser",filterByUser)
+
+
+
+    const handleUserChange = (selectedOption) => {
+        // const { name, value } = e.target;
+        setSelectedOption(selectedOption)
+
+    }
+
+    const _Useroptions = [];
+    _Useroptions.push({ value: "", label: "All" });
+    var _userList = null
+    _userList = localStorage.getItem('user_List') && localStorage.getItem('user_List') !== 'undefined' && typeof (localStorage.getItem('user_List')) !== undefined ? JSON.parse(localStorage.getItem('user_List')) : null;
+    if (_userList !== null) {
+        _userList.map((user) => {
+            var option = { value: user.Id, label: user.Name };
+            _Useroptions.push(option);
+        })
+    }
+    var _platform = [{ key: "both", value: "Both" }, { key: "oliver-pos", value: "Oliver POS" }, { key: "web-shop", value: "Webshop" }];
+    var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
+
+
     return <>
         <div className="transactions-wrapper">
             <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
-            {/* <div className="navbar">
-                <div className="header-row">
-                    <img src="../assets/images/svg/Oliver-Icon-Color.svg" alt="" className="oliver-logo" />
-                    <img src="../assets/images/svg/Oliver-Type.svg" alt="" className="oliver-text" />
-                </div>
-                <button id="registerButton" className="page-link">
-                    <div className="img-container">
-                        <img src="../assets/images/svg/Register-Icon.svg" alt="" />
-                    </div>
-                    <p>Register</p>
-                    <div className="f-key">F1</div>
-                </button>
-                <button id="customersButton" className="page-link selected" disabled>
-                    <div className="img-container">
-                        <img src="../assets/images/svg/Customers-Icon.svg" alt="" />
-                    </div>
-                    <p>Customers</p>
-                    <div className="f-key">F2</div>
-                </button>
-                <button id="transactionsButton" className="page-link">
-                    <div className="img-container">
-                        <img src="../assets/images/svg/Transactions-Icon.svg" alt="" />
-                    </div>
-                    <p>Transactions</p>
-                    <div className="f-key">F3</div>
-                </button>
-                <button id="cashManagementButton" className="page-link">
-                    <div className="img-container">
-                        <img src="../assets/images/svg/CashManagement-Icon.svg" alt="" />
-                    </div>
-                    <p>Cash Management</p>
-                    <div className="f-key">F4</div>
-                </button>
-                <button id="linkLauncherButton" className="launcher">
-                    <div className="img-container">
-                        <img src="../assets/images/svg/LinkLauncher-Icon.svg" alt="" />
-                    </div>
-                    <p>Link Launcher</p>
-                </button>
-                <div className="divider"></div>
-                <button id="appLauncherButton" className="launcher">
-                    <div className="img-container">
-                        <img src="../assets/images/svg/Oliver-Icon-BaseBlue.svg" alt="" />
-                    </div>
-                    <p>App Launcher</p>
-                </button>
-                <button id="navApp1" className="launcher app">
-                    <div className="img-container">
-                        <img src="../Assets/Images/Temp/ClockIn_Icon.png" alt="" />
-                    </div>
-                    <p>Clock-in App</p>
-                </button>
-                <button id="navApp2" className="launcher app">
-                    <div className="img-container">
-                        <img src="../Assets/Images/Temp/MC_Logo 1.png" alt="" />
-                    </div>
-                    <p>MailChimp</p>
-                </button>
-                <button id="navApp3" className="launcher app">
-                    <div className="img-container">
-                        <img src="../Assets/Images/Temp/Quickbooks 1.png" alt="" />
-                    </div>
-                    <p>Quickbooks Sync</p>
-                </button>
-                <button id="navToggle" className="toggle-nav">
-                    <div className="img-container">
-                        <img src="../assets/images/svg/ToggleNavbar-Icon.svg" alt="" />
-                    </div>
-                    <p>Minimize Sidebar</p>
-                </button>
-            </div> */}
-            <div id="appLauncherWrapper" className="app-launcher-wrapper hidden">
-                <div className="app-launcher">
-                    <div className="header">
-                        <button id="appLauncherExit">
-                            <img src="../assets/images/svg/AngledBracket-Left-BaseBlue.svg" alt="" />
-                        </button>
-                        <p>App Launcher</p>
-                    </div>
-                    <div className="body">
-                        {/* <!-- IMAGE WILL SHOW IF NO APPS --> */}
-                        <img src="../assets/images/svg/NoApps-Message.svg" alt="" />
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/ClockIn_Icon.png" alt="" />
-                            </div>
-                            <p>Clock-in App</p>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/Stripe Icon.png" alt="" />
-                            </div>
-                            <p>Stripe Payments</p>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/QRCode_Icon.png" alt="" />
-                            </div>
-                            <p>QR Code App</p>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/DYMO-Icon.png" alt="" />
-                            </div>
-                            <p>DYMO Label Printing</p>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/Fortis-Icon.png" alt="" />
-                            </div>
-                            <p>Fortis Payments</p>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/QuoteApp_Icon.png" alt="" />
-                            </div>
-                            <p>Quote Printer</p>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/GiftCard_Icon.png" alt="" />
-                            </div>
-                            <p>Giftcards</p>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div id="linkLauncherWrapper" className="link-launcher-wrapper hidden">
-                <div className="link-launcher">
-                    <div className="header">
-                        <button id="linkLauncherExit">
-                            <img src="../assets/images/svg/AngledBracket-Left-BaseBlue.svg" alt="" />
-                        </button>
-                        <p>Link Launcher</p>
-                    </div>
-                    <div className="body">
-                        {/* <!-- IMAGE WILL SHOW IF NO Link --> */}
-                        <img src="../assets/images/svg/NoLink-Image.svg" alt="" />
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/OliverKnowledge-Icon.png" alt="" />
-                            </div>
-                            <div className="col">
-                                <p className="style1">Oliver Knowledge Base</p>
-                                <p className="style2">https://help.oliverpos.com/</p>
-                            </div>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/FB-Icon.png" alt="" />
-                            </div>
-                            <div className="col">
-                                <p className="style1">Facebook Site</p>
-                                <p className="style2">
-                                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Expedita animi ipsam quia hic tempora obcaecati enim
-                                    quibusdam ratione assumenda, laboriosam quo fugiat perspiciatis itaque culpa provident, aliquid vitae, id quidem?
-                                </p>
-                            </div>
-                        </button>
-                        <button>
-                            <div className="img-container">
-                                <img src="../Assets/Images/Temp/Etsy-Icon.png" alt="" />
-                            </div>
-                            <div className="col">
-                                <p className="style1">Etsy Site</p>
-                                <p className="style2">www.etsy.com</p>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
             <div id="navCover" className="nav-cover"></div>
             <div className="mobile-transactions-header">
-                <button id="mobileNavToggle">
+                <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""}>
                     <img src="" alt="" />
                 </button>
                 <p>Transactions</p>
-                <button id="mobileTransactionsSearchButton">
-                    <img src="../assets/images/svg/SearchBaseBlue.svg" alt="" />
+                <button id="mobileTransactionsSearchButton" onClick={mobileTransactionsSearch}>
+                    <img src={SearchBaseBlue} alt="" />
                 </button>
-                <button id="mobileAppsButton">
-                    <img src="../assets/images/svg/Oliver-Icon-BaseBlue.svg" alt="" />
+                <button id="mobileAppsButton" onClick={() => toggleAppLauncher()}>
+                    <img src={OliverIconBaseBlue} alt="" />
                 </button>
             </div>
-            <div id="transactionsSearch" className="transactions-search">
+            <div id="transactionsSearch" className={isCvmobile === true ? "transactions-search open" : "transactions-search"}>
                 <div className="search-header">
                     <p>Transactions</p>
-                    <button id="clearSearchFields">Clear</button>
+                    <button id="clearSearchFields" onClick={clearFilter}>Clear</button>
                 </div>
                 <div className="search-header-mobile">
-                    <button id="mobileSearchExit">
-                        <img src="../assets/images/svg/AngledBracket-Left-Blue.svg" alt="" />
+                    <button id="mobileSearchExit" onClick={mobileTransactionsSearch}>
+                        <img src={AngledBracketBlueleft} alt="" />
                         Go Back
                     </button>
-                    <button id="mobileSearchFieldClear">Clear</button>
+                    <button id="mobileSearchFieldClear" onClick={clearFilter} >Clear</button>
                 </div>
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
                     <label for="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" />
+                    <input type="text" id="orderID" placeholder="Order ID" onChange={e => setEmailNamePhone(e.target.value)} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label for="custInfo">Customer Info</label>
-                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" />
+                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={e => setEmailNamePhone(e.target.value)} />
                     <label for="orderStatus">Order Status</label>
-                    <div className="dropdown-wrapper">
-                        <img src="../assets/images/svg/DropdownArrow.svg" alt="" />
-                        <input type="text" id="orderStatus" placeholder="Select Status" readonly />
+                    <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
+                        <img src={DropdownArrow} alt="" />
+                        <input type="text" id="orderStatus" placeholder={filterByStatus == '' ? "All" : filterByStatus !== "" ? filterByStatus : "Select Status"} />
                         <div className="option-list">
-                            <div className="option">
-                                <p>Complete</p>
-                            </div>
-                            <div className="option">
-                                <p>On Hold</p>
-                            </div>
-                            <div className="option">
-                                <p>In Progress</p>
-                            </div>
+                            {_orderstatus && _orderstatus.length > 0 && _orderstatus.map((item, index) => {
+                                return (
+                                    <div className="option" key={"status" + index} onClick={() => SetFilterStatus("status", item.key)}>
+                                        <p>{item.value}</p>
+                                    </div>
+                                )
+                            })
+                            }
                         </div>
                     </div>
                     <div className="input-row">
                         <div className="input-col">
                             <label for="dateFrom">Date From</label>
-                            <div className="date-selector-placeholder"></div>
+                            <div className="date-selector-wrapper left ">
+                                <input type="text" id="dateFrom" placeholder="Date" />
+                                <button className="open-date-selector open">
+                                    <img src={calendar} alt="" />
+                                </button>
+                                <div className="date-selector"></div>
+                            </div>
                         </div>
                         <div className="input-col">
                             <label for="dateTo">Date To</label>
-                            <div className="date-selector-placeholder"></div>
+                            <div className="date-selector-wrapper right">
+                                <input type="text" id="dateTo" placeholder="Date" />
+                                <button className="open-date-selector">
+                                    <img src={calendar} alt="" />
+                                </button>
+                                <div className="date-selector"></div>
+                            </div>
                         </div>
                     </div>
                     <label for="salesPlatform">Sales Platform</label>
-                    <div className="dropdown-wrapper">
-                        <img src="../assets/images/svg/DropdownArrow.svg" alt="" />
-                        <input type="text" id="salesPlatform" placeholder="All Platforms" readonly />
+                    <div className={salepersonWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleSaleperson} >
+                        <img src={DropdownArrow} alt="" />
+                        <input type="text" id="salesPlatform" placeholder={filterByPlatform ? filterByPlatform : "All Platforms"} />
                         <div className="option-list">
-                            <div className="option">
-                                <p>Online</p>
-                            </div>
-                            <div className="option">
-                                <p>In Store</p>
-                            </div>
+                            {_platform && _platform.length > 0 && _platform.map((item, index) => {
+                                return (
+                                    <div className="option" key={"Platform" + index} onClick={() => SetFilterPlatform("platform", item.key)}>
+                                        <p>{item.value}</p>
+                                    </div>
+                                )
+                            })
+                            }
+
+
                         </div>
                     </div>
+
                     <label for="employee">Employee</label>
-                    <div className="dropdown-wrapper">
-                        <img src="../assets/images/svg/DropdownArrow.svg" alt="" />
-                        <input type="text" id="employee" placeholder="Select Employee" readonly />
+                    <div className={isEmployeeWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleEmployee}>
+                        <img src={DropdownArrow} alt="" />
+                        <input type="text" id="employee" placeholder={selectuserfilter ? selectuserfilter : "Select Employee"} />
                         <div className="option-list">
-                            <div className="option">
-                                <p>Tyson</p>
-                            </div>
-                            <div className="option">
-                                <p>Shravan</p>
-                            </div>
-                            <div className="option">
-                                <p>Fahad</p>
-                            </div>
-                            <div className="option">
-                                <p>Sam</p>
-                            </div>
-                            <div className="option">
-                                <p>Francois</p>
-                            </div>
-                            <div className="option">
-                                <p>Jagier</p>
-                            </div>
+                            {_Useroptions && _Useroptions.length > 0 && _Useroptions.map((item, index) => {
+                                return (
+                                    <div className="option" onClick={() => SetFilterUser("user", item.value, item.label)}>
+                                        <p>{item.label}</p>
+                                    </div>
+                                )
+                            })
+                            }
+
                         </div>
                     </div>
+
+
                     <div className="input-row">
                         <div className="input-col">
                             <label for="priceFrom">Price From</label>
-                            <input type="text" id="priceFrom" placeholder="Price" />
+                            <input type="text" id="priceFrom" placeholder="Price" onChange={e => setPriceFrom(e.target.value)} />
                         </div>
                         <div className="input-col">
                             <label for="priceTo">Price To</label>
-                            <input type="text" id="priceTo" placeholder="Price" />
+                            <input type="text" id="priceTo" placeholder="Price" onChange={e => setPriceTo(e.target.value)} />
                         </div>
                     </div>
-                    <button id="searchTransactionButton">Search</button>
+                    <button id="searchTransactionButton" onClick={applyServerFilter}>Search</button>
                 </div>
             </div>
+
             <div className="transactions-list">
-                <div className="header">
+                <div className="header" onClick={toggleSortWrapp}>
                     <p>Sort by:</p>
-                    <div id="customerListSort" className="sort-wrapper">
+                    <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         <input type="text" id="filterType" />
                         <img src="../assets/images/svg/FilterCollapseIcon.svg" alt="" />
-                        <div id="sortCurrent" className="sort-current">
-                            <img src="../assets/images/svg/FilterArrowUp.svg" alt="" />
+
+                        <div id="sortCurrent" className="sort-current"  >
+                            <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />
+                            <p>{sortbyvaluename}</p>
+                        </div>
+
+                        <div className="sort-option" data-value="dateAsc" onClick={(e) => sortByList("dateAsc", "Date")} >
+                            <img src={FilterArrowUp} alt="" />
                             <p>Date</p>
                         </div>
-                        <div className="sort-option" data-value="dateAsc">
-                            <img src="../assets/images/svg/FilterArrowUp.svg" alt="" />
+                        <div className="sort-option" data-value="dateDesc" onClick={(e) => sortByList("dateDesc", "Date")}>
+                            <img src={FilterArrowDown} alt="" />
                             <p>Date</p>
                         </div>
-                        <div className="sort-option" data-value="dateDesc">
-                            <img src="../assets/images/svg/FilterArrowDown.svg" alt="" />
-                            <p>Date</p>
-                        </div>
-                        <div className="sort-option" data-value="amountAsc">
-                            <img src="../assets/images/svg/FilterArrowUp.svg" alt="" />
+                        <div className="sort-option" data-value="amountAsc" onClick={(e) => sortByList("amountAsc", "Amount")}>
+                            <img src={FilterArrowUp} alt="" />
                             <p>Amount</p>
                         </div>
-                        <div className="sort-option" data-value="amountDesc">
-                            <img src="../assets/images/svg/FilterArrowDown.svg" alt="" />
+                        <div className="sort-option" data-value="amountDesc" onClick={(e) => sortByList("amountDesc", "Amount")}>
+                            <img src={FilterArrowDown} alt="" />
                             <p>Amount</p>
                         </div>
+
                     </div>
                 </div>
-                <div className="body">
-                    <div className="filter-name">
-                        <p>July 19, 2022</p>
-                    </div>
-                    <button className="transaction-card no-transform selected">
-                        <div className="col">
-                            <p className="style1">Order #483719</p>
-                            <p className="style2">Steven Segal</p>
-                            <div className="row">
-                                <img src="../assets/images/svg/InStoreSale.svg" alt="" />
-                                <p>Completed</p>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <p className="style3">$23.82</p>
-                            <p className="style4">12:35pm</p>
-                        </div>
-                        <div className="selected-indicator"></div>
-                    </button>
-                    <button className="transaction-card no-transform">
-                        <div className="col">
-                            <p className="style1">Order #483718</p>
-                            <p className="style2">Sean Connery</p>
-                            <div className="row">
-                                <img src="../assets/images/svg/OnlineSale.svg" alt="" />
-                                <p>Completed</p>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <p className="style3">$235.99</p>
-                            <p className="style4">12:35pm</p>
-                        </div>
-                        <div className="selected-indicator"></div>
-                    </button>
-                    <div className="filter-name">
-                        <p>July 18, 2022</p>
-                    </div>
-                    <button className="transaction-card no-transform">
-                        <div className="col">
-                            <p className="style1">Order #483717</p>
-                            <p className="style2">Jet Li</p>
-                            <div className="row">
-                                <img src="../assets/images/svg/OnlineSale.svg" alt="" />
-                                <p>Refunded</p>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <p className="style3">$19.35</p>
-                            <p className="style4">2:35pm</p>
-                        </div>
-                        <div className="selected-indicator"></div>
-                    </button>
-                </div>
+                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} />
             </div>
-            <div id="transactionsDetailed" className="transactions-detailed">
+            <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">
-                    <button id="mobileDetailedExit">
-                        <img src="../assets/images/svg/AngledBracket-Left-Blue.svg" alt="" />
+                    <button id="mobileDetailedExit" onClick={toggleResponsiveList}>
+                        <img src={AngledBracketBlueleft} alt="" />
                         Go Back
                     </button>
                 </div>
-                <div className="quick-info">
-                    <div className="col">
-                        <p className="style1">Order #483719</p>
-                        <p className="style2">Total: <b>$235.99</b></p>
-                        <p className="style3">July 19, 2022</p>
-                    </div>
-                    <div className="col right">
-                        <div className="row">
-                            <img src="../assets/images/svg/OnlineSale.svg" alt="" />
-                            <p>Completed</p>
-                        </div>
-                        <p className="style2">Served by: <b>Sean Connery</b></p>
-                        <p className="style3">12:35pm</p>
-                    </div>
-                </div>
-                <div className="customer-info">
-                    <div className="col">
-                        <p className="style1">Customer Information</p>
-                        <p className="style2">Earnst S. Blofeld</p>
-                        <p className="style2">esb@spectra.com</p>
-                        <p className="style2">+709 425 007</p>
-                    </div>
-                    <button>Open Customer</button>
-                </div>
+                <ActivityOrderDetail />
                 <div className="order-details">
-                    <p>Order Details</p>
-                    <div className="item">
-                        <div className="img-container">
-                            <div className="quantity">
-                                <p>3</p>
-                            </div>
-                            <img src="../Assets/Images/Temp/shirt.png" alt="" />
-                        </div>
-                        <div className="col">
-                            <div className="main-row">
-                                <p>T-shirt</p>
-                                <p>$24.99</p>
-                            </div>
-                            <div className="item-fields">
-                                <p>SKU: ACE2349801</p>
-                                <p>Black</p>
-                                <p>Medium</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="item">
-                        <div className="img-container">
-                            <div className="quantity">
-                                <p>1</p>
-                            </div>
-                            <img src="../Assets/Images/Temp/Sweater.png" alt="" />
-                        </div>
-                        <div className="col">
-                            <div className="main-row">
-                                <p>Hoodie</p>
-                                <p>$178.99</p>
-                            </div>
-                            <div className="item-fields">
-                                <p>SKU: ACE2349801</p>
-                                <p>Blue</p>
-                                <p>Medium</p>
-                                <p>
-                                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eligendi voluptas aut accusamus perferendis reiciendis a
-                                    explicabo quidem aliquam cumque corrupti minima nobis, voluptatum vel expedita facilis, aliquid officia.
-                                    Voluptatum, ratione!
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="custom-fields">
-                        <p className="style1">Custom Fields</p>
-                        <p className="style2">Sizing Chart ID: HIOK23498979</p>
-                        <p className="style2">Employee Compensation: 20%</p>
-                    </div>
+                    <ActivityOrderList />
                 </div>
-                <div className="footer">
-                    <button id="refundButton">Refund</button>
-                    <button id="receiptButton">Receipt</button>
-                    <button id="openSaleButton">Open Sale</button>
-                </div>
+
+                <ActivityFooter getPdfdateTime={getPdfdateTime} />
             </div>
         </div>
         <div className="subwindow-wrapper hidden"></div>
