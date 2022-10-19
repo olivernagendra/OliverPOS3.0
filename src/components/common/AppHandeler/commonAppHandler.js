@@ -21,7 +21,9 @@ import {
   DataToReceipt, PrintReceiptWithAppData,
   handleCartValue, handleCart,
   sendCustomerDetail, HandleCustomer, CustomerToSale, retrieveCustomerInSale,
-  addCartDiscount, cartTaxes, Notes, lockEnvironment, Environment, doParkSale, getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon, transactionApp, transactionStatus, DoParkSale, AddProductToCart
+  addCartDiscount, cartTaxes, Notes, lockEnvironment, Environment, doParkSale,
+  getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon,
+  transactionApp, transactionStatus, DoParkSale, AddProductToCart, payfromApp
 } from './apps';
 import { productPriceUpdate, sendProductQuantity } from './apps/productApp';
 import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
@@ -82,9 +84,9 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
       // case ("productDetail").toLowerCase():
       //   productDetail(jsonMsg, isbackgroudApp)
       //   break
-      // case ("Payment").toLowerCase():
-      //   appResponse = payfromApp(jsonMsg, isbackgroudApp)
-      //   break
+      case ("Payment").toLowerCase():
+        appResponse = payfromApp(jsonMsg, isbackgroudApp)
+        break
       // case ("rawProductData").toLowerCase():
       //   rawProductData(jsonMsg, isbackgroudApp)
       //   break
