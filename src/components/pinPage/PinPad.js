@@ -288,7 +288,7 @@ const PinPad = React.memo(props => {
         {/* {(status === STATUSES.ERROR && <div>{error}</div>)} */}
         <p class={location.pathname === "/openregister"?"step3":"style3"}>{LocalizedLanguage.enteryouruserid}</p>
         <div class={status === STATUSES.ERROR ? "error-message" : "error-message hide"}>Invalid user ID. Please try again.</div>
-        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue", display: "none" }} onChange={handle} onKeyDown={handleBack} autoComplete="off" />
+        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue" }} onChange={handle} onKeyDown={handleBack} autoComplete="off" />
         <div className="pinpad">
 
             {hasPin !== "true" && <ShowCreatePin />}

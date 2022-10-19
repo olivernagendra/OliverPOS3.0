@@ -38,6 +38,7 @@ import ManualPayment from "../common/commonComponents/paymentComponents/ManualPa
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
 import GlobalPayment from "../common/commonComponents/paymentComponents/GlobalPayment";
+import MsgPopup from "../common/commonComponents/MsgPopup";
 const Checkout = (props) => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -84,6 +85,9 @@ const Checkout = (props) => {
     const [isShowParkSale, setisShowParkSale] = useState(false);
     const [isLayAwayOrPark, setIsLayAwayOrPark] = useState('park_sale');
     const [storeCredit, setStoreCredit] = useState(0);
+    const [isShowMsg, setisShowMsg] = useState(false);
+    const [msgTitle, setmsgTitle] = useState('');
+    const [msgBody, setmsgBody] = useState('');
     const [paymentTypeItem, setPaymentTypeItem] = useState({
         Code: "",
         ColorCode: "",
@@ -113,7 +117,25 @@ const Checkout = (props) => {
             dispatch(changeReturnAmount(null));
             navigate('/salecomplete');
         }
+        else if (resSave && resSave.status == STATUSES.ERROR && resSave.is_success===false && loading === true)
+        {
+            console.log("error message---"+resSave.data);
+            setLoading(false);
+            var data = { title: "", msg:resSave.error , is_success: true }
+            dispatch(popupMessage(data));
+        }
     }, [resSave]);
+
+    const [respopupMessage] = useSelector((state) => [state.popupMessage])
+    useEffect(() => {
+        if (respopupMessage && respopupMessage.status == STATUSES.IDLE && respopupMessage.is_success && respopupMessage.data) {
+            toggleMsgPopup(true);
+            setmsgBody(respopupMessage.data.msg);
+            setmsgTitle(respopupMessage.data.title);
+            dispatch(popupMessage(null));
+        }
+    }, [respopupMessage]);
+
     //var paidAmount = 0;
     // const setPaidAmount = (amt) => {
     //     if (amt == null) {
@@ -132,16 +154,24 @@ const Checkout = (props) => {
     // }
     //setPaidAmount(null);
     useEffect(() => {
+        if(loading===false)
+        {getPaymentDetails();}
+    },[paymentsArr]);
+    useEffect(() => {
         var _checklist = JSON.parse(localStorage.getItem("CHECKLIST"));
         if (_checklist && _checklist.customerDetail && _checklist.customerDetail.store_credit) {
             setStoreCredit(_checklist.customerDetail.store_credit)
         }
+        
     }, [])
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     var cash_rounding = ActiveUser.key.cash_rounding;
+    const toggleMsgPopup = () => {
+        setisShowMsg(!isShowMsg)
+    }
     const toggleManualPayment = () => {
         setisManualPayment(!isManualPayment)
     }
@@ -326,7 +356,7 @@ const Checkout = (props) => {
         if (isInit === false && useCancelled == false) {
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
-                if (typeof data == 'string' && data !== "" && window.location.pathname == "/checkout") {
+                if (typeof data == 'string' && data !== "" && location.pathname == "/checkout") {
                     responseData(JSON.parse(data))
                     //compositeSwitchCases(JSON.parse(data))
                     console.log("leftnavigation")
@@ -509,12 +539,12 @@ const Checkout = (props) => {
         //this.setState({ paymentType: paymentType })
         if (parseFloat(payment_amount) > 0) {
             if (paymentType !== true && paymentType !== paymentsType.typeName.cashPayment && TerminalCount == 0 && paymentType !== paymentsType.typeName.storeCredit && paymentType !== 'manual_global_payment' && Support !== paymentsType.typeName.Support && paymentType !== 'stripe_terminal' && Support !== paymentsType.typeName.UPISupport) {
-                if (closingTab == false) {
-                    payment_amount = parseFloat(RoundAmount(_getRemainingPrice))
+               // if (closingTab == false) {
+                    payment_amount = partialAmount != null ? partialAmount :parseFloat(RoundAmount(_getRemainingPrice));
                     setPartialPayment(paymentType, payment_amount)
-                } else {
-                    setPartialPayment(paymentType, payment_amount)
-                }
+                // } else {
+                //     setPartialPayment(paymentType, payment_amount)
+                // }
             }
             if (TerminalCount > 0 && paymentType !== 'manual_global_payment') {
 
@@ -726,6 +756,10 @@ const Checkout = (props) => {
         dispatch(makeOnlinePayments(onlinePayCardData))
     }
     const extraPayAmount = (msg) => {
+
+        var data = { title: "", msg: msg, is_success: true }
+        dispatch(popupMessage(data));
+
         console.log(msg)
         setLoading(false);
         // this.setState({ common_Msg: msg })
@@ -1913,7 +1947,7 @@ const Checkout = (props) => {
         }
 
         else {
-            setPartialAmount(null);
+            setPartialAmount(partialAmount);
             pay_amount(item.Code); }
     }
 
@@ -2150,6 +2184,7 @@ const Checkout = (props) => {
         {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)} getRemainingPriceForCash={getRemainingPriceForCash} ></NumberPad> : null}
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
+        <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
     </React.Fragment>)
 }
 export default Checkout

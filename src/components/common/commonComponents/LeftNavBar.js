@@ -42,24 +42,26 @@ const LeftNavBar = (props) => {
     const [isShowLinkLauncherPage, setisShowLinkLauncherPage] = useState(false);
 
     useEffect(() => {
-        if (isInit === false && useCancelled == false) {
+        if (location.pathname !== "/checkout") {
+            if (isInit === false && useCancelled == false) {
 
-            window.addEventListener('message', function (e) {
-                var data = e && e.data;
-                if (typeof data == 'string' && data !== "" && window.location.pathname !== "/checkout") {  //checkout page handle independentaly 
-                    try {
-                        var _data = data && JSON.parse(data);
-                        responseData(_data)
-                    } catch (e) {
-                        console.log(e);
+                window.addEventListener('message', function (e) {
+                    var data = e && e.data;
+                    if (typeof data == 'string' && data !== "" && location.pathname !== "/checkout") {  //checkout page handle independentaly 
+                        try {
+                            var _data = data && JSON.parse(data);
+                            responseData(_data)
+                        } catch (e) {
+                            console.log(e);
+                        }
+
                     }
-
-                }
-            })
-            setisInit(true);
-        }
-        return () => {
-            useCancelled = true;
+                })
+                setisInit(true);
+            }
+            return () => {
+                useCancelled = true;
+            }
         }
     }, [isInit]);
 
@@ -71,7 +73,8 @@ const LeftNavBar = (props) => {
             whereToview = "CheckoutView"
         else
             whereToview = "home"
-        handleAppEvent(data, whereToview)
+        var response = handleAppEvent(data, whereToview);
+        console.log("-----command response from handler--" + response)
     }
     const toggleLeftMenu = () => {
         setisShowLeftMenu(!isShowLeftMenu)
@@ -222,26 +225,26 @@ const LeftNavBar = (props) => {
 
 
                 {/* display Apps for home page */}
-                
-                {
-                appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
-                    var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
-                    {
-                        return isDisplay == true &&
-                            <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
-                                <div className="img-container">
-                                    {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
-                                    {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
-                                        currentTarget.onerror = null; // prevents looping
-                                        currentTarget.src = NoImageAvailable;
-                                    }} /> : <img src={NoImageAvailable} alt="" />}
-                                </div>
-                                <p>{appItem.Name}</p>
-                                <div className="f-key">F{6+displayAppCount}</div>
-                            </button>
 
-                    }
-                })}
+                {
+                    appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
+                        var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
+                        {
+                            return isDisplay == true &&
+                                <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
+                                    <div className="img-container">
+                                        {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
+                                        {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
+                                            currentTarget.onerror = null; // prevents looping
+                                            currentTarget.src = NoImageAvailable;
+                                        }} /> : <img src={NoImageAvailable} alt="" />}
+                                    </div>
+                                    <p>{appItem.Name}</p>
+                                    <div className="f-key">F{6 + displayAppCount}</div>
+                                </button>
+
+                        }
+                    })}
 
 
 
