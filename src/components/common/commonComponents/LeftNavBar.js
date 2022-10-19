@@ -73,7 +73,7 @@ const LeftNavBar = (props) => {
             whereToview = "CheckoutView"
         else
             whereToview = "home"
-        var response = handleAppEvent(data, whereToview);
+        var response = handleAppEvent(data, whereToview,false,navigate);
         console.log("-----command response from handler--" + response)
     }
     const toggleLeftMenu = () => {
