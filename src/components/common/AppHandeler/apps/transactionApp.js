@@ -182,6 +182,48 @@ export const transactionStatus = (RequestData, whereToview, isbackgroudApp) => {
 
     }
 }
+// *** Payment Detail ***************
+export const payfromApp = (RequestData, isbackgroudApp) => {
+    var clientJSON = ""
+
+    var validationResponse = validateRequest(RequestData)
+
+    if (validationResponse.isValidationSuccess == false) {
+        clientJSON = validationResponse.clientJSON;
+        postmessage(clientJSON)
+    }
+    else {
+        if (RequestData.method == 'post')  //for payment through APP
+        {
+            return 'app_do_payment'   //on checkout we check this value and process according
+        }
+        else if (RequestData.method == 'get') {
+            var UID = get_UDid('UDID');
+            store.dispatch(activityActions.getDetail(RequestData.order_id, UID));
+            setTimeout(() => {
+                const state = store.getState();
+                console.log("state", state)
+                if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
+                    var _order = state.single_Order_list && state.single_Order_list.items.content;
+                    clientJSON = {
+                        command: RequestData.command,
+                        version: "1.0",
+                        method: RequestData.method,
+                        status: 200,
+                        error: null,
+                        total_amount: _order.total_amount,
+                        //data: JSON.stringify(order_payments)
+                        payments: _order.order_payments ? _order.order_payments : []
+                    }
+
+                    postmessage(clientJSON);
+                }
+            }, 1000);
+
+        }
+
+    }
+}
 const validateRequest = (RequestData) => {
 
     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
