@@ -15,7 +15,8 @@ import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import { get_customerName } from "../../common/localSettings";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { useIndexedDB } from 'react-indexed-db';
-import { NumericFormat } from 'react-number-format'
+import { NumericFormat } from 'react-number-format';
+import { paymentAmount } from "../../checkout/checkoutSlice";
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -508,7 +509,8 @@ const CartList = (props) => {
 
                 if (IsExist === true && IsExsitTicket === false && checkseatStatus == false && checkoutData == false) {
                     localStorage.removeItem("oliver_order_payments");
-                    localStorage.removeItem("VOID_SALE")
+                    localStorage.removeItem("VOID_SALE");
+                    dispatch(paymentAmount(null));
                     navigate('/checkout');
                 }
                 setUpdateProductStatus(true);

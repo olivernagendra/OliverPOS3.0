@@ -319,7 +319,7 @@ const Checkout = (props) => {
     const [respPaymentAmount] = useSelector((state) => [state.paymentAmount])
     useEffect(() => {
         if ((respPaymentAmount && respPaymentAmount.status == STATUSES.IDLE && respPaymentAmount.is_success)) {
-            console.log("----" + JSON.stringify(respPaymentAmount));
+            //console.log("-respPaymentAmount---" + JSON.stringify(respPaymentAmount));
             if (respPaymentAmount.data.type == "cash") {
                 pay_amount("cash");
             }
