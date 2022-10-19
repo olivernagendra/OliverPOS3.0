@@ -385,9 +385,9 @@ const Checkout = (props) => {
         else if (appResponse == "do_app_orderPark") {
             setPayment('park_sale', 'byExtApp');
         }
-        // if (appResponse == 'app_do_payment') {
-        //     this.handleAppPayment(extensionData)
-        // }
+        else if (appResponse == 'app_do_payment') {
+            handleAppPayment(data)
+        }
         // else if (appResponse == 'app-coupon_duplicate') {
         //     var localCouponApplied = JSON.parse(localStorage.getItem("couponApplied"));
         //     var isCouponFound = null;
@@ -475,6 +475,58 @@ const Checkout = (props) => {
                     }
                     postmessage(clientJSON);
                 }, 500);
+            }
+            else {
+                console.error('App Error : Invalid Data');
+            }
+        } catch (error) {
+            console.error('App Error : ', error);
+        }
+    }
+    function handleAppPayment(RequesteData) {
+        try {
+            var data = RequesteData && RequesteData.data;
+           // const { checkList } = this.state
+            if (data && data.payment_type && data.payment_type.data) {
+                var type = data && data.payment_type && data.payment_type.name ? data.payment_type.name : ''
+                checkList['transection_id'] = data && data.payment_type && data.payment_type.data && data.payment_type.data.transaction_id ? data.payment_type.data.transaction_id : ''
+                var _amount = data && data.payment_type && data.payment_type.data && data.payment_type.data.amt ? data.payment_type.data.amt : 0
+                var _emv = data && data.payment_type && data.payment_type.data && data.payment_type.data.emv_data ? data.payment_type.data.emv_data : ""
+                var allEmvData = [];
+                allEmvData = emvData ? emvData : [];
+                if (_emv) {
+                    var obj = {};
+                    obj[type] = _emv;
+                    allEmvData.push(obj)
+                }
+
+                // this.setState({
+                //     checkList: checkList, isPaymentByExtension: true, extensionPaymentType: type,
+                //     EmvData: allEmvData
+                // }
+                // )
+                setCheckList(checkList);
+                setEmvData(allEmvData)
+                // set the current trnasaction status, Used for APP Command "TransactionStatus"
+                localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": type, "status": "completed" }))
+                
+                setTimeout(() => {
+                    //orderPayments.setPartialPayment(type, _amount)
+                    setPartialPayment(type, _amount)
+                    var clientJSON = {
+                        command: RequesteData.command,
+                        version: RequesteData.version,
+                        method: RequesteData.method,
+                        status: 200,
+                    }
+                    postmessage(clientJSON);
+                }, 500);
+                //  this.orderPayments.updateClosingTab(true)
+                // hideModal('common_ext_popup')
+                // this.close_ext_modal()
+                // setTimeout(() => {
+                //     this.orderPayments.setPartialPayment(type, _amount)
+                // }, 500);
             }
             else {
                 console.error('App Error : Invalid Data');
