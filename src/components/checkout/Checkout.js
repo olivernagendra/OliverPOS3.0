@@ -8,7 +8,7 @@ import Stripe_Icon from '../../assets/images/svg/Stripe Icon.svg'
 import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import Header from "./Header";
 import CartListBody from "../common/commonComponents/CartListBody";
@@ -29,6 +29,9 @@ import { product } from "../dashboard/product/productSlice";
 import { addtoCartProduct } from "../dashboard/product/productLogic";
 import { makeOnlinePayments, getMakePayment, save, paymentAmount, changeReturnAmount } from "../checkout/checkoutSlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+
+import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
+
 import ParkSale from "./ParkSale";
 import { CheckAppDisplayInView } from "../common/commonFunctions/appDisplayFunction";
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
@@ -133,7 +136,7 @@ const Checkout = (props) => {
         if (_checklist && _checklist.customerDetail && _checklist.customerDetail.store_credit) {
             setStoreCredit(_checklist.customerDetail.store_credit)
         }
-    },[])
+    }, [])
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -314,6 +317,144 @@ const Checkout = (props) => {
     // useEffect(() => {
     //     pay_amount(payment_Type);
     // }, [payment_Type]);
+
+    //Handel Apps --------------------------------
+    const [isInit, setisInit] = useState(false)
+    const location = useLocation();
+    let useCancelled = false;
+    useEffect(() => {
+        if (isInit === false && useCancelled == false) {
+            window.addEventListener('message', function (e) {
+                var data = e && e.data;
+                if (typeof data == 'string' && data !== "" && window.location.pathname == "/checkout") {
+                    responseData(JSON.parse(data))
+                    //compositeSwitchCases(JSON.parse(data))
+                    console.log("leftnavigation")
+                }
+            })
+            setisInit(true);
+        }
+
+        return () => {
+            useCancelled = true;
+        }
+    }, [isInit]);
+    const responseData = (data) => {
+        console.log("---ext app data--" + data);
+        var _route = location.pathname;
+        var whereToview = "";
+        // if (_route == "checkout")
+        whereToview = "CheckoutView"
+        // else
+        //     whereToview = "home"
+        var appResponse = handleAppEvent(data, whereToview)
+        console.log("appResponse", appResponse)
+        if (appResponse == 'app_do_transaction') {      // Transection App 2.0                     
+            handleAppTransaction(data)
+        }
+        else if (appResponse == "do_app_orderPark") {
+            setPayment('park_sale', 'byExtApp');
+        }
+        // if (appResponse == 'app_do_payment') {
+        //     this.handleAppPayment(extensionData)
+        // }
+        // else if (appResponse == 'app-coupon_duplicate') {
+        //     var localCouponApplied = JSON.parse(localStorage.getItem("couponApplied"));
+        //     var isCouponFound = null;
+        //     if (extensionData && extensionData.data) {
+        //         isCouponFound = localCouponApplied.find(coupon => { return coupon.coupon_code == extensionData.data.coupon_code })
+        //     } //&& extensionData.data.length > 0 && extensionData.data.map(request => {
+
+        //     if (isCouponFound) {
+        //         this.setState({ common_Msg: "Coupon '" + isCouponFound.coupon_code + "' already exist!" });
+        //     }
+        //     setTimeout(function () {
+        //         hideModal("common_ext_popup");
+        //         showModal('common_msg_popup');
+        //     }, 100)
+        // }
+        // else if (appResponse == 'app-modificaiton-external' || appResponse == 'app-coupon_discount') {
+        //     this.setState({ hideApp: true })
+        //     this.setState({ UpdateCartByApp: true }) //To Refresh the cart need to update the state
+        //     this.close_ext_modal() //To close popup 
+
+        // }
+        // else if (appResponse == 'app-modificaiton-lock-env') {
+        //     setTimeout(() => {
+        //         this.setState({ "appLock": true })
+        //     }, 200);
+
+        // }
+        // else if (appResponse == 'app-modificaiton-unlock-env') {
+        //     setTimeout(() => {
+        //         this.setState({ "appLock": false })
+        //     }, 200);
+        // } else if (appResponse == 'app-get-lock-env') {
+        //     var clientJSON = {
+        //         command: extensionData.command,
+        //         version: extensionData.version,
+        //         method: extensionData.method,
+        //         status: 200,
+        //         state: this.state.appLock == true ? "lock" : 'unlock'
+        //     }
+        //     postmessage(clientJSON)
+        // } else if (appResponse == 'app_cancle_transaction') {
+        //     this.setState({ "cancleTransaction": true })
+        // }
+
+    }
+    function handleAppTransaction(RequesteData) {
+        try {
+            var data = RequesteData && RequesteData.data;
+            //const { checkList } = this.state
+            if (data) {
+                var type = data && data.processor ? data.processor : ''
+                checkList['transection_id'] = data && data.transaction_id ? data.transaction_id : ''
+                var _amount = data && data.amount ? data.amount / 100 : 0
+                var _emv = data && data.emv_data ? data.emv_data : ""
+                var allEmvData = [];
+                allEmvData = emvData ? emvData : [];
+                if (_emv) {
+                    var obj = {};
+                    obj[type] = _emv;
+                    allEmvData.push(obj)
+                }
+
+                setCheckList(checkList);
+                setEmvData(allEmvData)
+                // this.setState({
+                //     //checkList: checkList, 
+                //     isPaymentByExtension: true, 
+                //     extensionPaymentType: type,
+                //     //EmvData: allEmvData
+                // }
+                //)
+                // set the current trnasaction status, Used for APP Command "TransactionStatus"
+                localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": type, "status": "completed" }))
+                //  this.orderPayments.updateClosingTab(true)
+                // hideModal('common_ext_popup')
+                //this.close_ext_modal()
+                setTimeout(() => {
+                    //orderPayments.setPartialPayment(type, _amount)
+                    setPartialPayment(type, _amount)
+                    var clientJSON = {
+                        command: RequesteData.command,
+                        version: RequesteData.version,
+                        method: RequesteData.method,
+                        status: 200,
+                    }
+                    postmessage(clientJSON);
+                }, 500);
+            }
+            else {
+                console.error('App Error : Invalid Data');
+            }
+        } catch (error) {
+            console.error('App Error : ', error);
+        }
+    }
+    //-----------------------------------------------------
+
     //  function use to check for payment types and perform action accordingly 
     const pay_amount = (paymentType, TerminalCount = 0, Support = '', paymentCode = '', paidConfirmAmount = 0) => {
         var closingTab = '';
@@ -485,7 +626,7 @@ const Checkout = (props) => {
                 }
             }
             if (Support == paymentsType.typeName.UPISupport) {
-                var payconiqAmount =payment_amount;// myInput;
+                var payconiqAmount = payment_amount;// myInput;
                 payconiqAmount = ActiveUser.key.isSelfcheckout == true ? payment_amount : payconiqAmount
                 var paymentMode = paymentType;
                 payment_amount = parseFloat(RoundAmount(_getRemainingPrice));
@@ -576,7 +717,7 @@ const Checkout = (props) => {
         if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data)) {
             console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
         }
-    },[respmakeOnlinePayments])
+    }, [respmakeOnlinePayments])
 
     // handle online payment payamount
     const onlineCardPayments = (paycode, amount) => {
@@ -1835,7 +1976,7 @@ const Checkout = (props) => {
     //         []
     // }
     var _activeDisplay = true;
-    var global_payment=null;
+    var global_payment = null;
     return (<React.Fragment>
         {loading === true ? <LoadingModal></LoadingModal> : null}
         <div className="checkout-wrapper">
@@ -1937,14 +2078,14 @@ const Checkout = (props) => {
                     <div className="button-container">
                         {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
-                                return payment.image || payment.Code==="stripe_terminal" ?
-                                // <img src={payment.image}  alt=""></img>
-                                <button >
-                                <img src={Stripe_Icon} alt=""></img></button>
-                                :
-                                <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
-                                    {payment.Name}
-                                </button>
+                                return payment.image || payment.Code === "stripe_terminal" ?
+                                    // <img src={payment.image}  alt=""></img>
+                                    <button >
+                                        <img src={Stripe_Icon} alt=""></img></button>
+                                    :
+                                    <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                        {payment.Name}
+                                    </button>
                             })
                         }
                     </div>

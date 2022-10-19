@@ -21,7 +21,7 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
-import { CheckAppDisplayInView } from '../commonFunctions/appDisplayFunction'
+import { CheckAppDisplayInView, updateRecentUsedApp } from '../commonFunctions/appDisplayFunction'
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
 import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
@@ -38,26 +38,31 @@ const LeftNavBar = (props) => {
     const [isShowMobileView, setisShowMobileView] = useState(false);
     const [extApp, setExtApp] = useState('');
     const [isInit, setisInit] = useState(false);
+    let useCancelled = false;
     const [isShowLinkLauncherPage, setisShowLinkLauncherPage] = useState(false);
 
     useEffect(() => {
-        if (isInit === false) {
+        if (isInit === false && useCancelled == false) {
+
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
-                if (typeof data == 'string' && data !== "") {
+                if (typeof data == 'string' && data !== "" && window.location.pathname !== "/checkout") {  //checkout page handle independentaly 
                     try {
-                        var _data = JSON.parse(data);
+                        var _data = data && JSON.parse(data);
                         responseData(_data)
                     } catch (e) {
                         console.log(e);
                     }
 
-                    //compositeSwitchCases(JSON.parse(data))
                 }
             })
             setisInit(true);
         }
+        return () => {
+            useCancelled = true;
+        }
     }, [isInit]);
+
     const responseData = (data) => {
         console.log("---ext app data--" + data);
         var _route = location.pathname;
@@ -88,6 +93,9 @@ const LeftNavBar = (props) => {
     }
     const toggleiFrameWindow = (_exApp = null) => {
         if (_exApp != null) { setExtApp(_exApp); }
+        if (isShowiFrameWindow === false) {
+            updateRecentUsedApp(_exApp, true, 0)
+        }
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
     const toggleMobileView = () => {
@@ -117,7 +125,36 @@ const LeftNavBar = (props) => {
         var data = { title: title, msg: msg, is_success: true }
         dispatch(popupMessage(data));
     }
-    var appsList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD"));
+
+    //Display 3 Most used app---------------------***********----------------------- 
+    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD"));
+    var mostUsedApp = localStorage.getItem("recent_apps") && JSON.parse(localStorage.getItem("recent_apps"));
+    if (mostUsedApp && mostUsedApp.length > 0) {
+        //const sortDesc = (_recentApp, used_count) => {
+        mostUsedApp = mostUsedApp.sort((a, b) => {   //sort by most used app  
+            if (a["used_count"] > b['used_count']) { return -1; }
+            if (b["used_count"] > a["used_count"]) { return 1; }
+            return 0;
+        })
+        console.log("sortDesc", mostUsedApp)
+        //}
+    }
+    var appsList = []
+    var appDisplayCount = 0
+    if (mostUsedApp && mostUsedApp.length > 0) {
+        mostUsedApp.map(function (itemUsed, index) {
+            // if (index < 3) {
+            var app = allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0)
+            if (app && appDisplayCount < 3)//only 3 item need to display
+            {
+                appsList.push(app);
+                appDisplayCount++
+            }
+            // }
+        });
+    }
+    //----------------------------**************----------------------------------------
+    console.log("appsList", appsList)
     var displayAppCount = 0;
     return (
         <React.Fragment>
@@ -189,10 +226,8 @@ const LeftNavBar = (props) => {
                 {
                 appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
                     var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
-                    if (isDisplay == true) displayAppCount += 1;
                     {
-                        return displayAppCount < 4 && isDisplay == true &&
-
+                        return isDisplay == true &&
                             <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
                                 <div className="img-container">
                                     {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
