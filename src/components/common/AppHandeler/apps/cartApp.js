@@ -10,7 +10,8 @@ import { get_UDid } from "../../localSettings";
 import moment from "moment";
 import Config from '../../../../Config'
 import { useIndexedDB } from "react-indexed-db";
-
+import { getDetail } from "../../../activity/ActivitySlice";
+import {product} from "../../../dashboard/product/productSlice";
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 export const textToBase64Barcode = (text) => {
@@ -633,9 +634,10 @@ export const Notes = (RequestData, isbackgroudApp, whereToview) => {
             } else {
                 list = cartlist
             }
+            addCartProductAction(list);
             setTimeout(() => {
                 // store.dispatch(checkoutActions.getAll(list));
-                addCartProductAction(list)
+                store.dispatch(product());
             }, 200)
         }
     }
@@ -646,7 +648,7 @@ export const Notes = (RequestData, isbackgroudApp, whereToview) => {
         return "app-modificaiton-external"
 }
 
-export function DoParkSale(RequestData) {
+export function DoParkSale(RequestData,navigate) {
     const { getByID: getProductByID, getAll: getAllProducts } = useIndexedDB("products");
     var clientJSON = {};
     var validationResponse = validateRequest(RequestData)
@@ -665,12 +667,12 @@ export function DoParkSale(RequestData) {
         // });
         //var wc_order_no= RequestData.wc_order_no;
         var UID = get_UDid('UDID');
-        //store.dispatch(activityActions.getDetail(RequestData.wc_order_no, UID));
+        store.dispatch(getDetail(RequestData.wc_order_no, UID));
         var single_Order_list = {};
         setTimeout(() => {
             const state = store.getState();
-            if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
-                single_Order_list = state.single_Order_list && state.single_Order_list.items.content;
+            if (state.activityGetDetail && state.activityGetDetail.data && state.activityGetDetail.data.content) {
+                single_Order_list = state.activityGetDetail && state.activityGetDetail.data.content;
 
                 localStorage.removeItem("oliver_order_payments"); //remove existing payments   
                 // sessionStorage.getItem("OrderDetail") for mobile view.............
@@ -907,7 +909,10 @@ export function DoParkSale(RequestData) {
                 })
                 localStorage.setItem("PRODUCTX_DATA", JSON.stringify(addonsItem))
                 localStorage.setItem("BACK_CHECKOUT", true)
-                window.location = '/checkout';
+                //window.location = '/checkout';
+                //return "goto_checkout";
+                store.dispatch(product());
+                navigate && navigate('/checkout')
 
             }
             clientJSON =
@@ -956,8 +961,11 @@ export function DoParkSale(RequestData) {
                         }
                     };
                     postmessage(clientJSON);
+                   
                     clearInterval(myInterval);
+                     return "do_app_orderPark";
                     setTimeout(() => {
+                        //navigate('home');
                         //history.push('/shopview');
                     }, 3000);
                 }
@@ -1132,7 +1140,8 @@ export const doCustomFee = (RequestData) => {
                         _wc_points_logged_redemption: list._wc_points_logged_redemption,
 
                     }
-                    localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+                    localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList));
+                    store.dispatch(product());
                     // store.dispatch(checkoutActions.getAll(CheckoutList));
 
 
@@ -1140,7 +1149,7 @@ export const doCustomFee = (RequestData) => {
             }, 300);
 
         }
-
+       
         if (RequestData.method == "put") {
             clientJSON["data"] = {
                 name: add_title,
@@ -1243,6 +1252,7 @@ export const doCustomFee = (RequestData) => {
         localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartlist));
         //store.dispatch(cartProductActions.addtoCartProduct(cartlist));
         addCartProductAction(cartlist)
+        store.dispatch(product());
         clientJSON =
         {
             command: RequestData.command,

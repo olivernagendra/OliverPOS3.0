@@ -39,7 +39,7 @@ import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
 //   return print_bar_code;
 // }
 
-export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
+export const handleAppEvent = (value, whereToview, isbackgroudApp = false,navigate=null) => {
   console.log("value", value)
 
   var jsonMsg = value ? value : '';
@@ -131,7 +131,7 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
         appResponse = getOrderStatus(jsonMsg, whereToview)
         break
       case ("ParkSale").toLowerCase():
-        appResponse = DoParkSale(jsonMsg)
+        appResponse = DoParkSale(jsonMsg,navigate)
         break
       case ("CustomFee").toLowerCase():
         appResponse = doCustomFee(jsonMsg)

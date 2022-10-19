@@ -83,7 +83,7 @@ const Checkout = (props) => {
     const [set_order_notes, set_set_order_notes] = useState([]);
     const [partialType, setPartialType] = useState('');
     const [isShowParkSale, setisShowParkSale] = useState(false);
-    const [isLayAwayOrPark, setIsLayAwayOrPark] = useState('park_sale');
+    const [isLayAwayOrPark, setIsLayAwayOrPark] = useState('');
     const [storeCredit, setStoreCredit] = useState(0);
     const [isShowMsg, setisShowMsg] = useState(false);
     const [msgTitle, setmsgTitle] = useState('');
@@ -115,7 +115,14 @@ const Checkout = (props) => {
             setLoading(false);
             dispatch(paymentAmount(null));
             dispatch(changeReturnAmount(null));
-            navigate('/salecomplete');
+            if(isLayAwayOrPark==="park_sale" || isLayAwayOrPark==="lay_away")
+            {
+                gotoHome();
+            }
+            else
+            {
+                navigate('/salecomplete');
+            }
         }
         else if (resSave && resSave.status == STATUSES.ERROR && resSave.is_success===false && loading === true)
         {
@@ -384,6 +391,8 @@ const Checkout = (props) => {
         }
         else if (appResponse == "do_app_orderPark") {
             setPayment('park_sale', 'byExtApp');
+            setIsLayAwayOrPark('park_sale');
+            setLoading(true);   
         }
         else if (appResponse == 'app_do_payment') {
             handleAppPayment(data)
@@ -1295,7 +1304,10 @@ const Checkout = (props) => {
         //const { dispatch } = this.props;
         // var checkList = JSON.parse(localStorage.getItem('CHECKLIST'));
         setCheckList(JSON.parse(localStorage.getItem("CHECKLIST")));
-
+        // if(updatedBy==="byExtApp" && get_order_status==="park_sale" )
+        // {
+        //     checkList=JSON.parse(localStorage.getItem("CHECKLIST"));
+        // }
         var customer = checkList && checkList.customerDetail && checkList.customerDetail;
         var place_order;
         var order_payments = [];
@@ -1978,6 +1990,31 @@ const Checkout = (props) => {
         } else {
             //alert("Your browser not support local storage");
         }
+    }
+    const gotoHome = () => {
+        localStorage.removeItem('CARD_PRODUCT_LIST');
+        localStorage.removeItem('GTM_ORDER');
+
+        localStorage.removeItem('ORDER_ID');
+        localStorage.removeItem('CHECKLIST');
+        localStorage.removeItem('oliver_order_payments');
+        localStorage.removeItem('AdCusDetail');
+        localStorage.removeItem('CARD_PRODUCT_LIST');
+        localStorage.removeItem("CART");
+        localStorage.removeItem("SINGLE_PRODUCT");
+        localStorage.removeItem("PRODUCT");
+        localStorage.removeItem('PRODUCTX_DATA');
+        localStorage.removeItem('PAYCONIQ_PAYMENT_RESPONSE');
+        localStorage.removeItem('ONLINE_PAYMENT_RESPONSE');
+        localStorage.removeItem('STRIPE_PAYMENT_RESPONSE');
+        localStorage.removeItem('GLOBAL_PAYMENT_RESPONSE');
+        localStorage.removeItem('PAYMENT_RESPONSE');
+        localStorage.removeItem('PENDING_PAYMENTS');
+        localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
+        localStorage.removeItem('PrintCHECKLIST');
+
+        // dispatch(addtoCartProduct(null));
+        navigate('/home');
     }
     const pay_amount_cash = (item) => {
         setPaymentTypeItem(item);
