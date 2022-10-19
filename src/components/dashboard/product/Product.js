@@ -1152,9 +1152,14 @@ const Product = (props) => {
                                                                 var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
                                                                 return (<React.Fragment>
                                                                     <div className="main-row" onChange={onChangeValue}>
-                                                                        <div className="text-group">
+                                                                    <div class="input-col1" >
+                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
+                                                                       
+                                                                   
+                                                                        
+                                                                        {/* <div className="text-group">
                                                                             <p className="label">{efm.Name}</p>
-                                                                        </div>
+                                                                        </div> */}
                                                                         <div className="increment-input">
                                                                             <button onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
                                                                                 <img src={Checkout_Minus} alt="" />
@@ -1164,8 +1169,8 @@ const Product = (props) => {
                                                                                 <img src={Checkout_Plus} alt="" />
                                                                             </button>
                                                                         </div>
-                                                                        <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div>
+                                                                       
+                                                                        </div><div> <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
                                                                     {/* <div className="row" onChange={onChangeValue}>
                                                                         <div className="increment-input">
                                                                             <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
@@ -1213,15 +1218,24 @@ const Product = (props) => {
                                                 <React.Fragment>
                                                     <p className="labelTitle">{mod.Title}</p>
                                                     {
+
+
                                                         mod.modifierFields && mod.modifierFields.map(mf => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name).replace(/ /g, "_");
                                                                 return (<React.Fragment>
-                                                                    <p className="label">{efm.Name}</p>
+                                                                    <div className="main-row" onChange={onChangeValue}>
+                                                                    <div class="input-col" >
+                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
+                                                                        <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                       
+                                                                    </div>
+                                                                    <div class="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
+                                                                    {/* <p className="label">{efm.Name}</p>
                                                                     <div className="row" onChange={onChangeValue}>
                                                                         <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
                                                                         <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div>
+                                                                    </div> */}
                                                                 </React.Fragment>)
                                                             }))
                                                         })

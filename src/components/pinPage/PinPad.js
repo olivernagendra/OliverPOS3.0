@@ -7,7 +7,7 @@ import Backspace_White from '../../assets/images/svg/Backspace-White.svg'
 
 
 import { createPin, validatePin } from "./pinSlice"
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { get_UDid } from "../common/localSettings";
 import STATUSES from "../../constants/apiStatus";
 //import { openRegister } from '../components/cashmanagement/CashmanagementSlice'
@@ -52,13 +52,13 @@ const PinPad = React.memo(props => {
 
         }
 
-       focusInput()
+        focusInput()
     }, [data])
 
 
 
     const pinSuccessful = () => {
-       // console.log("pinSuccessful")
+        // console.log("pinSuccessful")
         if (status === STATUSES.error) {
             //  console.log(error)
             inputElement.current.focus();
@@ -85,7 +85,7 @@ const PinPad = React.memo(props => {
             var user = JSON.parse(localStorage.getItem("user"))
             var lang = user && user.language ? user.language : 'en';
             localStorage.setItem("LANG", lang);
-          //  focusInput()
+            //  focusInput()
             //Reloading the component if new language set for the login user.                  
             if (_lang && _lang !== lang) {
                 // window.location = '/';
@@ -113,6 +113,7 @@ const PinPad = React.memo(props => {
 
 
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", " ", "0", "c"];
+    const pinAlphabetList = ["X", "A B C", "D E F", "G H I", "J K L", "M N O", "P Q R S", "T U V", "W X Y Z", " ", "X", "X"];
     const trshPin = ['txt1', 'txt2', 'txt3', 'txt4']
 
     const NumInput = props =>
@@ -124,7 +125,11 @@ const PinPad = React.memo(props => {
                         <button key={"input" + i} type="button" id={props.id}
                             onClick={() => { addToScreen(nm) }}
                             className={nm === 'c' ? "backspace" : ""}>
-                            {nm === 'c' ? (location.pathname === "/home"?<img src={imgBackSpace} />:<img src={Backspace_White} />) : nm}
+                            {nm === 'c' ? (location.pathname === "/home" ? <img src={imgBackSpace} /> : <img src={Backspace_White} />) :
+
+                                location.pathname === "/openregister" ? <React.Fragment><p>{nm}</p>
+                                    <div class="text-row">{(nm!=" "&& nm!="1"&& nm!="c")? pinAlphabetList[parseInt(nm) -1]:""}</div></React.Fragment> : nm
+                            }
                         </button>
                     )
                 })
@@ -271,7 +276,7 @@ const PinPad = React.memo(props => {
 
 
     if (status === STATUSES.ERROR) {
-    document.getElementById("whichkey").value='';
+        document.getElementById("whichkey").value = '';
         focusInput()
         console.log(status)
         // setTotalSize(0)
@@ -281,9 +286,9 @@ const PinPad = React.memo(props => {
     }
     return <React.Fragment>
         {/* {(status === STATUSES.ERROR && <div>{error}</div>)} */}
-        <p class="style2">{LocalizedLanguage.enteryouruserid}</p>
-        <div class={status === STATUSES.ERROR ?"error-message":"error-message hide"}>Invalid user ID. Please try again.</div>
-        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent',border:"blue", display:"none" }} onChange={handle} onKeyDown={handleBack}  autoComplete="off" />
+        <p class={location.pathname === "/openregister"?"step3":"style3"}>{LocalizedLanguage.enteryouruserid}</p>
+        <div class={status === STATUSES.ERROR ? "error-message" : "error-message hide"}>Invalid user ID. Please try again.</div>
+        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue", display: "none" }} onChange={handle} onKeyDown={handleBack} autoComplete="off" />
         <div className="pinpad">
 
             {hasPin !== "true" && <ShowCreatePin />}

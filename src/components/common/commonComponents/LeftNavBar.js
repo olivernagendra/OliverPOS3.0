@@ -172,6 +172,7 @@ const LeftNavBar = (props) => {
                         <img src={LinkLauncher_Icon} alt="" />
                     </div>
                     <p>Link Launcher</p>
+                    <div className="f-key">F5</div>
                 </button>
                 <div className="divider"></div>
                 <button id="appLauncherButton" className={isShowAppLauncher === true ? "launcher filter" : "launcher"} onClick={() => toggleAppLauncher()}>
@@ -179,11 +180,14 @@ const LeftNavBar = (props) => {
                         <img src={Oliver_Icon_BaseBlue} alt="" />
                     </div>
                     <p>App Launcher</p>
+                    <div className="f-key">F6</div>
                 </button>
 
 
                 {/* display Apps for home page */}
-                {appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
+                
+                {
+                appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
                     var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
                     if (isDisplay == true) displayAppCount += 1;
                     {
@@ -198,6 +202,7 @@ const LeftNavBar = (props) => {
                                     }} /> : <img src={NoImageAvailable} alt="" />}
                                 </div>
                                 <p>{appItem.Name}</p>
+                                <div className="f-key">F{6+displayAppCount}</div>
                             </button>
 
                     }

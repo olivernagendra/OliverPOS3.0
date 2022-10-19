@@ -793,12 +793,12 @@ const CartList = (props) => {
                         </div>
                     </div>
                     <div className="checkout-container">
-                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
                     </div>
                 </div>
             </div>
             <div className="mobile-homepage-footer">
-                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
             </div>
         </React.Fragment>)
 }
