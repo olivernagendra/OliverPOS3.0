@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { saveAPI, updateAPI,getDetailAPI,getPageAPI ,getAllEventsAPi,updateCustomerNoteAPI ,updateCreditScoreAPI ,saveCustomerToTempOrderAPI} from './CustomerAPI'
 import STATUSES from '../../constants/apiStatus';
-
+import { useIndexedDB } from 'react-indexed-db';
 
 const initialState = {
     "status": STATUSES.IDLE,
@@ -17,6 +17,13 @@ export const updateCreditScore = createAsyncThunk(
   async (parameter, { rejectWithValue }) => {
       try {
           const response = await updateCreditScoreAPI(parameter);
+          if(response && response.is_success===true && response.message==="Success" && response.content!=null && parameter.CustomerWpid)
+          {
+            const { update, getByID } = useIndexedDB("customers");
+            var _item =  await getByID(parameter.CustomerWpid);
+            _item.store_credit=response.content;
+            await update(_item);
+          }
           return response;
       } catch (err) {
           return rejectWithValue(err.response.data)
