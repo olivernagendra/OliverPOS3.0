@@ -13,6 +13,7 @@ import { useIndexedDB } from "react-indexed-db";
 
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
+var clientJSON
 export const textToBase64Barcode = (text) => {
     var canvas = document.createElement("canvas");
     JsBarcode(canvas, text, {
@@ -1276,6 +1277,16 @@ export const doCustomFee = (RequestData) => {
 
 export const getReceiptData = (RequestData, whereToview) => {
     var validationResponse = validateRequest(RequestData)
+    if (whereToview == 'home') {
+        clientJSON = {
+            command: RequestData.command,
+            version: "2.0",
+            method: RequestData.method,
+            status: 403,
+            'error': "Invalid request component."
+        }
+        postmessage(clientJSON)
+    }
     // if (validationResponse.isValidationSuccess == false) {
     //     clientJSON = validationResponse.clientJSON;
     //     return postmessage(clientJSON)
@@ -1381,9 +1392,19 @@ export const getReceiptData = (RequestData, whereToview) => {
 
 }
 export const getOrderStatus = (RequestData, whereToview) => {
+    var clientJSON = ""
     var validationResponse = validateRequest(RequestData)
     if (validationResponse.isValidationSuccess == false) {
         clientJSON = validationResponse.clientJSON;
+        postmessage(clientJSON)
+    } else if (whereToview == 'home') {
+        clientJSON = {
+            command: RequestData.command,
+            version: "2.0",
+            method: RequestData.method,
+            status: 403,
+            'error': "Invalid request component."
+        }
         postmessage(clientJSON)
     }
     else {
