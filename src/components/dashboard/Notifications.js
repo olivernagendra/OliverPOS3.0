@@ -103,7 +103,6 @@ const Notifications = (props) => {
                 </div>))
                 //"Sending email to customer for order#" + list.TempOrderID + ""
             }
-
             else if (list.Status == "true" && list.order_status == "completed") {
                 description = ((<div className="notification approval" key={uniqueKey()}>
                     <div className="side-color"></div>
@@ -113,48 +112,46 @@ const Notifications = (props) => {
                     </div>
                 </div>))
             }
-            else //order refunded successfully
-                if (list.Status == "true" && list.order_status === "refunded") {
-                    description = ((<div className="notification info" key={uniqueKey()}>
-                        <div className="side-color"></div>
-                        <div className="main-row">
-                            <img src={Info_Icon} alt="" />
-                            {/* <p>Order# {list.TempOrderID}</p> */}
-                            <p>order  Refunded  successfully.</p>
-                        </div>
-                    </div>))
-                }
-                else //sync issue
-                    if (list.Status == "failed" && list.new_customer_email == "") {
-                        description = ((<div className="notification error" key={uniqueKey()}>
-                            <div className="side-color"></div>
-                            <div className="main-row">
-                                <img src={Error_Icon} alt="" />
-                                <p>Order# {list.TempOrderID}</p>
-                            </div>
-                            <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a>
-                        </div>))
-                    }
-                    else
-                        if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                            description = ((<div className="notification approval" key={uniqueKey()}>
-                                <div className="side-color"></div>
-                                <div className="main-row">
-                                    <img src={Approval_Icon} alt="" />
-                                    {/* <p>Order# {list.TempOrderID} </p> */}
-                                    <p>There was an issue to send email to customer for<br /> order# {list.TempOrderID}</p>
-                                </div>
-                            </div>))
-                        }
-                        else {
-                            description = ((<div className="notification info" key={uniqueKey()}>
-                                <div className="side-color"></div>
-                                <div className="main-row">
-                                    <img src={Info_Icon} alt="" />
-                                    <p>Order# {list.TempOrderID}</p>
-                                </div>
-                            </div>))
-                        }
+            //order refunded successfully
+            else if (list.Status == "true" && list.order_status === "refunded") {
+                description = ((<div className="notification info" key={uniqueKey()}>
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Info_Icon} alt="" />
+                        {/* <p>Order# {list.TempOrderID}</p> */}
+                        <p>order  Refunded  successfully.</p>
+                    </div>
+                </div>))
+            }//sync issue
+            else if (list.Status == "failed" && list.new_customer_email == "") {
+                description = ((<div className="notification error" key={uniqueKey()}>
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Error_Icon} alt="" />
+                        <p>Order# {list.TempOrderID}</p>
+                    </div>
+                    <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a>
+                </div>))
+            }
+            else if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
+                description = ((<div className="notification approval" key={uniqueKey()}>
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Approval_Icon} alt="" />
+                        {/* <p>Order# {list.TempOrderID} </p> */}
+                        <p>There was an issue to send email to customer for<br /> order# {list.TempOrderID}</p>
+                    </div>
+                </div>))
+            }
+            else {
+                description = ((<div className="notification info" key={uniqueKey()}>
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Info_Icon} alt="" />
+                        <p>Order# {list.TempOrderID}</p>
+                    </div>
+                </div>))
+            }
 
             var TempOrderID = list.TempOrderID
             var time = list.Status == "true" ? list.date : list.date;
