@@ -404,13 +404,13 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-            <label for="fName">First Name</label>
+            <label htmlFor="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
-            <label for="lName">Last Name</label>
+            <label htmlFor="lName">Last Name</label>
             <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
-            <label for="email">Email</label>
+            <label htmlFor="email">Email</label>
             <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
-            <label for="tel">Phone Number</label>
+            <label htmlFor="tel">Phone Number</label>
             <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
             <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>
