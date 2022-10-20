@@ -25,7 +25,7 @@ import {
   getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon,
   transactionApp, transactionStatus, DoParkSale, AddProductToCart, payfromApp
 } from './apps';
-import { productPriceUpdate, sendProductQuantity } from './apps/productApp';
+import { productPriceUpdate, RawProductData, sendProductQuantity } from './apps/productApp';
 import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
 // var JsBarcode = require('jsbarcode');
 // var print_bar_code;
@@ -54,7 +54,7 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false,naviga
     //this.setState({ showNewAppExtension:true})
     switch (clientEvent) {
       case ("appReady").toLowerCase():  //working
-        appReady(whereToview, isbackgroudApp, isbackgroudApp)
+        appReady(whereToview, isbackgroudApp, isbackgroudApp) //done
         break;
       case ("DataToReceipt").toLowerCase():
         appResponse = DataToReceipt(jsonMsg, whereToview, isbackgroudApp);
@@ -85,11 +85,11 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false,naviga
       //   productDetail(jsonMsg, isbackgroudApp)
       //   break
       case ("Payment").toLowerCase():
-        appResponse = payfromApp(jsonMsg, isbackgroudApp)
+        appResponse = payfromApp(jsonMsg, isbackgroudApp) //done
         break
-      // case ("rawProductData").toLowerCase():
-      //   rawProductData(jsonMsg, isbackgroudApp)
-      //   break
+      case ("rawProductData").toLowerCase():
+        RawProductData(jsonMsg, isbackgroudApp)
+        break
       case ("cartDiscount").toLowerCase():
         appResponse = addCartDiscount(jsonMsg, isbackgroudApp, whereToview)
         break
