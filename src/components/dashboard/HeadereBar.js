@@ -15,6 +15,12 @@ import { product } from "../dashboard/product/productSlice";
 import UserInfo from "../common/commonComponents/UserInfo";
 import SwitchUser from "../common/commonComponents/SwitchUser";
 import EndSession from "../common/commonComponents/EndSession";
+import Config from '../../Config';
+import { checkTempOrderSync } from "../checkout/checkoutSlice";
+import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
+import { checkTempOrderStatus } from "../checkout/checkoutSlice";
+import { get_UDid } from "../common/localSettings";
+import ActiveUser from "../../settings/ActiveUser";
 const HeadereBar = (props) => {
     const dispatch = useDispatch();
     const [isShowUserProfile, setisShowUserProfile] = useState(false);
@@ -37,6 +43,45 @@ const HeadereBar = (props) => {
     const clearCart = () => {
         removeCheckOutList();
         dispatch(product());
+    }
+    useEffect(()=>{
+       checkTempOrderSyncStatus();
+        //checkTempOrderStatus();
+    })
+   const checkTempOrderSyncStatus=()=> {
+        const { Email } = ActiveUser.key;
+        setTimeout(function () {
+            var TempOrdersForSync = localStorage.getItem(`TempOrders_${Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${Email}`)) : [];
+            if (TempOrdersForSync && TempOrdersForSync.length > 0) {
+                var TempOrders = TempOrdersForSync.filter(item => (item.Status.toString() == "false" /*|| item.Status.toString() == "failed"*/) && item.Sync_Count < Config.key.SYNC_COUNT_LIMIT);
+                if (TempOrders && TempOrders.length > 0) {
+                    var sortArr = TempOrders.sort(function (obj1, obj2) {
+                        return obj1.Index - obj2.Index;
+                    })
+                    var syncOrderID = sortArr[0].TempOrderID;
+
+                    if (syncOrderID && syncOrderID !== '') {
+                        dispatch(checkTempOrderSync(syncOrderID));
+                    }
+                }
+
+                /// Sync for add new customer to order and send email to customer
+                TempOrders = TempOrdersForSync.filter(item => item.new_customer_email !== "" && item.isCustomerEmail_send == false && item.Sync_Count < Config.key.SYNC_COUNT_LIMIT && (item.Status.toString() == "false" /*|| item.Status.toString() == "failed"*/));
+                if (TempOrders && TempOrders.length > 0) {
+                    var sortArr = TempOrders.sort(function (obj1, obj2) {
+                        return obj1.Index - obj2.Index;
+                    })
+                    var syncOrderID = sortArr[0].TempOrderID;
+
+                    //Sync_Count<=1 FOR ONLY ONE TIME EXCECUTION
+                    // console.log("TempOrders[0].Sync_Count", TempOrders[0].Sync_Count)
+                    if (syncOrderID && TempOrders[0].Sync_Count <= 1 && TempOrders[0].new_customer_email !== "" && TempOrders[0].isCustomerEmail_send == false) {
+                        // console.log("Call email customer", TempOrders[0].Sync_Count)
+                        dispatch(saveCustomerToTempOrder({"order_id":syncOrderID,"email_id":TempOrders[0].new_customer_email}));
+                    }
+                }
+            }
+        }, 10000);
     }
     return (<React.Fragment>
         <div className="header">
