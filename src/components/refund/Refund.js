@@ -29,7 +29,8 @@ const Refund = () => {
     const [isShowNumberPad, setisShowNumberPad] = useState(false);
     const [isShowPartialPayment, setisShowPartialPayment] = useState(false);
     const [balance, setbalance] = useState(0);
-
+    const [checkList, setCheckList] = useState(JSON.parse(localStorage.getItem("CHECKLIST")));
+    const [cashRound, setCashRound] = useState(0);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -40,6 +41,45 @@ const Refund = () => {
     }
     const toggleShowPartialPayment = () => {
         setisShowPartialPayment(!isShowPartialPayment)
+    }
+    const pay_partial = (amount, item) => {
+        // toggleShowPartialPayment();
+        // //setPaidAmount(amount);
+        // setPartialAmount(amount);
+        // setPaymentTypeItem(item);
+        // dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        // //pay_amount(type);
+        // //setPayment_Type("cash");
+    }
+    const getRemainingPrice = () => {
+        //var checkList = JSON.parse(localStorage.getItem("CHECKLIST"));
+        var paid_amount = 0;
+        var getPayments = (typeof JSON.parse(localStorage.getItem("oliver_order_payments")) !== "undefined") ? JSON.parse(localStorage.getItem("oliver_order_payments")) : [];
+        if (getPayments !== null) {
+            getPayments.forEach(paid_payments => {
+                paid_amount += parseFloat(paid_payments.payment_amount);
+            });
+        }
+        if (checkList && checkList.totalPrice && parseFloat(checkList.totalPrice) >= paid_amount) {
+            return (parseFloat(checkList.totalPrice) - parseFloat(paid_amount));
+        }
+    }
+
+    const getRemainingPriceForCash = () => {
+        // var checkList = JSON.parse(localStorage.getItem("CHECKLIST"));
+        var paid_amount = 0;
+        var getPayments = (typeof JSON.parse(localStorage.getItem("oliver_order_payments")) !== "undefined") ? JSON.parse(localStorage.getItem("oliver_order_payments")) : [];
+        if (getPayments !== null) {
+            getPayments.forEach(paid_payments => {
+                paid_amount += parseFloat(paid_payments.payment_amount);
+            });
+        }
+        var totalPrice = checkList && checkList.totalPrice ? parseFloat(RoundAmount(checkList.totalPrice)) : 0;
+        var cashRoundReturn = parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount))
+        //this.state.CashRound = parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount))
+        setCashRound(parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount)));
+        var new_total_price = (totalPrice - paid_amount) + parseFloat(cashRoundReturn)
+        return new_total_price;
     }
     const pay_amount = (item) => {
         if (item.Name.toLowerCase() === "cash")
@@ -176,7 +216,7 @@ const Refund = () => {
           
         </div>
         <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad}></NumberPad>
-        <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment}></PartialPayment>
+        <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice}></PartialPayment>
         </React.Fragment>)
 }
 export default Refund
