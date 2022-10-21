@@ -31,7 +31,8 @@ import { isSafari, isMobileOnly, isTablet } from "react-device-detect";
 import { refundOrder } from "./refundOrderSlice";
 import Config from '../../Config';
 import moment from "moment";
-
+import { getDetail } from "../activity/ActivitySlice";
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Refund = (props) => {
 
     const [refundSubTotal, setRefundSubTotal] = useState(0.00);
@@ -253,7 +254,7 @@ const Refund = (props) => {
             getorder = JSON.parse(localStorage.getItem("getorder"));
         }
 
-        setLoading(true);
+        // setLoading(true);
         refund(getorder.order_id, cashRound, refundItemList);
         //setPayment(status);
     }
@@ -1117,12 +1118,12 @@ const Refund = (props) => {
         var paid_amount = 0.0;
         var payments = new Array();
         //if (checkList && checkList !== null && refundTotal !== null) {
-            // this.setState({
-            //     totalPrice: refundTotal
-            // })
-            //setTotalPrice(totalPrice);
+        // this.setState({
+        //     totalPrice: refundTotal
+        // })
+        //setTotalPrice(totalPrice);
         //}
-        if (localStorage.getItem("oliver_refund_order_payments") ) {
+        if (localStorage.getItem("oliver_refund_order_payments")) {
             var getPayments = (typeof JSON.parse(localStorage.getItem("oliver_refund_order_payments")) !== "undefined") ? JSON.parse(localStorage.getItem("oliver_refund_order_payments")) : new Array();
             getPayments.forEach(paid_payments => {
                 paid_amount += parseFloat(paid_payments.payment_amount);
@@ -1776,6 +1777,7 @@ const Refund = (props) => {
         setRefundTotal(RoundAmount(tt));
         setbalance(RoundAmount(tt))
         setRefundItemList(ril);
+        setPaidAmount(RoundAmount(tt));
         //setPaidAmount(ril);
     }
     const setPartialPayment = (paymentType, paymentAmount) => {
@@ -1847,8 +1849,22 @@ const Refund = (props) => {
             setLoading(false);
             dispatch(paymentAmount(null));
             dispatch(changeReturnAmount(null));
-console.log("---refund done-----")
-            //navigate('/salecomplete');
+
+            if (JSON.parse(localStorage.getItem("user")).display_sale_refund_complete_screen == false) {
+                navigate('/transactions');
+            } else {
+                var getorder = {};
+                if (localStorage.getItem("getorder")) {
+                    getorder = JSON.parse(localStorage.getItem("getorder"));
+                }
+                var order_id = getorder.order_id;
+                var UID = get_UDid();
+                dispatch(getDetail(order_id, UID));
+                navigate('/refundcomplete');
+            }
+
+            //console.log("---refund done-----")
+            //navigate('/refundcomplete');
         }
         else if (resRefundOrder && resRefundOrder.status == STATUSES.ERROR && resRefundOrder.is_success === false && loading === true) {
             console.log("error message---" + resRefundOrder.data);
@@ -1929,7 +1945,7 @@ console.log("---refund done-----")
     }
     var _activeDisplay = true;
     var global_payment = null;
-    return (<React.Fragment>
+    return (<React.Fragment>     {loading === true ? <LoadingModal></LoadingModal> : null}
         <div className="refund-wrapper">
             <LeftNavBar ></LeftNavBar>
             <Header title={LocalizedLanguage.refundTitle}></Header>

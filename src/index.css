@@ -542,3 +542,13 @@ code {
 {z-index: unset;}
 .transactions-list > .header > .sort-wrapper
 {z-index: unset;}
+.refund-complete-txt
+{display: flex;
+    align-items: center;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 21px;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 43px;}
