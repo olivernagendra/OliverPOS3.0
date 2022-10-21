@@ -168,7 +168,7 @@ function LeftNavBar(props) {
     }
     var appsList = []
     var appDisplayCount = 0
-    if (mostUsedApp && mostUsedApp.length > 0) {
+    if (allAppList && mostUsedApp && mostUsedApp !== null && mostUsedApp.length > 0) {
         mostUsedApp.map(function (itemUsed, index) {
             // if (index < 3) {
             var app = allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0 && CheckAppDisplayInView(item.viewManagement) == true)
