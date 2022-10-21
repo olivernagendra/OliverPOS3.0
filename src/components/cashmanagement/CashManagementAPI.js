@@ -68,3 +68,9 @@ export function addRemoveCashAPI(addRemoveCashParm) {
 }
 
 
+export function addPaymentListLogAPI(PaymentLogs) {
+    return serverRequest.clientServiceRequest('POST', `/CashManagement/addPaymentListLog`, PaymentLogs)
+        .then(result => {
+            return result;
+        });
+}

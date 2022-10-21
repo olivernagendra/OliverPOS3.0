@@ -121,8 +121,9 @@ export const ActivityFooter = (props) => {
                 setTimeout(function () {
                     localStorage.setItem("getorder", JSON.stringify(single_Order_list))
                     // window.location = '/refund'
+                    localStorage.removeItem("oliver_refund_order_payments");
                     navigate('/refund');
-                }, 1000)
+                }, 100)
             }
         }
         if (type == 'statuspending' && id) {

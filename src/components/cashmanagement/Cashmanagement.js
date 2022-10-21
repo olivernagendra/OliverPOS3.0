@@ -30,6 +30,7 @@ function Cashmanagement() {
   const [addremoveCash, setaddremoveCash] = useState(true)
   const [isMobileList, setisMobileList] = useState(false)
   const [CashDrawerPaymentDetail, setcashDrawerDetailData] = useState([])
+  const [activateSelect, setActivateSelect] = useState()
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
@@ -70,6 +71,7 @@ function Cashmanagement() {
   const getCashDrawerPaymentDetail = (OrderId, index) => {
     toggleListWrapp()
     dispatch(getDetails(OrderId));
+    setActivateSelect(OrderId)
   }
 
   const { status, data, error, is_success } = useSelector((state) => state.cashmanagement)
@@ -159,6 +161,8 @@ function Cashmanagement() {
   useEffect(() => {
     if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
       setcashDrawerDetailData(cashDrawerAllDetails.getdetail && getdetail.content);
+     setActivateSelect(cashDrawerAllDetails.getdetail && getdetail.content.CashManagementId)
+
     }
   }, [cashDrawerAllDetails]);
 
@@ -233,15 +237,15 @@ function Cashmanagement() {
                   {/* <div className="prev-registers"> */}
 
                   {
+                   
                     orders && ordersDate && ordersDate.map((getDate, index) => {
                       return (<React.Fragment> <div className="date"><p>{current_date == getDate ? 'Today' : getDate} </p></div>
                         {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
                           return (
-                            <button className="other-register no-transform" onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
+                            <button  className={activateSelect == order.Id ? "other-register no-transform selected" : "other-register no-transform"}  onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
                               <div className="row">
                                 <p className="style1">{order.RegisterName}</p>
-
-                                <p className="style2">{!order.ClosedTime ? " OPEN " : "  CLOSED  " + order.ClosedTime}  </p>
+                                <p className="style2">{!order.ClosedTime ? " OPEN " : "  CLOSED  "}</p>
                               </div>
                               <div className="row">
                                 <p className="style2">User:   {order.SalePersonName}</p>
@@ -275,8 +279,11 @@ function Cashmanagement() {
                     <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
                     <p className="open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
                   </div>
+               
                   <p className="style1">{Status === "Open"
-                    ? _openDateTime : _openDateTime + " to " + _closeDateTime} </p>
+                    ? _openDateTime : _openDateTime  +  " to " }</p>
+                     {Status !== "Open" ? <p>{_closeDateTime}</p>:''} 
+                  
                 </div>
                 <div className="col">
                   <p className="style1 mobile-difference">Cash Drawer Ending Balance</p>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import avatar from '../../assets/images/svg/avatar.svg';
+import Avatar_Blue_Background from '../../assets/images/svg/Avatar-Blue_Background.svg';
+import avatar_2 from '../../assets/images/svg/avatar-2.svg';
 import Oliver_Type from '../../assets/images/svg/Oliver-Type.svg';
 import Search_Icon_Blue from '../../assets/images/svg/Search-Icon-Blue.svg';
 import Ellipsis_Icon_DarkBlue from '../../assets/images/svg/Ellipsis-Icon-DarkBlue.svg';
@@ -95,7 +97,10 @@ const HeadereBar = (props) => {
                     Search Console
                 </button>
                 <button id="userInfoButton" onClick={() => toggleUserProfile()}>
-                    <img src={avatar} alt="" />
+                    {/* <img src={avatar} alt="" /> */}
+                    {/* Will use by default if no other img is given  */}
+						<img src={Avatar_Blue_Background} alt="" class="default" />
+						<img src={avatar_2} alt="" />
                 </button>
                 <button id="mobileOptionsButton" onClick={() => props.toggleOptionPage()} className={props.isShow == true ? "filter" : ""}>
                     <img src={Ellipsis_Icon_DarkBlue} alt="" />

@@ -28,8 +28,8 @@ import { make_payconiq_paymentSlice, check_payconiq_pay_statusSlice, cancel_payc
 //import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/inventorySlice'
 import inventoryReducer from '../components/dashboard/slices/inventorySlice'
 import { getAllActivityListSlice, getDetailSlice, getFilteredActivitiesSlice } from '../components/activity/ActivitySlice';
+import { refundOrderSlice } from '../components/refund/refundOrderSlice';
 import { postMetaSlice, getPostMetaSlice } from '../components/common/commonAPIs/postMetaSlice';
-
 
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
@@ -75,25 +75,26 @@ export const store = configureStore({
     popupMessage: popupMessageSlice.reducer,
     discountList: discountSlice.reducer,
     inventories: inventoryReducer,
-    addRemoveCashmanagement: addRemoveCashSlice.reducer,
-    customergetDetail: CustomerGetDetailsSlice.reducer,
-    getAllEvents: getAllEventsSlice.reducer,
-    getExtensions: getExtensionsSlice.reducer,
-    getPaymentTypeName: getPaymentTypeNameSlice.reducer,
-    makePayment: getMakePaymentSlice.reducer,
-    makeOnlinePayments: makeOnlinePaymentsSlice.reducer,
-    save: saveSlice.reducer,
-    paymentAmount: paymentAmountSlice.reducer,
-    changeReturnAmount: changeReturnAmountSlice.reducer,
-    checkTempOrderSync: checkTempOrderSyncSlice.reducer,
-    checkTempOrderStatus: checkTempOrderStatusSlice.reducer,
-    saveCustomerToTempOrder: saveCustomerToTempOrderSlice.reducer,
-    activityRecords: getAllActivityListSlice.reducer,
-    activityGetDetail: getDetailSlice.reducer,
-    getFilteredActivities: getFilteredActivitiesSlice.reducer,
-    make_payconiq_payment: make_payconiq_paymentSlice.reducer,
-    check_payconiq_pay_status: check_payconiq_pay_statusSlice.reducer,
-    cancel_payconiq_payment: cancel_payconiq_paymentSlice.reducer,
+    addRemoveCashmanagement:addRemoveCashSlice.reducer,
+    customergetDetail:CustomerGetDetailsSlice.reducer,
+    getAllEvents:getAllEventsSlice.reducer,
+    getExtensions:getExtensionsSlice.reducer,
+    getPaymentTypeName:getPaymentTypeNameSlice.reducer,
+    makePayment:getMakePaymentSlice.reducer,
+    makeOnlinePayments:makeOnlinePaymentsSlice.reducer,
+    save:saveSlice.reducer,
+    paymentAmount:paymentAmountSlice.reducer,
+    changeReturnAmount:changeReturnAmountSlice.reducer,
+    checkTempOrderSync:checkTempOrderSyncSlice.reducer,
+    checkTempOrderStatus:checkTempOrderStatusSlice.reducer,
+    saveCustomerToTempOrder:saveCustomerToTempOrderSlice.reducer,
+    activityRecords:getAllActivityListSlice.reducer,
+    activityGetDetail:getDetailSlice.reducer,
+    getFilteredActivities:getFilteredActivitiesSlice.reducer,
+    make_payconiq_payment:make_payconiq_paymentSlice.reducer,
+    check_payconiq_pay_status:check_payconiq_pay_statusSlice.reducer,
+    cancel_payconiq_payment:cancel_payconiq_paymentSlice.reducer,
+    refundOrder:refundOrderSlice.reducer,
     postMeta: postMetaSlice.reducer,
     getPostMeta: getPostMetaSlice.reducer
   }

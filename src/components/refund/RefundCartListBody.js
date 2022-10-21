@@ -20,7 +20,7 @@ const RefundCartListBody = (props) => {
             var _getorder = JSON.parse(localStorage.getItem("getorder"));
             setGetorder(_getorder)
             setListItem(_getorder.line_items);
-           
+
         }
     }, []);
     const updateQuantity = (id, type) => {
@@ -51,7 +51,7 @@ const RefundCartListBody = (props) => {
     const calculateCart = () => {
 
         var refund_subtotal = 0.0;
-        var refund_total = getorder ? parseFloat(getorder.total_amount).toFixed(2) : 0.0;
+        var refund_total = 0.0;
         var refund_tax = 0.0;
         var _totalDiscountedAmount = 0.0;
         var _customFee = 0.0;
@@ -65,16 +65,16 @@ const RefundCartListBody = (props) => {
         var _cartDiscountAmount = 0.00;
         var _productDiscountAmount = 0.00;
         var _seprateDiscountAmount = 0.00;
-        
+
         var total_refund_amount = getorder && getorder.total_amount;
         var cash_rounding_amount = getorder && getorder.cash_rounding_amount;
-        var taxInclusiveName = getorder?getInclusiveTaxType(getorder.meta_datas):"";
+        var taxInclusiveName = getorder ? getInclusiveTaxType(getorder.meta_datas) : "";
         listItem && listItem.map((item, index) => {
             if (item.hasOwnProperty("quantity_to_refund") && item.quantity_to_refund > 0) {
                 refund_subtotal += item.price * item.quantity_to_refund;
                 //if(item.isTaxable===true)
                 {
-                    refund_tax+= (parseFloat(item.total_tax/item.quantity) * item.quantity_to_refund);
+                    refund_tax += (parseFloat(item.total_tax / item.quantity) * item.quantity_to_refund);
                 }
                 if (taxInclusiveName && taxInclusiveName !== "") { //in inclusive tax need to add tax intosub total
                     refund_subtotal += refund_tax;
@@ -85,20 +85,22 @@ const RefundCartListBody = (props) => {
                 }
             }
         })
-      
-        var _dis = _cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
 
-        props.setValues && props.setValues(refund_subtotal, RoundAmount(refund_tax), _dis, refund_total);
+        var _dis = _cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
+        var refundlistItem = listItem && listItem.filter(a => a.hasOwnProperty("quantity_to_refund") && a.quantity_to_refund > 0);
+
+        
+        props.setValues && props.setValues(refund_subtotal, RoundAmount(refund_tax), _dis, refund_total,refundlistItem);
     }
     return (
         <div className="body">
             <img src={EmptyCart} alt="" />
             {(props.refresh == false || props.refresh == true) && listItem && listItem.length > 0 && listItem.map(item => {
-                return <div className="cart-item">
+                return <div className="cart-item" key={item.line_item_id}>
                     <div className="main-row">
                         <p className="quantity">{item.quantity - Math.abs(item.quantity_refunded)}</p>
                         <p className="content-style">{item.name}</p>
-                        <p className="price">${parseFloat(item.price*(item.quantity - Math.abs(item.quantity_refunded))).toFixed(2)}</p>
+                        <p className="price">${parseFloat(item.price * (item.quantity - Math.abs(item.quantity_refunded))).toFixed(2)}</p>
                     </div>
                     <div className="increment-input">
                         <button onClick={() => updateQuantity(item.line_item_id, 'dec')}>
