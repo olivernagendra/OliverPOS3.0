@@ -27,9 +27,10 @@ const ActivityOrderDetail = () => {
     var Customerdata = activityOrderDetails && activityOrderDetails.orderCustomerInfo ? activityOrderDetails.orderCustomerInfo : ''
 
     const OpenCustomer = (orderid) => {
-        console.log(orderid)
-        sessionStorage.setItem("CUSTOMER_ID", orderid ? orderid : 0);
+       if(orderid !==''){
+        sessionStorage.setItem("Cusredirection", orderid ? orderid : 0);
         navigate('/customers')
+       } 
     }
 
 
@@ -38,9 +39,9 @@ const ActivityOrderDetail = () => {
     return (<>
         <div className="quick-info">
             <div className="col">
-                <p className="style1">Order #{activityOrderDetails.order_id}</p>
+                <p className="style1">Order #{activityOrderDetails&&activityOrderDetails.order_id}</p>
                 <p className="style2">Total: <b>{
-                    (activityOrderDetails.refunded_amount > 0) ? <div>{parseFloat(activityOrderDetails.total_amount - activityOrderDetails.refunded_amount).toFixed(2)} <del>{parseFloat(activityOrderDetails.total_amount).toFixed(2)}</del></div> : parseFloat(activityOrderDetails.total_amount).toFixed(2)
+                    (activityOrderDetails&&activityOrderDetails.refunded_amount > 0) ? <div>{parseFloat(activityOrderDetails.total_amount - activityOrderDetails.refunded_amount).toFixed(2)} <del>{parseFloat(activityOrderDetails&&activityOrderDetails.total_amount).toFixed(2)}</del></div> : parseFloat(activityOrderDetails&&activityOrderDetails.total_amount).toFixed(2)
                 }</b></p>
                 <p className="style3" >
                     {

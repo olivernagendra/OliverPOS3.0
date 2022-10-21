@@ -31,6 +31,7 @@ import { ActivityFooter } from "./ActivityFooter";
 
 const ActivityView = () => {
 
+
     const [AllActivityList, setAllActivityList] = useState([])
     const [updateActivityId, setupdateActivityId] = useState('')
     const [SelectedTypes, setSelectedTypes] = useState('')
@@ -111,7 +112,13 @@ const ActivityView = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-            reload()
+            var transactionredirect = sessionStorage.getItem("transactionredirect")?sessionStorage.getItem("transactionredirect"):'';
+            setEmailNamePhone(transactionredirect)
+            if(transactionredirect !== ''){
+                applyServerFilter()
+            }else{
+                reload()
+            }            
         }
         return () => {
             useCancelled = true;
@@ -241,9 +248,14 @@ const ActivityView = () => {
     let useCancelled1 = false;
     useEffect(() => {
         var UID = get_UDid('UDID');
-        var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
+        var transactionsRedirect = sessionStorage.getItem("transactionredirect")? sessionStorage.getItem("transredirection"):'';
+        // if(transactionsRedirect &&transactionsRedirect.length > 0) {
+        //     var customer_to_activity_id = sessionStorage.getItem("transredirection") ?sessionStorage.getItem("transredirection"):'';
+        //   }
+            var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
+          
+          console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
-        // console.log("customer_to_activity_id",customer_to_activity_id)
         if (useCancelled1 == false) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
@@ -425,6 +437,7 @@ const ActivityView = () => {
 
     // Filter Submit Btn
     const applyServerFilter = () => {
+        var transactionredirect = sessionStorage.getItem("transactionredirect")?sessionStorage.getItem("transactionredirect"):'';
         var UID = get_UDid('UDID');
         var pagesize = Config.key.ACTIVITY_PAGE_SIZE
         // var fromdate = document.getElementById("txtfromdate");
@@ -463,17 +476,14 @@ const ActivityView = () => {
             // "EndDay": e_dd,
             // "EndMonth": e_mm,
             // "EndYear": e_yy,
-            "searchVal": emailnamephone,
+            "searchVal": emailnamephone?emailnamephone:transactionredirect
             //"groupSlug": this.state.filterByGroupList,
 
         };
+       // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
-        //Display List
-        // var dvFilter = document.getElementById("activityFilter");
-        // if ((dvFilter || (txtSearch && txtSearch !== '')) && isMobileOnly !== true) {
-        //     dvFilter.style.display = "none"
-        //     this.setState({ filterButtonText: LocalizedLanguage.cancel });
-        // }
+        sessionStorage.removeItem('transactionredirect');
+        
     }
 
 
@@ -482,6 +492,8 @@ const ActivityView = () => {
         setfilterByUser("")
         setFilterByStatus("")
         setFilterByPlatform("")
+        setEmailNamePhone("")
+        setSelectuserFilter('')
     }
     
     // console.log("filterByPlatform",filterByPlatform)
@@ -493,6 +505,11 @@ const ActivityView = () => {
     const handleUserChange = (selectedOption) => {
         // const { name, value } = e.target;
         setSelectedOption(selectedOption)
+
+    }
+
+    const hundleChange=(event)=>{
+        setEmailNamePhone(event.target.value)
 
     }
 
@@ -542,11 +559,11 @@ const ActivityView = () => {
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
                     <label for="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" onChange={e => setEmailNamePhone(e.target.value)} />
+                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChange} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label for="custInfo">Customer Info</label>
-                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={e => setEmailNamePhone(e.target.value)} />
+                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange}  value={emailnamephone} />
                     <label for="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
                         <img src={DropdownArrow} alt="" />

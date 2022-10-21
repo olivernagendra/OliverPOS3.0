@@ -25,6 +25,7 @@ import Cusomercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 const CustomerView = () => {
 
   var orderCount = ''
@@ -145,13 +146,21 @@ const CustomerView = () => {
   let useCancelled1 = false;
   useEffect(() => {
     var UID = get_UDid('UDID');
-    var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID");
-    setupdateCustomerId(CUSTOMER_ID)
+    var Customerredirection = sessionStorage.getItem("Cusredirection")? sessionStorage.getItem("Cusredirection"):'';
+    if(Customerredirection &&Customerredirection.length > 0) {
+      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection")?sessionStorage.getItem("Cusredirection"):'';
+      setupdateCustomerId(CUSTOMER_ID)
+    }else{
+      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID")?sessionStorage.getItem("CUSTOMER_ID"):'';
+      setupdateCustomerId(CUSTOMER_ID)
+    }
+ 
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
-
     }
+    //  Remove saved data from sessionStorage
+      sessionStorage.removeItem('Cusredirection');
     return () => {
       useCancelled1 = true;
     }
@@ -183,6 +192,7 @@ const CustomerView = () => {
         eventtype: '', Id: '', amount: '', oliverPOSReciptId: '', datetime: '', status: '',
         Description: '', ShortDescription: '', location: ''
       };
+      var time = FormateDateAndTime.formatDateWithTime(event.CreateDateUtc, event.time_zone);
       var jsonData = event.JsonData && JSON.parse(event.JsonData)
       collectionItem['eventtype'] = event.EventName;
       collectionItem['Id'] = event.Id;
@@ -194,6 +204,7 @@ const CustomerView = () => {
       collectionItem['Description'] = jsonData ? jsonData.Notes : event.Description;
       collectionItem['ShortDescription'] = event.ShortDescription;
       collectionItem['location'] = event ? event.Location : '';
+      collectionItem['time'] = time ? time : '';
       eventCollection.push(collectionItem)
     })
     orderCount = eventCollection.filter(x => x.eventtype == "New Order")
@@ -357,7 +368,14 @@ const CustomerView = () => {
       localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
     }
     navigate('/home')
+  }
 
+  const OpenTransactions =(customerDetailData)=>{
+    //console.log("customerDetailData",customerDetailData.Email)
+    if(customerDetailData.Email !=='' ){
+      sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : 0);
+      navigate('/transactions')
+     } 
   }
 
 
@@ -559,7 +577,7 @@ const CustomerView = () => {
                   <div className="customer-note">
                     <div className="row">
                       <p className="style1">{item.datetime}</p>
-                      <p className="style2">12:50PM</p>
+                      <p className="style2">{item.time}</p>
                       <button>
                         <img src={ClearCart} alt="" />
                       </button>
@@ -575,7 +593,7 @@ const CustomerView = () => {
 
           <Cusomercreate isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
           <div className="footer">
-            <button id="customerToTransactions">View Transactions</button>
+            <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
             <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
           </div>
         </div>

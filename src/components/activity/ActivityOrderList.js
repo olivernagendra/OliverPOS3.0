@@ -5,7 +5,15 @@ import { showSubTitle, showTitle, getInclusiveTaxType } from "../../settings/Com
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import shirt from '../../assets/images/Temp/shirt.png'
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { useIndexedDB } from 'react-indexed-db';
+import { Await } from "react-router-dom";
 const ActivityOrderList = () => {
+    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
+
+
+    
+
+
     const [activityOrderDetails, setActivityOrderDetails] = useState([])
     var TaxSetting = localStorage.getItem("TAX_SETTING") ? JSON.parse(localStorage.getItem("TAX_SETTING")) : null;
     // Getting Response from activitygetDetail Api
@@ -21,13 +29,6 @@ const ActivityOrderList = () => {
 
     let data = activityOrderDetails && activityOrderDetails !== '' ? activityOrderDetails : ''
    // console.log("data", data)
-
-
-
-
-
-
-
 
 
 
@@ -157,6 +158,14 @@ const ActivityOrderList = () => {
         });
     }
 
+    var productImage =''
+    const productImageFind = async (item)=>{
+      var product = await getByID(item.product_id)
+    //  console.log("product",product)
+      productImage = product.ProductImage
+        //return product.ProductImage;
+
+    }
 
 
 
@@ -165,7 +174,10 @@ const ActivityOrderList = () => {
         {activitygetdetails.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
             <p>Order Details</p>
             {
-                lineitems && lineitems.map((item, inde) => {
+                lineitems && lineitems.map((item, index) => {
+                    productImageFind (item) ;
+                  
+                    var sku = item.sku ?item.sku:''
                     var varDetail = item.ProductSummery.toString();
                     ///Composit Child product------------------------
                     if ((item.composite_parent_key && item.composite_parent_key !== "") || (item.bundled_parent_key && item.bundled_parent_key !== "")) { //remove child composit product
@@ -220,7 +232,7 @@ const ActivityOrderList = () => {
                                         }
                                     </p>
                                 </div>
-                                <img src={shirt} alt="" />
+                                <img src={productImage ? productImage:""} alt="" />
                             </div>
                             <div className="col">
                                 <div className="main-row">
@@ -239,18 +251,15 @@ const ActivityOrderList = () => {
                                                 :
                                                 ((item.subtotal - item.total) != 0) && isIndivisualDiscountApply.length > 0 ?
                                                     TaxSetting && TaxSetting.pos_prices_include_tax == 'no' ?
-                                                       
                                                         <div><del >{parseFloat(_amount).toFixed(2)}</del>{_final_amount} </div>
                                                         : <div><del>{(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2)}</del>{(item.total + (taxInclusiveName == "" ? 0 : item.subtotal_tax) + _productCartDiscountAmount).toFixed(2)}   </div>
                                                     :Math.round(parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2))
                                         }
-
                                     </p>
                                 </div>
                                 <div className="item-fields">
-                                    <p>SKU: ACE2349801</p>
-                                    <p>Black</p>
-                                    <p>Medium</p>
+                                    {sku?<p>SKU: {sku}</p> :''}
+                                  
                                 </div>
                             </div>
                         </div>
@@ -260,11 +269,11 @@ const ActivityOrderList = () => {
 
 
 
-            <div className="custom-fields">
+            {/* <div className="custom-fields">
                 <p className="style1">Custom Fields</p>
                 <p className="style2">Sizing Chart ID: HIOK23498979</p>
                 <p className="style2">Employee Compensation: 20%</p>
-            </div>
+            </div> */}
         </>
     )
 }
