@@ -26,7 +26,7 @@ import {
   transactionApp, transactionStatus, DoParkSale, AddProductToCart, payfromApp
 } from './apps';
 import { productPriceUpdate, RawProductData, sendProductQuantity } from './apps/productApp';
-import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
+import { UpdateRecentUsedApp } from '../commonFunctions/AppDisplayFunction';
 // var JsBarcode = require('jsbarcode');
 // var print_bar_code;
 // export const textToBase64Barcode = (text) => {
@@ -39,7 +39,7 @@ import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
 //   return print_bar_code;
 // }
 
-export const handleAppEvent = (value, whereToview, isbackgroudApp = false,navigate=null) => {
+export const handleAppEvent = (value, whereToview, isbackgroudApp = false, navigate = null) => {
   console.log("value", value)
 
   var jsonMsg = value ? value : '';
@@ -131,7 +131,7 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false,naviga
         appResponse = getOrderStatus(jsonMsg, whereToview)
         break
       case ("ParkSale").toLowerCase():
-        appResponse = DoParkSale(jsonMsg,navigate)
+        appResponse = DoParkSale(jsonMsg, navigate)
         break
       case ("CustomFee").toLowerCase():
         appResponse = doCustomFee(jsonMsg)
@@ -187,7 +187,7 @@ export const postmessage = (clientJSON) => {
         "Name": currentAppName.innerText
       }
       console.log("text", app)
-      if (app !== null) { updateRecentUsedApp(app, false, true) }
+      if (app !== null) { UpdateRecentUsedApp(app, false, true) }
     }
     //-------------------------------------------------------
 
