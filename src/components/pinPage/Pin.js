@@ -17,6 +17,8 @@ import { useNavigate } from 'react-router-dom';
 import PinPad from "./PinPad";
 import { get_UDid } from "../common/localSettings";
 import LogoutConfirm from "../common/commonComponents/LogoutConfirm";
+import { getPostMeta } from "../common/commonAPIs/postMetaSlice";
+
 //import $ from "jquery";
 const Pin = () => {
     const dispatch = useDispatch();
@@ -25,6 +27,7 @@ const Pin = () => {
     const [onClick, setOnClick] = useState(false);
     const [isShowLogoutConfirm, setisShowLogoutConfirm] = useState(false)
     const register_Id = localStorage.getItem('register');
+
     const toggleLogoutConfirm = () => {
         setisShowLogoutConfirm(!isShowLogoutConfirm)
     }
@@ -32,14 +35,20 @@ const Pin = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-            localStorage.setItem("recent_apps", [])
+
             fetchData()
+            dispatch(getPostMeta("recent_apps"));
         }
         return () => {
             useCancelled = true;
         }
     }, []);
-
+    const resGetPostMeta = useSelector((state) => state.getPostMeta)
+    if (resGetPostMeta && resGetPostMeta.is_success == true) {
+        if (resGetPostMeta.data && resGetPostMeta.data.content.Slug == "recent_apps") {
+            localStorage.setItem("recent_apps", resGetPostMeta.data.content.Value)
+        }
+    }
     // if ($('#whichkey')) {
     //     //inputElement && inputElement !== null && inputElement.current.focus();
     //     $('#whichkey').focus();
@@ -267,7 +276,7 @@ const Pin = () => {
 
     return <React.Fragment>
         <div className="idle-register-wrapper" onClick={hundleTrue}>
-            <button id="logoutRegisterButton" onClick={()=>toggleLogoutConfirm()}>
+            <button id="logoutRegisterButton" onClick={() => toggleLogoutConfirm()}>
                 <img src={LogOut_Icon_White} alt="" />
                 {LocalizedLanguage.logout}
             </button>
@@ -302,7 +311,7 @@ const Pin = () => {
                 </div>
             </div>
         </div> */}
-      {isShowLogoutConfirm===true?<LogoutConfirm isShow={isShowLogoutConfirm} toggleLogoutConfirm={toggleLogoutConfirm}></LogoutConfirm>:null}
+        {isShowLogoutConfirm === true ? <LogoutConfirm isShow={isShowLogoutConfirm} toggleLogoutConfirm={toggleLogoutConfirm}></LogoutConfirm> : null}
     </React.Fragment>
 }
 

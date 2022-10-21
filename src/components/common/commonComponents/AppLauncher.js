@@ -10,7 +10,7 @@ import NoApps_Message from '../../../assets/images/svg/NoApps-Message.svg';
 // import Fortis_Icon from '../../../assets/images/Temp/Fortis-Icon.png';
 // import QuoteApp_Icon from '../../../assets/images/Temp/QuoteApp_Icon.png';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
-import { CheckAppDisplayInView } from "../commonFunctions/appDisplayFunction";
+import { CheckAppDisplayInView } from "../commonFunctions/AppDisplayFunction";
 const AppLauncher = (props) => {
 
 
@@ -29,7 +29,7 @@ const AppLauncher = (props) => {
                         {
                             //(  Items.PluginId == 0 && Items.Name !== 'Contact Details' && Items.ShowAtCheckout === true) ||
                             return (Items.viewManagement && Items.viewManagement !== [] && CheckAppDisplayInView(Items.viewManagement) === true) ?
-                                <button onClick={() => props.toggleiFrameWindow(Items)} key={Items.Id}>
+                                <button onClick={() => props.ToggleiFrameWindow(Items)} key={Items.Id}>
                                     <div className="img-container">
                                         {Items.logo != null ? <img src={Items.logo} alt="" onError={({ currentTarget }) => {
                                             currentTarget.onerror = null; // prevents looping

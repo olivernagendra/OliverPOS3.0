@@ -21,13 +21,13 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
-import { CheckAppDisplayInView, updateRecentUsedApp } from '../commonFunctions/appDisplayFunction'
+import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/AppDisplayFunction'
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
 import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
 import LinkLauncherPage from "./LinkLauncherPage";
 
-const LeftNavBar = (props) => {
+function LeftNavBar(props) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
@@ -118,10 +118,10 @@ const LeftNavBar = (props) => {
     const navigateTo = (page) => {
         navigate(page);
     }
-    const toggleiFrameWindow = (_exApp = null) => {
+    function ToggleiFrameWindow(_exApp = null) {
         if (_exApp != null) { setExtApp(_exApp); }
         if (isShowiFrameWindow === false) {
-            updateRecentUsedApp(_exApp, true, 0)
+            UpdateRecentUsedApp(_exApp, true, 0)
         }
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
@@ -255,7 +255,7 @@ const LeftNavBar = (props) => {
                         var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
                         {
                             return isDisplay == true &&
-                                <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
+                                <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => ToggleiFrameWindow(appItem)}>
                                     <div className="img-container">
                                         {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
                                         {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
@@ -272,19 +272,19 @@ const LeftNavBar = (props) => {
 
 
 
-                {/* <button id="navApp1" className="launcher app" onClick={() => toggleiFrameWindow()}>
+                {/* <button id="navApp1" className="launcher app" onClick={() => ToggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={ClockIn_Icon} alt="" />
                     </div>
                     <p>{"Clock-in App"}</p>
                 </button>
-                <button id="navApp2" className="launcher app" onClick={() => toggleiFrameWindow()}>
+                <button id="navApp2" className="launcher app" onClick={() => ToggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={MC_Logo1} alt="" />
                     </div>
                     <p>MailChimp</p>
                 </button>
-                <button id="navApp3" className="launcher app" onClick={() => toggleiFrameWindow()}>
+                <button id="navApp3" className="launcher app" onClick={() => ToggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={Quickbooks1} alt="" />
                     </div>
@@ -297,10 +297,10 @@ const LeftNavBar = (props) => {
                     <p>Minimize Sidebar</p>
                 </button>
             </div>
-            {isShowAppLauncher === true ? <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher> : null}
+            {isShowAppLauncher === true ? <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow}></AppLauncher> : null}
             {isShowLinkLauncher === true ? <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleLinkLauncherPage={toggleLinkLauncherPage}></LinkLauncher> : null}
             {isShowLinkLauncherPage === true ? <LinkLauncherPage isShow={isShowLinkLauncherPage} toggleLinkLauncherPage={toggleLinkLauncherPage}></LinkLauncherPage> : null}
-            {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow> : null}
+            {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
         </React.Fragment>)
 }
 

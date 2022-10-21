@@ -1,6 +1,8 @@
 import { current } from "@reduxjs/toolkit";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { store } from "../../../app/store";
+import { postMeta } from "../commonAPIs/postMetaSlice";
 
 export const CheckAppDisplayInView = (viewManagement, view = null) => {
     // const [page, setPage] = useState('ShopView');
@@ -49,7 +51,8 @@ export const CheckAppDisplayInView = (viewManagement, view = null) => {
     return returnRes;
 }
 
-export const updateRecentUsedApp = (_exApp, isPing = false, IsUsed = false) => {
+export function UpdateRecentUsedApp(_exApp, isPing = false, IsUsed = false) {
+
     var recentApps = localStorage.getItem("recent_apps") ? JSON.parse(localStorage.getItem("recent_apps")) : []
     var _crrApp = null
     if (recentApps && recentApps.length > 0) {
@@ -75,7 +78,9 @@ export const updateRecentUsedApp = (_exApp, isPing = false, IsUsed = false) => {
             // "extra_field_3" : ""
         })
     }
-
-
     localStorage.setItem("recent_apps", JSON.stringify(recentApps))
+
+    var parma = { "Slug": "recent_apps", "Value": JSON.stringify(recentApps), "Id": 0, "IsDeleted": 0 };
+    store.dispatch(postMeta(parma))
+
 }

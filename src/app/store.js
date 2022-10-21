@@ -9,25 +9,28 @@ import { receiptSettingSlice } from '../components/serverSetting/receiptSettingS
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 
 import { tileSlice, addTileSlice, deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
-import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice  , GetOpenRegisterSlice ,addRemoveCashSlice } from '../components/cashmanagement/CashmanagementSlice';
+import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice, GetOpenRegisterSlice, addRemoveCashSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-import { CustomergetPageSlice ,CustomerGetDetailsSlice ,getAllEventsSlice,saveCustomerToTempOrderSlice} from '../components/customer/CustomerSlice'
+import { CustomergetPageSlice, CustomerGetDetailsSlice, getAllEventsSlice, saveCustomerToTempOrderSlice } from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
 import { CustomerSaveSlice } from '../components/customer/CustomerSlice'
-import { checkStockSlice,getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice ,paymentAmountSlice, changeReturnAmountSlice,checkTempOrderSyncSlice,checkTempOrderStatusSlice} from '../components/checkout/checkoutSlice';
+import { checkStockSlice, getPaymentTypeNameSlice, getExtensionsSlice, getMakePaymentSlice, makeOnlinePaymentsSlice, saveSlice, paymentAmountSlice, changeReturnAmountSlice, checkTempOrderSyncSlice, checkTempOrderStatusSlice } from '../components/checkout/checkoutSlice';
 import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
 import { discountSlice } from '../components/common/commonAPIs/discountSlice';
 import { popupMessageSlice } from '../components/common/commonAPIs/messageSlice';
-import { make_payconiq_paymentSlice,check_payconiq_pay_statusSlice,cancel_payconiq_paymentSlice } from '../components/common/commonComponents/paymentComponents/paymentSlice';
+import { make_payconiq_paymentSlice, check_payconiq_pay_statusSlice, cancel_payconiq_paymentSlice } from '../components/common/commonComponents/paymentComponents/paymentSlice';
 //import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/inventorySlice'
 import inventoryReducer from '../components/dashboard/slices/inventorySlice'
 import { getAllActivityListSlice, getDetailSlice, getFilteredActivitiesSlice } from '../components/activity/ActivitySlice';
+import { postMetaSlice, getPostMetaSlice } from '../components/common/commonAPIs/postMetaSlice';
+
+
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -72,25 +75,27 @@ export const store = configureStore({
     popupMessage: popupMessageSlice.reducer,
     discountList: discountSlice.reducer,
     inventories: inventoryReducer,
-    addRemoveCashmanagement:addRemoveCashSlice.reducer,
-    customergetDetail:CustomerGetDetailsSlice.reducer,
-    getAllEvents:getAllEventsSlice.reducer,
-    getExtensions:getExtensionsSlice.reducer,
-    getPaymentTypeName:getPaymentTypeNameSlice.reducer,
-    makePayment:getMakePaymentSlice.reducer,
-    makeOnlinePayments:makeOnlinePaymentsSlice.reducer,
-    save:saveSlice.reducer,
-    paymentAmount:paymentAmountSlice.reducer,
-    changeReturnAmount:changeReturnAmountSlice.reducer,
-    checkTempOrderSync:checkTempOrderSyncSlice.reducer,
-    checkTempOrderStatus:checkTempOrderStatusSlice.reducer,
-    saveCustomerToTempOrder:saveCustomerToTempOrderSlice.reducer,
-    activityRecords:getAllActivityListSlice.reducer,
-    activityGetDetail:getDetailSlice.reducer,
-    getFilteredActivities:getFilteredActivitiesSlice.reducer,
-    make_payconiq_payment:make_payconiq_paymentSlice.reducer,
-    check_payconiq_pay_status:check_payconiq_pay_statusSlice.reducer,
-    cancel_payconiq_payment:cancel_payconiq_paymentSlice.reducer
+    addRemoveCashmanagement: addRemoveCashSlice.reducer,
+    customergetDetail: CustomerGetDetailsSlice.reducer,
+    getAllEvents: getAllEventsSlice.reducer,
+    getExtensions: getExtensionsSlice.reducer,
+    getPaymentTypeName: getPaymentTypeNameSlice.reducer,
+    makePayment: getMakePaymentSlice.reducer,
+    makeOnlinePayments: makeOnlinePaymentsSlice.reducer,
+    save: saveSlice.reducer,
+    paymentAmount: paymentAmountSlice.reducer,
+    changeReturnAmount: changeReturnAmountSlice.reducer,
+    checkTempOrderSync: checkTempOrderSyncSlice.reducer,
+    checkTempOrderStatus: checkTempOrderStatusSlice.reducer,
+    saveCustomerToTempOrder: saveCustomerToTempOrderSlice.reducer,
+    activityRecords: getAllActivityListSlice.reducer,
+    activityGetDetail: getDetailSlice.reducer,
+    getFilteredActivities: getFilteredActivitiesSlice.reducer,
+    make_payconiq_payment: make_payconiq_paymentSlice.reducer,
+    check_payconiq_pay_status: check_payconiq_pay_statusSlice.reducer,
+    cancel_payconiq_payment: cancel_payconiq_paymentSlice.reducer,
+    postMeta: postMetaSlice.reducer,
+    getPostMeta: getPostMetaSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

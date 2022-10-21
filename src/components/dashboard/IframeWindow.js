@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
 import AppIconPlaceholder from '../../assets/images/svg/AppIconPlaceholder.svg';
 const IframeWindow = (props) => {
-    return (<div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={() => props.toggleiFrameWindow()}>
+    return (<div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={() => props.ToggleiFrameWindow()}>
 
         <div className={props.isShow === true ? "subwindow app-launcher-subwindow current" : "subwindow app-launcher-subwindow"}>
             <div className="subwindow-header">

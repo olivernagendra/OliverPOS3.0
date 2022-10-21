@@ -33,7 +33,7 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
 
 import ParkSale from "./ParkSale";
-import { CheckAppDisplayInView } from "../common/commonFunctions/appDisplayFunction";
+import { CheckAppDisplayInView } from "../common/commonFunctions/AppDisplayFunction";
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
@@ -300,11 +300,10 @@ const Checkout = (props) => {
         }
         else if (storeCredit > 0) {
             setPaidAmount(getRemainingPrice());
-            dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount":  getRemainingPrice()}));
-            setStoreCredit(storeCredit-getRemainingPrice())
+            dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount": getRemainingPrice() }));
+            setStoreCredit(storeCredit - getRemainingPrice())
         }
-        else
-        {
+        else {
             console.log("--no credit score--");
         }
 
@@ -2061,7 +2060,7 @@ const Checkout = (props) => {
             setPartialPayment(item.Code, paidAmount)
         }
         else {
-            setPartialAmount(item.Code,partialAmount);
+            setPartialAmount(item.Code, partialAmount);
             pay_amount(item.Code);
         }
     }
