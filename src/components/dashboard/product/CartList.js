@@ -15,7 +15,8 @@ import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import { get_customerName } from "../../common/localSettings";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { useIndexedDB } from 'react-indexed-db';
-import { NumericFormat } from 'react-number-format'
+import { NumericFormat } from 'react-number-format';
+import { paymentAmount } from "../../checkout/checkoutSlice";
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -508,7 +509,8 @@ const CartList = (props) => {
 
                 if (IsExist === true && IsExsitTicket === false && checkseatStatus == false && checkoutData == false) {
                     localStorage.removeItem("oliver_order_payments");
-                    localStorage.removeItem("VOID_SALE")
+                    localStorage.removeItem("VOID_SALE");
+                    dispatch(paymentAmount(null));
                     navigate('/checkout');
                 }
                 setUpdateProductStatus(true);
@@ -782,7 +784,7 @@ const CartList = (props) => {
                         </div>
                         {discountType !="" ?
                             <div className="row">
-                                <p>Cart Discount - {discountType}</p>
+                                <p>Cart Discount ({discountType})</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
                                 <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                             </div> : null}
@@ -793,12 +795,12 @@ const CartList = (props) => {
                         </div>
                     </div>
                     <div className="checkout-container">
-                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
                     </div>
                 </div>
             </div>
             <div className="mobile-homepage-footer">
-                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""} - ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
             </div>
         </React.Fragment>)
 }

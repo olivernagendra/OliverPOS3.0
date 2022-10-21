@@ -24,6 +24,7 @@ import AdjustCreditpopup from "./AdjustCreditpopup";
 import Cusomercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 const CustomerView = () => {
@@ -194,12 +195,16 @@ const CustomerView = () => {
       };
       var time = FormateDateAndTime.formatDateWithTime(event.CreateDateUtc, event.time_zone);
       var jsonData = event.JsonData && JSON.parse(event.JsonData)
+
+      var gmtDateTime = FormateDateAndTime.formatDateAndTime(event.CreateDateUtc, event.time_zone)
+      var time = FormateDateAndTime.formatDateWithTime(event.CreateDateUtc, event.time_zone);
       collectionItem['eventtype'] = event.EventName;
       collectionItem['Id'] = event.Id;
       collectionItem['amount'] = jsonData && jsonData.AddPoint ? jsonData.AddPoint : event.Amount;
       collectionItem['DeductPoint'] = jsonData && jsonData.DeductPoint ? jsonData.DeductPoint : event.Amount;
       collectionItem['oliverPOSReciptId'] = '';
-      collectionItem['datetime'] = moment.utc(event.CreateDateUtc).local().format(Config.key.TIMEDATE_FORMAT);//event.CreateDateUtc;
+      collectionItem['datetime'] = gmtDateTime
+      // moment.utc(event.CreateDateUtc).local().format(Config.key.TIMEDATE_FORMAT);//event.CreateDateUtc;
       collectionItem['status'] = event ? event.Status : '';
       collectionItem['Description'] = jsonData ? jsonData.Notes : event.Description;
       collectionItem['ShortDescription'] = event.ShortDescription;
@@ -572,6 +577,7 @@ const CustomerView = () => {
               <button id="addCustNoteButton" onClick={toggleNoteModel} >Add Note</button>
             </div>
             {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+
               return (
                 item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
                   <div className="customer-note">

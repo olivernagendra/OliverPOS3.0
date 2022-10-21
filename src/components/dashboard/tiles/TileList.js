@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import CircledPlus_Icon_Border from '../../../assets/images/svg/CircledPlus-Icon-Border.svg';
+import Rounded_Square_Plus_Icon_NewGrey from '../../../assets/images/svg/Rounded-Square-Plus-Icon-NewGrey.svg';
 import STATUSES from "../../../constants/apiStatus";
 import { AddItemType } from "../../common/EventFunctions";
 import { useIndexedDB } from 'react-indexed-db';
@@ -700,7 +700,7 @@ const TileList = (props) => {
                 <p>Clothing</p>
             </button> */}
             <button className="add-tile" onClick={() => props.toggleAddTitle()}>
-                <img src={CircledPlus_Icon_Border} alt="" />
+                <img src={Rounded_Square_Plus_Icon_NewGrey} alt="" />
                 Add Tile
             </button>{isLoading === true ? <LoadingModal></LoadingModal> : null}
         </div></div>)

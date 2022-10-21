@@ -32,7 +32,7 @@ const Pin = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-
+            localStorage.setItem("recent_apps", [])
             fetchData()
         }
         return () => {
@@ -273,7 +273,7 @@ const Pin = () => {
             </button>
             <header>
                 <img src={imgOpenReg} alt="" />
-                <div className="col">
+                <div className="col text-center">
                     <p className="style1">{getShopName()}</p>
                     <div className="divider divider-pin"></div>
                     <p className="style2">{get_regName()}</p>

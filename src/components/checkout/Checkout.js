@@ -8,7 +8,7 @@ import Stripe_Icon from '../../assets/images/svg/Stripe Icon.svg'
 import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import Header from "./Header";
 import CartListBody from "../common/commonComponents/CartListBody";
@@ -29,12 +29,16 @@ import { product } from "../dashboard/product/productSlice";
 import { addtoCartProduct } from "../dashboard/product/productLogic";
 import { makeOnlinePayments, getMakePayment, save, paymentAmount, changeReturnAmount } from "../checkout/checkoutSlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+
+import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
+
 import ParkSale from "./ParkSale";
 import { CheckAppDisplayInView } from "../common/commonFunctions/appDisplayFunction";
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
 import GlobalPayment from "../common/commonComponents/paymentComponents/GlobalPayment";
+import MsgPopup from "../common/commonComponents/MsgPopup";
 const Checkout = (props) => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -79,8 +83,11 @@ const Checkout = (props) => {
     const [set_order_notes, set_set_order_notes] = useState([]);
     const [partialType, setPartialType] = useState('');
     const [isShowParkSale, setisShowParkSale] = useState(false);
-    const [isLayAwayOrPark, setIsLayAwayOrPark] = useState('park_sale');
+    const [isLayAwayOrPark, setIsLayAwayOrPark] = useState('');
     const [storeCredit, setStoreCredit] = useState(0);
+    const [isShowMsg, setisShowMsg] = useState(false);
+    const [msgTitle, setmsgTitle] = useState('');
+    const [msgBody, setmsgBody] = useState('');
     const [paymentTypeItem, setPaymentTypeItem] = useState({
         Code: "",
         ColorCode: "",
@@ -108,9 +115,31 @@ const Checkout = (props) => {
             setLoading(false);
             dispatch(paymentAmount(null));
             dispatch(changeReturnAmount(null));
-            navigate('/salecomplete');
+            if (isLayAwayOrPark === "park_sale" || isLayAwayOrPark === "lay_away") {
+                gotoHome();
+            }
+            else {
+                navigate('/salecomplete');
+            }
+        }
+        else if (resSave && resSave.status == STATUSES.ERROR && resSave.is_success === false && loading === true) {
+            console.log("error message---" + resSave.data);
+            setLoading(false);
+            var data = { title: "", msg: resSave.error, is_success: true }
+            dispatch(popupMessage(data));
         }
     }, [resSave]);
+
+    const [respopupMessage] = useSelector((state) => [state.popupMessage])
+    useEffect(() => {
+        if (respopupMessage && respopupMessage.status == STATUSES.IDLE && respopupMessage.is_success && respopupMessage.data) {
+            toggleMsgPopup(true);
+            setmsgBody(respopupMessage.data.msg);
+            setmsgTitle(respopupMessage.data.title);
+            dispatch(popupMessage(null));
+        }
+    }, [respopupMessage]);
+
     //var paidAmount = 0;
     // const setPaidAmount = (amt) => {
     //     if (amt == null) {
@@ -129,16 +158,23 @@ const Checkout = (props) => {
     // }
     //setPaidAmount(null);
     useEffect(() => {
+        if (loading === false) { getPaymentDetails(); }
+    }, [paymentsArr]);
+    useEffect(() => {
         var _checklist = JSON.parse(localStorage.getItem("CHECKLIST"));
         if (_checklist && _checklist.customerDetail && _checklist.customerDetail.store_credit) {
             setStoreCredit(_checklist.customerDetail.store_credit)
         }
-    },[])
+
+    }, [])
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     var cash_rounding = ActiveUser.key.cash_rounding;
+    const toggleMsgPopup = () => {
+        setisShowMsg(!isShowMsg)
+    }
     const toggleManualPayment = () => {
         setisManualPayment(!isManualPayment)
     }
@@ -245,8 +281,35 @@ const Checkout = (props) => {
         //setPayment_Type("cash");
     }
     const pay_by_store_credit = () => {
-        setPartialAmount(storeCredit);
-        dispatch(paymentAmount({ "type": "store-credit", "amount": storeCredit }));
+        //setPartialAmount(storeCredit);
+        setPaymentTypeItem({
+            Code: paymentsType.typeName.storeCredit, ColorCode: "#4b4b4b",
+            EODReconcilliation: false,
+            HasTerminal: false,
+            Id: 0,
+            Name: LocalizedLanguage.storeCreditTitle,
+            Support: "",
+            TerminalCount: 0,
+            TerminalSerialNo: []
+        });
+        if (storeCredit < getRemainingPrice() && storeCredit > 0) {
+            //setPartialPayment(storeCredit);
+            setPaidAmount(storeCredit);
+            dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount": storeCredit }));
+            setStoreCredit(0);
+        }
+        else if (storeCredit > 0) {
+            setPaidAmount(getRemainingPrice());
+            dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount":  getRemainingPrice()}));
+            setStoreCredit(storeCredit-getRemainingPrice())
+        }
+        else
+        {
+            console.log("--no credit score--");
+        }
+
+
+
     }
     // const checkStoreCreditBalance=()=> {
     //     var paid_amount_by_store_credit = 0;
@@ -286,7 +349,7 @@ const Checkout = (props) => {
     const [respPaymentAmount] = useSelector((state) => [state.paymentAmount])
     useEffect(() => {
         if ((respPaymentAmount && respPaymentAmount.status == STATUSES.IDLE && respPaymentAmount.is_success)) {
-            console.log("----" + JSON.stringify(respPaymentAmount));
+            //console.log("-respPaymentAmount---" + JSON.stringify(respPaymentAmount));
             if (respPaymentAmount.data.type == "cash") {
                 pay_amount("cash");
             }
@@ -314,6 +377,198 @@ const Checkout = (props) => {
     // useEffect(() => {
     //     pay_amount(payment_Type);
     // }, [payment_Type]);
+
+    //Handel Apps --------------------------------
+    const [isInit, setisInit] = useState(false)
+    const location = useLocation();
+    let useCancelled = false;
+    useEffect(() => {
+        if (isInit === false && useCancelled == false) {
+            window.addEventListener('message', function (e) {
+                var data = e && e.data;
+                if (typeof data == 'string' && data !== "" && location.pathname == "/checkout") {
+                    responseData(JSON.parse(data))
+                    //compositeSwitchCases(JSON.parse(data))
+                    console.log("leftnavigation")
+                }
+            })
+            setisInit(true);
+        }
+
+        return () => {
+            useCancelled = true;
+        }
+    }, [isInit]);
+    const responseData = (data) => {
+        console.log("---ext app data--" + data);
+        var _route = location.pathname;
+        var whereToview = "";
+        // if (_route == "checkout")
+        whereToview = "CheckoutView"
+        // else
+        //     whereToview = "home"
+        var appResponse = handleAppEvent(data, whereToview)
+        console.log("appResponse", appResponse)
+        if (appResponse == 'app_do_transaction') {      // Transection App 2.0                     
+            handleAppTransaction(data)
+        }
+        else if (appResponse == "do_app_orderPark") {
+            setPayment('park_sale', 'byExtApp');
+            setIsLayAwayOrPark('park_sale');
+            setLoading(true);
+        }
+        else if (appResponse == 'app_do_payment') {
+            handleAppPayment(data)
+        }
+        // else if (appResponse == 'app-coupon_duplicate') {
+        //     var localCouponApplied = JSON.parse(localStorage.getItem("couponApplied"));
+        //     var isCouponFound = null;
+        //     if (extensionData && extensionData.data) {
+        //         isCouponFound = localCouponApplied.find(coupon => { return coupon.coupon_code == extensionData.data.coupon_code })
+        //     } //&& extensionData.data.length > 0 && extensionData.data.map(request => {
+
+        //     if (isCouponFound) {
+        //         this.setState({ common_Msg: "Coupon '" + isCouponFound.coupon_code + "' already exist!" });
+        //     }
+        //     setTimeout(function () {
+        //         hideModal("common_ext_popup");
+        //         showModal('common_msg_popup');
+        //     }, 100)
+        // }
+        // else if (appResponse == 'app-modificaiton-external' || appResponse == 'app-coupon_discount') {
+        //     this.setState({ hideApp: true })
+        //     this.setState({ UpdateCartByApp: true }) //To Refresh the cart need to update the state
+        //     this.close_ext_modal() //To close popup 
+
+        // }
+        // else if (appResponse == 'app-modificaiton-lock-env') {
+        //     setTimeout(() => {
+        //         this.setState({ "appLock": true })
+        //     }, 200);
+
+        // }
+        // else if (appResponse == 'app-modificaiton-unlock-env') {
+        //     setTimeout(() => {
+        //         this.setState({ "appLock": false })
+        //     }, 200);
+        // } else if (appResponse == 'app-get-lock-env') {
+        //     var clientJSON = {
+        //         command: extensionData.command,
+        //         version: extensionData.version,
+        //         method: extensionData.method,
+        //         status: 200,
+        //         state: this.state.appLock == true ? "lock" : 'unlock'
+        //     }
+        //     postmessage(clientJSON)
+        // } else if (appResponse == 'app_cancle_transaction') {
+        //     this.setState({ "cancleTransaction": true })
+        // }
+
+    }
+    function handleAppTransaction(RequesteData) {
+        try {
+            var data = RequesteData && RequesteData.data;
+            //const { checkList } = this.state
+            if (data) {
+                var type = data && data.processor ? data.processor : ''
+                checkList['transection_id'] = data && data.transaction_id ? data.transaction_id : ''
+                var _amount = data && data.amount ? data.amount / 100 : 0
+                var _emv = data && data.emv_data ? data.emv_data : ""
+                var allEmvData = [];
+                allEmvData = emvData ? emvData : [];
+                if (_emv) {
+                    var obj = {};
+                    obj[type] = _emv;
+                    allEmvData.push(obj)
+                }
+
+                setCheckList(checkList);
+                setEmvData(allEmvData)
+                // this.setState({
+                //     //checkList: checkList, 
+                //     isPaymentByExtension: true, 
+                //     extensionPaymentType: type,
+                //     //EmvData: allEmvData
+                // }
+                //)
+                // set the current trnasaction status, Used for APP Command "TransactionStatus"
+                localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": type, "status": "completed" }))
+                //  this.orderPayments.updateClosingTab(true)
+                // hideModal('common_ext_popup')
+                //this.close_ext_modal()
+                setTimeout(() => {
+                    //orderPayments.setPartialPayment(type, _amount)
+                    setPartialPayment(type, _amount)
+                    var clientJSON = {
+                        command: RequesteData.command,
+                        version: RequesteData.version,
+                        method: RequesteData.method,
+                        status: 200,
+                    }
+                    postmessage(clientJSON);
+                }, 500);
+            }
+            else {
+                console.error('App Error : Invalid Data');
+            }
+        } catch (error) {
+            console.error('App Error : ', error);
+        }
+    }
+    function handleAppPayment(RequesteData) {
+        try {
+            var data = RequesteData && RequesteData.data;
+            // const { checkList } = this.state
+            if (data && data.payment_type && data.payment_type.data) {
+                var type = data && data.payment_type && data.payment_type.name ? data.payment_type.name : ''
+                checkList['transection_id'] = data && data.payment_type && data.payment_type.data && data.payment_type.data.transaction_id ? data.payment_type.data.transaction_id : ''
+                var _amount = data && data.payment_type && data.payment_type.data && data.payment_type.data.amt ? data.payment_type.data.amt : 0
+                var _emv = data && data.payment_type && data.payment_type.data && data.payment_type.data.emv_data ? data.payment_type.data.emv_data : ""
+                var allEmvData = [];
+                allEmvData = emvData ? emvData : [];
+                if (_emv) {
+                    var obj = {};
+                    obj[type] = _emv;
+                    allEmvData.push(obj)
+                }
+
+                // this.setState({
+                //     checkList: checkList, isPaymentByExtension: true, extensionPaymentType: type,
+                //     EmvData: allEmvData
+                // }
+                // )
+                setCheckList(checkList);
+                setEmvData(allEmvData)
+                // set the current trnasaction status, Used for APP Command "TransactionStatus"
+                localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": type, "status": "completed" }))
+
+                setTimeout(() => {
+                    //orderPayments.setPartialPayment(type, _amount)
+                    setPartialPayment(type, _amount)
+                    var clientJSON = {
+                        command: RequesteData.command,
+                        version: RequesteData.version,
+                        method: RequesteData.method,
+                        status: 200,
+                    }
+                    postmessage(clientJSON);
+                }, 500);
+                //  this.orderPayments.updateClosingTab(true)
+                // hideModal('common_ext_popup')
+                // this.close_ext_modal()
+                // setTimeout(() => {
+                //     this.orderPayments.setPartialPayment(type, _amount)
+                // }, 500);
+            }
+            else {
+                console.error('App Error : Invalid Data');
+            }
+        } catch (error) {
+            console.error('App Error : ', error);
+        }
+    }
+    //-----------------------------------------------------
+
     //  function use to check for payment types and perform action accordingly 
     const pay_amount = (paymentType, TerminalCount = 0, Support = '', paymentCode = '', paidConfirmAmount = 0) => {
         var closingTab = '';
@@ -368,12 +623,12 @@ const Checkout = (props) => {
         //this.setState({ paymentType: paymentType })
         if (parseFloat(payment_amount) > 0) {
             if (paymentType !== true && paymentType !== paymentsType.typeName.cashPayment && TerminalCount == 0 && paymentType !== paymentsType.typeName.storeCredit && paymentType !== 'manual_global_payment' && Support !== paymentsType.typeName.Support && paymentType !== 'stripe_terminal' && Support !== paymentsType.typeName.UPISupport) {
-                if (closingTab == false) {
-                    payment_amount = parseFloat(RoundAmount(_getRemainingPrice))
-                    setPartialPayment(paymentType, payment_amount)
-                } else {
-                    setPartialPayment(paymentType, payment_amount)
-                }
+                // if (closingTab == false) {
+                payment_amount = partialAmount != null ? partialAmount : parseFloat(RoundAmount(_getRemainingPrice));
+                setPartialPayment(paymentType, payment_amount)
+                // } else {
+                //     setPartialPayment(paymentType, payment_amount)
+                // }
             }
             if (TerminalCount > 0 && paymentType !== 'manual_global_payment') {
 
@@ -485,7 +740,7 @@ const Checkout = (props) => {
                 }
             }
             if (Support == paymentsType.typeName.UPISupport) {
-                var payconiqAmount =payment_amount;// myInput;
+                var payconiqAmount = payment_amount;// myInput;
                 payconiqAmount = ActiveUser.key.isSelfcheckout == true ? payment_amount : payconiqAmount
                 var paymentMode = paymentType;
                 payment_amount = parseFloat(RoundAmount(_getRemainingPrice));
@@ -576,7 +831,7 @@ const Checkout = (props) => {
         if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data)) {
             console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
         }
-    },[respmakeOnlinePayments])
+    }, [respmakeOnlinePayments])
 
     // handle online payment payamount
     const onlineCardPayments = (paycode, amount) => {
@@ -585,6 +840,10 @@ const Checkout = (props) => {
         dispatch(makeOnlinePayments(onlinePayCardData))
     }
     const extraPayAmount = (msg) => {
+
+        var data = { title: "", msg: msg, is_success: true }
+        dispatch(popupMessage(data));
+
         console.log(msg)
         setLoading(false);
         // this.setState({ common_Msg: msg })
@@ -1068,7 +1327,10 @@ const Checkout = (props) => {
         //const { dispatch } = this.props;
         // var checkList = JSON.parse(localStorage.getItem('CHECKLIST'));
         setCheckList(JSON.parse(localStorage.getItem("CHECKLIST")));
-
+        // if(updatedBy==="byExtApp" && get_order_status==="park_sale" )
+        // {
+        //     checkList=JSON.parse(localStorage.getItem("CHECKLIST"));
+        // }
         var customer = checkList && checkList.customerDetail && checkList.customerDetail;
         var place_order;
         var order_payments = [];
@@ -1752,6 +2014,31 @@ const Checkout = (props) => {
             //alert("Your browser not support local storage");
         }
     }
+    const gotoHome = () => {
+        localStorage.removeItem('CARD_PRODUCT_LIST');
+        localStorage.removeItem('GTM_ORDER');
+
+        localStorage.removeItem('ORDER_ID');
+        localStorage.removeItem('CHECKLIST');
+        localStorage.removeItem('oliver_order_payments');
+        localStorage.removeItem('AdCusDetail');
+        localStorage.removeItem('CARD_PRODUCT_LIST');
+        localStorage.removeItem("CART");
+        localStorage.removeItem("SINGLE_PRODUCT");
+        localStorage.removeItem("PRODUCT");
+        localStorage.removeItem('PRODUCTX_DATA');
+        localStorage.removeItem('PAYCONIQ_PAYMENT_RESPONSE');
+        localStorage.removeItem('ONLINE_PAYMENT_RESPONSE');
+        localStorage.removeItem('STRIPE_PAYMENT_RESPONSE');
+        localStorage.removeItem('GLOBAL_PAYMENT_RESPONSE');
+        localStorage.removeItem('PAYMENT_RESPONSE');
+        localStorage.removeItem('PENDING_PAYMENTS');
+        localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
+        localStorage.removeItem('PrintCHECKLIST');
+
+        // dispatch(addtoCartProduct(null));
+        navigate('/home');
+    }
     const pay_amount_cash = (item) => {
         setPaymentTypeItem(item);
         //item.Code.toLowerCase() === "cash"
@@ -1770,10 +2057,13 @@ const Checkout = (props) => {
         else if (item.Code == paymentsType.typeName.stripePayment) {
             toggleStripeTerminalPayment();
         }
-
+        else if (item.Code == paymentsType.typeName.storeCredit) {
+            setPartialPayment(item.Code, paidAmount)
+        }
         else {
-            setPartialAmount(null);
-            pay_amount(item.Code); }
+            setPartialAmount(item.Code,partialAmount);
+            pay_amount(item.Code);
+        }
     }
 
     const placeParkLayAwayOrder = (status) => {
@@ -1835,7 +2125,7 @@ const Checkout = (props) => {
     //         []
     // }
     var _activeDisplay = true;
-    var global_payment=null;
+    var global_payment = null;
     return (<React.Fragment>
         {loading === true ? <LoadingModal></LoadingModal> : null}
         <div className="checkout-wrapper">
@@ -1937,14 +2227,14 @@ const Checkout = (props) => {
                     <div className="button-container">
                         {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
-                                return payment.image || payment.Code==="stripe_terminal" ?
-                                // <img src={payment.image}  alt=""></img>
-                                <button >
-                                <img src={Stripe_Icon} alt=""></img></button>
-                                :
-                                <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
-                                    {payment.Name}
-                                </button>
+                                return payment.image || payment.Code === "stripe_terminal" ?
+                                    // <img src={payment.image}  alt=""></img>
+                                    <button >
+                                        <img src={Stripe_Icon} alt=""></img></button>
+                                    :
+                                    <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                        {payment.Name}
+                                    </button>
                             })
                         }
                     </div>
@@ -2009,6 +2299,7 @@ const Checkout = (props) => {
         {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)} getRemainingPriceForCash={getRemainingPriceForCash} ></NumberPad> : null}
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
+        <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
     </React.Fragment>)
 }
 export default Checkout

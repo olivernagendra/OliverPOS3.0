@@ -45,7 +45,7 @@ const ActivityView = () => {
     const [filterByStatus, setFilterByStatus] = useState('')
     const [isloader, setSmallLoader] = useState(true)
     const [getPdfdateTime, setGetPdfdateTime] = useState('')
-  
+
     const [filterByUser, setfilterByUser] = useState('')
     const [selectuserfilter, setSelectuserFilter] = useState('')
     // Toggle State------------
@@ -94,7 +94,7 @@ const ActivityView = () => {
     const toggleEmployee = () => {
         setEmployeeToggle(!isEmployeeWrapper)
     }
-    const toggleResponsiveList =()=>{
+    const toggleResponsiveList = () => {
         setResponsiveCusList(!responsiveCusList)
     }
 
@@ -143,7 +143,7 @@ const ActivityView = () => {
     // --Set Filter response from filter Api
     const [activityfilter] = useSelector((state) => [state.getFilteredActivities])
     useEffect(() => {
-      //  console.log("activityfilter", activityfilter)
+        //  console.log("activityfilter", activityfilter)
         if (activityfilter && activityfilter.data.length > 0) {
             setAllActivityList(activityfilter.data);
             setSmallLoader(false)
@@ -413,23 +413,23 @@ const ActivityView = () => {
     }
 
     // filter All Function 
-    const SetFilterStatus = (filterType, FilterValue,label) => {
+    const SetFilterStatus = (filterType, FilterValue, label) => {
         if (filterType == 'status') {
             setFilterByStatus(FilterValue)
-        } 
+        }
     }
-    const SetFilterPlatform = (filterType, FilterValue,label) => {
+    const SetFilterPlatform = (filterType, FilterValue, label) => {
         if (filterType == 'platform') {
             setFilterByPlatform(FilterValue)
         }
     }
-    const SetFilterUser = (filterType, FilterValue,label) => {
+    const SetFilterUser = (filterType, FilterValue, label) => {
         if (filterType == 'user') {
             if (FilterValue !== "") {
-              setfilterByUser(FilterValue)
-              setSelectuserFilter(label)
+                setfilterByUser(FilterValue)
+                setSelectuserFilter(label)
             }
-        } 
+        }
     }
     //-----------------------
 
@@ -487,15 +487,18 @@ const ActivityView = () => {
     }
 
 
+    const PrintClick = () => {
 
-    const clearFilter=()=>{
+    }
+
+    const clearFilter = () => {
         setfilterByUser("")
         setFilterByStatus("")
         setFilterByPlatform("")
         setEmailNamePhone("")
         setSelectuserFilter('')
     }
-    
+
     // console.log("filterByPlatform",filterByPlatform)
     // console.log("filterByStatus",filterByStatus)
     // console.log("filterByUser",filterByUser)
@@ -514,12 +517,12 @@ const ActivityView = () => {
     }
 
     const _Useroptions = [];
-    _Useroptions.push({ value: "", label: "All"   });
+    _Useroptions.push({ value: "", label: "All" });
     var _userList = null
     _userList = localStorage.getItem('user_List') && localStorage.getItem('user_List') !== 'undefined' && typeof (localStorage.getItem('user_List')) !== undefined ? JSON.parse(localStorage.getItem('user_List')) : null;
     if (_userList !== null) {
         _userList.map((user) => {
-            var option = { value: user.Id, label: user.Name  };
+            var option = { value: user.Id, label: user.Name };
             _Useroptions.push(option);
         })
     }
@@ -567,7 +570,7 @@ const ActivityView = () => {
                     <label for="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
                         <img src={DropdownArrow} alt="" />
-                        <input type="text" id="orderStatus" placeholder={filterByStatus==''?"All" : filterByStatus !=="" ? filterByStatus:"Select Status" }   />
+                        <input type="text" id="orderStatus" placeholder={filterByStatus == '' ? "All" : filterByStatus !== "" ? filterByStatus : "Select Status"} />
                         <div className="option-list">
                             {_orderstatus && _orderstatus.length > 0 && _orderstatus.map((item, index) => {
                                 return (
@@ -602,9 +605,9 @@ const ActivityView = () => {
                         </div>
                     </div>
                     <label for="salesPlatform">Sales Platform</label>
-                    <div className={salepersonWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"}  onClick={toggleSaleperson} >
+                    <div className={salepersonWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleSaleperson} >
                         <img src={DropdownArrow} alt="" />
-                        <input type="text" id="salesPlatform" placeholder={filterByPlatform?filterByPlatform :"All Platforms"} />
+                        <input type="text" id="salesPlatform" placeholder={filterByPlatform ? filterByPlatform : "All Platforms"} />
                         <div className="option-list">
                             {_platform && _platform.length > 0 && _platform.map((item, index) => {
                                 return (
@@ -622,15 +625,15 @@ const ActivityView = () => {
                     <label for="employee">Employee</label>
                     <div className={isEmployeeWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleEmployee}>
                         <img src={DropdownArrow} alt="" />
-                        <input type="text" id="employee" placeholder={ selectuserfilter ? selectuserfilter:"Select Employee"}   />
+                        <input type="text" id="employee" placeholder={selectuserfilter ? selectuserfilter : "Select Employee"} />
                         <div className="option-list">
                             {_Useroptions && _Useroptions.length > 0 && _Useroptions.map((item, index) => {
                                 return (
-                                    <div className="option"  onClick={() => SetFilterUser("user", item.value ,item.label )}>
+                                    <div className="option" onClick={() => SetFilterUser("user", item.value, item.label)}>
                                         <p>{item.label}</p>
                                     </div>
                                 )
-                             })
+                            })
                             }
 
                         </div>

@@ -10,13 +10,23 @@ import { isMobileOnly, isIOS } from "react-device-detect";
 //import FetchIndexDB from "../settings/FetchIndexDB";
 //import { cartProductActions } from "../_actions";
 //import { checkoutActions } from "../CheckoutPage";
-//import { changeTaxRate, getInclusiveTaxType, getTaxAllProduct, PrintPage } from "../_components";
+import { changeTaxRate, getInclusiveTaxType, getTaxAllProduct, PrintPage } from "../../../settings";
 import ActiveUser from '../../../settings/ActiveUser';
 //import { serverRequest } from "../CommonServiceRequest/serverRequest";
 //import { TaxSetting } from "../_components/TaxSetting";
 //import moment from 'moment';
 //import { checkOrderStatus } from '../_components/CommonJS';
 
+import {
+  DataToReceipt, PrintReceiptWithAppData,
+  handleCartValue, handleCart,
+  sendCustomerDetail, HandleCustomer, CustomerToSale, retrieveCustomerInSale,
+  addCartDiscount, cartTaxes, Notes, lockEnvironment, Environment, doParkSale,
+  getOrderStatus, sendClientsDetails, doCustomFee, getReceiptData, addDiscountCoupon,
+  transactionApp, transactionStatus, DoParkSale, AddProductToCart, payfromApp
+} from './apps';
+import { productPriceUpdate, RawProductData, sendProductQuantity } from './apps/productApp';
+import { updateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
 // var JsBarcode = require('jsbarcode');
 // var print_bar_code;
 // export const textToBase64Barcode = (text) => {
@@ -28,7 +38,8 @@ import ActiveUser from '../../../settings/ActiveUser';
 //   print_bar_code = canvas.toDataURL("image/png");
 //   return print_bar_code;
 // }
-export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
+
+export const handleAppEvent = (value, whereToview, isbackgroudApp = false,navigate=null) => {
   console.log("value", value)
 
   var jsonMsg = value ? value : '';
@@ -36,99 +47,101 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
   console.log("jsonMsg", jsonMsg)
   console.log("clientEvent", clientEvent)
   var appResponse = '';
+
+
   if (clientEvent && clientEvent !== '') {
     // console.log("clientEvent", jsonMsg)
     //this.setState({ showNewAppExtension:true})
     switch (clientEvent) {
-      case ("appReady").toLowerCase():
-        appReady(whereToview, isbackgroudApp, isbackgroudApp)
+      case ("appReady").toLowerCase():  //working
+        appReady(whereToview, isbackgroudApp, isbackgroudApp) //done
         break;
-      // case ("DataToReceipt").toLowerCase():
-      //   appResponse = DataToReceipt(jsonMsg, whereToview, isbackgroudApp);
-      //   break;
-      // case ("Receipt").toLowerCase():
-      //   PrintReceiptWithAppData(jsonMsg, isbackgroudApp)
-      //   break;
-      // case ("CartValue").toLowerCase():
-      //   handleCartValue(jsonMsg, whereToview, isbackgroudApp)
-      //   break;
-      // case ("Cart").toLowerCase():
-      //   handleCart(jsonMsg, whereToview, isbackgroudApp)
-      //   break;
+      case ("DataToReceipt").toLowerCase():
+        appResponse = DataToReceipt(jsonMsg, whereToview, isbackgroudApp);
+        break;
+      case ("Receipt").toLowerCase():
+        PrintReceiptWithAppData(jsonMsg, isbackgroudApp)
+        break;
+      case ("CartValue").toLowerCase():
+        handleCartValue(jsonMsg, whereToview, isbackgroudApp)
+        break;
+      case ("Cart").toLowerCase():
+        handleCart(jsonMsg, whereToview, isbackgroudApp)
+        break;
 
-      // case ("Customers").toLowerCase():         //Handle Customer events
-      //   handleCustomer(jsonMsg, isbackgroudApp);
-      //   break;
-      // case ("CustomerDetails").toLowerCase():
-      //   sendCustomerDetail(jsonMsg, isbackgroudApp)
-      //   break;
-      // case ("CustomerInSale").toLowerCase():
-      //   retrieveCustomerInSale(jsonMsg, isbackgroudApp)
-      //   break;
-      // case ("CustomerToSale").toLowerCase():
-      //   CustomerToSale(jsonMsg, isbackgroudApp)
-      //   break;
+      case ("Customers").toLowerCase():         //Handle Customer events
+        HandleCustomer(jsonMsg, isbackgroudApp);
+        break;
+      case ("CustomerDetails").toLowerCase():
+        sendCustomerDetail(jsonMsg, isbackgroudApp)
+        break;
+      case ("CustomerInSale").toLowerCase():
+        retrieveCustomerInSale(jsonMsg, isbackgroudApp)
+        break;
+      case ("CustomerToSale").toLowerCase():
+        CustomerToSale(jsonMsg, isbackgroudApp)
+        break;
       // case ("productDetail").toLowerCase():
       //   productDetail(jsonMsg, isbackgroudApp)
       //   break
-      // case ("Payment").toLowerCase():
-      //   appResponse = payfromApp(jsonMsg, isbackgroudApp)
-      //   break
-      // case ("rawProductData").toLowerCase():
-      //   rawProductData(jsonMsg, isbackgroudApp)
-      //   break
-      // case ("cartDiscount").toLowerCase():
-      //   appResponse = addCartDiscount(jsonMsg, isbackgroudApp, whereToview)
-      //   break
-      // case ("cartTaxes").toLowerCase():
-      //   appResponse = cartTaxes(jsonMsg, isbackgroudApp)
-      //   break
-      // case ("addProductToCart").toLowerCase():
-      //   appResponse = addProductToCart(jsonMsg, isbackgroudApp, whereToview)
-      //   break
-      // case ("Notes").toLowerCase():
-      //   appResponse = Notes(jsonMsg, isbackgroudApp, whereToview)
-      //   break
-      // case ("Environment").toLowerCase():
-      //   Environment(jsonMsg, isbackgroudApp, whereToview)
-      //   break
-      // case ("lockEnvironment").toLowerCase():
-      //   appResponse = lockEnvironment(jsonMsg, isbackgroudApp, whereToview)
-      //   break
-      // case ("productPriceUpdate").toLowerCase():
-      //   appResponse = productPriceUpdate(jsonMsg, isbackgroudApp, whereToview)
-      //   break
-      // case ("sendProductQuantity").toLowerCase():
-      //   appResponse = sendProductQuantity(jsonMsg, isbackgroudApp, whereToview)
-      //   break
+      case ("Payment").toLowerCase():
+        appResponse = payfromApp(jsonMsg, isbackgroudApp) //done
+        break
+      case ("rawProductData").toLowerCase():
+        RawProductData(jsonMsg, isbackgroudApp)
+        break
+      case ("cartDiscount").toLowerCase():
+        appResponse = addCartDiscount(jsonMsg, isbackgroudApp, whereToview)
+        break
+      case ("cartTaxes").toLowerCase():
+        appResponse = cartTaxes(jsonMsg, isbackgroudApp)
+        break
+      case ("addProductToCart").toLowerCase():
+        appResponse = AddProductToCart(jsonMsg, isbackgroudApp, whereToview)
+        break
+      case ("Notes").toLowerCase():
+        appResponse = Notes(jsonMsg, isbackgroudApp, whereToview)
+        break
+      case ("Environment").toLowerCase():
+        Environment(jsonMsg, isbackgroudApp, whereToview)
+        break
+      case ("lockEnvironment").toLowerCase():
+        appResponse = lockEnvironment(jsonMsg, isbackgroudApp, whereToview)
+        break
+      case ("productPriceUpdate").toLowerCase():
+        appResponse = productPriceUpdate(jsonMsg, isbackgroudApp, whereToview)
+        break
+      case ("sendProductQuantity").toLowerCase():
+        appResponse = sendProductQuantity(jsonMsg, isbackgroudApp, whereToview)
+        break
       // //App 2.0--------------------
-      // case ("Transaction").toLowerCase(): //same as payment
-      //   appResponse = transactionApp(jsonMsg, isbackgroudApp)
-      //   break;
-      // case ("TransactionStatus"): //same as payment
-      //   appResponse = transactionStatus(jsonMsg, whereToview, isbackgroudApp)
-      //   break;
-      // case ("CloseExtension").toLowerCase():
-      //   CloseExtension();
-      //   break;
+      case ("Transaction").toLowerCase(): //same as payment
+        appResponse = transactionApp(jsonMsg, isbackgroudApp)
+        break;
+      case ("TransactionStatus").toLowerCase(): //same as payment
+        appResponse = transactionStatus(jsonMsg, whereToview, isbackgroudApp)
+        break;
+      case ("CloseExtension").toLowerCase():
+        CloseExtension();
+        break;
       case ("ClientInfo").toLowerCase():
         appResponse = sendClientsDetails(jsonMsg)
         break
       case ("OrderStatus").toLowerCase():
         appResponse = getOrderStatus(jsonMsg, whereToview)
         break
-      // case ("ParkSale").toLowerCase():
-      //   appResponse = doParkSale(jsonMsg)
-      //   break
-      // case ("CustomFee").toLowerCase():
-      //   appResponse = doCustomFee(jsonMsg)
-      //   break
-      // case ("ReceiptData").toLowerCase():
-      //   appResponse = getReceiptData(jsonMsg, whereToview)
-      //   break
-      // case ("discountCoupon").toLowerCase():
-      //   appResponse = addDiscountCoupon(jsonMsg, isbackgroudApp, whereToview)
-      //   break
+      case ("ParkSale").toLowerCase():
+        appResponse = DoParkSale(jsonMsg,navigate)
+        break
+      case ("CustomFee").toLowerCase():
+        appResponse = doCustomFee(jsonMsg)
+        break
+      case ("ReceiptData").toLowerCase():
+        appResponse = getReceiptData(jsonMsg, whereToview)
+        break
+      case ("discountCoupon").toLowerCase():
+        appResponse = addDiscountCoupon(jsonMsg, isbackgroudApp, whereToview)
+        break
       default: // extensionFinished
         var clientJSON = {
           command: jsonMsg.command,
@@ -144,121 +157,6 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false) => {
     return appResponse;
   }
 }
-export const appReady = (whereToview, isbackgroudApp) => {
-  var clientDetails = localStorage.getItem('clientDetail') ?
-    JSON.parse(localStorage.getItem('clientDetail')) : 0
-  var client_guid = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.client_guid : ''
-
-  if (whereToview == 'ActivityView') {
-    // var pagesize = Config.key.ACTIVITY_PAGE_SIZE
-    // var UID = get_UDid('UDID');
-    // var pagno = 0;
-    //store.dispatch(activityActions.getOne(UID,pagesize,pagno));
-    setTimeout(() => {
-      const state = store.getState();
-      console.log("state", state)
-      if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
-        var _OrderId = state.single_Order_list.items.content.order_id;
-        var OliverReciptId = state.single_Order_list.items.content.OliverReciptId;
-        var _customerId = state.single_Order_list.items.content.customer_id;
-        var clientJSON = {
-          command: "appReady",
-          version: "1.0",
-          method: "get",
-          status: 200,
-          data:
-          {
-            OrderId: _OrderId,
-            WooCommerceId: _customerId,
-            clientGUID: client_guid,
-            view: whereToview,
-            privilege: clientDetails && clientDetails.user_role,
-            viewport: isMobileOnly == true ? "Mobile" : "desktop"
-          },
-          error: null
-        }
-        postmessage(clientJSON)
-      }
-    }, 1000);
-
-  } else if (whereToview == 'CheckoutView' || whereToview == 'RefundView' || whereToview == 'efundCompleteView') {
-    var clientJSON = {
-      command: "appReady",
-      version: "1.0",
-      method: "get",
-      status: 200,
-      data:
-      {
-        clientGUID: client_guid,
-        view: whereToview,
-        privilege: clientDetails && clientDetails.user_role,
-        viewport: isMobileOnly == true ? "Mobile" : "desktop"
-      },
-      error: null
-    }
-    postmessage(clientJSON)
-  } else if (whereToview == 'CustomerView') {
-    //var UID = get_UDid('UDID');
-    //store.dispatch(customerActions.getAllEvents(UID));
-    setTimeout(() => {
-      const state = store.getState();
-      console.log("state", state)
-      if (state.single_cutomer_list && state.single_cutomer_list.items && state.single_cutomer_list.items.content) {
-        var _CustomerId = state.single_cutomer_list.items.content.customerDetails.WPId;
-        var clientJSON = {
-          command: "appReady",
-          version: "1.0",
-          method: "get",
-          status: 200,
-          data:
-          {
-            CustomerId: _CustomerId,
-            clientGUID: client_guid,
-            view: whereToview,
-            privilege: clientDetails && clientDetails.user_role,
-            viewport: isMobileOnly == true ? "Mobile" : "desktop"
-          },
-          error: null
-        }
-        postmessage(clientJSON)
-      }
-    }, 1000);
-  } else if (whereToview == 'ProductView') {  // this is not in used. 
-    var clientJSON = {
-      command: "appReady",
-      version: "1.0",
-      method: "get",
-      status: 200,
-      data:
-      {
-        ProductId: 445667,
-        view: whereToview,
-        privilege: clientDetails && clientDetails.user_role,
-        viewport: isMobileOnly == true ? "Mobile" : "desktop"
-      },
-      error: null
-    }
-    postmessage(clientJSON)
-    console.log("clientJSON from shopview", clientJSON)
-  } else {  //home
-    var clientJSON = {
-      command: "appReady",
-      version: "1.0",
-      method: "get",
-      status: 200,
-      data:
-      {
-        view: whereToview,
-        privilege: clientDetails && clientDetails.user_role,
-        viewport: isMobileOnly == true ? "Mobile" : "desktop"
-      },
-      error: null
-    }
-    postmessage(clientJSON)
-    console.log("clientJSON from shopview", clientJSON)
-  }
-
-}
 export const postmessage = (clientJSON) => {
   //var iframex = document.getElementsByTagName("iframe")[0].contentWindow;
   var iframex = undefined;
@@ -266,20 +164,35 @@ export const postmessage = (clientJSON) => {
     iframex = document.getElementById("commoniframe").contentWindow;
     if (!iframex)
       iframex = document.getElementById("iframeid").contentWindow;
-  } else if (document.getElementById("iframeid")) {
-    iframex = document.getElementById("iframeid").contentWindow;
   }
-  else if (document.getElementById("iframeViewSecond")) {
-    iframex = document.getElementById("iframeViewSecond").contentWindow;
-  }
+  // else if (document.getElementById("iframeid")) {
+  //   iframex = document.getElementById("iframeid").contentWindow;
+  // }
+  // else if (document.getElementById("iframeViewSecond")) {
+  //   iframex = document.getElementById("iframeViewSecond").contentWindow;
+  // }
 
-  console.log(iframex)
+  console.log("iframex", iframex)
   if (iframex) {
     iframex.postMessage(JSON.stringify(clientJSON), '*');
+
+    // ----------Set recent app call-------------------------
+    var app = null
+    var currentAppName = document.getElementById('app_Name');
+    var currentAppID = document.getElementById('app_Id');
+
+    if (currentAppID) {
+      app = {
+        "Id": currentAppID.innerText,
+        "Name": currentAppName.innerText
+      }
+      console.log("text", app)
+      if (app !== null) { updateRecentUsedApp(app, false, true) }
+    }
+    //-------------------------------------------------------
+
   }
-
 }
-
 const validateRequest = (RequestData) => {
 
   var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -344,55 +257,55 @@ const validateRequest = (RequestData) => {
 
     return { isValidationSuccess, clientJSON };
   }
-  else if (RequestData.command.toLowerCase() == ('DataToReceipt').toLowerCase() || RequestData.command.toLowerCase() == ('Receipt').toLowerCase()) {
-    if (RequestData && (!RequestData.method || !RequestData.method == 'post')) { //missing attribut/invalid attribute name
-      isValidationSuccess = false;
-      clientJSON['error'] = "Invalid Attribute"
-    } else if (RequestData && !RequestData.url) {
-      isValidationSuccess = false;
-      clientJSON['error'] = "Missing Attribute(s)" //GR[3]
+  // else if (RequestData.command.toLowerCase() == ('DataToReceipt').toLowerCase() || RequestData.command.toLowerCase() == ('Receipt').toLowerCase()) {
+  //   if (RequestData && (!RequestData.method || !RequestData.method == 'post')) { //missing attribut/invalid attribute name
+  //     isValidationSuccess = false;
+  //     clientJSON['error'] = "Invalid Attribute"
+  //   } else if (RequestData && !RequestData.url) {
+  //     isValidationSuccess = false;
+  //     clientJSON['error'] = "Missing Attribute(s)" //GR[3]
 
-    } else if (RequestData && !urlReg.test(RequestData.url)) {
-      isValidationSuccess = false;
-      clientJSON['error'] = "Invalid Value" //GR[5]  
-    }
+  //   } else if (RequestData && !urlReg.test(RequestData.url)) {
+  //     isValidationSuccess = false;
+  //     clientJSON['error'] = "Invalid Value" //GR[5]  
+  //   }
 
-  }
-  else if (RequestData.command.toLowerCase() == ('CartValue').toLowerCase()) { //|| RequestData.command=='Receipt'
-    if (RequestData && !RequestData.method) { //missing attribut/invalid attribute name
-      isValidationSuccess = false;
-      clientJSON['error'] = "Invalid Attribute"
-    }
-    if (RequestData && RequestData.method && RequestData.method == 'put') {
-      if (RequestData.data && RequestData.data.discount && RequestData.data.tender_amt) {
-        if (typeof RequestData.data.discount == 'string' || typeof RequestData.data.tender_amt == 'string') {
-          isValidationSuccess = false;
-          clientJSON['error'] = "Invalid Value" //GR[4]  
-        }
-      } else {
-        isValidationSuccess = false;
-        clientJSON['error'] = "Invalid Attribute"
-      }
-    }
-  }
-  else if (RequestData.command.toLowerCase() == ('Cart').toLowerCase()) { //|| RequestData.command=='Receipt'
-    if (RequestData && !RequestData.method) { //missing attribut/invalid attribute name
-      isValidationSuccess = false;
-      clientJSON['error'] = "Invalid Attribute"
-    }
-    // else if (RequestData && (RequestData.method || !RequestData.method=='post')) { //missing attribut/invalid attribute name
-    //   isValidationSuccess=false;        
-    //   clientJSON['error']= "Invalid Attribute"          
-    // }else if (RequestData  && !RequestData.url){ 
-    //   isValidationSuccess=false;
-    //     clientJSON['error']="Missing Attribute(s)" //GR[3]
+  // }
+  // else if (RequestData.command.toLowerCase() == ('CartValue').toLowerCase()) { //|| RequestData.command=='Receipt'
+  //   if (RequestData && !RequestData.method) { //missing attribut/invalid attribute name
+  //     isValidationSuccess = false;
+  //     clientJSON['error'] = "Invalid Attribute"
+  //   }
+  //   if (RequestData && RequestData.method && RequestData.method == 'put') {
+  //     if (RequestData.data && RequestData.data.discount && RequestData.data.tender_amt) {
+  //       if (typeof RequestData.data.discount == 'string' || typeof RequestData.data.tender_amt == 'string') {
+  //         isValidationSuccess = false;
+  //         clientJSON['error'] = "Invalid Value" //GR[4]  
+  //       }
+  //     } else {
+  //       isValidationSuccess = false;
+  //       clientJSON['error'] = "Invalid Attribute"
+  //     }
+  //   }
+  // }
+  // else if (RequestData.command.toLowerCase() == ('Cart').toLowerCase()) { //|| RequestData.command=='Receipt'
+  //   if (RequestData && !RequestData.method) { //missing attribut/invalid attribute name
+  //     isValidationSuccess = false;
+  //     clientJSON['error'] = "Invalid Attribute"
+  //   }
+  // else if (RequestData && (RequestData.method || !RequestData.method=='post')) { //missing attribut/invalid attribute name
+  //   isValidationSuccess=false;        
+  //   clientJSON['error']= "Invalid Attribute"          
+  // }else if (RequestData  && !RequestData.url){ 
+  //   isValidationSuccess=false;
+  //     clientJSON['error']="Missing Attribute(s)" //GR[3]
 
-    // }else if (RequestData  && !urlReg.test(RequestData.url)){ 
-    //   isValidationSuccess=false;
-    //   clientJSON['error']=  "Invalid Value" //GR[5]  
-    // }      
+  // }else if (RequestData  && !urlReg.test(RequestData.url)){ 
+  //   isValidationSuccess=false;
+  //   clientJSON['error']=  "Invalid Value" //GR[5]  
+  // }      
 
-  }
+  //}
   else if (RequestData.command.toLowerCase() == ('productDetail').toLowerCase()) {
     if (RequestData && !RequestData.method) { //missing attribut/invalid attribute name
       isValidationSuccess = false;
@@ -789,6 +702,128 @@ const validateRequest = (RequestData) => {
   return { isValidationSuccess, clientJSON };
 }
 
+export const appReady = (whereToview, isbackgroudApp) => {
+  var clientDetails = localStorage.getItem('clientDetail') ?
+    JSON.parse(localStorage.getItem('clientDetail')) : 0
+  var client_guid = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.client_guid : ''
+
+  if (whereToview == 'ActivityView') {
+    // var pagesize = Config.key.ACTIVITY_PAGE_SIZE
+    // var UID = get_UDid('UDID');
+    // var pagno = 0;
+    //store.dispatch(activityActions.getOne(UID,pagesize,pagno));
+    setTimeout(() => {
+      const state = store.getState();
+      console.log("state", state)
+      if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
+        var _OrderId = state.single_Order_list.items.content.order_id;
+        var OliverReciptId = state.single_Order_list.items.content.OliverReciptId;
+        var _customerId = state.single_Order_list.items.content.customer_id;
+        var clientJSON = {
+          command: "appReady",
+          version: "1.0",
+          method: "get",
+          status: 200,
+          data:
+          {
+            OrderId: _OrderId,
+            WooCommerceId: _customerId,
+            clientGUID: client_guid,
+            view: whereToview,
+            privilege: clientDetails && clientDetails.user_role,
+            viewport: isMobileOnly == true ? "Mobile" : "desktop"
+          },
+          error: null
+        }
+        postmessage(clientJSON)
+      }
+    }, 1000);
+
+  } else if (whereToview == 'CheckoutView' || whereToview == 'RefundView' || whereToview == 'efundCompleteView') {
+    var clientJSON = {
+      command: "appReady",
+      version: "1.0",
+      method: "get",
+      status: 200,
+      data:
+      {
+        clientGUID: client_guid,
+        view: whereToview,
+        privilege: clientDetails && clientDetails.user_role,
+        viewport: isMobileOnly == true ? "Mobile" : "desktop"
+      },
+      error: null
+    }
+    postmessage(clientJSON)
+  } else if (whereToview == 'CustomerView') {
+    //var UID = get_UDid('UDID');
+    //store.dispatch(customerActions.getAllEvents(UID));
+    setTimeout(() => {
+      const state = store.getState();
+      console.log("state", state)
+      if (state.single_cutomer_list && state.single_cutomer_list.items && state.single_cutomer_list.items.content) {
+        var _CustomerId = state.single_cutomer_list.items.content.customerDetails.WPId;
+        var clientJSON = {
+          command: "appReady",
+          version: "1.0",
+          method: "get",
+          status: 200,
+          data:
+          {
+            CustomerId: _CustomerId,
+            clientGUID: client_guid,
+            view: whereToview,
+            privilege: clientDetails && clientDetails.user_role,
+            viewport: isMobileOnly == true ? "Mobile" : "desktop"
+          },
+          error: null
+        }
+        postmessage(clientJSON)
+      }
+    }, 1000);
+  } else if (whereToview == 'ProductView') {  // this is not in used. 
+    var clientJSON = {
+      command: "appReady",
+      version: "1.0",
+      method: "get",
+      status: 200,
+      data:
+      {
+        ProductId: 445667,
+        view: whereToview,
+        privilege: clientDetails && clientDetails.user_role,
+        viewport: isMobileOnly == true ? "Mobile" : "desktop"
+      },
+      error: null
+    }
+    postmessage(clientJSON)
+    console.log("clientJSON from shopview", clientJSON)
+  } else {  //home
+    var clientJSON = {
+      command: "appReady",
+      version: "1.0",
+      method: "get",
+      status: 200,
+      data:
+      {
+        view: whereToview,
+        privilege: clientDetails && clientDetails.user_role,
+        viewport: isMobileOnly == true ? "Mobile" : "desktop"
+      },
+      error: null
+    }
+    postmessage(clientJSON)
+    console.log("clientJSON from shopview", clientJSON)
+  }
+
+}
+// Product Detail end****************
+export const CloseExtension = () => {
+  //hideModal('common_ext_popup');
+
+}
+
+
 
 export const postClientExtensionResponse = (method, isSuccess, message, command = "Customers", data = "") => {
   var _method = command == "CustomerDetails" ? 'get' :
@@ -809,120 +844,3 @@ export const postClientExtensionResponse = (method, isSuccess, message, command 
   postmessage(clientJSON);
 
 }
-
-export const sendClientsDetails = (RequestData) => {
-  var validationResponse = validateRequest(RequestData)
-  if (validationResponse.isValidationSuccess == false) {
-    clientJSON = validationResponse.clientJSON;
-    postmessage(clientJSON)
-  }
-  else {
-    var clientDetails = localStorage.getItem('clientDetail') ? JSON.parse(localStorage.getItem('clientDetail')) : 0
-    var guid = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.client_guid : '';
-    var account_type = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.subscription_name : '';
-    var store_url = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.url : '';
-    var business_name = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.company_name : '';
-    var account_monthly_price = clientDetails && clientDetails.subscription_detail ? clientDetails.subscription_detail.MonthlyPrice : ''
-    var email = clientDetails && clientDetails.user_email ? clientDetails.user_email : ''
-    var currency = clientDetails && clientDetails.currency ? clientDetails.currency : '';
-    var account_creation_date = clientDetails && clientDetails.register_unix_date ? clientDetails.register_unix_date : '';
-
-    var clientJSON =
-    {
-      oliverpos:
-      {
-        command: RequestData.command,
-        method: RequestData.method,
-        version: "2.0",
-        status: 200,
-      },
-      data:
-      {
-        guid: guid,
-        account_creation_date: account_creation_date,
-        account_type: account_type,
-        account_monthly_price: account_monthly_price,
-        store_url: store_url,
-        email: email,
-        currency: currency,
-        business_name: business_name
-      }
-    };
-    postmessage(clientJSON);
-  }
-}
-export const getOrderStatus = (RequestData, whereToview) => {
-  var validationResponse = validateRequest(RequestData)
-  if (validationResponse.isValidationSuccess == false) {
-    clientJSON = validationResponse.clientJSON;
-    postmessage(clientJSON)
-  }
-  else {
-    var tempOrdrId = localStorage.getItem('tempOrder_Id') && localStorage.getItem('tempOrder_Id') !== undefined ? JSON.parse(localStorage.getItem("tempOrder_Id")) : null;
-    var clientJSON = {};
-
-    const { Email } = ActiveUser.key;
-    var TempOrders = localStorage.getItem(`TempOrders_${Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${Email}`)) : []; if (TempOrders && TempOrders.length > 0) {
-      var filteredOrder = null;
-      if (TempOrders && TempOrders.length > 0) {
-        filteredOrder = TempOrders && TempOrders.filter(tOrder => tOrder.TempOrderID == tempOrdrId)
-      }
-    }
-    if (RequestData.method == 'get') {
-      clientJSON = {
-        command: RequestData.command,
-        version: "2.0",
-        method: RequestData.method,
-        status: 200,
-      }
-
-      if (filteredOrder && filteredOrder.length > 0 && whereToview !== 'ActivityView' && whereToview !== 'RefundView') {
-        filteredOrder && filteredOrder.map(order => {
-          clientJSON['data'] = {
-            wc_status: order.order_status_DB ? order.order_status_DB : order.order_status,
-            wc_order_no: order.OrderID,
-            oliver_order_id: order.TempOrderID
-
-          }
-        })
-
-      } else if (whereToview == 'RefundView' && localStorage.getItem('getorder')) {
-        var _order = JSON.parse(localStorage.getItem('getorder'));
-        clientJSON['data'] = {
-          wc_status: _order && _order.order_status,
-          wc_order_no: _order && _order.order_id,
-          oliver_order_id: _order && _order.OliverReciptId
-
-        }
-      }
-      else {
-        const state = store.getState();
-        if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
-          var _order = state.single_Order_list.items.content
-          if (_order) {
-            clientJSON['data'] = {
-              wc_status: _order.order_status,
-              wc_order_no: _order.order_id,
-              oliver_order_id: _order.OliverReciptId
-            }
-          }
-
-
-        }
-      }
-    }
-    else {
-      //clientJSON['error'] == "no transaction found"
-    }
-
-    postmessage(clientJSON);
-  }
-}
-
-//export const checkStoreValue()
-
-// // Product Detail end****************
-// export const CloseExtension = () => {
-//   hideModal('common_ext_popup');
-
-// }

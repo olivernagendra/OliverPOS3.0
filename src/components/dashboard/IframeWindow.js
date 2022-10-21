@@ -12,8 +12,11 @@ const IframeWindow = (props) => {
                     <div className="text-col">
                         <p id="appName" className="style1">{props && props.exApp && props.exApp.Name}</p>
                         <p id="appAuthorName" className="style2">Author Name</p>
+
                     </div>
                 </div>
+                <label id="app_Name" style={{ display: "none" }}>{props && props.exApp && props.exApp.Name}</label>
+                <label id="app_Id" style={{ display: "none" }}>{props && props.exApp && props.exApp.Id}</label>
                 <button className="close-subwindow">
                     <img src={X_Icon_DarkBlue} alt="" />
                 </button>
@@ -33,6 +36,7 @@ const IframeWindow = (props) => {
                 <iframe
                     id="commoniframe"
                     src={props.product && props.product.ParamLink ? props.product.PageUrl : props.exApp ? props.exApp.PageUrl : ''}
+                    // src='http://localhost:3000/externalApp/new_apps.html'
                     frameBorder="0"
                     sandbox="allow-scripts allow-same-origin allow-forms"
                 // ref={(f) => this.ifr = f}

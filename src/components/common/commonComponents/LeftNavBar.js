@@ -21,7 +21,7 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
-import { CheckAppDisplayInView } from '../commonFunctions/appDisplayFunction'
+import { CheckAppDisplayInView, updateRecentUsedApp } from '../commonFunctions/appDisplayFunction'
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
 import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
@@ -38,26 +38,33 @@ const LeftNavBar = (props) => {
     const [isShowMobileView, setisShowMobileView] = useState(false);
     const [extApp, setExtApp] = useState('');
     const [isInit, setisInit] = useState(false);
+    let useCancelled = false;
     const [isShowLinkLauncherPage, setisShowLinkLauncherPage] = useState(false);
 
     useEffect(() => {
-        if (isInit === false) {
-            window.addEventListener('message', function (e) {
-                var data = e && e.data;
-                if (typeof data == 'string' && data !== "") {
-                    try {
-                        var _data = JSON.parse(data);
-                        responseData(_data)
-                    } catch (e) {
-                        console.log(e);
-                    }
+        if (location.pathname !== "/checkout") {
+            if (isInit === false && useCancelled == false) {
 
-                    //compositeSwitchCases(JSON.parse(data))
-                }
-            })
-            setisInit(true);
+                window.addEventListener('message', function (e) {
+                    var data = e && e.data;
+                    if (typeof data == 'string' && data !== "" && location.pathname !== "/checkout") {  //checkout page handle independentaly 
+                        try {
+                            var _data = data && JSON.parse(data);
+                            responseData(_data)
+                        } catch (e) {
+                            console.log(e);
+                        }
+
+                    }
+                })
+                setisInit(true);
+            }
+            return () => {
+                useCancelled = true;
+            }
         }
     }, [isInit]);
+
     const responseData = (data) => {
         console.log("---ext app data--" + data);
         var _route = location.pathname;
@@ -66,7 +73,8 @@ const LeftNavBar = (props) => {
             whereToview = "CheckoutView"
         else
             whereToview = "home"
-        handleAppEvent(data, whereToview)
+        var response = handleAppEvent(data, whereToview,false,navigate);
+        console.log("-----command response from handler--" + response)
     }
     const toggleLeftMenu = () => {
         setisShowLeftMenu(!isShowLeftMenu)
@@ -88,6 +96,9 @@ const LeftNavBar = (props) => {
     }
     const toggleiFrameWindow = (_exApp = null) => {
         if (_exApp != null) { setExtApp(_exApp); }
+        if (isShowiFrameWindow === false) {
+            updateRecentUsedApp(_exApp, true, 0)
+        }
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
     const toggleMobileView = () => {
@@ -117,7 +128,36 @@ const LeftNavBar = (props) => {
         var data = { title: title, msg: msg, is_success: true }
         dispatch(popupMessage(data));
     }
-    var appsList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD"));
+
+    //Display 3 Most used app---------------------***********----------------------- 
+    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD"));
+    var mostUsedApp = localStorage.getItem("recent_apps") && JSON.parse(localStorage.getItem("recent_apps"));
+    if (mostUsedApp && mostUsedApp.length > 0) {
+        //const sortDesc = (_recentApp, used_count) => {
+        mostUsedApp = mostUsedApp.sort((a, b) => {   //sort by most used app  
+            if (a["used_count"] > b['used_count']) { return -1; }
+            if (b["used_count"] > a["used_count"]) { return 1; }
+            return 0;
+        })
+        console.log("sortDesc", mostUsedApp)
+        //}
+    }
+    var appsList = []
+    var appDisplayCount = 0
+    if (mostUsedApp && mostUsedApp.length > 0) {
+        mostUsedApp.map(function (itemUsed, index) {
+            // if (index < 3) {
+            var app = allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0)
+            if (app && appDisplayCount < 3)//only 3 item need to display
+            {
+                appsList.push(app);
+                appDisplayCount++
+            }
+            // }
+        });
+    }
+    //----------------------------**************----------------------------------------
+    //console.log("appsList", appsList)
     var displayAppCount = 0;
     return (
         <React.Fragment>
@@ -172,6 +212,7 @@ const LeftNavBar = (props) => {
                         <img src={LinkLauncher_Icon} alt="" />
                     </div>
                     <p>Link Launcher</p>
+                    <div className="f-key">F5</div>
                 </button>
                 <div className="divider"></div>
                 <button id="appLauncherButton" className={isShowAppLauncher === true ? "launcher filter" : "launcher"} onClick={() => toggleAppLauncher()}>
@@ -179,29 +220,31 @@ const LeftNavBar = (props) => {
                         <img src={Oliver_Icon_BaseBlue} alt="" />
                     </div>
                     <p>App Launcher</p>
+                    <div className="f-key">F6</div>
                 </button>
 
 
                 {/* display Apps for home page */}
-                {appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
-                    var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
-                    if (isDisplay == true) displayAppCount += 1;
-                    {
-                        return displayAppCount < 4 && isDisplay == true &&
 
-                            <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
-                                <div className="img-container">
-                                    {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
-                                    {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
-                                        currentTarget.onerror = null; // prevents looping
-                                        currentTarget.src = NoImageAvailable;
-                                    }} /> : <img src={NoImageAvailable} alt="" />}
-                                </div>
-                                <p>{appItem.Name}</p>
-                            </button>
+                {
+                    appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
+                        var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
+                        {
+                            return isDisplay == true &&
+                                <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
+                                    <div className="img-container">
+                                        {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
+                                        {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
+                                            currentTarget.onerror = null; // prevents looping
+                                            currentTarget.src = NoImageAvailable;
+                                        }} /> : <img src={NoImageAvailable} alt="" />}
+                                    </div>
+                                    <p>{appItem.Name}</p>
+                                    <div className="f-key">F{6 + displayAppCount}</div>
+                                </button>
 
-                    }
-                })}
+                        }
+                    })}
 
 
 

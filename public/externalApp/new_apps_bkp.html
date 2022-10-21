@@ -1,0 +1,331 @@
+<html>
+
+
+<body>
+
+    <div> 
+         <h1>TEST COMMANDS</h1>
+        <div>
+            <table>
+<tr>
+    <td><button id="ClientInfoGet">ClientInfo(Get)</button></td>
+</tr>
+<tr>
+    <td colspan="2">--------------------------------------------------------------------
+    </td>
+</tr>
+<tr>
+    <td><button id="OrderStatusGet">OrderStatus(Get)</button></td>
+</tr>
+<tr>
+    <td colspan="2">--------------------------------------------------------------------
+    </td>
+</tr>
+<tr>
+    <td >
+        <input id="txtInput" type="number"><button id="ParkSaleGet">ParkSale(Get)</button>
+    </td>
+    <td><button id="ParkSalePost">ParkSale(Post)</button></td>
+</tr>
+
+<tr>
+    <td colspan="2">--------------------------------------------------------------------
+    </td>
+</tr>
+<tr>
+    <td>
+        <button id="CustomFeeGet">CustomFee(Get)</button>
+    </td>
+    <td>
+        <button id="CustomFeePost">CustomFee(Post)</button>
+    </td>
+</tr>
+<tr>
+    <td>
+        <button id="CustomFeePut">CustomFee(Put)</button>
+    </td>
+
+    <td>
+        <button id="CustomFeeDelete">CustomFee(Delete)</button>
+    </td>
+</tr>
+<tr>
+    <td>
+        <button id="CustomFeeDeleteAll">CustomFee(Delete All)</button>
+    </td>
+<tr>
+    <td colspan="2">--------------------------------------------------------------------
+    </td>
+</tr>
+    <tr>
+        <td colspan="2">
+            <button id="ReceiptDataGet">ReceiptData(Get)</button>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">--------------------------------------------------------------------
+        </td>
+    </tr>
+    <tr>
+        <td>
+              <button id="btnPayAmountGet">Transaction(get)</button>            
+        </td>
+        <td>
+             <button id="btnPayAmountPost">Transaction(post)</button> 
+        </td>
+    </tr>
+    <tr>
+        <td>
+              <button id="btnTransactionStausGet">TransactionStaus(get)</button>            
+        </td>
+        <td>
+             <button id="btnTransactionStausPut">TransactionStaus(put)</button> 
+        </td>
+    </tr>
+</tr>
+</table>
+</div>
+</div>
+    <div id="dvRequest"></div>
+    <div id="dvResponse"></div>
+    <script>
+
+        //Listen for message from Oliver POS 
+        var msgData = ''
+        setTimeout(() => {
+            var readyExtensionData = {
+                command: 'appReady',
+                version:"1.0",
+                method: 'get'
+            }
+
+            window.parent.postMessage(JSON.stringify(readyExtensionData), '*');
+
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(readyExtensionData,undefined,2);
+        }, 1000);
+        //----------------------------------------
+
+        window.addEventListener('message', function (e) {
+            msgData = JSON.parse(e.data);
+            console.log("Message from Oliver POS:", msgData)
+            document.getElementById('dvResponse').innerText = "";
+            document.getElementById('dvResponse').innerText = "Response:" + JSON.stringify(msgData,undefined,2);
+
+        }, false);
+
+
+        var btnCartValueGet = document.getElementById('CustomFeeGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                command: "CustomFee",
+                version:"2.0",
+                method: "get",
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+
+        var btnCartValueGet = document.getElementById('ParkSaleGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                command: "ParkSale",
+                version:"2.0",
+                method: "get",
+                wc_order_no:document.getElementById('txtInput').value
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+        var btnCartValueGet = document.getElementById('ParkSalePost');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                command: "ParkSale",
+                version:"2.0",
+                method: "post",
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+        var btnCartValueGet = document.getElementById('ReceiptDataGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                command: "ReceiptData",
+                version:"2.0",
+                method: "get",
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+        var btnCartValueGet = document.getElementById('CustomFeePost');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                "command": "CustomFee",
+                "method": "post",
+                "version": 2.0,
+                "data": {
+                    "name": "Example Fee",
+                    "amount": 200,
+                    "is_taxable": true
+                }
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+
+        var btnCartValueGet = document.getElementById('CustomFeePut');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                "command": "CustomFee",
+                "method": "put",
+                "version": 2.0,
+                "data": {
+                "name": "Example Fee",
+                "amount": 350
+                }
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+        var btnCartValueGet = document.getElementById('CustomFeeDelete');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                "command": "CustomFee",
+                "method": "delete",
+                "version": 2.0,
+                "name":"Example Fee"
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+        var btnCartValueGet = document.getElementById('CustomFeeDeleteAll');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                "command": "CustomFee",
+                "method": "delete",
+                "version": 2.0,
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+
+        var btnCartValueGet = document.getElementById('ClientInfoGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                command: "ClientInfo",
+                version:"2.0",
+                method: "get",
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+
+        var btnCartValueGet = document.getElementById('OrderStatusGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+            var jsonMsg = {
+                command: "OrderStatus",
+                version:"2.0",
+                method: "get",
+                }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg,undefined,2);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+        });
+
+        //get payment request-----------
+        var btnPayAmountGet = document.getElementById('btnPayAmountGet');
+                btnPayAmountGet.addEventListener('click', function (e) {
+
+                var jsonMsg = {
+                    "command": "Transaction",
+                    "method": "get",
+                    "version": "2.0",
+                    "processor": "cash", // [optional, case-sensitive],
+                    "transaction_type": "sale" // [optional],
+                }
+
+                document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg);
+                console.log('------get btn clicked----', jsonMsg);
+                window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+            });
+
+          //Send payment request-----------
+          var btnPayAmountPost = document.getElementById('btnPayAmountPost');
+          btnPayAmountPost.addEventListener('click', function (e) {
+
+            var jsonMsg = {
+                "command": "Transaction",
+                "method": "post",
+                "version": "2.0",
+                "data": {
+                        "processor": "fortispay",
+                        "amount": 4000,
+                        "transaction_id": "64224", //[must be string]
+                        "emv_data": {//[optional]
+                                        "AC": "400012531",
+                                        "AID": "a000532114",
+                                        "AIDNAME": "VISA Debit/Credit",
+                                        "APPLAB": "VISA Credit",
+                            }
+                }
+            }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+ //TrnsactionStaus request-----------
+ var btnTransactionStausGet = document.getElementById('btnTransactionStausGet');
+        btnTransactionStausGet.addEventListener('click', function (e) {
+
+            var jsonMsg = {
+                "command": "TransactionStatus",
+                "method": "get",
+                "version": "2.0",
+               
+            }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+
+        var btnTransactionStausPut = document.getElementById('btnTransactionStausPut');
+        btnTransactionStausPut.addEventListener('click', function (e) {
+
+            var jsonMsg = {
+                "command": "TransactionStatus",
+                "method": "put",
+                "version": "2.0",
+                "data": {
+                         "transaction_status": "cancel"
+                    }
+            }
+            document.getElementById('dvRequest').innerText = "Request:" + JSON.stringify(jsonMsg);
+            console.log('------get btn clicked----', jsonMsg);
+            window.parent.postMessage(JSON.stringify(jsonMsg), '*');
+
+        });
+    </script>
+
+</body>
+
+</html>

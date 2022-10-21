@@ -188,7 +188,7 @@ function Cashmanagement() {
   var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
   var localCashData = localStorage.getItem("Cash_Management_Data") ? JSON.parse(localStorage.getItem("Cash_Management_Data")) : '';
-  
+
   return (
     <>
       <React.Fragment>
@@ -197,7 +197,7 @@ function Cashmanagement() {
           <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
           <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
 
-          <div class="mobile-cm-header">
+          <div className="mobile-cm-header">
             <button id="mobileNavToggle" onClick={() => toggleMobileNav()} className={isMobileNav === true ? "opened" : ""} >
               <img src="" alt="" />
             </button>

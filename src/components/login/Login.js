@@ -42,8 +42,51 @@ function Login() {
 
     //It will clear all local storage items
     const clearLocalStorages = () => {
-        localStorage.clear();
+        //localStorage.clear();
+        localStorage.removeItem("cloudPrinters");
+        localStorage.removeItem("DemoGuid");
+        localStorage.removeItem("VisiterUserID");
+        localStorage.removeItem("VisiterUserEmail");
+        localStorage.removeItem("shopstatus");
+        localStorage.removeItem('UserLocations');
+        localStorage.removeItem("userId");
+        localStorage.removeItem("LANG");
+        localStorage.removeItem('AdCusDetail')
+        localStorage.removeItem("clientDetail");
+        localStorage.removeItem("selectedRegister");
+        localStorage.removeItem("RegisterPermissions");
+        localStorage.removeItem('user');
+        localStorage.removeItem('demoUser');
+        localStorage.removeItem('productcount');
+        localStorage.removeItem("PRODUCTX_DATA");
+        localStorage.removeItem("GET_EXTENTION_FIELD");
+        localStorage.removeItem("GroupSaleRecord")
 
+
+        localStorage.removeItem("shopstatus");
+        localStorage.removeItem('UserLocations');
+        localStorage.removeItem("userId");
+        localStorage.removeItem("LANG");
+        localStorage.removeItem('AdCusDetail')
+        localStorage.removeItem("clientDetail");
+        localStorage.removeItem("selectedRegister");
+        localStorage.removeItem("RegisterPermissions");
+        localStorage.removeItem('user');
+        localStorage.removeItem('demoUser');
+        localStorage.removeItem("PRODUCTX_DATA");
+        localStorage.removeItem('CART');
+        localStorage.removeItem('firebaseStaffName');
+        localStorage.removeItem('firebaseSelectedRegisters');
+
+        localStorage.removeItem('pdf_format');
+        localStorage.removeItem("CustomerList");
+        localStorage.removeItem("FAV_LIST_ARRAY");
+        localStorage.removeItem("FAVROUTE_LIST_ARRAY");
+        localStorage.removeItem("categorieslist");
+        localStorage.removeItem("WarehouseId");
+        localStorage.removeItem('DEFAULT_TAX_STATUS');
+        localStorage.removeItem('APPLY_DEFAULT_TAX');
+        localStorage.removeItem("oliver_refund_order_payments");
     }
 
 

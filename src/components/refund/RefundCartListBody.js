@@ -6,22 +6,53 @@ import { RoundAmount } from "../common/TaxSetting";
 import STATUSES from "../../constants/apiStatus";
 import { useSelector } from 'react-redux';
 import { NumericFormat } from 'react-number-format';
+import { getInclusiveTaxType } from "../../settings";
 const RefundCartListBody = (props) => {
     const [taxRate, setTaxRate] = useState(0.00);
     const [listItem, setListItem] = useState([]);
+    const [getorder, setGetorder] = useState({});
     useEffect(() => {
         calculateCart();
+
     }, [listItem]);
-    const [resProduct] = useSelector((state) => [state.product])
     useEffect(() => {
-        if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
-            setListItem(resProduct.data);
+        if (localStorage.getItem("getorder")) {
+            var _getorder = JSON.parse(localStorage.getItem("getorder"));
+            setGetorder(_getorder)
+            setListItem(_getorder.line_items);
+
         }
-    }, [resProduct]);
+    }, []);
+    const updateQuantity = (id, type) => {
+        var _listItem = listItem;
+
+        var _item = _listItem && _listItem.find(a => a.line_item_id === id);
+        if (_item && typeof _item != "undefined") {
+            if (_item.hasOwnProperty("quantity_to_refund")) {
+                if (type === "inc") {
+                    if ((_item.quantity - Math.abs(_item.quantity_refunded)) > _item.quantity_to_refund)
+                        _item.quantity_to_refund = _item.quantity_to_refund + 1
+                }
+                else if (type === "dec") {
+                    if (_item.quantity_to_refund > 0) { _item.quantity_to_refund = _item.quantity_to_refund - 1; }
+                    else { console.log("it can note be less than one") }
+                }
+            }
+            else {
+                if (type === "inc") {
+                    _item["quantity_to_refund"] = 1
+                }
+            }
+        }
+        setListItem(_listItem);
+        calculateCart();
+        props.setRefresh(!props.refresh);
+    }
     const calculateCart = () => {
-        var _subtotal = 0.0;
-        var _total = 0.0;
-        var _taxAmount = 0.0;
+
+        var refund_subtotal = 0.0;
+        var refund_total = 0.0;
+        var refund_tax = 0.0;
         var _totalDiscountedAmount = 0.0;
         var _customFee = 0.0;
         var _exclTax = 0;
@@ -34,120 +65,57 @@ const RefundCartListBody = (props) => {
         var _cartDiscountAmount = 0.00;
         var _productDiscountAmount = 0.00;
         var _seprateDiscountAmount = 0.00;
-        var taxratelist = [];
-        if ((typeof localStorage.getItem('TAXT_RATE_LIST') !== 'undefined') && localStorage.getItem('TAXT_RATE_LIST') !== null) {
-            taxratelist = localStorage.getItem('TAXT_RATE_LIST') && JSON.parse(localStorage.getItem('TAXT_RATE_LIST'));
-        }
-        if (taxratelist && taxratelist !== null && taxratelist !== "undefined") {
-            taxratelist && taxratelist.length > 0 && taxratelist.map(tax => {
-                _taxId.push(tax.TaxId);
-                _taxRate.push(tax.TaxRate);
-                if (tax.check_is == true) {
-                    TaxIs.push({ [tax.TaxId]: parseFloat(tax.TaxRate) })
-                }
-            })
-            setTaxRate(_taxRate);
-        }
-        _taxRate = taxRate;
+
+        var total_refund_amount = getorder && getorder.total_amount;
+        var cash_rounding_amount = getorder && getorder.cash_rounding_amount;
+        var taxInclusiveName = getorder ? getInclusiveTaxType(getorder.meta_datas) : "";
         listItem && listItem.map((item, index) => {
-            if (item.Price) {
-                _subtotalPrice += item.Price
-                _subtotalDiscount += parseFloat(item.discount_amount == null || isNaN(item.discount_amount) == true ? 0 : item.discount_amount)
-                if (item.product_id) {//donothing  
-                    var isProdAddonsType = "";//CommonJs.checkForProductXAddons(item.product_id);// check for productX is Addons type products                  
-                    _exclTax += item.excl_tax ? item.excl_tax : 0;
-                    _inclTax += item.incl_tax ? item.incl_tax : 0;
-                    _cartDiscountAmount += item.cart_discount_amount;
-                    // _productDiscountAmount += item.discount_type == "Number" ? item.product_discount_amount:item.product_discount_amount; // quantity commment for addons
-                    _productDiscountAmount += item.discount_type == "Number" ? item.product_discount_amount : item.product_discount_amount * (isProdAddonsType && isProdAddonsType == true ? 1 : item.quantity);
+            if (item.hasOwnProperty("quantity_to_refund") && item.quantity_to_refund > 0) {
+                refund_subtotal += item.price * item.quantity_to_refund;
+                //if(item.isTaxable===true)
+                {
+                    refund_tax += (parseFloat(item.total_tax / item.quantity) * item.quantity_to_refund);
                 }
-                else {
-                    _customFee += item.Price;
-                    _exclTax += item.excl_tax ? item.excl_tax : 0;
-                    _inclTax += item.incl_tax ? item.incl_tax : 0;
+                if (taxInclusiveName && taxInclusiveName !== "") { //in inclusive tax need to add tax intosub total
+                    refund_subtotal += refund_tax;
+                }
+                refund_total = (parseFloat(refund_subtotal) + parseFloat(taxInclusiveName == "" ? refund_tax : 0)); //added tax for exclusive tax
+                if (refund_total + (cash_rounding_amount) == total_refund_amount) {
+                    refund_total = refund_total + (cash_rounding_amount)
                 }
             }
         })
-        _seprateDiscountAmount = _subtotalPrice - _subtotalDiscount;
-        _subtotal = _subtotalPrice - _productDiscountAmount;
-        _totalDiscountedAmount = _subtotalDiscount;
-        if (_taxRate) {
-            _taxAmount = parseFloat(_exclTax) + parseFloat(_inclTax);
-        }
-        _total = parseFloat(_seprateDiscountAmount) + parseFloat(_exclTax);
-        var _dis=_cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
+
+        var _dis = _cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
+        var refundlistItem = listItem && listItem.filter(a => a.hasOwnProperty("quantity_to_refund") && a.quantity_to_refund > 0);
+
         
-        props.setValues && props.setValues(_subtotal,RoundAmount(_taxAmount) ,_dis,_total);
+        props.setValues && props.setValues(refund_subtotal, RoundAmount(refund_tax), _dis, refund_total,refundlistItem);
     }
     return (
         <div className="body">
             <img src={EmptyCart} alt="" />
-            {listItem && listItem.length > 0 && listItem.map(a => {
-                var notes =  listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
-                var item_type = "";
-                if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) {
-                    item_type = "no_note";
-                }
-                else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
-                else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
-                if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')&& !a.hasOwnProperty('pid')) { item_type = "note"; }
-                switch (item_type) {
-                    case "product":
-                        return <div className="cart-item">
-                        <div className="main-row" >
-                            <p className="quantity">{a.quantity && a.quantity}</p>
-                            <p className="content-style">{a.Title && a.Title}</p>
-                            <p className="price">
-                                <NumericFormat className={a.product_discount_amount !=0?"strike-through":""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-                            </p>
-                            {a.product_discount_amount !=0 &&
-                            <p className="price" >
-                                <NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount):a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-                            </p>
-                            }
-                        </div>
-                        
-                        <div className="secondary-col">
-                        {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
-                        </div>
-                        <div className="increment-input">
-							<button>
-								<img src={Minus_Blue} alt="" />
-							</button>
-							<input type="text" readonly value={a.quantity && "0/"+a.quantity} />
-							<button>
-								<img src={Plus_Blue} alt="" />
-							</button>
-						</div>
+            {(props.refresh == false || props.refresh == true) && listItem && listItem.length > 0 && listItem.map(item => {
+                return <div className="cart-item" key={item.line_item_id}>
+                    <div className="main-row">
+                        <p className="quantity">{item.quantity - Math.abs(item.quantity_refunded)}</p>
+                        <p className="content-style">{item.name}</p>
+                        <p className="price">${parseFloat(item.price * (item.quantity - Math.abs(item.quantity_refunded))).toFixed(2)}</p>
                     </div>
-                    case "note":
-                        return <div className="cart-item">
-                        <div className="main-row aligned">
-                            <div className="tag cart-note">Note</div>
-                            <p className="content-style line-capped">
-                            {a.Title && a.Title}
-                            </p>
-                        </div>
+                    <div className="increment-input">
+                        <button onClick={() => updateQuantity(item.line_item_id, 'dec')}>
+                            <img src={Minus_Blue} alt="" />
+                        </button>
+                        <input type="text" readOnly value={(item.hasOwnProperty("quantity_to_refund") ? item.quantity_to_refund : "0") + "/" + (item.quantity - Math.abs(item.quantity_refunded))} />
+                        {/* <input type="text" readOnly defaultValue={item.quantity_to_refund} /> */}
+                        <button onClick={() => updateQuantity(item.line_item_id, 'inc')}>
+                            <img src={Plus_Blue} alt="" />
+                        </button>
                     </div>
-                    case "custom_fee":
-                        return <div className="cart-item">
-                            <div className="main-row aligned">
-                                <div className="tag custom-fee">Custom Fee</div>
-                                <div className="content-style">{a.Title && a.Title}</div>
-                                <div className="price">{a.Price && a.Price}</div>
-                            </div>
-                        </div>
-                    case "group":
-                        return   <div className="cart-item">
-                        <div className="main-row aligned">
-                            <div className="tag group">Group</div>
-                            <p className="content-style">{a.Title && a.Title}</p>
-                        </div>
-                    </div>
-                    default:
-                        return null;
-                }
+                </div>
             })}
+
+
         </div>)
 }
 export default RefundCartListBody
