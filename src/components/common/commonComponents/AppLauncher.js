@@ -10,7 +10,7 @@ import NoApps_Message from '../../../assets/images/svg/NoApps-Message.svg';
 // import Fortis_Icon from '../../../assets/images/Temp/Fortis-Icon.png';
 // import QuoteApp_Icon from '../../../assets/images/Temp/QuoteApp_Icon.png';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
-import { CheckAppDisplayInView } from "../commonFunctions/AppDisplayFunction";
+import { CheckAppDisplayInView } from "../commonFunctions/appDisplayFunction";
 const AppLauncher = (props) => {
 
 

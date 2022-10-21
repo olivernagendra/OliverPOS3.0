@@ -26,7 +26,6 @@ import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
-import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 const CustomerView = () => {
 
   var orderCount = ''
