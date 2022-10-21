@@ -53,43 +53,20 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false, navig
     // console.log("clientEvent", jsonMsg)
     //this.setState({ showNewAppExtension:true})
     switch (clientEvent) {
+      // common apps----------------------------------
       case ("appReady").toLowerCase():  //working
         appReady(whereToview, isbackgroudApp, isbackgroudApp) //done
         break;
-      case ("DataToReceipt").toLowerCase():
-        appResponse = DataToReceipt(jsonMsg, whereToview, isbackgroudApp);
+      case ("ClientInfo").toLowerCase(): //done
+        appResponse = sendClientsDetails(jsonMsg)
         break;
-      case ("Receipt").toLowerCase():
-        PrintReceiptWithAppData(jsonMsg, isbackgroudApp)
+      case ("CloseExtension").toLowerCase():
+        CloseExtension();
         break;
-      case ("CartValue").toLowerCase():
-        handleCartValue(jsonMsg, whereToview, isbackgroudApp)
-        break;
-      case ("Cart").toLowerCase():
-        handleCart(jsonMsg, whereToview, isbackgroudApp)
-        break;
+      //-------------------------------------------------
 
-      case ("Customers").toLowerCase():         //Handle Customer events
-        HandleCustomer(jsonMsg, isbackgroudApp);
-        break;
-      case ("CustomerDetails").toLowerCase():
-        sendCustomerDetail(jsonMsg, isbackgroudApp)
-        break;
-      case ("CustomerInSale").toLowerCase():
-        retrieveCustomerInSale(jsonMsg, isbackgroudApp)
-        break;
-      case ("CustomerToSale").toLowerCase():
-        CustomerToSale(jsonMsg, isbackgroudApp)
-        break;
-      // case ("productDetail").toLowerCase():
-      //   productDetail(jsonMsg, isbackgroudApp)
-      //   break
-      case ("Payment").toLowerCase():
-        appResponse = payfromApp(jsonMsg, isbackgroudApp) //done
-        break
-      case ("rawProductData").toLowerCase():
-        RawProductData(jsonMsg, isbackgroudApp)
-        break
+
+      // for Home and checkot ------------------    
       case ("cartDiscount").toLowerCase():
         appResponse = addCartDiscount(jsonMsg, isbackgroudApp, whereToview)
         break
@@ -102,6 +79,57 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false, navig
       case ("Notes").toLowerCase():
         appResponse = Notes(jsonMsg, isbackgroudApp, whereToview)
         break
+      case ("CustomFee").toLowerCase():
+        appResponse = doCustomFee(jsonMsg)
+        break
+      //----------------------------------
+
+      // For Checkout----------------------------------
+      case ("CartValue").toLowerCase():
+        handleCartValue(jsonMsg, whereToview, isbackgroudApp)
+        break;
+      case ("Cart").toLowerCase():
+        handleCart(jsonMsg, whereToview, isbackgroudApp)
+        break;
+
+      case ("Payment").toLowerCase():
+        appResponse = payfromApp(jsonMsg, isbackgroudApp) //done
+        break
+      case ("rawProductData").toLowerCase():
+        RawProductData(jsonMsg, isbackgroudApp)
+        break
+      // //App 2.0--------------------
+      case ("Transaction").toLowerCase(): //same as payment
+        appResponse = transactionApp(jsonMsg, isbackgroudApp)
+        break;
+      case ("TransactionStatus").toLowerCase(): //same as payment
+        appResponse = transactionStatus(jsonMsg, whereToview, isbackgroudApp)
+        break;
+      case ("discountCoupon").toLowerCase():
+        appResponse = addDiscountCoupon(jsonMsg, isbackgroudApp, whereToview)
+        break
+      case ("ParkSale").toLowerCase():
+        appResponse = DoParkSale(jsonMsg, navigate)
+        break
+      // ------------------------------------------
+      //customer apps------------------------------
+      case ("Customers").toLowerCase(): //Handle Customer events
+        HandleCustomer(jsonMsg, isbackgroudApp);
+        break;
+      case ("CustomerDetails").toLowerCase():
+        sendCustomerDetail(jsonMsg, isbackgroudApp)
+        break;
+      case ("CustomerInSale").toLowerCase():
+        retrieveCustomerInSale(jsonMsg, isbackgroudApp)
+        break;
+      case ("CustomerToSale").toLowerCase():
+        CustomerToSale(jsonMsg, isbackgroudApp)
+        break;
+
+      //----end customer apps--------------------------
+
+
+      ///---Producut------------------------
       case ("Environment").toLowerCase():
         Environment(jsonMsg, isbackgroudApp, whereToview)
         break
@@ -114,34 +142,31 @@ export const handleAppEvent = (value, whereToview, isbackgroudApp = false, navig
       case ("sendProductQuantity").toLowerCase():
         appResponse = sendProductQuantity(jsonMsg, isbackgroudApp, whereToview)
         break
-      // //App 2.0--------------------
-      case ("Transaction").toLowerCase(): //same as payment
-        appResponse = transactionApp(jsonMsg, isbackgroudApp)
+      // case ("productDetail").toLowerCase():
+      //   productDetail(jsonMsg, isbackgroudApp)
+      //   break
+
+      //------------------------------------------------
+
+      // Transaction view----------------------------------------
+      case ("DataToReceipt").toLowerCase():
+        appResponse = DataToReceipt(jsonMsg, whereToview, isbackgroudApp);
         break;
-      case ("TransactionStatus").toLowerCase(): //same as payment
-        appResponse = transactionStatus(jsonMsg, whereToview, isbackgroudApp)
+      case ("Receipt").toLowerCase():
+        PrintReceiptWithAppData(jsonMsg, isbackgroudApp)
         break;
-      case ("CloseExtension").toLowerCase():
-        CloseExtension();
-        break;
-      case ("ClientInfo").toLowerCase():
-        appResponse = sendClientsDetails(jsonMsg)
-        break
+
       case ("OrderStatus").toLowerCase():
         appResponse = getOrderStatus(jsonMsg, whereToview)
-        break
-      case ("ParkSale").toLowerCase():
-        appResponse = DoParkSale(jsonMsg, navigate)
-        break
-      case ("CustomFee").toLowerCase():
-        appResponse = doCustomFee(jsonMsg)
-        break
+        break;
+      //-------------------------------------------------------
+
+      // sellComplete---------------------------------------
       case ("ReceiptData").toLowerCase():
         appResponse = getReceiptData(jsonMsg, whereToview)
-        break
-      case ("discountCoupon").toLowerCase():
-        appResponse = addDiscountCoupon(jsonMsg, isbackgroudApp, whereToview)
-        break
+        break;
+      //---------------------------------------------------
+
       default: // extensionFinished
         var clientJSON = {
           command: jsonMsg.command,
