@@ -86,6 +86,7 @@ function Login() {
         localStorage.removeItem("WarehouseId");
         localStorage.removeItem('DEFAULT_TAX_STATUS');
         localStorage.removeItem('APPLY_DEFAULT_TAX');
+        localStorage.removeItem("oliver_refund_order_payments");
     }
 
 

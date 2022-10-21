@@ -157,7 +157,7 @@ const LeftNavBar = (props) => {
         });
     }
     //----------------------------**************----------------------------------------
-    console.log("appsList", appsList)
+    //console.log("appsList", appsList)
     var displayAppCount = 0;
     return (
         <React.Fragment>
