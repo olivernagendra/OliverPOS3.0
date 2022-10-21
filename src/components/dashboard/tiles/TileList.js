@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import Rounded_Square_Plus_Icon_NewGrey from '../../../assets/images/svg/Rounded-Square-Plus-Icon-Rounded_Square_Plus_Icon_NewGrey.svg';
+import Rounded_Square_Plus_Icon_NewGrey from '../../../assets/images/svg/Rounded-Square-Plus-Icon-NewGrey.svg';
 import STATUSES from "../../../constants/apiStatus";
 import { AddItemType } from "../../common/EventFunctions";
 import { useIndexedDB } from 'react-indexed-db';
