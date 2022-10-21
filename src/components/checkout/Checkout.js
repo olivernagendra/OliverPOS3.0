@@ -33,7 +33,7 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
 
 import ParkSale from "./ParkSale";
-import { CheckAppDisplayInView } from "../common/commonFunctions/appDisplayFunction";
+import { CheckAppDisplayInView } from "../common/commonFunctions/AppDisplayFunction";
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
@@ -115,20 +115,17 @@ const Checkout = (props) => {
             setLoading(false);
             dispatch(paymentAmount(null));
             dispatch(changeReturnAmount(null));
-            if(isLayAwayOrPark==="park_sale" || isLayAwayOrPark==="lay_away")
-            {
+            if (isLayAwayOrPark === "park_sale" || isLayAwayOrPark === "lay_away") {
                 gotoHome();
             }
-            else
-            {
+            else {
                 navigate('/salecomplete');
             }
         }
-        else if (resSave && resSave.status == STATUSES.ERROR && resSave.is_success===false && loading === true)
-        {
-            console.log("error message---"+resSave.data);
+        else if (resSave && resSave.status == STATUSES.ERROR && resSave.is_success === false && loading === true) {
+            console.log("error message---" + resSave.data);
             setLoading(false);
-            var data = { title: "", msg:resSave.error , is_success: true }
+            var data = { title: "", msg: resSave.error, is_success: true }
             dispatch(popupMessage(data));
         }
     }, [resSave]);
@@ -161,15 +158,14 @@ const Checkout = (props) => {
     // }
     //setPaidAmount(null);
     useEffect(() => {
-        if(loading===false)
-        {getPaymentDetails();}
-    },[paymentsArr]);
+        if (loading === false) { getPaymentDetails(); }
+    }, [paymentsArr]);
     useEffect(() => {
         var _checklist = JSON.parse(localStorage.getItem("CHECKLIST"));
         if (_checklist && _checklist.customerDetail && _checklist.customerDetail.store_credit) {
             setStoreCredit(_checklist.customerDetail.store_credit)
         }
-        
+
     }, [])
 
     const dispatch = useDispatch();
@@ -285,8 +281,34 @@ const Checkout = (props) => {
         //setPayment_Type("cash");
     }
     const pay_by_store_credit = () => {
-        setPartialAmount(storeCredit);
-        dispatch(paymentAmount({ "type": "store-credit", "amount": storeCredit }));
+        //setPartialAmount(storeCredit);
+        setPaymentTypeItem({
+            Code: paymentsType.typeName.storeCredit, ColorCode: "#4b4b4b",
+            EODReconcilliation: false,
+            HasTerminal: false,
+            Id: 0,
+            Name: LocalizedLanguage.storeCreditTitle,
+            Support: "",
+            TerminalCount: 0,
+            TerminalSerialNo: []
+        });
+        if (storeCredit < getRemainingPrice() && storeCredit > 0) {
+            //setPartialPayment(storeCredit);
+            setPaidAmount(storeCredit);
+            dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount": storeCredit }));
+            setStoreCredit(0);
+        }
+        else if (storeCredit > 0) {
+            setPaidAmount(getRemainingPrice());
+            dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount": getRemainingPrice() }));
+            setStoreCredit(storeCredit - getRemainingPrice())
+        }
+        else {
+            console.log("--no credit score--");
+        }
+
+
+
     }
     // const checkStoreCreditBalance=()=> {
     //     var paid_amount_by_store_credit = 0;
@@ -392,7 +414,7 @@ const Checkout = (props) => {
         else if (appResponse == "do_app_orderPark") {
             setPayment('park_sale', 'byExtApp');
             setIsLayAwayOrPark('park_sale');
-            setLoading(true);   
+            setLoading(true);
         }
         else if (appResponse == 'app_do_payment') {
             handleAppPayment(data)
@@ -495,7 +517,7 @@ const Checkout = (props) => {
     function handleAppPayment(RequesteData) {
         try {
             var data = RequesteData && RequesteData.data;
-           // const { checkList } = this.state
+            // const { checkList } = this.state
             if (data && data.payment_type && data.payment_type.data) {
                 var type = data && data.payment_type && data.payment_type.name ? data.payment_type.name : ''
                 checkList['transection_id'] = data && data.payment_type && data.payment_type.data && data.payment_type.data.transaction_id ? data.payment_type.data.transaction_id : ''
@@ -518,7 +540,7 @@ const Checkout = (props) => {
                 setEmvData(allEmvData)
                 // set the current trnasaction status, Used for APP Command "TransactionStatus"
                 localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": type, "status": "completed" }))
-                
+
                 setTimeout(() => {
                     //orderPayments.setPartialPayment(type, _amount)
                     setPartialPayment(type, _amount)
@@ -600,9 +622,9 @@ const Checkout = (props) => {
         //this.setState({ paymentType: paymentType })
         if (parseFloat(payment_amount) > 0) {
             if (paymentType !== true && paymentType !== paymentsType.typeName.cashPayment && TerminalCount == 0 && paymentType !== paymentsType.typeName.storeCredit && paymentType !== 'manual_global_payment' && Support !== paymentsType.typeName.Support && paymentType !== 'stripe_terminal' && Support !== paymentsType.typeName.UPISupport) {
-               // if (closingTab == false) {
-                    payment_amount = partialAmount != null ? partialAmount :parseFloat(RoundAmount(_getRemainingPrice));
-                    setPartialPayment(paymentType, payment_amount)
+                // if (closingTab == false) {
+                payment_amount = partialAmount != null ? partialAmount : parseFloat(RoundAmount(_getRemainingPrice));
+                setPartialPayment(paymentType, payment_amount)
                 // } else {
                 //     setPartialPayment(paymentType, payment_amount)
                 // }
@@ -2034,10 +2056,13 @@ const Checkout = (props) => {
         else if (item.Code == paymentsType.typeName.stripePayment) {
             toggleStripeTerminalPayment();
         }
-
+        else if (item.Code == paymentsType.typeName.storeCredit) {
+            setPartialPayment(item.Code, paidAmount)
+        }
         else {
-            setPartialAmount(partialAmount);
-            pay_amount(item.Code); }
+            setPartialAmount(item.Code, partialAmount);
+            pay_amount(item.Code);
+        }
     }
 
     const placeParkLayAwayOrder = (status) => {

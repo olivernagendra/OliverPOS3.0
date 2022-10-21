@@ -784,7 +784,7 @@ const CartList = (props) => {
                         </div>
                         {discountType !="" ?
                             <div className="row">
-                                <p>Cart Discount - {discountType}</p>
+                                <p>Cart Discount ({discountType})</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
                                 <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                             </div> : null}

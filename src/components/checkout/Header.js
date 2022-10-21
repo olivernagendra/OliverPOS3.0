@@ -65,9 +65,10 @@ const Header = (props) => {
         // }
     }
     const goBack = () => {
-        navigate('/home');
+        if (props.title) {navigate('/transactions'); }
+        else { navigate('/home'); }
     }
-    const checkTempOrderSyncStatus=()=> {
+    const checkTempOrderSyncStatus = () => {
         var udid = get_UDid;
         const { Email } = ActiveUser.key;
         setTimeout(function () {

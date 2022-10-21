@@ -100,7 +100,7 @@ export const ActivityFooter = (props) => {
 
 
     const onClick1 = () => {
-
+        onClick2("statuscompleted",activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id:0)
     }
 
 
@@ -120,8 +120,10 @@ export const ActivityFooter = (props) => {
                     })
                 setTimeout(function () {
                     localStorage.setItem("getorder", JSON.stringify(single_Order_list))
-                    window.location = '/refund'
-                }, 1000)
+                    // window.location = '/refund'
+                    localStorage.removeItem("oliver_refund_order_payments");
+                    navigate('/refund');
+                }, 100)
             }
         }
         if (type == 'statuspending' && id) {
@@ -361,7 +363,8 @@ export const ActivityFooter = (props) => {
         }
     }
 
-    const getCustomFeeDetails = (_item) => {
+    const getCustomFeeDetails = (_itemPara) => {
+        var _item={..._itemPara};
         var getorderlist = activityOrderDetails && activityOrderDetails.meta_datas && activityOrderDetails.meta_datas !== null ? activityOrderDetails.meta_datas.find(data => data.ItemName == '_order_oliverpos_product_discount_amount') : null;
         if (getorderlist !== null) {
             getorderlist = getorderlist && getorderlist.ItemValue && JSON.parse(getorderlist.ItemValue);
@@ -395,6 +398,7 @@ export const ActivityFooter = (props) => {
                         _item['subtotal_taxes'] = fee.subtotal_taxes ? fee.subtotal_taxes : [];
                         _item['total_tax'] = fee.total_tax ? fee.total_tax : 0;
                         _item['total_taxes'] = fee.total_taxes ? fee.total_taxes : [];
+                        
                     }
                 });
             })
@@ -409,7 +413,7 @@ export const ActivityFooter = (props) => {
     return (
         <div className="footer">
              <button id="refundButton" onClick={()=>
-                activityOrderDetails.order_status == 'completed' ? onClick1
+                activityOrderDetails.order_status == 'completed' ? onClick1()
                     : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold" || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing") ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '')
                         : activityOrderDetails.order_status == "refunded" ? RefundPOP
                             : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP

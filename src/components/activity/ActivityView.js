@@ -31,6 +31,7 @@ import { ActivityFooter } from "./ActivityFooter";
 
 const ActivityView = () => {
 
+
     const [AllActivityList, setAllActivityList] = useState([])
     const [updateActivityId, setupdateActivityId] = useState('')
     const [SelectedTypes, setSelectedTypes] = useState('')
@@ -111,7 +112,13 @@ const ActivityView = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-            reload()
+            var transactionredirect = sessionStorage.getItem("transactionredirect")?sessionStorage.getItem("transactionredirect"):'';
+            setEmailNamePhone(transactionredirect)
+            if(transactionredirect !== ''){
+                applyServerFilter()
+            }else{
+                reload()
+            }            
         }
         return () => {
             useCancelled = true;
@@ -241,9 +248,14 @@ const ActivityView = () => {
     let useCancelled1 = false;
     useEffect(() => {
         var UID = get_UDid('UDID');
-        var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
+        var transactionsRedirect = sessionStorage.getItem("transactionredirect")? sessionStorage.getItem("transredirection"):'';
+        // if(transactionsRedirect &&transactionsRedirect.length > 0) {
+        //     var customer_to_activity_id = sessionStorage.getItem("transredirection") ?sessionStorage.getItem("transredirection"):'';
+        //   }
+            var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
+          
+          console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
-        // console.log("customer_to_activity_id",customer_to_activity_id)
         if (useCancelled1 == false) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
@@ -269,13 +281,12 @@ const ActivityView = () => {
                 }
             });
         });
-        
+
         let monthTranslate = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        
+
         function initCalendarDate(date, dateSelector) {
-            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button class="raise-level">${
-                monthTranslate[date.getMonth()]
-            } ${date.getFullYear()}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="day-row"><div class="day">Su</div><div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div></div>`;
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button class="raise-level">${monthTranslate[date.getMonth()]
+                } ${date.getFullYear()}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="day-row"><div class="day">Su</div><div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div></div>`;
             dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
                 let monthYear = e.currentTarget.nextElementSibling.innerHTML.split(" ");
                 let monthIndex = monthTranslate.indexOf(monthYear[0]) - 1;
@@ -333,9 +344,8 @@ const ActivityView = () => {
                         let currentSelector = e.currentTarget.parentNode.parentNode;
                         let monthYear = currentSelector.firstElementChild.children[1].innerHTML.split(" ");
                         let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
-                        currentSelector.parentNode.querySelector("input").value = `${
-                            e.currentTarget.innerHTML.length == 2 ? e.currentTarget.innerHTML : "0" + e.currentTarget.innerHTML
-                        }/${monthIndex.toString().length == 2 ? monthIndex : "0" + monthIndex}/${monthYear[1]}`;
+                        currentSelector.parentNode.querySelector("input").value = `${e.currentTarget.innerHTML.length == 2 ? e.currentTarget.innerHTML : "0" + e.currentTarget.innerHTML
+                            }/${monthIndex.toString().length == 2 ? monthIndex : "0" + monthIndex}/${monthYear[1]}`;
                         currentSelector.classList.remove("open");
                     });
                     dateRow.appendChild(cell);
@@ -343,7 +353,7 @@ const ActivityView = () => {
                 dateSelector.appendChild(dateRow);
             }
         }
-        
+
         function initCalendarMonths(year, dateSelector) {
             dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button>${year}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="month-row"><button class="cell">January</button><button class="cell">February</button><button class="cell">March</button></div><div class="month-row"><button class="cell">April</button><button class="cell">May</button><button class="cell">June</button></div><div class="month-row"><button class="cell">July</button><button class="cell">August</button><button class="cell">September</button></div><div class="month-row"><button class="cell">October</button><button class="cell">Novemeber</button><button class="cell">December</button></div>`;
             dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
@@ -365,21 +375,15 @@ const ActivityView = () => {
                 });
             });
         }
-        
+
         function initCalendarYears(startYear, dateSelector) {
-            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><div>${startYear} - ${
-                startYear + 11
-            }</div><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="year-row"><button class="cell">${startYear}</button><button class="cell">${
-                startYear + 1
-            }</button><button class="cell">${startYear + 2}</button></div><div class="year-row"><button class="cell">${
-                startYear + 3
-            }</button><button class="cell">${startYear + 4}</button><button class="cell">${
-                startYear + 5
-            }</button></div><div class="year-row"><button class="cell">${startYear + 6}</button><button class="cell">${
-                startYear + 7
-            }</button><button class="cell">${startYear + 8}</button></div><div class="year-row"><button class="cell">${
-                startYear + 9
-            }</button><button class="cell">${startYear + 10}</button><button class="cell">${startYear + 11}</button></div>`;
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><div>${startYear} - ${startYear + 11
+                }</div><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="year-row"><button class="cell">${startYear}</button><button class="cell">${startYear + 1
+                }</button><button class="cell">${startYear + 2}</button></div><div class="year-row"><button class="cell">${startYear + 3
+                }</button><button class="cell">${startYear + 4}</button><button class="cell">${startYear + 5
+                }</button></div><div class="year-row"><button class="cell">${startYear + 6}</button><button class="cell">${startYear + 7
+                }</button><button class="cell">${startYear + 8}</button></div><div class="year-row"><button class="cell">${startYear + 9
+                }</button><button class="cell">${startYear + 10}</button><button class="cell">${startYear + 11}</button></div>`;
             dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
                 initCalendarYears(parseInt(e.currentTarget.nextElementSibling.innerHTML.split(" - ")[0]) - 12, e.currentTarget.parentNode.parentNode);
             });
@@ -392,7 +396,7 @@ const ActivityView = () => {
                 });
             });
         }
-        
+
     }, []);
 
     const sortByList = (filterType, FilterValue) => {
@@ -425,6 +429,7 @@ const ActivityView = () => {
 
     // Filter Submit Btn
     const applyServerFilter = () => {
+        var transactionredirect = sessionStorage.getItem("transactionredirect")?sessionStorage.getItem("transactionredirect"):'';
         var UID = get_UDid('UDID');
         var pagesize = Config.key.ACTIVITY_PAGE_SIZE
         // var fromdate = document.getElementById("txtfromdate");
@@ -463,17 +468,14 @@ const ActivityView = () => {
             // "EndDay": e_dd,
             // "EndMonth": e_mm,
             // "EndYear": e_yy,
-            "searchVal": emailnamephone,
+            "searchVal": emailnamephone?emailnamephone:transactionredirect
             //"groupSlug": this.state.filterByGroupList,
 
         };
+       // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
-        //Display List
-        // var dvFilter = document.getElementById("activityFilter");
-        // if ((dvFilter || (txtSearch && txtSearch !== '')) && isMobileOnly !== true) {
-        //     dvFilter.style.display = "none"
-        //     this.setState({ filterButtonText: LocalizedLanguage.cancel });
-        // }
+        sessionStorage.removeItem('transactionredirect');
+        
     }
 
 
@@ -485,6 +487,8 @@ const ActivityView = () => {
         setfilterByUser("")
         setFilterByStatus("")
         setFilterByPlatform("")
+        setEmailNamePhone("")
+        setSelectuserFilter('')
     }
 
     // console.log("filterByPlatform",filterByPlatform)
@@ -496,6 +500,11 @@ const ActivityView = () => {
     const handleUserChange = (selectedOption) => {
         // const { name, value } = e.target;
         setSelectedOption(selectedOption)
+
+    }
+
+    const hundleChange=(event)=>{
+        setEmailNamePhone(event.target.value)
 
     }
 
@@ -545,11 +554,11 @@ const ActivityView = () => {
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
                     <label for="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" onChange={e => setEmailNamePhone(e.target.value)} />
+                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChange} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label for="custInfo">Customer Info</label>
-                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={e => setEmailNamePhone(e.target.value)} />
+                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange}  value={emailnamephone} />
                     <label for="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
                         <img src={DropdownArrow} alt="" />
@@ -567,7 +576,7 @@ const ActivityView = () => {
                     </div>
                     <div className="input-row">
                         <div className="input-col">
-                            <label for="dateFrom">Date From</label>
+                            <label htmlFor="dateFrom">Date From</label>
                             <div className="date-selector-wrapper left ">
                                 <input type="text" id="dateFrom" placeholder="Date" />
                                 <button className="open-date-selector open">
@@ -577,7 +586,7 @@ const ActivityView = () => {
                             </div>
                         </div>
                         <div className="input-col">
-                            <label for="dateTo">Date To</label>
+                            <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
                                 <input type="text" id="dateTo" placeholder="Date" />
                                 <button className="open-date-selector">
@@ -587,7 +596,7 @@ const ActivityView = () => {
                             </div>
                         </div>
                     </div>
-                    <label for="salesPlatform">Sales Platform</label>
+                    <label htmlFor="salesPlatform">Sales Platform</label>
                     <div className={salepersonWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleSaleperson} >
                         <img src={DropdownArrow} alt="" />
                         <input type="text" id="salesPlatform" placeholder={filterByPlatform ? filterByPlatform : "All Platforms"} />
@@ -605,7 +614,7 @@ const ActivityView = () => {
                         </div>
                     </div>
 
-                    <label for="employee">Employee</label>
+                    <label htmlFor="employee">Employee</label>
                     <div className={isEmployeeWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleEmployee}>
                         <img src={DropdownArrow} alt="" />
                         <input type="text" id="employee" placeholder={selectuserfilter ? selectuserfilter : "Select Employee"} />
@@ -625,11 +634,11 @@ const ActivityView = () => {
 
                     <div className="input-row">
                         <div className="input-col">
-                            <label for="priceFrom">Price From</label>
+                            <label htmlFor="priceFrom">Price From</label>
                             <input type="text" id="priceFrom" placeholder="Price" onChange={e => setPriceFrom(e.target.value)} />
                         </div>
                         <div className="input-col">
-                            <label for="priceTo">Price To</label>
+                            <label htmlFor="priceTo">Price To</label>
                             <input type="text" id="priceTo" placeholder="Price" onChange={e => setPriceTo(e.target.value)} />
                         </div>
                     </div>
