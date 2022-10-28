@@ -82,7 +82,7 @@ const StripePayment = (props) => {
             //  cancelManually: false })
             setTimeout(() => {
                 // boxHeight();
-                if (props.type == 'refund') {
+                if (props.type && props.type=== 'refund') {
                     // props.hideCashTab(false)
                     // setState({ connectReedersErr: ``, popupClass: '', displayPopupStyle: 'none', activeDisplayStatus: false, loading: false, msgColor: 'green', processingStart: false })
                     props.pay_amount(props.code)

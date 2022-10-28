@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import ClearCart from '../../assets/images/svg/ClearCart-Icon.svg'
 import OliverIconBaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg'
-import DropdownArrow from '../../assets/images/svg/DropdownArrow.svg'
+// import DropdownArrow from '../../assets/images/svg/DropdownArrow.svg'
+import down_angled_bracket from '../../assets/images/svg/down-angled-bracket.svg';
 import calendar from '../../assets/images/svg/calendar.svg'
 //import Select from 'react-select'
 import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
@@ -561,7 +562,7 @@ const ActivityView = () => {
                     <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange}  value={emailnamephone} />
                     <label for="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="orderStatus" placeholder={filterByStatus == '' ? "All" : filterByStatus !== "" ? filterByStatus : "Select Status"} />
                         <div className="option-list">
                             {_orderstatus && _orderstatus.length > 0 && _orderstatus.map((item, index) => {
@@ -598,7 +599,7 @@ const ActivityView = () => {
                     </div>
                     <label htmlFor="salesPlatform">Sales Platform</label>
                     <div className={salepersonWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleSaleperson} >
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="salesPlatform" placeholder={filterByPlatform ? filterByPlatform : "All Platforms"} />
                         <div className="option-list">
                             {_platform && _platform.length > 0 && _platform.map((item, index) => {
@@ -616,7 +617,7 @@ const ActivityView = () => {
 
                     <label htmlFor="employee">Employee</label>
                     <div className={isEmployeeWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleEmployee}>
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="employee" placeholder={selectuserfilter ? selectuserfilter : "Select Employee"} />
                         <div className="option-list">
                             {_Useroptions && _Useroptions.length > 0 && _Useroptions.map((item, index) => {

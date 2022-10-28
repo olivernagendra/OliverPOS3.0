@@ -33,6 +33,12 @@ const UPIPayments = (props) => {
             props.toggleUPIPayment && props.toggleUPIPayment();
         }
     }
+    const toggleUPIPayment_byCancel = () => {
+        clearInterval(checkStatus_Interval);
+        clearInterval(countdown_Interval);
+        props.toggleUPIPayment();
+
+    }
     // constructor(props) {
     //     super(props);
     //     this.state = {
@@ -95,10 +101,14 @@ const UPIPayments = (props) => {
         setactiveDisplayStatus(false);
         // this.setState({ activeDisplayStatus: false })
     }
-    useEffect(()=>
-    {
-        make_payconiq_payment_request()
-    },[])
+    useEffect(() => {
+        if (props.type && props.type === "refund") {
+            props.pay_amount(props.code)
+        }
+        else {
+            make_payconiq_payment_request()
+        }
+    }, [])
     const [respcheck_payconiq_pay_status] = useSelector((state) => [state.check_payconiq_pay_status])
     useEffect(() => {
         if (respcheck_payconiq_pay_status && respcheck_payconiq_pay_status.status == STATUSES.IDLE && respcheck_payconiq_pay_status.is_success) {
@@ -307,12 +317,11 @@ const UPIPayments = (props) => {
         if (checkList && checkList.totalPrice && parseFloat(checkList.totalPrice) >= paid_amount) {
             payconiqPrice = (parseFloat(checkList.totalPrice) - parseFloat(paid_amount));
         }
-        if(props.partialAmount && props.partialAmount !=0)
-        {
-            payconiqPrice=props.partialAmount;
+        if (props.partialAmount && props.partialAmount != 0) {
+            payconiqPrice = props.partialAmount;
         }
         // var payconiq_pay_amount = ActiveUser.key.isSelfcheckout == true ? payconiqPrice : 0;
-        var payconiq_pay_amount = payconiqPrice ;
+        var payconiq_pay_amount = payconiqPrice;
         console.log("chargeAmount", parseFloat(payconiq_pay_amount))
         // this.setState({ chargeAmount: parseFloat(payconiq_pay_amount) })
         if (uniqueID) {
@@ -325,7 +334,7 @@ const UPIPayments = (props) => {
             }
             dispatch(make_payconiq_payment(_requestData))
             check_payconiq_payment_status()
-            var _checkStatusInterval = setInterval(() => {
+            const _checkStatusInterval = setInterval(() => {
                 check_payconiq_payment_status()
             }, 5000);
             setCheckStatus_Interval(_checkStatusInterval);
@@ -392,12 +401,12 @@ const UPIPayments = (props) => {
             //this.setState({ sessionMsg: '' })
             clearInterval(countdown_Interval);
         }
-       var _countdownInterval = setInterval(() => {
+        const _countdownInterval = setInterval(() => {
             counter = counter + 1000;
             var diff = (endDate - startDate) - counter
             var minutes = Math.floor(diff / 60000);
             var seconds = ((diff % 60000) / 1000).toFixed(0);
-             if (seconds < 0) {
+            if (seconds < 0) {
                 setTmerValue('');
                 // $('#counterId').text('')
                 // $('#counterParentId').text('')
@@ -428,7 +437,7 @@ const UPIPayments = (props) => {
 
                 <div className="subwindow-header">
                     <p>{Name}</p>
-                    <button className="close-subwindow" onClick={props.toggleUPIPayment}>
+                    <button className="close-subwindow" onClick={() => toggleUPIPayment_byCancel()}>
                         <img src={IconDarkBlue} alt="" />
                     </button>
                 </div>
