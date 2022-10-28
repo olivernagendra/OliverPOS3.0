@@ -171,7 +171,7 @@ function LeftNavBar(props) {
     if (mostUsedApp && mostUsedApp.length > 0) {
         mostUsedApp.map(function (itemUsed, index) {
             // if (index < 3) {
-            var app = allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0 && CheckAppDisplayInView(item.viewManagement) == true)
+            var app = allAppList && allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0 && CheckAppDisplayInView(item.viewManagement) == true)
             if (app && appDisplayCount < 3)//only 3 item need to display 
             {
                 appsList.push(app);

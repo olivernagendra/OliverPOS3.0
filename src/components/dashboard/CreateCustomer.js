@@ -229,7 +229,7 @@ const CreateCustomer = (props) => {
                         <section id="contactInfoSection">
                             <p>Contact Information</p>
                             <div className="input-row">
-                                <div className="input-col">
+                                <div className={errors.email===""?"input-col":"input-col error"}>
                                     <label htmlFor="email">Email*</label>
                                     <input type="email" id="email" placeholder="Enter Email" name='email' value={props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} />
                                     <p>{errors.email}</p>

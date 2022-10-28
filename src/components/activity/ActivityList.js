@@ -43,58 +43,63 @@ const ActivityList = (props) => {
     }
 
 
-  
-     
+
+
 
     return (
-            <div className="body">
-                {((!ordersDate) || ordersDate.length == 0) ?
+        <div className="body">
+            {((!ordersDate) || ordersDate.length == 0) ?
                 <LoadingSmallModal />
-                    :
-                    orders && ordersDate && ordersDate.map((getDate, index) => {
-                        return (
-                            <>
-                                <div className="filter-name" key={"orderDatedv"+index}>
-                                    <p key={"date" + index}> {current_date == getDate ? 'Today' : getDate}</p>
-                                </div>
-                                {
-                                    getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
-                                        var time = FormateDateAndTime.formatDateWithTime(order.date_time, order.time_zone);
-                                        return (
-                                            <button className="transaction-card no-transform selected" onClick={() => props.click(order, order.order_id)}>
-                                                <div className="col">
-                                                    <p className="style1">Order# {order.order_id}</p>
-                                                    <p className="style2">{order.CustFullName}</p>
-                                                    <div className="row">
+                :
+                orders && ordersDate && ordersDate.map((getDate, index) => {
+                    return (
+                        <>
+                             {/* Only shows if only element in parent */}
+                            <div class="no-results">
+                                <p class="style1">No results found.</p>
+                                <p class="style2">Sorry, you search did not <br/> match any results.</p>
+                            </div>
+                            <div className="filter-name" key={"orderDatedv" + index}>
+                                <p key={"date" + index}> {current_date == getDate ? 'Today' : getDate}</p>
+                            </div>
+                            {
+                                getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
+                                    var time = FormateDateAndTime.formatDateWithTime(order.date_time, order.time_zone);
+                                    return (
+                                        <button className={props.updateActivityId == order.order_id?"transaction-card no-transform selected":"transaction-card no-transform"} onClick={() => props.click(order, order.order_id)}>
+                                            <div className="col">
+                                                <p className="style1">Order# {order.order_id}</p>
+                                                <p className="style2">{order.CustFullName}</p>
+                                                <div className="row">
                                                     {
                                                         (order.OliverReciptId !=='') ? <img src={InStoreSale} alt="" /> :<img src={OnlineSale} alt="" />
 
                                                     }
-                                                        <p>{order.order_status}</p>
-                                                    </div>
+                                                    <p>{order.order_status}</p>
                                                 </div>
-                                                <div className="col">
-                                                    {
-                                                        (order.refunded_amount > 0) ?
-                                                        <p className="style3"> {parseFloat(order.total - order.refunded_amount).toFixed(2) } 
-                                                         &nbsp;<del>{parseFloat(order.total).toFixed(2)}</del> 
-                                                         </p>
-                                                         : 
-                                                         <p className="style3"> {parseFloat(order.total).toFixed(2)}</p>
-                                                    }
-                                                    <p className="style4">{order.time}</p>
-                                                </div>
-                                                {props.updateActivityId == order.order_id ? <div className="selected-indicator"></div> :'' }
-                                            </button>
-                                        )
-                                    })
-                                }
-                            </>
-                        )
-                    })
+                                            </div>
+                                            <div className="col">
+                                                {
+                                                    (order.refunded_amount > 0) ?
+                                                        <p className="style3"> {parseFloat(order.total - order.refunded_amount).toFixed(2)}
+                                                            &nbsp;<del>{parseFloat(order.total).toFixed(2)}</del>
+                                                        </p>
+                                                        :
+                                                        <p className="style3"> {parseFloat(order.total).toFixed(2)}</p>
+                                                }
+                                                <p className="style4">{order.time}</p>
+                                            </div>
+                                            {props.updateActivityId == order.order_id ? <div className="selected-indicator"></div> : ''}
+                                        </button>
+                                    )
+                                })
+                            }
+                        </>
+                    )
+                })
 
-                }
-            </div>
+            }
+        </div>
     )
 }
 
