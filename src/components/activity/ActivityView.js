@@ -30,8 +30,6 @@ import ActivityOrderList from "./ActivityOrderList";
 import { ActivityFooter } from "./ActivityFooter";
 
 const ActivityView = () => {
-
-
     const [AllActivityList, setAllActivityList] = useState([])
     const [updateActivityId, setupdateActivityId] = useState('')
     const [SelectedTypes, setSelectedTypes] = useState('')
@@ -39,6 +37,7 @@ const ActivityView = () => {
     const [selectedOption, setSelectedOption] = useState('')
     const [sortbyvaluename, SetSortByValueName] = useState('Date')
     const [emailnamephone, setEmailNamePhone] = useState('')
+    const [orderidsearch, setorderId] = useState('')
     const [pricefrom, setPriceFrom] = useState('')
     const [priceto, setPriceTo] = useState('')
     const [filterByPlatform, setFilterByPlatform] = useState('')
@@ -254,7 +253,7 @@ const ActivityView = () => {
         //   }
             var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
           
-          console.log("transactionsRedirect",transactionsRedirect)
+         // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
         if (useCancelled1 == false) {
             if (customer_to_activity_id) {
@@ -468,9 +467,9 @@ const ActivityView = () => {
             // "EndDay": e_dd,
             // "EndMonth": e_mm,
             // "EndYear": e_yy,
-            "searchVal": emailnamephone?emailnamephone:transactionredirect
+            "searchVal": emailnamephone?emailnamephone:orderidsearch
             //"groupSlug": this.state.filterByGroupList,
-
+            
         };
        // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
@@ -484,11 +483,14 @@ const ActivityView = () => {
     }
 
     const clearFilter = () => {
+        reload()
         setfilterByUser("")
         setFilterByStatus("")
         setFilterByPlatform("")
         setEmailNamePhone("")
         setSelectuserFilter('')
+        setorderId('')
+       
     }
 
     // console.log("filterByPlatform",filterByPlatform)
@@ -498,14 +500,14 @@ const ActivityView = () => {
 
 
     const handleUserChange = (selectedOption) => {
-        // const { name, value } = e.target;
         setSelectedOption(selectedOption)
-
     }
 
     const hundleChange=(event)=>{
         setEmailNamePhone(event.target.value)
-
+    }
+    const  hundleChangeID=(event)=>{
+    setorderId(event.target.value)
     }
 
     const _Useroptions = [];
@@ -554,7 +556,7 @@ const ActivityView = () => {
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
                     <label for="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChange} />
+                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChangeID} value={orderidsearch} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label for="custInfo">Customer Info</label>

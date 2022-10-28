@@ -99,7 +99,7 @@ const ActivityOrderList = () => {
 
 
 
-    var lineitems = activityOrderDetails && activityOrderDetails.line_items ? activityOrderDetails.line_items : ''
+    var lineitems = activityOrderDetails && activityOrderDetails.line_items ? activityOrderDetails.line_items : [];
     var getorderlist = activityOrderDetails && activityOrderDetails.meta_datas && activityOrderDetails.meta_datas !== null ? activityOrderDetails.meta_datas.find(data => data.ItemName == '_order_oliverpos_product_discount_amount') : null;
     var notesList = activityOrderDetails && activityOrderDetails.order_notes ? activityOrderDetails.order_notes : []
     var taxInclusiveName = "";
@@ -158,12 +158,10 @@ const ActivityOrderList = () => {
         });
     }
 
-    var productImage =''
+  
     const productImageFind = async (item)=>{
-      var product = await getByID(item.product_id)
-    //  console.log("product",product)
-      productImage = product.ProductImage
-        //return product.ProductImage;
+        var product = await  getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
+        return product.ProductImage
 
     }
 
@@ -174,9 +172,15 @@ const ActivityOrderList = () => {
         {activitygetdetails.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
             <p>Order Details</p>
             {
-                lineitems && lineitems.map((item, index) => {
-                    productImageFind (item) ;
-                  
+             lineitems && lineitems.map((item, index) => {
+                var productImage='';
+                var IndexImage=''
+                IndexImage =  productImageFind(item);
+                IndexImage.then((a) => {
+                    console.log(a);
+                    productImage = a
+                  });
+               // console.log("productImage",productImage)
                     var sku = item.sku ?item.sku:''
                     var varDetail = item.ProductSummery.toString();
                     ///Composit Child product------------------------
@@ -200,7 +204,7 @@ const ActivityOrderList = () => {
                         varDetail = compositChield.join(', ')
                     }
                     //-----------------------------------------------
-                      //  console.log("_indivisualProductDiscountArray",_indivisualProductDiscountArray)
+                  
                     var isIndivisualDiscountApply= _indivisualProductDiscountArray && _indivisualProductDiscountArray.filter(x => x.ProductId === item.product_id);
                     var _productCartDiscountAmount=0;
                     if(_indivisualProductCartDiscountArray && _indivisualProductCartDiscountArray.length>0){
@@ -216,12 +220,14 @@ const ActivityOrderList = () => {
                             _indivisualDiscount=x.discountAmount     
                         });
                     }
+
+                    var qty=item.quantity+item.quantity_refunded;
                     var _single_amount = ((item.subtotal + (taxType == "incl" ? item.subtotal_tax : 0)) / item.quantity);
                     var _amount = _single_amount * item.quantity;
                     var _final_amount = qty == 0 ? 0 : (_single_amount * qty) - _indivisualDiscount;
                     var qty = item.quantity + item.quantity_refunded;
                     var refundItemTax = ((item.subtotal_tax / item.quantity) * item.quantity_refunded)
-
+                    
                     return (
                         <div className="item">
                             <div className="img-container">
@@ -245,14 +251,13 @@ const ActivityOrderList = () => {
                                             (item.amount_refunded > 0 || isTotalRefund == true) ?
                                                 (item.quantity_refunded < 0) ?
                                                     <div><del style={{ marginRight: 10 }}>
-                                                      {_amount} </del>{_final_amount} </div>
-                                                    :
-                                                    parseFloat(item.total).toFixed(2)
+                                                      {parseFloat(_amount).toFixed(2)} </del>{parseFloat(_final_amount).toFixed(2)} </div>
+                                                    : parseFloat(item.total).toFixed(2)
                                                 :
                                                 ((item.subtotal - item.total) != 0) && isIndivisualDiscountApply.length > 0 ?
                                                     TaxSetting && TaxSetting.pos_prices_include_tax == 'no' ?
-                                                        <div><del >{parseFloat(_amount).toFixed(2)}</del>{_final_amount} </div>
-                                                        : <div><del>{(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2)}</del>{(item.total + (taxInclusiveName == "" ? 0 : item.subtotal_tax) + _productCartDiscountAmount).toFixed(2)}   </div>
+                                                        <div><del >{parseFloat(_amount).toFixed(2)}</del>{parseFloat(_final_amount).toFixed(2)} </div>
+                                                        : <div><del>{parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2)}</del>{(item.total + (taxInclusiveName == "" ? 0 : item.subtotal_tax) + _productCartDiscountAmount).toFixed(2)} </div>
                                                     :Math.round(parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2))
                                         }
                                     </p>

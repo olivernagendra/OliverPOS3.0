@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import STATUSES from "../../constants/apiStatus";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
+import OnlineSale from '../../assets/images/svg/OnlineSale.svg'
+import InStoreSale from '../../assets/images/svg/InStoreSale.svg'
 const ActivityOrderDetail = () => {
 
     const navigate = useNavigate()
@@ -17,7 +19,7 @@ const ActivityOrderDetail = () => {
 
         }
     }, [activitygetdetails]);
-   // console.log("activityOrderDetails", activityOrderDetails)
+    //console.log("activityOrderDetails", activityOrderDetails)
 
     var DateTime = activityOrderDetails
     var gmtDateTime = "";
@@ -52,7 +54,7 @@ const ActivityOrderDetail = () => {
             </div>
             <div className="col right">
                 <div className="row">
-                    <img src="../assets/images/svg/OnlineSale.svg" alt="" />
+                    <img   src={activityOrderDetails != "" && activityOrderDetails.OliverReciptId !=='' ? InStoreSale : OnlineSale}  alt="" />
                     <p>{activityOrderDetails.order_status}</p>
                 </div>
                 <p className="style2">Served by: <b>{activityOrderDetails.ServedBy}</b></p>

@@ -45,7 +45,7 @@ const Pin = () => {
     }, []);
     const resGetPostMeta = useSelector((state) => state.getPostMeta)
     if (resGetPostMeta && resGetPostMeta.is_success == true) {
-        if (resGetPostMeta.data && resGetPostMeta.data.content.Slug == "recent_apps") {
+        if (resGetPostMeta.data && resGetPostMeta.data.content&& resGetPostMeta.data.content.Slug == "recent_apps") {
             localStorage.setItem("recent_apps", resGetPostMeta.data.content.Value)
         }
     }

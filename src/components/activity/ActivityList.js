@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
+import OnlineSale from '../../assets/images/svg/OnlineSale.svg'
 import InStoreSale from '../../assets/images/svg/InStoreSale.svg'
-//import OnlineSale from '../../assets/images/SVG/OnlineSale.svg'
 import moment from 'moment';
 import Config from '../../Config'
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
@@ -67,7 +67,7 @@ const ActivityList = (props) => {
                                                     <p className="style2">{order.CustFullName}</p>
                                                     <div className="row">
                                                     {
-                                                        (order.refunded_amount > 0) ? <img src={InStoreSale} alt="" /> :<img src={InStoreSale} alt="" />
+                                                        (order.OliverReciptId !=='') ? <img src={InStoreSale} alt="" /> :<img src={OnlineSale} alt="" />
 
                                                     }
                                                         <p>{order.order_status}</p>
