@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg';
 import Stripe_Icon from '../../assets/images/svg/Stripe Icon.svg';
-import EmptyCart from '../../assets/images/svg/EmptyCart.svg'
+import EmptyCart from '../../assets/images/svg/EmptyCart.svg';
+import CashButtonImage from '../../assets/images/svg/CashButtonImage.svg';
+import CardButtonImage from '../../assets/images/svg/CardButtonImage.svg'
 import person from '../../assets/images/svg/person.svg'
 import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 import paymentsType from '../../settings/PaymentsType'
@@ -1277,7 +1279,10 @@ const Refund = (props) => {
             pay_amount(item.Code);
         }
     }
-
+    const showPartial = (val) => {
+        setPartialType(val);
+        setisShowPartialPayment(true);
+    }
     const placeParkLayAwayOrder = (status) => {
         // setCheckList(JSON.parse(localStorage.getItem("CHECKLIST"))) ;
         createOrder(status);
@@ -1371,9 +1376,9 @@ const Refund = (props) => {
                 <p className="style1">Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
                 <div className="button-row">
-                    <button>1/2</button>
-                    <button>1/3</button>
-                    <button>1/4</button>
+                <button onClick={() => showPartial(2)}>1/2</button>
+                    <button onClick={() => showPartial(3)}>1/3</button>
+                    <button onClick={() => showPartial(4)}>1/4</button>
                 </div>
                 <div className="button-row">
                     <button id="splitByProductButton">By Product</button>
@@ -1393,16 +1398,22 @@ const Refund = (props) => {
                         {
                             _paymentTypeName && _paymentTypeName.length > 0 && _paymentTypeName.map(payment => {
 
-                                var isOrderPaymentGlobal = checkIfOrderTypeGlobal(getorder, payment)
-                                isOrderPaymentGlobal = isOrderPaymentGlobal ? true : false
-                                var isOrderPaymentOnline = checkIfOrderTypeOnline(getorder, payment)
-                                isOrderPaymentOnline = isOrderPaymentOnline ? true : false
+                                // var isOrderPaymentGlobal = checkIfOrderTypeGlobal(getorder, payment)
+                                // isOrderPaymentGlobal = isOrderPaymentGlobal ? true : false
+                                // var isOrderPaymentOnline = checkIfOrderTypeOnline(getorder, payment)
+                                // isOrderPaymentOnline = isOrderPaymentOnline ? true : false
 
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
                                     <button >
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
+                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                        <img src={CashButtonImage} alt=""></img></button>
+                                        :
+                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                            <img src={CardButtonImage} alt=""></img></button>
+                                            :
                                     //(payment.HasTerminal == true && payment.Support == "Terminal" && payment.Code != paymentsType.typeName.stripePayment)?
                                     <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
                                         {payment.Name}

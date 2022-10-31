@@ -4,7 +4,8 @@ import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-
 import EmptyCart from '../../assets/images/svg/EmptyCart.svg'
 import person from '../../assets/images/svg/person.svg';
 import Stripe_Icon from '../../assets/images/svg/Stripe Icon.svg'
-
+import CashButtonImage from '../../assets/images/svg/CashButtonImage.svg';
+import CardButtonImage from '../../assets/images/svg/CardButtonImage.svg'
 import { get_customerName, get_UDid, get_userName } from '../common/localSettings';
 
 import STATUSES from "../../constants/apiStatus";
@@ -39,6 +40,7 @@ import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
 import GlobalPayment from "../common/commonComponents/paymentComponents/GlobalPayment";
 import MsgPopup from "../common/commonComponents/MsgPopup";
+import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
 const Checkout = (props) => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -104,7 +106,7 @@ const Checkout = (props) => {
     const [isStripeTerminalPayment, setisStripeTerminalPayment] = useState(false);
     const [cancleTransaction, setcancleTransaction] = useState(false);
     const [isGlobalPayment, setisGlobalPayment] = useState(false);
-
+    const [isShowSplitByProduct, setisShowSplitByProduct] = useState(false);
     // change_amount: change_amount,
     // cash_payment: paying_amount,
     // after_payment_is: payment_is
@@ -174,6 +176,9 @@ const Checkout = (props) => {
     var cash_rounding = ActiveUser.key.cash_rounding;
     const toggleMsgPopup = () => {
         setisShowMsg(!isShowMsg)
+    }
+    const toggleSplitByProduct = () => {
+        setisShowSplitByProduct(!isShowSplitByProduct)
     }
     const toggleManualPayment = () => {
         setisManualPayment(!isManualPayment)
@@ -2131,7 +2136,7 @@ const Checkout = (props) => {
             <LeftNavBar ></LeftNavBar>
             <Header toggleParkSale={toggleParkSale}></Header>
             <div className="cart">
-                {get_customerName() != null ? <div className="checkout-cart-header">
+                {/* {get_customerName() != null ? <div className="checkout-cart-header">
                     <div className="cart-customer">
                         <div className="avatar">
                             <img src={person} alt="" />
@@ -2141,7 +2146,7 @@ const Checkout = (props) => {
                             <p className="style2">{get_customerName().Email}</p>
                         </div>
                     </div>
-                </div> : null}
+                </div> : null} */}
                 <CartListBody setValues={setValues}></CartListBody>
                 <div className="footer">
                     <div className="totals">
@@ -2203,7 +2208,7 @@ const Checkout = (props) => {
                     </div>}
 
                 </button>
-                <p className="style1">Click to make a partial payment</p>
+                <p id="bottomText">Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
                 <div className="button-row">
                     <button onClick={() => showPartial(2)}>1/2</button>
@@ -2211,7 +2216,7 @@ const Checkout = (props) => {
                     <button onClick={() => showPartial(4)}>1/4</button>
                 </div>
                 <div className="button-row">
-                    <button>By Product</button>
+                    <button onClick={() => toggleSplitByProduct()}>By Product</button>
                     <button>By People</button>
                 </div>
                 <p className="style2">Customer Payment Types</p>
@@ -2228,12 +2233,18 @@ const Checkout = (props) => {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
-                                    <button >
+                                    <button key={payment.Id}>
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
-                                    <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
-                                        {payment.Name}
-                                    </button>
+                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                        <img src={CashButtonImage} alt=""></img></button>
+                                        :
+                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                            <img src={CardButtonImage} alt=""></img></button>
+                                            :
+                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                                {payment.Name}
+                                            </button>
                             })
                         }
                     </div>
@@ -2299,6 +2310,7 @@ const Checkout = (props) => {
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
         <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
+        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}></SplitByProduct> : null}
     </React.Fragment>)
 }
 export default Checkout

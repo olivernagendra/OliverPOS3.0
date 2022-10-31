@@ -323,7 +323,11 @@ const Customercreate = (props) => {
                             </div>
                         </section>
                     </form>
-                    <button onClick={handleSubmit}>Create Customer</button>
+                    {/* <button onClick={handleSubmit}>Create Customer</button> */}
+                    <div class="button-row">
+						<button onClick={handleSubmit}>Create Customer</button>
+						<button>Create & Add to Cart</button>
+					</div>
                 </div>
             </div>
         </div>)
