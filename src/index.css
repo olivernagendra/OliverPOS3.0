@@ -520,35 +520,96 @@ code {
 	color: var(--oliver-base-blue);
 	margin-bottom: 4px;
 }
-.input-col1 > input {
-    height: 42px;
-    background-color: #fff;
-    border: 1px solid var(--oliver-border);
-    box-sizing: border-box;
-    padding: 0 12px;
-    border-radius: 6px;
-    outline: 0;
-    font-family: Poppins;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-    text-align: left;
-    color: var(--oliver-base-blue);
+
+.input-col1>input {
+	height: 42px;
+	background-color: #fff;
+	border: 1px solid var(--oliver-border);
+	box-sizing: border-box;
+	padding: 0 12px;
+	border-radius: 6px;
+	outline: 0;
+	font-family: Poppins;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	text-align: left;
+	color: var(--oliver-base-blue);
 }
-.text-center{
+
+.text-center {
 	text-align: center;
 }
-.transactions-search
-{z-index: unset;}
-.transactions-list > .header > .sort-wrapper
-{z-index: unset;}
-.refund-complete-txt
-{display: flex;
-    align-items: center;
+
+.transactions-search {
+	z-index: unset;
+}
+
+.refund-complete-txt {
+	display: flex;
+	align-items: center;
+	font-family: Poppins;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 21px;
+	text-align: center;
+	color: #fff;
+	margin-bottom: 43px;
+}
+.manual-payment{width:424px;}
+.manual-payment>.input-row {
+	width: 100%;
+	display: flex;
+	margin-bottom: 12px;
+}
+
+.manual-payment>.input-row >.input-col {
+	width: 0;
+	flex: 1 1;
+	margin-left: 14px;
+	display: flex;
+	flex-direction: column;
+}
+
+.manual-payment>.input-row >.input-col>label {
+	font-family: Poppins;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	letter-spacing: 0em;
+	text-align: left;
+	color: var(--oliver-base-blue);
+	margin-bottom: 4px;
+}
+
+.manual-payment>.input-row > .input-col>input {
+	height: 42px;
+	background-color: #fff;
+	border: 1px solid var(--oliver-border);
+	box-sizing: border-box;
+	padding: 0 12px;
+	border-radius: 6px;
+	outline: 0;
+	font-family: Poppins;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	text-align: left;
+	color: var(--oliver-base-blue);
+}
+
+.manual-payment>.charge-card {
+    width: 424px;
+    height: 48px;
+    border: 0;
+    border-radius: 6px;
+    background-color: var(--oliver-blue);
     font-family: Poppins;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
-    line-height: 21px;
+    line-height: 24px;
     text-align: center;
     color: #fff;
-    margin-bottom: 43px;}
+    margin-bottom: 10px;
+}
+#bottomText{cursor: pointer;}

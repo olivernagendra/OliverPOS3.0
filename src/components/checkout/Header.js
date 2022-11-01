@@ -22,6 +22,8 @@ import { get_UDid } from "../common/localSettings";
 import { checkTempOrderSync } from "./checkoutSlice";
 import ActiveUser from '../../settings/ActiveUser';
 import Config from '../../Config';
+import { removeCheckOutList } from '../dashboard/product/productLogic';
+import { product } from "../dashboard/product/productSlice";
 const Header = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -109,6 +111,10 @@ const Header = (props) => {
             }
         }, 10000);
     }
+    const clearCart = () => {
+        removeCheckOutList();
+        dispatch(product());
+    }
     return (<React.Fragment>
         <div className="header">
             <button id="exitCheckoutButton" onClick={() => goBack()}>
@@ -129,7 +135,7 @@ const Header = (props) => {
             <div id="pageOptions" className={isShowOptionPage ? "page-options-wrapper" : "page-options-wrapper hidden"}>
                 <div className="page-options">
                     <p>Options Menu</p>
-                    <button id="clearCartButton">
+                    <button id="clearCartButton" onClick={()=>clearCart()}>
 						<div class="img-container">
 							<img src={ClearCart_Icon} alt="" />
 						</div>

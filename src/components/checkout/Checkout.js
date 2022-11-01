@@ -230,13 +230,6 @@ const Checkout = (props) => {
         setbalance(RoundAmount(tt))
         setPaidAmount(RoundAmount(tt));
     }
-    const addCustomer = () => {
-        dispatch(paymentAmount(null));
-        navigate('/customer');
-        // var data ={title:"",msg:"Please add at least one product in cart !",is_success:true}
-        // dispatch(popupMessage(data));
-        //alert('add customer to order');
-    }
 
     const getRemainingPrice = () => {
         //var checkList = JSON.parse(localStorage.getItem("CHECKLIST"));
@@ -2075,7 +2068,15 @@ const Checkout = (props) => {
         createOrder(status);
     }
     const closingTab = () => { }
-    const onlinePayCardDetails = (cardData) => { setOnlinePayCardData(cardData); }
+    const onlinePayCardDetails = (cardData) => {
+        setOnlinePayCardData(cardData);
+    }
+    useEffect(() => {
+        if(onlinePayCardData.hasOwnProperty("paycode"))
+        {
+            pay_amount(onlinePayCardData.paycode);
+        }
+    }, [onlinePayCardData]);
     const activeDisplay = (st) => {
 
         // this.closingTab()
@@ -2208,7 +2209,7 @@ const Checkout = (props) => {
                     </div>}
 
                 </button>
-                <p id="bottomText">Click to make a partial payment</p>
+                <p id="bottomText" onClick={() => toggleShowPartialPayment()}>Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
                 <div className="button-row">
                     <button onClick={() => showPartial(2)}>1/2</button>
@@ -2217,7 +2218,7 @@ const Checkout = (props) => {
                 </div>
                 <div className="button-row">
                     <button onClick={() => toggleSplitByProduct()}>By Product</button>
-                    <button>By People</button>
+                    <button disabled>By Group (Coming Soon)</button>
                 </div>
                 <p className="style2">Customer Payment Types</p>
                 <p className="style3">Please add a customer to make customer payment types available</p>
@@ -2233,7 +2234,7 @@ const Checkout = (props) => {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
-                                    <button key={payment.Id}>
+                                    <button key={payment.Id}  onClick={() => pay_amount_cash(payment)}>
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
                                     payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>

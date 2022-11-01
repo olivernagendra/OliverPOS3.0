@@ -5,17 +5,22 @@ import { PrintPage } from "../common/PrintPage";
 import moment from 'moment';
 import STATUSES from "../../constants/apiStatus";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
-import { getTotalTaxByName, TaxSetting , getTaxAllProduct } from "../common/TaxSetting";
+import { getTotalTaxByName, TaxSetting, getTaxAllProduct } from "../common/TaxSetting";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import Config from '../../Config'
 import { useIndexedDB } from 'react-indexed-db';
+import ViewReceipt from "../common/commonComponents/ViewReceipt";
 export const ActivityFooter = (props) => {
     const navigate = useNavigate()
     const { getAll } = useIndexedDB("products");
     const [activityOrderDetails, setActivityOrderDetails] = useState([])
     const [productList, setProductList] = useState([])
+    const [isShowViewReceipt, setisShowViewReceipt] = useState(false)
 
+    const toggleViewReceipt = () => {
+        setisShowViewReceipt(!isShowViewReceipt)
+    }
 
     let useCancelled = false;
     useEffect(() => {
@@ -76,37 +81,43 @@ export const ActivityFooter = (props) => {
     var appreposnse = ''
     // print by local printer in case no cloud printer available or if any available show cloud popup
     function PrintClick() {
-        var printersList = cloudPrinters
+        toggleViewReceipt();
 
-        PrintPage.PrintElem(activityOrderDetails, props.getPdfdateTime, isTotalRefund, cash_rounding_amount, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, redeemPointsToPrint
-            , appreposnse)
+        // var printersList = cloudPrinters
+        // if (printersList && printersList.length > 0) { }
+        // else {
+            PrintPage.PrintElem(activityOrderDetails, props.getPdfdateTime, isTotalRefund, cash_rounding_amount, textToBase64Barcode(activityOrderDetails.OliverReciptId), orderList, type, productxList, AllProductList, TotalTaxByName, redeemPointsToPrint
+                , appreposnse);
+        //}
+
 
         //For Tickera ------------------------------------            
         if (activityOrderDetails && activityOrderDetails.TicketDetails && activityOrderDetails.TicketDetails != "" && activityOrderDetails.TicketDetails.length > 0) {
             // Ticket_print();
         }
+
         //--------------------------------------------
     }
 
 
     const VoidPOP = () => {
-
+alert('canceled')
     }
 
 
     const RefundPOP = () => {
-
+        alert('refunded')
     }
 
 
     const onClick1 = () => {
-        onClick2("statuscompleted",activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id:0)
+        onClick2("statuscompleted", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : 0)
     }
 
 
 
     const onClick2 = (type, id, productList = []) => {
-       // console.log("type")
+        // console.log("type")
         if (type == 'statuscompleted' && id) {
             if (CommonModuleJS.permissionsForRefund() == false) {
                 //  this.setState({ common_Msg: '' })
@@ -364,13 +375,13 @@ export const ActivityFooter = (props) => {
     }
 
     const getCustomFeeDetails = (_itemPara) => {
-        var _item={..._itemPara};
+        var _item = { ..._itemPara };
         var getorderlist = activityOrderDetails && activityOrderDetails.meta_datas && activityOrderDetails.meta_datas !== null ? activityOrderDetails.meta_datas.find(data => data.ItemName == '_order_oliverpos_product_discount_amount') : null;
         if (getorderlist !== null) {
             getorderlist = getorderlist && getorderlist.ItemValue && JSON.parse(getorderlist.ItemValue);
             getorderlist && getorderlist.map((item, index) => {
                 item && item.order_custom_fee && item.order_custom_fee.map((fee, index) => {
-                    if (item.order_custom_fee != null && _item.note == fee.note){
+                    if (item.order_custom_fee != null && _item.note == fee.note) {
                         var _total_tax = {};
                         fee.total_taxes && fee.total_taxes.map((item, index) => {
                             Object.assign(_total_tax, item)
@@ -398,7 +409,7 @@ export const ActivityFooter = (props) => {
                         _item['subtotal_taxes'] = fee.subtotal_taxes ? fee.subtotal_taxes : [];
                         _item['total_tax'] = fee.total_tax ? fee.total_tax : 0;
                         _item['total_taxes'] = fee.total_taxes ? fee.total_taxes : [];
-                        
+
                     }
                 });
             })
@@ -408,29 +419,32 @@ export const ActivityFooter = (props) => {
 
 
 
-   // console.log("activityOrderDetails", activityOrderDetails)
+    // console.log("activityOrderDetails", activityOrderDetails)
 
     return (
-        <div className="footer">
-             <button id="refundButton" onClick={()=>
-                activityOrderDetails.order_status == 'completed' ? onClick1()
-                    : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold" || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing") ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '')
-                        : activityOrderDetails.order_status == "refunded" ? RefundPOP
-                            : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP
+        <React.Fragment>
+            <div className="footer">
+                <button id="refundButton" onClick={() =>
+                    activityOrderDetails.order_status == 'completed' ? onClick1()
+                        : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold" || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing") ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '')
+                            : activityOrderDetails.order_status == "refunded" ? RefundPOP
+                                : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP
+                                    : null
+                }  > {activityOrderDetails.order_status == 'completed' ? LocalizedLanguage.refundSale
+                    : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
+                        || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
+                        || activityOrderDetails.order_status == "") ? LocalizedLanguage.openSale
+                        : activityOrderDetails.order_status == "refunded" ? LocalizedLanguage.refundedSale
+                            : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? LocalizedLanguage.cancel
                                 : null
-            }  > {activityOrderDetails.order_status == 'completed' ? LocalizedLanguage.refundSale
-                : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
-                    || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
-                    || activityOrderDetails.order_status == "") ? LocalizedLanguage.openSale
-                    : activityOrderDetails.order_status == "refunded" ? LocalizedLanguage.refundedSale
-                        : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? LocalizedLanguage.cancel
-                            : null
-                }</button> 
+                    }</button>
 
 
 
-            <button id="receiptButton" onClick={() => PrintClick()}>Receipt</button>
-            {/* <button id="openSaleButton">Open Sale</button> */}
-        </div>
+                <button id="receiptButton" onClick={() => toggleViewReceipt()}>Receipt</button>
+                <button id="openSaleButton">Open Sale</button>
+            </div>
+            {isShowViewReceipt?<ViewReceipt isShow={isShowViewReceipt} toggleViewReceipt={toggleViewReceipt} PrintClick={PrintClick}></ViewReceipt>:null}
+        </React.Fragment>
     )
 }

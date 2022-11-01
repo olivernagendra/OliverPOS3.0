@@ -7,7 +7,7 @@ import OliverIconBaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg
 import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
-import FilterCollapseIcon from '../../assets/images/svg/FilterCollapseIcon.svg'
+import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
@@ -441,7 +441,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <input type="text" id="filterType" />
-              <img src={FilterCollapseIcon} alt="" />
+              <img class="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>

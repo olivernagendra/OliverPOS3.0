@@ -101,12 +101,18 @@ const UPIPayments = (props) => {
         setactiveDisplayStatus(false);
         // this.setState({ activeDisplayStatus: false })
     }
+    var isCalled=false
     useEffect(() => {
         if (props.type && props.type === "refund") {
             props.pay_amount(props.code)
         }
         else {
-            make_payconiq_payment_request()
+            if(isCalled===false)
+            {
+                make_payconiq_payment_request();
+                isCalled=true;
+            }
+           
         }
     }, [])
     const [respcheck_payconiq_pay_status] = useSelector((state) => [state.check_payconiq_pay_status])

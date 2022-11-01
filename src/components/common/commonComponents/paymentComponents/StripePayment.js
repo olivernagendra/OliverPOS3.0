@@ -70,7 +70,7 @@ const StripePayment = (props) => {
         const { paymentDetails } = props;
         if (process.env.ENVIRONMENT !== 'dev1' //For development need to connect with simulator
             && paymentDetails && paymentDetails.HasTerminal == true && paymentDetails.TerminalCount == 0 && paymentDetails.Support == "Terminal") {
-            props.terminalPopup(LocalizedLanguage.terminalnotconnected)
+            //props.terminalPopup(LocalizedLanguage.terminalnotconnected)
             setconnectReedersErr(LocalizedLanguage.terminalnotconnected);
         }
         else {
