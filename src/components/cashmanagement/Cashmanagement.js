@@ -35,6 +35,7 @@ function Cashmanagement() {
   const [CashDrawerPaymentDetail, setcashDrawerDetailData] = useState([])
   const [activateSelect, setActivateSelect] = useState()
   const [_cashmangementlist, setCashmanagementList] = useState([])
+  const [listrecordscount, setlistrecordscount] = useState([])
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
@@ -89,7 +90,7 @@ function Cashmanagement() {
   }, []);
 
   const loadMore = (pageNo) => {
-    dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.PPRODUCT_PAGE_SIZE, "pageNumber": pageNo }));
+    dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.CUSTOMER_PAGE_SIZE, "pageNumber": pageNo }));
   }
 
   const [cashdrawer] = useSelector((state) => [state.cashmanagement])
@@ -98,6 +99,7 @@ function Cashmanagement() {
        // setCashmanagementList(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records)
           var temState = [..._cashmangementlist, ...cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records]
           setCashmanagementList(temState);
+          setlistrecordscount(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.TotalRecords)
       }
   }, [cashdrawer]);
 
@@ -195,20 +197,18 @@ function Cashmanagement() {
     setCallDetailApiOnLoad(false)
     getCashDrawerPaymentDetail(firstRecordId);
     firstRecordId = ""
-
   }
-
 
   const onScroll = (e) => {
     const bottom = Number((e.target.scrollHeight - e.target.scrollTop).toFixed(0)) - e.target.clientHeight < 50;
-    if (bottom) {
+    if(_cashmangementlist.length == listrecordscount){
+
+    }else if (bottom) {
       setDefauldNumber(defauldnumber + 1)
-     // console.log("defauldnumber", defauldnumber)
-      if (defauldnumber != 1) {
-        loadMore(defauldnumber)
-       // console.log("i am in bottom")
-      }
-    }
+       if (defauldnumber != 1) {
+         loadMore(defauldnumber)
+       }
+    } 
   };
 
 

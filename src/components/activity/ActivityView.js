@@ -46,7 +46,6 @@ const ActivityView = () => {
     const [filterByStatus, setFilterByStatus] = useState('')
     const [isloader, setSmallLoader] = useState(true)
     const [getPdfdateTime, setGetPdfdateTime] = useState('')
-
     const [filterByUser, setfilterByUser] = useState('')
     const [selectuserfilter, setSelectuserFilter] = useState('')
     // Toggle State------------
@@ -104,16 +103,6 @@ const ActivityView = () => {
     const dispatch = useDispatch();
 
 
-    // useEffect(() => {
-    //     window.addEventListener("scroll",listenToScroll)
-
-    // }, [])
-
-    // const listenToScroll =()=>{ 
-    //     const winScroll = document.body.scrollTop || document.documentElement.scrollTop
-    //     console.log("winScroll",winScroll)
-    // }
-
 
 
 
@@ -150,6 +139,7 @@ const ActivityView = () => {
         if (activityAllDetails && activityAllDetails.data.length > 0) {
             var temState = [...AllActivityList, ...activityAllDetails.data]
             setAllActivityList(temState);
+           // setactivityListcount(activityAllDetails.data)
         }
     }, [activityAllDetails]);
 
