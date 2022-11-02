@@ -31,6 +31,7 @@ import ActivityOrderList from "./ActivityOrderList";
 import { ActivityFooter } from "./ActivityFooter";
 
 const ActivityView = () => {
+    const [defauldnumber, setDefauldNumber] = useState(2);
     const [AllActivityList, setAllActivityList] = useState([])
     const [updateActivityId, setupdateActivityId] = useState('')
     const [SelectedTypes, setSelectedTypes] = useState('')
@@ -103,7 +104,17 @@ const ActivityView = () => {
     const dispatch = useDispatch();
 
 
+    // useEffect(() => {
+    //     window.addEventListener("scroll",listenToScroll)
 
+    // }, [])
+
+    // const listenToScroll =()=>{ 
+    //     const winScroll = document.body.scrollTop || document.documentElement.scrollTop
+    //     console.log("winScroll",winScroll)
+    // }
+
+   
 
 
 
@@ -117,8 +128,10 @@ const ActivityView = () => {
             if(transactionredirect !== ''){
                 applyServerFilter()
             }else{
-                reload()
-            }            
+                reload(1)
+            } 
+          
+                   
         }
         return () => {
             useCancelled = true;
@@ -128,14 +141,15 @@ const ActivityView = () => {
     const reload = (pagno) => {
         var UID = get_UDid('UDID')
         var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
-        dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": 1 }));
+        dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": pagno }));
     }
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
     useEffect(() => {
         if (activityAllDetails && activityAllDetails.data.length > 0) {
-            setAllActivityList(activityAllDetails.data);
+            var temState = [...AllActivityList, ...activityAllDetails.data]
+            setAllActivityList(temState);
         }
     }, [activityAllDetails]);
 
@@ -145,7 +159,7 @@ const ActivityView = () => {
     useEffect(() => {
         //  console.log("activityfilter", activityfilter)
         if (activityfilter && activityfilter.data.length > 0) {
-            setAllActivityList(activityfilter.data);
+            setAllActivityList(activityfilter.data );
             setSmallLoader(false)
         }
     }, [activityfilter]);
@@ -479,12 +493,10 @@ const ActivityView = () => {
     }
 
 
-    const PrintClick = () => {
-
-    }
+   
 
     const clearFilter = () => {
-        reload()
+        reload(1)
         setfilterByUser("")
         setFilterByStatus("")
         setFilterByPlatform("")
@@ -524,6 +536,17 @@ const ActivityView = () => {
     var _platform = [{ key: "both", value: "Both" }, { key: "oliver-pos", value: "Oliver POS" }, { key: "web-shop", value: "Webshop" }];
     var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
 
+  
+
+    const updateSomething = () => {
+        setDefauldNumber(defauldnumber + 1)
+       // console.log("defauldnumber",defauldnumber)
+        if (defauldnumber != 1) {
+            reload(defauldnumber)
+        }
+      }
+
+    //   console.log("AllActivityList",AllActivityList.length)
 
     return <>
         <div className="transactions-wrapper">
@@ -649,7 +672,7 @@ const ActivityView = () => {
                 </div>
             </div>
 
-            <div className="transactions-list">
+            <div className="transactions-list" >
                 <div className="header" onClick={toggleSortWrapp}>
                     <p>Sort by:</p>
                     <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
@@ -681,7 +704,7 @@ const ActivityView = () => {
 
                     </div>
                 </div>
-                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} />
+                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader}  updateSomething={updateSomething} />
             </div>
             <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">
