@@ -60,6 +60,7 @@ const ActivityView = () => {
     const [isMobileNav, setisMobileNav] = useState(false);
     const [isSortWrapper, setSortWrapper] = useState(false)
     const [responsiveCusList, setResponsiveCusList] = useState(false)
+    const [activityListcount, setactivityListcount] = useState([])
 
     // All TOGGLE 
     const toggleAppLauncher = () => {
@@ -135,11 +136,13 @@ const ActivityView = () => {
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
+    console.log("activityAllDetails", activityAllDetails)
+
     useEffect(() => {
-        if (activityAllDetails && activityAllDetails.data.length > 0) {
-            var temState = [...AllActivityList, ...activityAllDetails.data]
+        if (activityAllDetails && activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records.length > 0) {
+            var temState = [...AllActivityList, ...activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records]
             setAllActivityList(temState);
-           // setactivityListcount(activityAllDetails.data)
+            setactivityListcount(activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.TotalRecords)
         }
     }, [activityAllDetails]);
 
@@ -523,10 +526,11 @@ const ActivityView = () => {
     var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
 
 
-
     const updateSomething = () => {
         setDefauldNumber(defauldnumber + 1)
-        if (defauldnumber != 1) {
+        if (AllActivityList.length == activityListcount) {
+
+        } else if (defauldnumber != 1) {
             reload(defauldnumber)
         }
     }
