@@ -183,9 +183,9 @@ function Cashmanagement() {
       _balance = CashDrawerPaymentDetail.Expected;
   }
   var closeDateTime = CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcClosedDateTime : "";
-  var _closeDateTime = moment.utc(closeDateTime).local().format(Config.key.TIMEDATE_FORMAT);
+  var _closeDateTime = moment.utc(closeDateTime).local().format(Config.key.MONTH_DAY_FORMAT);
   var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
-  var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
+  var _openDateTime = moment.utc(openDateTime).local().format(Config.key.MONTH_DAY_FORMAT);
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
   var localCashData = localStorage.getItem("Cash_Management_Data") ? JSON.parse(localStorage.getItem("Cash_Management_Data")) : '';
 

@@ -5,7 +5,7 @@ export function getCloudPrintersAPI(locationId) {
         return serverRequest.clientServiceRequest('GET', `/CloudPrinter/GetPrinterByLocation?id=${locationId}`, '')
             .then(cloudPrinters => {
                 if(cloudPrinters && cloudPrinters.is_success == true && cloudPrinters.content ){
-                    localStorage.setItem("cloudPrinters", JSON.stringify(cloudPrinters));
+                    localStorage.setItem("cloudPrinters", JSON.stringify(cloudPrinters.content));
                 }
                 return cloudPrinters;
             }).catch(error => {
