@@ -148,21 +148,21 @@ const CustomerView = () => {
   let useCancelled1 = false;
   useEffect(() => {
     var UID = get_UDid('UDID');
-    var Customerredirection = sessionStorage.getItem("Cusredirection")? sessionStorage.getItem("Cusredirection"):'';
-    if(Customerredirection &&Customerredirection.length > 0) {
-      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection")?sessionStorage.getItem("Cusredirection"):'';
+    var Customerredirection = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
+    if (Customerredirection && Customerredirection.length > 0) {
+      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
       setupdateCustomerId(CUSTOMER_ID)
-    }else{
-      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID")?sessionStorage.getItem("CUSTOMER_ID"):'';
+    } else {
+      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
       setupdateCustomerId(CUSTOMER_ID)
     }
- 
+
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
     }
     //  Remove saved data from sessionStorage
-      sessionStorage.removeItem('Cusredirection');
+    sessionStorage.removeItem('Cusredirection');
     return () => {
       useCancelled1 = true;
     }
@@ -376,12 +376,12 @@ const CustomerView = () => {
     navigate('/home')
   }
 
-  const OpenTransactions =(customerDetailData)=>{
+  const OpenTransactions = (customerDetailData) => {
     //console.log("customerDetailData",customerDetailData.Email)
-    if(customerDetailData.Email !=='' ){
+    if (customerDetailData.Email !== '') {
       sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : 0);
       navigate('/transactions')
-     } 
+    }
   }
 
 
@@ -421,10 +421,10 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-          <div class="row">
-						<img src={SearchBaseBlue} alt=""/>
-						<p>Search for Customers</p>
-					</div>
+            <div className="row">
+              <img src={SearchBaseBlue} alt="" />
+              <p>Search for Customers</p>
+            </div>
             <label htmlFor="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
             <label htmlFor="lName">Last Name</label>

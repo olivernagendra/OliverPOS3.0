@@ -13,21 +13,21 @@ const SplitByProduct = (props) => {
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow split-by-product current" : "subwindow split-by-product"}>
-                <div class="subwindow-header">
+                <div className="subwindow-header">
                     <p>Split by Product</p>
-                    <button class="close-subwindow" onClick={() => props.toggleSplitByProduct()}>
+                    <button className="close-subwindow" onClick={() => props.toggleSplitByProduct()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div class="subwindow-body">
-                    <div class="body">
-                        <div class="product-row">
-                            <div class="main-row">
-                                <div class="text-group">
+                <div className="subwindow-body">
+                    <div className="body">
+                        <div className="product-row">
+                            <div className="main-row">
+                                <div className="text-group">
                                     <p>Wool Hat</p>
                                     <p>$12.99</p>
                                 </div>
-                                <div class="increment-input">
+                                <div className="increment-input">
                                     <button>
                                         <img src={Checkout_Minus} alt="" />
                                     </button>
@@ -38,13 +38,13 @@ const SplitByProduct = (props) => {
                                 </div>
                             </div>
                         </div>
-                        <div class="product-row">
-                            <div class="main-row">
-                                <div class="text-group">
+                        <div className="product-row">
+                            <div className="main-row">
+                                <div className="text-group">
                                     <p>Oliver Hoodie</p>
                                     <p>$42.99</p>
                                 </div>
-                                <div class="increment-input">
+                                <div className="increment-input">
                                     <button>
                                         <img src={Checkout_Minus} alt="" />
                                     </button>
@@ -54,17 +54,17 @@ const SplitByProduct = (props) => {
                                     </button>
                                 </div>
                             </div>
-                            <div class="secondary-row">
+                            <div className="secondary-row">
                                 <p>Red, Size 45, Leather Edition, with extra long shoe laces</p>
                             </div>
                         </div>
-                        <div class="product-row">
-                            <div class="main-row">
-                                <div class="text-group">
+                        <div className="product-row">
+                            <div className="main-row">
+                                <div className="text-group">
                                     <p>Blue Sneaker</p>
                                     <p>$39.50</p>
                                 </div>
-                                <div class="increment-input">
+                                <div className="increment-input">
                                     <button>
                                         <img src={Checkout_Minus} alt="" />
                                     </button>
@@ -76,7 +76,7 @@ const SplitByProduct = (props) => {
                             </div>
                         </div>
                     </div>
-                    <div class="footer">
+                    <div className="footer">
                         <button>Save Count</button>
                     </div>
                 </div>

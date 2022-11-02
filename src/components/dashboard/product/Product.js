@@ -1152,24 +1152,24 @@ const Product = (props) => {
                                                                 var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
                                                                 return (<React.Fragment>
                                                                     <div className="main-row" onChange={onChangeValue}>
-                                                                    <div class="input-col1" >
-                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
-                                                                       
-                                                                   
-                                                                        
-                                                                        {/* <div className="text-group">
+                                                                        <div className="input-col1" >
+                                                                            <label htmlFor={id + "-txt"}>{efm.Name}</label>
+
+
+
+                                                                            {/* <div className="text-group">
                                                                             <p className="label">{efm.Name}</p>
                                                                         </div> */}
-                                                                        <div className="increment-input">
-                                                                            <button onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <img src={Checkout_Minus} alt="" />
-                                                                            </button>
-                                                                            <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                            <button id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <img src={Checkout_Plus} alt="" />
-                                                                            </button>
-                                                                        </div>
-                                                                       
+                                                                            <div className="increment-input">
+                                                                                <button onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <img src={Checkout_Minus} alt="" />
+                                                                                </button>
+                                                                                <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                                <button id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <img src={Checkout_Plus} alt="" />
+                                                                                </button>
+                                                                            </div>
+
                                                                         </div><div> <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
                                                                     {/* <div className="row" onChange={onChangeValue}>
                                                                         <div className="increment-input">
@@ -1225,12 +1225,12 @@ const Product = (props) => {
                                                                 var id = (efm.Name).replace(/ /g, "_");
                                                                 return (<React.Fragment>
                                                                     <div className="main-row" onChange={onChangeValue}>
-                                                                    <div class="input-col" >
-                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
-                                                                        <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                       
-                                                                    </div>
-                                                                    <div class="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
+                                                                        <div className="input-col" >
+                                                                            <label htmlFor={id + "-txt"}>{efm.Name}</label>
+                                                                            <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+
+                                                                        </div>
+                                                                        <div className="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
                                                                     {/* <p className="label">{efm.Name}</p>
                                                                     <div className="row" onChange={onChangeValue}>
                                                                         <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
