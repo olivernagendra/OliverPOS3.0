@@ -10,7 +10,7 @@ export function getAllAPI(parameter) {
             localStorage.removeItem('CUSTOMER_TO_OrderId')
 
         //    console.log("activities",activities)
-            return activities;
+            return activityorderRes;
         });
 }
 

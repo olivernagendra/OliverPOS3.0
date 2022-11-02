@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { cashRecords, getDetails } from './CashmanagementSlice'
 import moment from 'moment';
 import Config from '../../Config'
+import { get_UDid } from '../common/localSettings';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import STATUSES from "../../constants/apiStatus";
@@ -18,8 +19,10 @@ function Cashmanagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   var registerId = localStorage.getItem('register');
+  var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
   var current_date = moment().format(Config.key.DATE_FORMAT);
-
+  const myRef = useRef();
+  const [defauldnumber, setDefauldNumber] = useState(2);
   const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
   const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
   const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
@@ -31,6 +34,8 @@ function Cashmanagement() {
   const [isMobileList, setisMobileList] = useState(false)
   const [CashDrawerPaymentDetail, setcashDrawerDetailData] = useState([])
   const [activateSelect, setActivateSelect] = useState()
+  const [_cashmangementlist, setCashmanagementList] = useState([])
+  const [listrecordscount, setlistrecordscount] = useState([])
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
@@ -74,14 +79,42 @@ function Cashmanagement() {
     setActivateSelect(OrderId)
   }
 
+  let useCancelled = false;
+  useEffect(() => {
+    if (useCancelled == false) {
+      loadMore(1)
+    }
+    return () => {
+      useCancelled = true;
+    }
+  }, []);
+
+  const loadMore = (pageNo) => {
+    dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.CUSTOMER_PAGE_SIZE, "pageNumber": pageNo }));
+  }
+
+  const [cashdrawer] = useSelector((state) => [state.cashmanagement])
+  useEffect(() => {
+      if (cashdrawer && cashdrawer.data&&cashdrawer.data.content&&cashdrawer.data.content.Records.length > 0) {
+       // setCashmanagementList(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records)
+          var temState = [..._cashmangementlist, ...cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records]
+          setCashmanagementList(temState);
+          setlistrecordscount(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.TotalRecords)
+      }
+  }, [cashdrawer]);
+
+
+
   const { status, data, error, is_success } = useSelector((state) => state.cashmanagement)
   // console.log("status", status, "data", data, "error", error, "is_success", is_success)
   if (status === STATUSES.IDLE && is_success) {
     if (data && data.content && data.content !== undefined) {
-      var _RecordArray = data && data.content && data.content.Records ? data.content.Records : [];
+      var _RecordArray = _cashmangementlist
       var array = [];
+     
       if (_RecordArray.length > 0) {
         array = _RecordArray.slice().sort((a, b) => b.LogDate - a.LogDate)
+        array = [...new Set([...array, ...data.content.Records])];
         array.reverse();
         var openingCashDrawerRecord = array ? array.find(Items => Items.ClosedTimeUtc == null) : null;
         if (openingCashDrawerRecord && openingCashDrawerRecord.Id) {
@@ -102,22 +135,10 @@ function Cashmanagement() {
 
 
 
-  let useCancelled = false;
-  useEffect(() => {
-    if (useCancelled == false) {
-      dispatch(cashRecords({ "registerId": registerId, "pageSize": "1000", "pageNumber": "1" }));
-    }
-    return () => {
-      useCancelled = true;
-    }
-  }, []);
-
-
   //======Cash ReCords API Data Store 
-  var allCashRecords = data && data.content && data.content.Records
+  var allCashRecords =_cashmangementlist
   var current_date = moment().format(Config.key.DATE_FORMAT);
   var _newActivities = allCashRecords;
-
   /// Find Dates and And filter list with dates----------------------
   var getDistinctActivity = {};
   var _activity = allCashRecords
@@ -156,6 +177,7 @@ function Cashmanagement() {
 
 
 
+
   const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
   const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
   useEffect(() => {
@@ -168,12 +190,27 @@ function Cashmanagement() {
 
 
 
+
+
+
   if (callDetailApiOnLoad === true && firstRecordId !== "") {
     setCallDetailApiOnLoad(false)
     getCashDrawerPaymentDetail(firstRecordId);
     firstRecordId = ""
-
   }
+
+  const onScroll = (e) => {
+    const bottom = Number((e.target.scrollHeight - e.target.scrollTop).toFixed(0)) - e.target.clientHeight < 50;
+    if(_cashmangementlist.length == listrecordscount){
+
+    }else if (bottom) {
+      setDefauldNumber(defauldnumber + 1)
+       if (defauldnumber != 1) {
+         loadMore(defauldnumber)
+       }
+    } 
+  };
+
 
   var _balance = 0;
   if (CashDrawerPaymentDetail) {
@@ -192,7 +229,7 @@ function Cashmanagement() {
   return (
     <>
       <React.Fragment>
-      {status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+        {/* {status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null} */}
         <div className="cash-management-wrapper">
           <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
           <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
@@ -218,7 +255,7 @@ function Cashmanagement() {
               <p className="desktop">Cash Management</p>
               <p className="mobile">Transaction History</p>
             </div>
-            <div className="cm-list-body">
+            <div className="cm-list-body" ref={myRef} onScroll={onScroll} >
               {((!allCashRecords) || allCashRecords.length == 0) ? <>
                 {/* <div>loading...</div> */}
                 <LoadingSmallModal></LoadingSmallModal>
@@ -237,12 +274,12 @@ function Cashmanagement() {
                   {/* <div className="prev-registers"> */}
 
                   {
-                   
+
                     orders && ordersDate && ordersDate.map((getDate, index) => {
                       return (<React.Fragment> <div className="date"><p>{current_date == getDate ? 'Today' : getDate} </p></div>
                         {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
                           return (
-                            <button  className={activateSelect == order.Id ? "other-register no-transform selected" : "other-register no-transform"}  onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
+                            <button className={activateSelect == order.Id ? "other-register no-transform selected" : "other-register no-transform"} onClick={() => getCashDrawerPaymentDetail(order.Id, index)} >
                               <div className="row">
                                 <p className="style1">{order.RegisterName}</p>
                                 <p className="style2">{!order.ClosedTime ? " OPEN " : "  CLOSED  "}</p>
@@ -279,11 +316,11 @@ function Cashmanagement() {
                     <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
                     <p className="open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
                   </div>
-               
+
                   <p className="style1">{Status === "Open"
-                    ? _openDateTime : _openDateTime  +  " to " }</p>
-                     {Status !== "Open" ? <p>{_closeDateTime}</p>:''} 
-                  
+                    ? _openDateTime : _openDateTime + " to "}</p>
+                  {Status !== "Open" ? <p>{_closeDateTime}</p> : ''}
+
                 </div>
                 <div className="col">
                   <p className="style1 mobile-difference">Cash Drawer Ending Balance</p>
