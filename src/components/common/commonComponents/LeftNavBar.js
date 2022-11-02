@@ -21,7 +21,7 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
-import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
+import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/AppDisplayFunction';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
 import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
