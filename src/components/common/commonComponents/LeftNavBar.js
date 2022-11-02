@@ -163,7 +163,7 @@ function LeftNavBar(props) {
             if (b["used_count"] > a["used_count"]) { return 1; }
             return 0;
         })
-        console.log("sortDesc", mostUsedApp)
+      //  console.log("sortDesc", mostUsedApp)
         //}
     }
     var appsList = []
