@@ -2072,8 +2072,7 @@ const Checkout = (props) => {
         setOnlinePayCardData(cardData);
     }
     useEffect(() => {
-        if(onlinePayCardData.hasOwnProperty("paycode"))
-        {
+        if (onlinePayCardData.hasOwnProperty("paycode")) {
             pay_amount(onlinePayCardData.paycode);
         }
     }, [onlinePayCardData]);
@@ -2234,7 +2233,7 @@ const Checkout = (props) => {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
-                                    <button key={payment.Id}  onClick={() => pay_amount_cash(payment)}>
+                                    <button key={payment.Id} onClick={() => pay_amount_cash(payment)}>
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
                                     payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>

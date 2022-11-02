@@ -154,7 +154,7 @@ function LeftNavBar(props) {
     }
 
     //Display 3 Most used app---------------------***********----------------------- 
-    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) ?JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")):[] ;
+    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) ? JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) : [];
     var mostUsedApp = localStorage.getItem("recent_apps") && JSON.parse(localStorage.getItem("recent_apps"));
     if (mostUsedApp && mostUsedApp.length > 0) {
         //const sortDesc = (_recentApp, used_count) => {
