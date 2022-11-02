@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
@@ -9,10 +9,11 @@ import Config from '../../Config'
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
 const ActivityList = (props) => {
+    const myRef = useRef();
     const [isSortWrapper, setSortWrapper] = useState(false)
     const [SelectedTypes, setSelectedTypes] = useState('')
     const [AllActivityList, setAllActivityList] = useState([])
-
+    
     var current_date = moment().format(Config.key.DATE_FORMAT);
     var customer_to_OrderId = (typeof localStorage.getItem("CUSTOMER_TO_OrderId") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_OrderId") !== null) ? localStorage.getItem("CUSTOMER_TO_OrderId") : '';
     var id = `activity-order-${customer_to_OrderId}`
@@ -42,23 +43,28 @@ const ActivityList = (props) => {
         }
     }
 
+      const onScroll = (e) => {
+        const bottom = Number((e.target.scrollHeight - e.target.scrollTop).toFixed(0)) - e.target.clientHeight < 50;
+       // let page = this.state.page;
+        if (bottom) {
+            props.updateSomething()
+        }
+    };
 
 
-
+    
 
     return (
-        <div className="body">
+        <div ref={myRef} onScroll={onScroll} className="body">
             {((!ordersDate) || ordersDate.length == 0) ?
-                <LoadingSmallModal />
+                <div class="no-results">
+                    <p class="style1">No results found.</p>
+                    <p class="style2">Sorry, you search did not <br /> match any results.</p>
+                </div>
                 :
                 orders && ordersDate && ordersDate.map((getDate, index) => {
                     return (
                         <>
-                             {/* Only shows if only element in parent */}
-                            <div class="no-results">
-                                <p class="style1">No results found.</p>
-                                <p class="style2">Sorry, you search did not <br/> match any results.</p>
-                            </div>
                             <div className="filter-name" key={"orderDatedv" + index}>
                                 <p key={"date" + index}> {current_date == getDate ? 'Today' : getDate}</p>
                             </div>
@@ -66,13 +72,13 @@ const ActivityList = (props) => {
                                 getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
                                     var time = FormateDateAndTime.formatDateWithTime(order.date_time, order.time_zone);
                                     return (
-                                        <button className={props.updateActivityId == order.order_id?"transaction-card no-transform selected":"transaction-card no-transform"} onClick={() => props.click(order, order.order_id)}>
+                                        <button  className={props.updateActivityId == order.order_id ? "transaction-card no-transform selected" : "transaction-card no-transform"} onClick={() => props.click(order, order.order_id)}>
                                             <div className="col">
                                                 <p className="style1">Order# {order.order_id}</p>
                                                 <p className="style2">{order.CustFullName}</p>
                                                 <div className="row">
                                                     {
-                                                        (order.OliverReciptId !=='') ? <img src={InStoreSale} alt="" /> :<img src={OnlineSale} alt="" />
+                                                        (order.OliverReciptId !== '') ? <img src={InStoreSale} alt="" /> : <img src={OnlineSale} alt="" />
 
                                                     }
                                                     <p>{order.order_status}</p>
@@ -94,11 +100,14 @@ const ActivityList = (props) => {
                                     )
                                 })
                             }
+                          
                         </>
                     )
                 })
-
             }
+
+
+
         </div>
     )
 }

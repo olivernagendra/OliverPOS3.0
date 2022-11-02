@@ -161,7 +161,7 @@ const ActivityOrderList = () => {
   
     const productImageFind = async (item)=>{
         var product = await  getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
-        return product.ProductImage
+     //   return product.ProductImage
 
     }
 
@@ -177,7 +177,7 @@ const ActivityOrderList = () => {
                 var IndexImage=''
                 IndexImage =  productImageFind(item);
                 IndexImage.then((a) => {
-                    console.log(a);
+                   /// console.log(a);
                     productImage = a
                   });
                // console.log("productImage",productImage)
