@@ -89,7 +89,7 @@ function Cashmanagement() {
   }, []);
 
   const loadMore = (pageNo) => {
-    dispatch(cashRecords({ "registerId": registerId, "pageSize": 100, "pageNumber": pageNo }));
+    dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.PPRODUCT_PAGE_SIZE, "pageNumber": pageNo }));
   }
 
   const [cashdrawer] = useSelector((state) => [state.cashmanagement])
