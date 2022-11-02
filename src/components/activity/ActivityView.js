@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import ClearCart from '../../assets/images/svg/ClearCart-Icon.svg'
 import OliverIconBaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg'
-import DropdownArrow from '../../assets/images/svg/DropdownArrow.svg'
+// import DropdownArrow from '../../assets/images/svg/DropdownArrow.svg'
+import down_angled_bracket from '../../assets/images/svg/down-angled-bracket.svg';
 import calendar from '../../assets/images/svg/calendar.svg'
 //import Select from 'react-select'
 import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
-import FilterCollapseIcon from '../../assets/images/svg/FilterCollapseIcon.svg'
+import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
@@ -30,8 +31,7 @@ import ActivityOrderList from "./ActivityOrderList";
 import { ActivityFooter } from "./ActivityFooter";
 
 const ActivityView = () => {
-
-
+    const [defauldnumber, setDefauldNumber] = useState(2);
     const [AllActivityList, setAllActivityList] = useState([])
     const [updateActivityId, setupdateActivityId] = useState('')
     const [SelectedTypes, setSelectedTypes] = useState('')
@@ -39,6 +39,7 @@ const ActivityView = () => {
     const [selectedOption, setSelectedOption] = useState('')
     const [sortbyvaluename, SetSortByValueName] = useState('Date')
     const [emailnamephone, setEmailNamePhone] = useState('')
+    const [orderidsearch, setorderId] = useState('')
     const [pricefrom, setPriceFrom] = useState('')
     const [priceto, setPriceTo] = useState('')
     const [filterByPlatform, setFilterByPlatform] = useState('')
@@ -103,7 +104,17 @@ const ActivityView = () => {
     const dispatch = useDispatch();
 
 
+    // useEffect(() => {
+    //     window.addEventListener("scroll",listenToScroll)
 
+    // }, [])
+
+    // const listenToScroll =()=>{ 
+    //     const winScroll = document.body.scrollTop || document.documentElement.scrollTop
+    //     console.log("winScroll",winScroll)
+    // }
+
+   
 
 
 
@@ -117,8 +128,10 @@ const ActivityView = () => {
             if(transactionredirect !== ''){
                 applyServerFilter()
             }else{
-                reload()
-            }            
+                reload(1)
+            } 
+          
+                   
         }
         return () => {
             useCancelled = true;
@@ -128,14 +141,15 @@ const ActivityView = () => {
     const reload = (pagno) => {
         var UID = get_UDid('UDID')
         var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
-        dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": 1 }));
+        dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": pagno }));
     }
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
     useEffect(() => {
         if (activityAllDetails && activityAllDetails.data.length > 0) {
-            setAllActivityList(activityAllDetails.data);
+            var temState = [...AllActivityList, ...activityAllDetails.data]
+            setAllActivityList(temState);
         }
     }, [activityAllDetails]);
 
@@ -145,7 +159,7 @@ const ActivityView = () => {
     useEffect(() => {
         //  console.log("activityfilter", activityfilter)
         if (activityfilter && activityfilter.data.length > 0) {
-            setAllActivityList(activityfilter.data);
+            setAllActivityList(activityfilter.data );
             setSmallLoader(false)
         }
     }, [activityfilter]);
@@ -254,7 +268,7 @@ const ActivityView = () => {
         //   }
             var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
           
-          console.log("transactionsRedirect",transactionsRedirect)
+         // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
         if (useCancelled1 == false) {
             if (customer_to_activity_id) {
@@ -468,9 +482,9 @@ const ActivityView = () => {
             // "EndDay": e_dd,
             // "EndMonth": e_mm,
             // "EndYear": e_yy,
-            "searchVal": emailnamephone?emailnamephone:transactionredirect
+            "searchVal": emailnamephone?emailnamephone:orderidsearch
             //"groupSlug": this.state.filterByGroupList,
-
+            
         };
        // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
@@ -479,16 +493,17 @@ const ActivityView = () => {
     }
 
 
-    const PrintClick = () => {
-
-    }
+   
 
     const clearFilter = () => {
+        reload(1)
         setfilterByUser("")
         setFilterByStatus("")
         setFilterByPlatform("")
         setEmailNamePhone("")
         setSelectuserFilter('')
+        setorderId('')
+       
     }
 
     // console.log("filterByPlatform",filterByPlatform)
@@ -498,14 +513,14 @@ const ActivityView = () => {
 
 
     const handleUserChange = (selectedOption) => {
-        // const { name, value } = e.target;
         setSelectedOption(selectedOption)
-
     }
 
     const hundleChange=(event)=>{
         setEmailNamePhone(event.target.value)
-
+    }
+    const  hundleChangeID=(event)=>{
+    setorderId(event.target.value)
     }
 
     const _Useroptions = [];
@@ -521,6 +536,17 @@ const ActivityView = () => {
     var _platform = [{ key: "both", value: "Both" }, { key: "oliver-pos", value: "Oliver POS" }, { key: "web-shop", value: "Webshop" }];
     var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
 
+  
+
+    const updateSomething = () => {
+        setDefauldNumber(defauldnumber + 1)
+       // console.log("defauldnumber",defauldnumber)
+        if (defauldnumber != 1) {
+            reload(defauldnumber)
+        }
+      }
+
+    //   console.log("AllActivityList",AllActivityList.length)
 
     return <>
         <div className="transactions-wrapper">
@@ -554,14 +580,14 @@ const ActivityView = () => {
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
                     <label for="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChange} />
+                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChangeID} value={orderidsearch} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label for="custInfo">Customer Info</label>
                     <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange}  value={emailnamephone} />
                     <label for="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="orderStatus" placeholder={filterByStatus == '' ? "All" : filterByStatus !== "" ? filterByStatus : "Select Status"} />
                         <div className="option-list">
                             {_orderstatus && _orderstatus.length > 0 && _orderstatus.map((item, index) => {
@@ -578,7 +604,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateFrom">Date From</label>
                             <div className="date-selector-wrapper left ">
-                                <input type="text" id="dateFrom" placeholder="Date" />
+                                <input type="text" id="dateFrom" placeholder="dd/mm/yyyy" />
                                 <button className="open-date-selector open">
                                     <img src={calendar} alt="" />
                                 </button>
@@ -588,7 +614,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
-                                <input type="text" id="dateTo" placeholder="Date" />
+                                <input type="text" id="dateTo" placeholder="dd/mm/yyyy" />
                                 <button className="open-date-selector">
                                     <img src={calendar} alt="" />
                                 </button>
@@ -598,7 +624,7 @@ const ActivityView = () => {
                     </div>
                     <label htmlFor="salesPlatform">Sales Platform</label>
                     <div className={salepersonWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleSaleperson} >
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="salesPlatform" placeholder={filterByPlatform ? filterByPlatform : "All Platforms"} />
                         <div className="option-list">
                             {_platform && _platform.length > 0 && _platform.map((item, index) => {
@@ -616,7 +642,7 @@ const ActivityView = () => {
 
                     <label htmlFor="employee">Employee</label>
                     <div className={isEmployeeWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleEmployee}>
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="employee" placeholder={selectuserfilter ? selectuserfilter : "Select Employee"} />
                         <div className="option-list">
                             {_Useroptions && _Useroptions.length > 0 && _Useroptions.map((item, index) => {
@@ -646,13 +672,13 @@ const ActivityView = () => {
                 </div>
             </div>
 
-            <div className="transactions-list">
+            <div className="transactions-list" >
                 <div className="header" onClick={toggleSortWrapp}>
                     <p>Sort by:</p>
                     <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         <input type="text" id="filterType" />
-                        <img src="../assets/images/svg/FilterCollapseIcon.svg" alt="" />
+                        <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
 
                         <div id="sortCurrent" className="sort-current"  >
                             <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />
@@ -678,7 +704,7 @@ const ActivityView = () => {
 
                     </div>
                 </div>
-                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} />
+                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader}  updateSomething={updateSomething} />
             </div>
             <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">

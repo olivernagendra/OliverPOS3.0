@@ -2,14 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import ClearCart from '../../assets/images/svg/ClearCart-Icon.svg'
+import CircledX_Grey from '../../assets/images/svg/CircledX-Grey.svg'
 import OliverIconBaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg'
 import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
-import FilterCollapseIcon from '../../assets/images/svg/FilterCollapseIcon.svg'
+import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
+import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg'
 import { useNavigate } from 'react-router-dom';
 import { customergetPage, customergetDetail, getAllEvents } from './CustomerSlice'
 import { get_UDid } from '../common/localSettings';
@@ -146,21 +148,21 @@ const CustomerView = () => {
   let useCancelled1 = false;
   useEffect(() => {
     var UID = get_UDid('UDID');
-    var Customerredirection = sessionStorage.getItem("Cusredirection")? sessionStorage.getItem("Cusredirection"):'';
-    if(Customerredirection &&Customerredirection.length > 0) {
-      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection")?sessionStorage.getItem("Cusredirection"):'';
+    var Customerredirection = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
+    if (Customerredirection && Customerredirection.length > 0) {
+      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
       setupdateCustomerId(CUSTOMER_ID)
-    }else{
-      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID")?sessionStorage.getItem("CUSTOMER_ID"):'';
+    } else {
+      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
       setupdateCustomerId(CUSTOMER_ID)
     }
- 
+
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
     }
     //  Remove saved data from sessionStorage
-      sessionStorage.removeItem('Cusredirection');
+    sessionStorage.removeItem('Cusredirection');
     return () => {
       useCancelled1 = true;
     }
@@ -374,12 +376,12 @@ const CustomerView = () => {
     navigate('/home')
   }
 
-  const OpenTransactions =(customerDetailData)=>{
+  const OpenTransactions = (customerDetailData) => {
     //console.log("customerDetailData",customerDetailData.Email)
-    if(customerDetailData.Email !=='' ){
+    if (customerDetailData.Email !== '') {
       sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : 0);
       navigate('/transactions')
-     } 
+    }
   }
 
 
@@ -410,7 +412,7 @@ const CustomerView = () => {
           <div className="header">
             <p>{LocalizedLanguage.customers}</p>
             <button id="cvAddCustomer" onClick={toggleCreateCustomer}>
-              <img src={PlusSign} alt="" />
+              <img src={CircledPlus_Icon_Blue} alt="" />Add New
             </button>
             <button id="mobileCVExitSearch" onClick={CustomerSearchMobi}>
               <img src={AngledBracketBlueleft} alt="" />
@@ -419,6 +421,10 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
+            <div className="row">
+              <img src={SearchBaseBlue} alt="" />
+              <p>Search for Customers</p>
+            </div>
             <label htmlFor="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
             <label htmlFor="lName">Last Name</label>
@@ -435,7 +441,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <input type="text" id="filterType" />
-              <img src={FilterCollapseIcon} alt="" />
+              <img class="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>
@@ -584,7 +590,7 @@ const CustomerView = () => {
                       <p className="style1">{item.datetime}</p>
                       <p className="style2">{item.time}</p>
                       <button>
-                        <img src={ClearCart} alt="" />
+                        <img src={CircledX_Grey} alt="" />
                       </button>
                     </div>
                     <p>{item.Description}</p>

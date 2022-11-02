@@ -30,7 +30,7 @@ import inventoryReducer from '../components/dashboard/slices/inventorySlice'
 import { getAllActivityListSlice, getDetailSlice, getFilteredActivitiesSlice } from '../components/activity/ActivitySlice';
 import { refundOrderSlice } from '../components/refund/refundOrderSlice';
 import { postMetaSlice, getPostMetaSlice } from '../components/common/commonAPIs/postMetaSlice';
-
+import { sendMailSlice, sendExternalMailSlice } from '../components/common/commonAPIs/sendMailSlice';
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
 export const store = configureStore({
@@ -96,7 +96,9 @@ export const store = configureStore({
     cancel_payconiq_payment:cancel_payconiq_paymentSlice.reducer,
     refundOrder:refundOrderSlice.reducer,
     postMeta: postMetaSlice.reducer,
-    getPostMeta: getPostMetaSlice.reducer
+    getPostMeta: getPostMetaSlice.reducer,
+    sendMail:sendMailSlice.reducer,
+    sendExternalMail:sendExternalMailSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

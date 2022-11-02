@@ -6,6 +6,7 @@ import ActiveUser from '../../settings/ActiveUser';
 import Config from '../../Config';
 import { handleAppEvent } from '../common/AppHandeler/commonAppHandler';
 import {addPaymentListLog} from '../../components/cashmanagement/CashmanagementSlice';
+import { store } from '../../app/store';
 export function checkStockAPI(cartlist) {
     var items = [];
     var data;
@@ -148,6 +149,7 @@ export function saveAPI(shopOrder, path, updatedBy = "") {
                         })
                         console.log("paymentLog", paymentLog)
                         if (paymentLog.length > 0) {
+                            store.dispatch(addPaymentListLog(paymentLog));
                             //dispatch(addPaymentListLog(paymentLog));
                         }
                     }

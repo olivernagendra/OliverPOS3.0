@@ -128,7 +128,7 @@ const PinPad = React.memo(props => {
                             {nm === 'c' ? (location.pathname === "/home" ? <img src={imgBackSpace} /> : <img src={Backspace_White} />) :
 
                                 location.pathname === "/openregister" ? <React.Fragment><p>{nm}</p>
-                                    <div class="text-row">{(nm!=" "&& nm!="1"&& nm!="c")? pinAlphabetList[parseInt(nm) -1]:""}</div></React.Fragment> : nm
+                                    <div className="text-row">{(nm != " " && nm != "1" && nm != "c") ? pinAlphabetList[parseInt(nm) - 1] : ""}</div></React.Fragment> : nm
                             }
                         </button>
                     )
@@ -286,8 +286,8 @@ const PinPad = React.memo(props => {
     }
     return <React.Fragment>
         {/* {(status === STATUSES.ERROR && <div>{error}</div>)} */}
-        <p class={location.pathname === "/openregister"?"step3":"style3"}>{LocalizedLanguage.enteryouruserid}</p>
-        <div class={status === STATUSES.ERROR ? "error-message" : "error-message hide"}>Invalid user ID. Please try again.</div>
+        <p className={location.pathname === "/openregister" ? "step3" : "style3"}>{LocalizedLanguage.enteryouruserid}</p>
+        <div className={status === STATUSES.ERROR ? "error-message" : "error-message hide"}>Invalid user ID. Please try again.</div>
         <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue" }} onChange={handle} onKeyDown={handleBack} autoComplete="off" />
         <div className="pinpad">
 

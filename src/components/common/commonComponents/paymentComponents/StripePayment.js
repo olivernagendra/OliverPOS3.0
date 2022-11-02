@@ -70,7 +70,7 @@ const StripePayment = (props) => {
         const { paymentDetails } = props;
         if (process.env.ENVIRONMENT !== 'dev1' //For development need to connect with simulator
             && paymentDetails && paymentDetails.HasTerminal == true && paymentDetails.TerminalCount == 0 && paymentDetails.Support == "Terminal") {
-            props.terminalPopup(LocalizedLanguage.terminalnotconnected)
+            //props.terminalPopup(LocalizedLanguage.terminalnotconnected)
             setconnectReedersErr(LocalizedLanguage.terminalnotconnected);
         }
         else {
@@ -82,7 +82,7 @@ const StripePayment = (props) => {
             //  cancelManually: false })
             setTimeout(() => {
                 // boxHeight();
-                if (props.type == 'refund') {
+                if (props.type && props.type=== 'refund') {
                     // props.hideCashTab(false)
                     // setState({ connectReedersErr: ``, popupClass: '', displayPopupStyle: 'none', activeDisplayStatus: false, loading: false, msgColor: 'green', processingStart: false })
                     props.pay_amount(props.code)

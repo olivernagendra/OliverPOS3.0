@@ -22,11 +22,11 @@ const CashDrawerPaymentDetailList = () => {
     var userName = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.SalePersonName : '';
     var openingNote = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.OpeningNotes : '';
     var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
-    var _openDateTime = moment.utc(openDateTime).local().format(Config.key.TIMEDATE_FORMAT);
+    var _openDateTime = moment.utc(openDateTime).local().format(Config.key.ONLY_TIME);
     var openingBal = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.OpeningBalance : 0.00;
     var iscashDrawerClosed = CashDrawerPaymentDetail ? CashDrawerPaymentDetail.isClosed : false;
     var closeDateTime = CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcClosedDateTime : "";
-    var _closeDateTime = moment.utc(closeDateTime).local().format(Config.key.TIMEDATE_FORMAT);
+    var _closeDateTime = moment.utc(closeDateTime).local().format(Config.key.ONLY_TIME);
     var closingActualBal = CashDrawerPaymentDetail ? CashDrawerPaymentDetail.Actual : 0.00;
     var closingNote = CashDrawerPaymentDetail ? CashDrawerPaymentDetail.ClosingNotes : '';
     var closingExpectedBal = CashDrawerPaymentDetail ? CashDrawerPaymentDetail.Expected : 0.00;
@@ -66,7 +66,7 @@ const CashDrawerPaymentDetailList = () => {
                             <div className="col fill left">
                                 <div className="group">
                                     <p className={item.IsManual == true ? "style1 green" : item.IsManual == false && item.Expected < 0 ? "style1" : "style1 blue"}> {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash"}</p>
-                                    <p className="style2">{moment.utc(item.TransactionDateOffset).local().format(Config.key.TIMEDATE_FORMAT)}</p>
+                                    <p className="style2">{moment.utc(item.TransactionDateOffset).local().format(Config.key.ONLY_TIME)}</p>
                                 </div> </div>
 
                             <div className="col">

@@ -19,7 +19,7 @@ const Customercreate = (props) => {
     const [errors, setErrors] = useState({});
     const [allCustomerList, setAllCustomerList] = useState([])
     const [phone, setPhone] = useState();
-   
+
 
     //  Customer GetPage Api response 
     const { customergetPagesdata, customergetPageserror, customergetPagesis_success, customergetPagesstatus } = useSelector((state) => state.customergetPage)
@@ -54,7 +54,7 @@ const Customercreate = (props) => {
 
 
 
-        // hundle change phoneNumber
+    // hundle change phoneNumber
     const handleChangePhone = (e) => {
         const value = e.target.value.replace(/\D/g, "");
         setPhone(value);
@@ -323,7 +323,11 @@ const Customercreate = (props) => {
                             </div>
                         </section>
                     </form>
-                    <button onClick={handleSubmit}>Create Customer</button>
+                    {/* <button onClick={handleSubmit}>Create Customer</button> */}
+                    <div className="button-row">
+                        <button onClick={handleSubmit}>Create Customer</button>
+                        <button>Create & Add to Cart</button>
+                    </div>
                 </div>
             </div>
         </div>)

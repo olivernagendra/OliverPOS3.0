@@ -627,7 +627,7 @@ const TileList = (props) => {
                     favArrayList && favArrayList.map((item, index) => {
                         switch (item.type) {
                             case "product":
-                                return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()}>
+                                return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
                                     <div className="body">
                                         {item.Image != null ?
                                             <img src={item.Image} alt="" /> :
@@ -636,7 +636,7 @@ const TileList = (props) => {
                                     </div>
                                     <div className="footer">
                                         <p>
-                                            {item.Title}
+                                            {item.attribute_slug}
                                         </p>
                                     </div>
                                     <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
@@ -644,15 +644,15 @@ const TileList = (props) => {
                                 </button>
                             case "attribute":
                             case "sub-attribute":
-                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()}>
+                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
                                     <p>
-                                        {item.attribute_slug}
+                                        {item.Title}
                                     </p>
                                     <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                                 </button>
                             case "category":
                             case "sub-category":
-                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()}>
+                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
                                     <p>
                                         {item.name ? item.name : item.Value}
                                     </p>
