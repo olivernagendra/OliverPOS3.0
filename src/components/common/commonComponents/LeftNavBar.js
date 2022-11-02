@@ -21,7 +21,7 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
-import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/AppDisplayFunction';
+import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
 import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
@@ -154,7 +154,7 @@ function LeftNavBar(props) {
     }
 
     //Display 3 Most used app---------------------***********----------------------- 
-    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) ?JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")):[] ;
+    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) ? JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) : [];
     var mostUsedApp = localStorage.getItem("recent_apps") && JSON.parse(localStorage.getItem("recent_apps"));
     if (mostUsedApp && mostUsedApp.length > 0) {
         //const sortDesc = (_recentApp, used_count) => {
