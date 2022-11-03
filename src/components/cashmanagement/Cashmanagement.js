@@ -213,7 +213,7 @@ function Cashmanagement() {
     } 
   };
 
-  console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)
+  // console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)
 
 
   var _balance = 0;
