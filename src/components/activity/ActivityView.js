@@ -29,6 +29,7 @@ import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import ActivityOrderDetail from "./ActivityOrderDetail";
 import ActivityOrderList from "./ActivityOrderList";
 import { ActivityFooter } from "./ActivityFooter";
+import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 
 const ActivityView = () => {
     const [defauldnumber, setDefauldNumber] = useState(2);
@@ -119,9 +120,8 @@ const ActivityView = () => {
                 applyServerFilter()
             } else {
                 reload(1)
+                dispatch(cashRecords(null));
             }
-
-
         }
         return () => {
             useCancelled = true;
