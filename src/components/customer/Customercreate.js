@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
+import down_angled_bracket from '../../assets/images/svg/down-angled-bracket.svg';
+
 import Checkmark from '../../assets/images/svg/Checkmark.svg';
 import { customergetPage, customersave } from '../customer/CustomerSlice'
 import { get_UDid } from "../common/localSettings";
@@ -19,7 +21,7 @@ const Customercreate = (props) => {
     const [errors, setErrors] = useState({});
     const [allCustomerList, setAllCustomerList] = useState([])
     const [phone, setPhone] = useState();
-   
+
 
     //  Customer GetPage Api response 
     const { customergetPagesdata, customergetPageserror, customergetPagesis_success, customergetPagesstatus } = useSelector((state) => state.customergetPage)
@@ -54,7 +56,7 @@ const Customercreate = (props) => {
 
 
 
-        // hundle change phoneNumber
+    // hundle change phoneNumber
     const handleChangePhone = (e) => {
         const value = e.target.value.replace(/\D/g, "");
         setPhone(value);
@@ -225,109 +227,258 @@ const Customercreate = (props) => {
                     </button>
                 </div>
                 <div className="subwindow-body">
-                    <form id="myform" autoComplete="off">
-                        <section id="contactInfoSection">
-                            <p>Contact Information</p>
-                            <div className="input-row">
-                                <div className="input-col">
-                                    <label htmlFor="email">Email*</label>
-                                    <input type="email" id="email" placeholder="Enter Email" name='email' value={props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                    <p>{errors.email}</p>
-                                </div>
+                    {/* <form id="myform" autoComplete="off"> */}
+                    {/* <section id="contactInfoSection"> */}
+                    <div id="custInfoSection">
+                        <p>Contact Information</p>
+                        <div className="input-row">
+                            <div className="input-col">
+                                <label htmlFor="newCustEmail">Email*</label>
+                                <input type="email" id="newCustEmail" className="error required" placeholder="Enter Email" name='email' value={props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                {/* <p>{errors.email}</p> */}
+                                <div class="error-wrapper"></div>
+                            </div>
 
-                                <div className="input-col">
-                                    <label htmlFor="tel">Phone Number</label>
-                                    <input id="tel" type="text" pattern='[0-9]{0,5}' autoComplete='off' maxLength={13} placeholder="Enter Phone Number" name='tel' value={phone} onChange={handleChangePhone} />
-                                </div>
+                            <div className="input-col">
+                                <label htmlFor="newCustPhone">Phone Number</label>
+                                <input id="newCustPhone" className="error invalid-input" type="text" pattern='[0-9]{0,5}' autoComplete='off' maxLength={13} placeholder="Enter Phone Number" name='tel' value={phone} onChange={handleChangePhone} />
+                                <div class="error-wrapper"></div>
                             </div>
-                            <div className="input-row">
-                                <div className="input-col">
-                                    <label htmlFor="fName">First Name</label>
-                                    <input type="text" id="fName" value={values.fName} placeholder="Enter First Name" name='fName' onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                    {/* <p>{errors.fName}</p> */}
-                                </div>
+                        </div>
+                        <div className="input-row">
+                            <div className="input-col">
+                                <label htmlFor="newCustFirstName">First Name</label>
+                                <input type="text" id="newCustFirstName" value={values.fName} placeholder="Enter First Name" name='fName' onChange={(e) => handleChange(e.target.name, e.target.value)} className="error" />
+                                <div class="error-wrapper"></div>
+                                {/* <p>{errors.fName}</p> */}
+                            </div>
 
-                                <div className="input-col">
-                                    <label htmlFor="lName">Last Name</label>
-                                    <input type="text" id="lName" placeholder="Enter Last Name" name='lName' onChange={(e) => handleChange(e.target.name, e.target.value)} value={values.lName} />
-                                    {/* <p>{errors.lName}</p> */}
-                                </div>
-
-                                <div className="input-col">
-                                    <label htmlFor="website">Website</label>
-                                    <input type="url" id="website" placeholder="Enter URL" name='website' value={values.website} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
+                            <div className="input-col">
+                                <label htmlFor="newCustLastName">Last Name</label>
+                                <input type="text" id="newCustLastName" placeholder="Enter Last Name" name='lName' onChange={(e) => handleChange(e.target.name, e.target.value)} value={values.lName} />
+                                <div class="error-wrapper"></div>
+                                {/* <p>{errors.lName}</p> */}
                             </div>
-                        </section>
-                        <section id="billingAddress">
-                            <p>Billing Address</p>
-                            <div className="input-row">
-                                <div className="input-col">
-                                    <label htmlFor="billingAddress1">Address 1</label>
-                                    <input type="text" id="billingAddress1" placeholder="Enter Address 1" name="billingAddress1" value={values.address1} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
-                                <div className="input-col">
-                                    <label htmlFor="billingAddress2">Address 2</label>
-                                    <input type="text" id="billingAddress2" placeholder="Enter Address 2" name="billingAddress2" value={values.address2} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
+                        </div>
+                        <div className="input-row"> 
+                        <div className="input-col">
+                            <label htmlFor="newCustWebsite">Website</label>
+                            <input type="url" id="newCustWebsite" placeholder="Enter URL" name='website' value={values.website} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                            <div class="error-wrapper"></div>
+                        </div>
+                        <div class="input-col"></div>
+                        </div>
+                        {/* </section> */}
+                    </div>
+                    <div id="billingAddressSection">
+                        <p>Billing Address</p>
+                        <div className="input-row">
+                            <div className="input-col">
+                                <label htmlFor="newCustAddress1Billing">Address 1</label>
+                                <input type="text" id="newCustAddress1Billing" placeholder="Enter Address 1" name="billingAddress1" value={values.address1} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <div class="error-wrapper"></div>
                             </div>
-                            <div className="input-row">
-                                <div className="input-col">
-                                    <label htmlFor="billingZipPostal">Zip/Postal Code</label>
-                                    <input type="text" id="billingZipPostal" placeholder="Enter Zip/Postal Code" name="billingZipPostal" value={values.billingZipPostal} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
-                                <div className="input-col">
-                                    <label htmlFor="billingCity">City</label>
-                                    <input type="text" id="billingCity" name="billingCity" placeholder="Enter City" value={values.billingCity} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
-                                <div className="input-col">
-                                    <label htmlFor="billingCountry">Country</label>
-                                    <input type="text" id="billingCountry" name="billingCountry" placeholder="Enter Country" value={values.billingCountry} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
+                            <div className="input-col">
+                                <label htmlFor="newCustAddress2Billing">Address 2</label>
+                                <input type="text" id="newCustAddress2Billing" placeholder="Enter Address 2" name="billingAddress2" value={values.address2} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <div class="error-wrapper"></div>
                             </div>
-                        </section>
-                        <section id="shippingAddress">
-                            <div className="title-row">
-                                <p>Shipping Address</p>
-                                <label className="custom-checkbox-wrapper">
-                                    <input type="checkbox" id="sameAsBillingCheckbox" name="sameAsBillingCheckbox" onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                    <div className="custom-checkbox">
-                                        <img src={Checkmark} alt="" />
-                                    </div>
-                                    Same as billing
-                                </label>
+                        </div>
+                        <div className="input-row">
+                            <div className="input-col">
+                                <label htmlFor="newCustZipPCBilling">Zip/Postal Code</label>
+                                <input type="text" id="newCustZipPCBilling" placeholder="Enter Zip/Postal Code" name="billingZipPostal" value={values.billingZipPostal} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <div class="error-wrapper"></div>
                             </div>
-                            <div className="input-row">
-                                <div className="input-col">
-                                    <label htmlFor="shippingAddress1">Address 1</label>
-                                    <input type="text" id="shippingAddress1" placeholder="Enter Address 1" value={values.shippingAddress1} name='shippingAddress1' onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
-                                <div className="input-col">
-                                    <label htmlFor="shippingAddress2">Address 2</label>
-                                    <input type="text" id="shippingAddress2" name="shippingAddress2" value={values.shippingAddress2} placeholder="Enter Address 2" onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
+                            <div className="input-col">
+                                <label htmlFor="newCustCityBilling">City</label>
+                                <input type="text" id="newCustCityBilling" name="billingCity" placeholder="Enter City" value={values.billingCity} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <div class="error-wrapper"></div>
                             </div>
-                            <div className="input-row">
-                                <div className="input-col">
-                                    <label htmlFor="shippingZipPostal">Zip/Postal Code</label>
-                                    <input type="text" id="shippingZipPostal" name='shippingZipPostal' value={values.shippingZipPostal} placeholder="Enter Zip/Postal Code" onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
-                                <div className="input-col">
-                                    <label htmlFor="shippingCity">City</label>
-                                    <input type="text" id="shippingCity" placeholder="Enter City" name="shippingCity" value={values.shippingCity} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
-                                <div className="input-col">
-                                    <label htmlFor="shippingCountry">Country</label>
-                                    <input type="text" id="shippingCountry" placeholder="Select Country" name="shippingCountry" value={values.shippingCountry} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                </div>
+                            
+                        </div>
+                        <div className="input-row">
+                        <div class="input-col">
+								<label for="newCustStateProvBilling">State/Province</label>
+								<div class="dropdown-wrapper">
+									<input type="text" id="newCustStateProvBilling" placeholder="Select State/Province" readonly />
+									<div class="error-wrapper"></div>
+									<img src={down_angled_bracket} alt="" />
+									<div class="option-container">
+										<div class="option">
+											<p>Newfoundland and Labrador</p>
+										</div>
+										<div class="option">
+											<p>Nova Scotia</p>
+										</div>
+										<div class="option">
+											<p>New Brunswick</p>
+										</div>
+										<div class="option">
+											<p>Prince Edward Island</p>
+										</div>
+										<div class="option">
+											<p>Quebec</p>
+										</div>
+										<div class="option">
+											<p>Ontario</p>
+										</div>
+										<div class="option">
+											<p>Saskatchewan</p>
+										</div>
+										<div class="option">
+											<p>Manitoba</p>
+										</div>
+										<div class="option">
+											<p>Alberta</p>
+										</div>
+										<div class="option">
+											<p>British Colombia</p>
+										</div>
+										<div class="option">
+											<p>Yukon</p>
+										</div>
+										<div class="option">
+											<p>Northwest Territories</p>
+										</div>
+										<div class="option">
+											<p>Nunavut</p>
+										</div>
+									</div>
+								</div>
+							</div>
+                        <div className="input-col">
+                                <label htmlFor="newCustCountryBilling">Country</label>
+                                {/* <input type="text" id="billingCountry" name="billingCountry" placeholder="Enter Country" value={values.billingCountry} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <div class="error-wrapper"></div> */}
+                                <div class="dropdown-wrapper">
+									<input type="text" id="newCustCountryBilling" placeholder="Select Country" readonly />
+									<div class="error-wrapper"></div>
+									<img src={down_angled_bracket} alt="" />
+									<div class="option-container">
+										<div class="option">
+											<p>Canada</p>
+										</div>
+										<div class="option">
+											<p>United States</p>
+										</div>
+										<div class="option">
+											<p>Mexico</p>
+										</div>
+									</div>
+								</div>
                             </div>
-                        </section>
-                    </form>
+                        </div>
+                    </div>
+                    <div id="shippingAddressSection">
+                        <div className="title-row">
+                            <p>Shipping Address</p>
+                            <label className="custom-checkbox-wrapper">
+                                <input type="checkbox" id="sameAsBillingCheckbox" name="sameAsBillingCheckbox" onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <div className="custom-checkbox">
+                                    <img src={Checkmark} alt="" />
+                                </div>
+                                Same as billing
+                            </label>
+                        </div>
+                        <div className="input-row">
+                            <div className="input-col">
+                                <label htmlFor="shippingAddress1">Address 1</label>
+                                <input type="text" id="shippingAddress1" placeholder="Enter Address 1" value={values.shippingAddress1} name='shippingAddress1' onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                            </div>
+                            <div className="input-col">
+                                <label htmlFor="shippingAddress2">Address 2</label>
+                                <input type="text" id="shippingAddress2" name="shippingAddress2" value={values.shippingAddress2} placeholder="Enter Address 2" onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="input-row">
+                            <div className="input-col">
+                                <label htmlFor="shippingZipPostal">Zip/Postal Code</label>
+                                <input type="text" id="shippingZipPostal" name='shippingZipPostal' value={values.shippingZipPostal} placeholder="Enter Zip/Postal Code" onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                            </div>
+                            <div className="input-col">
+                                <label htmlFor="shippingCity">City</label>
+                                <input type="text" id="shippingCity" placeholder="Enter City" name="shippingCity" value={values.shippingCity} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="input-row">
+                        <div class="input-col">
+								<label for="newCustStateProvShipping">State/Province</label>
+								<div class="dropdown-wrapper">
+									<input type="text" id="newCustStateProvShipping" placeholder="Select State/Province" readonly />
+									<div class="error-wrapper"></div>
+									<img src={down_angled_bracket} alt="" />
+									<div class="option-container">
+										<div class="option">
+											<p>Newfoundland and Labrador</p>
+										</div>
+										<div class="option">
+											<p>Nova Scotia</p>
+										</div>
+										<div class="option">
+											<p>New Brunswick</p>
+										</div>
+										<div class="option">
+											<p>Prince Edward Island</p>
+										</div>
+										<div class="option">
+											<p>Quebec</p>
+										</div>
+										<div class="option">
+											<p>Ontario</p>
+										</div>
+										<div class="option">
+											<p>Saskatchewan</p>
+										</div>
+										<div class="option">
+											<p>Manitoba</p>
+										</div>
+										<div class="option">
+											<p>Alberta</p>
+										</div>
+										<div class="option">
+											<p>British Colombia</p>
+										</div>
+										<div class="option">
+											<p>Yukon</p>
+										</div>
+										<div class="option">
+											<p>Northwest Territories</p>
+										</div>
+										<div class="option">
+											<p>Nunavut</p>
+										</div>
+									</div>
+								</div>
+							</div>
+                        <div className="input-col">
+                                <label htmlFor="newCustCountryShipping">Country</label>
+                                {/* <input type="text" id="newCustCountryBilling" placeholder="Select Country" name="shippingCountry" value={values.shippingCountry} onChange={(e) => handleChange(e.target.name, e.target.value)} /> */}
+                                <div class="dropdown-wrapper">
+									<input type="text" id="newCustCountryShipping" placeholder="Select Country" readonly />
+									<div class="error-wrapper"></div>
+									<img src={down_angled_bracket} alt="" />
+									<div class="option-container">
+										<div class="option">
+											<p>Canada</p>
+										</div>
+										<div class="option">
+											<p>United States</p>
+										</div>
+										<div class="option">
+											<p>Mexico</p>
+										</div>
+									</div>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* </form> */}
                     {/* <button onClick={handleSubmit}>Create Customer</button> */}
                     <div class="button-row">
-						<button onClick={handleSubmit}>Create Customer</button>
-						<button>Create & Add to Cart</button>
-					</div>
+                        <button onClick={handleSubmit}>Create Customer</button>
+                        <button>Create & Add to Cart</button>
+                    </div>
                 </div>
             </div>
         </div>)

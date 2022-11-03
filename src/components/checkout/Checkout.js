@@ -121,6 +121,7 @@ const Checkout = (props) => {
                 gotoHome();
             }
             else {
+                //localStorage.removeItem('paybyproduct');
                 navigate('/salecomplete');
             }
         }
@@ -160,8 +161,9 @@ const Checkout = (props) => {
     // }
     //setPaidAmount(null);
     useEffect(() => {
+        console.log("paymentsArr----"+JSON.stringify(paymentsArr) );
         if (loading === false) { getPaymentDetails(); }
-    }, [paymentsArr]);
+    }, []);
     useEffect(() => {
         var _checklist = JSON.parse(localStorage.getItem("CHECKLIST"));
         if (_checklist && _checklist.customerDetail && _checklist.customerDetail.store_credit) {
@@ -275,6 +277,15 @@ const Checkout = (props) => {
         setPartialAmount(amount);
         setPaymentTypeItem(item);
         dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        //pay_amount(type);
+        //setPayment_Type("cash");
+    }
+    const pay_by_product = (amount) => {
+        toggleSplitByProduct();
+        //setPaidAmount(amount);
+        setPartialAmount(amount);
+       // setPaymentTypeItem(item);
+       // dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
         //pay_amount(type);
         //setPayment_Type("cash");
     }
@@ -2034,6 +2045,8 @@ const Checkout = (props) => {
         localStorage.removeItem('PrintCHECKLIST');
 
         // dispatch(addtoCartProduct(null));
+
+        localStorage.removeItem('paybyproduct');
         navigate('/home');
     }
     const pay_amount_cash = (item) => {
@@ -2310,7 +2323,7 @@ const Checkout = (props) => {
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
         <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
-        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}></SplitByProduct> : null}
+        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}  pay_by_product={pay_by_product}></SplitByProduct> : null}
     </React.Fragment>)
 }
 export default Checkout

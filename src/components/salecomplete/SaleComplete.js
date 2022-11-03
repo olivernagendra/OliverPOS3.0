@@ -24,6 +24,7 @@ import { isSafari } from "react-device-detect";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import STATUSES from "../../constants/apiStatus";
 import { checkTempOrderSync } from "../checkout/checkoutSlice";
+import { postMeta } from "../common/commonAPIs/postMetaSlice";
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 const SaleComplete = () => {
@@ -87,6 +88,15 @@ const SaleComplete = () => {
         return print_bar_code;
     }
     const printdetails = () => {
+
+        if (localStorage.getItem("paybyproduct")) {
+            var parma = { "Slug": tempOrder_Id + "paybyproduct", "Value": localStorage.getItem("paybyproduct"), "Id": 0, "IsDeleted": 0 };
+            dispatch(postMeta(parma));
+            setTimeout(() => {
+                localStorage.removeItem("paybyproduct");
+            }, 100);
+        }
+
 
         var ListItem = new Array();
         var _typeOfTax = typeOfTax()

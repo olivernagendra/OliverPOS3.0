@@ -423,7 +423,8 @@ const CustomerView = () => {
           <div className="body">
           <div class="row">
 						<img src={SearchBaseBlue} alt=""/>
-						<p>Search for Customers</p>
+						<p>Search</p>
+						<button id="customersClearSearch">Clear Search</button>
 					</div>
             <label htmlFor="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
@@ -521,8 +522,8 @@ const CustomerView = () => {
                 <p className="style2">{customerDetailData && customerDetailData.Email}</p>
               </div>
               <div className="text-group">
-                <p className="style2">Phone #:{customerDetailData && customerDetailData.Contact}</p>
-                {/*  <p className="style2">{customerDetailData && customerDetailData.Contact}</p> */}
+                <p className="style2">Phone #:</p>
+                 <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
               </div>
             </div>
           </div>
