@@ -636,7 +636,7 @@ const TileList = (props) => {
                                     </div>
                                     <div className="footer">
                                         <p>
-                                            {item.attribute_slug}
+                                            {item.Title}
                                         </p>
                                     </div>
                                     <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
