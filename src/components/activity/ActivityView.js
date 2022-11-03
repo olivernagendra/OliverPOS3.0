@@ -10,7 +10,7 @@ import calendar from '../../assets/images/svg/calendar.svg'
 import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
-import FilterCollapseIcon from '../../assets/images/svg/FilterCollapseIcon.svg'
+import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
@@ -591,7 +591,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateFrom">Date From</label>
                             <div className="date-selector-wrapper left ">
-                                <input type="text" id="dateFrom" placeholder="Date" />
+                                <input type="text" id="dateFrom" placeholder="dd/mm/yyyy" />
                                 <button className="open-date-selector open">
                                     <img src={calendar} alt="" />
                                 </button>
@@ -601,7 +601,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
-                                <input type="text" id="dateTo" placeholder="Date" />
+                                <input type="text" id="dateTo" placeholder="dd/mm/yyyy" />
                                 <button className="open-date-selector">
                                     <img src={calendar} alt="" />
                                 </button>
@@ -665,7 +665,7 @@ const ActivityView = () => {
                     <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         <input type="text" id="filterType" />
-                        <img src="../assets/images/svg/FilterCollapseIcon.svg" alt="" />
+                        <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
 
                         <div id="sortCurrent" className="sort-current"  >
                             <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />

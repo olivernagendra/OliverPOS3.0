@@ -1,4 +1,4 @@
-/* Version 0.9.7 */
+/* Version 0.9.9 */
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@300;400;500;600;700&display=swap");
 
@@ -1031,81 +1031,89 @@ input[type="number"] {
 
 	/* Create Customer */
 
-	.subwindow-wrapper > .subwindow.create-customer {
-		width: 344px;
-		height: min(calc(96% - 375px), 285px);
-		top: 2%;
-	}
-
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body {
-		box-sizing: border-box;
-		padding: 18px;
+	.subwindow.create-customer {
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > section {
+	.subwindow.create-customer > .subwindow-body {
+		box-sizing: border-box;
 		width: 100%;
-		/* padding-bottom: 2.0747vw; */
-		border-bottom: 1px solid var(--oliver-border);
-		margin-bottom: 16px;
+		height: 0;
+		flex-grow: 1;
+		padding: 20px;
+		display: block;
+		overflow-y: scroll;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > section:last-of-type {
-		border-bottom: 0;
-		margin-bottom: 0;
+	.subwindow.create-customer > .subwindow-body > div:not(.button-row) {
+		width: 100%;
+		border-top: 1px solid var(--oliver-border);
+		padding-top: 15px;
+		margin-top: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body p {
+	.subwindow.create-customer > .subwindow-body > div:first-of-type {
+		border-top: 0 !important;
+		padding-top: 0 !important;
+		margin-top: 0 !important;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div:first-of-type > .input-row:last-child > .input-col:last-child {
+		margin-top: 0 !important;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > p {
 		font-family: Poppins;
-		font-size: 16px;
+		font-size: 15px;
 		font-weight: 600;
-		line-height: 24px;
+		line-height: 23px;
 		text-align: left;
 		color: var(--oliver-base-blue);
-		margin: 0 auto 16px 0;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row {
+	.subwindow.create-customer > .subwindow-body > div > .input-row {
 		width: 100%;
 		display: flex;
 		flex-direction: column;
+		margin-top: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row.hidden {
-		display: none;
-	}
-
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col {
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		margin-bottom: 17.83px;
+		margin-top: 16px;
+		position: relative;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col:nth-child(1) {
-		margin-left: 0;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col:nth-child(1) {
+		margin-top: 0 !important;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > label {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > label {
 		font-family: Poppins;
 		font-size: 14px;
 		font-weight: 400;
 		line-height: 20px;
 		text-align: left;
 		color: var(--oliver-base-blue);
-		margin-bottom: 3.85px;
+		padding-bottom: 4px;
+		z-index: 2;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > input {
-		width: 100%;
-		height: 42.33px;
-		background-color: #fff;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > label:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input {
+		height: 42px;
 		border: 1px solid var(--oliver-border);
-		box-sizing: border-box;
-		padding: 0 12px;
 		border-radius: 6px;
-		outline: 0;
+		padding: 0 12px;
 		font-family: Poppins;
 		font-size: 14px;
 		font-weight: 400;
@@ -1114,23 +1122,157 @@ input[type="number"] {
 		color: var(--oliver-base-blue);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > input:focus {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input:hover {
 		border-color: var(--oliver-blue);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input:focus {
+		border-width: 2px;
+		border-color: var(--oliver-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error {
+		border-color: var(--error);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error ~ .error-wrapper {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error ~ .error-wrapper::after {
+		content: "*Error";
+		font-family: Poppins;
+		font-size: 13px;
+		font-weight: 400;
+		line-height: 19px;
+		text-align: left;
+		color: var(--error);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error.invalid-input ~ .error-wrapper::after {
+		content: "*Invalid Input";
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error.required ~ .error-wrapper::after {
+		content: "*Required";
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper {
+		width: 100%;
+		height: 42px;
+		position: relative;
+		background-color: #fff;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open {
+		z-index: 3;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input {
+		width: 100%;
+		height: 100%;
+		z-index: 2;
+		position: relative;
+		background-color: transparent;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input:focus {
+		border-width: 1px;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > input {
+		border-color: var(--oliver-blue);
+		border-radius: 6px 6px 0 0;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > img {
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		right: 12px;
+		top: calc(50% - 10px);
+		z-index: 1;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > img {
+		transform: rotate(180deg) translateY(-2px);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container {
+		display: none;
+		box-sizing: border-box;
+		width: 100%;
+		background-color: #fff;
+		max-height: 400%;
+		border: 1px solid var(--oliver-blue);
+		border-top: 0;
+		border-radius: 0 0 6px 6px;
+		overflow: auto;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > .option-container {
+		display: block;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option {
+		box-sizing: border-box;
+		width: 100%;
+		height: 42px;
+		padding: 0 12px;
+		display: flex;
+		align-items: center;
+		border-radius: 0 0 6px 6px;
+		border-top: 1px solid var(--oliver-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option:nth-child(1) {
+		border-top: 0 !important;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option > p {
+		width: 100%;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		font-family: Poppins;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 20px;
+		text-align: left;
+		color: var(--oliver-base-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option:hover > p {
+		color: var(--oliver-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .title-row {
 		width: 100%;
 		display: flex;
 		align-items: center;
-		margin-bottom: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > p {
-		margin-bottom: 0;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > p {
+		font-family: Poppins;
+		font-size: 15px;
+		font-weight: 600;
+		line-height: 23px;
+		text-align: left;
+		color: var(--oliver-base-blue);
+		margin-right: auto;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper {
-		width: fit-content;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label {
 		display: flex;
 		align-items: center;
 		font-family: Poppins;
@@ -1141,56 +1283,56 @@ input[type="number"] {
 		color: var(--oliver-base-blue);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > input[type="checkbox"] {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > input {
 		position: fixed;
 		left: -10000px;
 		opacity: 0;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox {
 		width: 18px;
 		height: 18px;
-		border: 1px solid var(--oliver-border);
-		border-radius: 4px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		box-sizing: border-box;
+		border: 1px solid var(--oliver-border);
+		border-radius: 4px;
 		margin-right: 12px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox > img {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox > img {
 		width: 10px;
-		height: 7px;
+		height: 10px;
 		display: none;
 	}
 
-	.subwindow-wrapper
-		> .subwindow.create-customer
-		> .subwindow-body
-		.title-row
-		> .custom-checkbox-wrapper
-		> input[type="checkbox"]:checked
-		~ .custom-checkbox {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > input:checked ~ .custom-checkbox {
 		border-color: var(--oliver-blue);
 	}
 
-	.subwindow-wrapper
-		> .subwindow.create-customer
-		> .subwindow-body
-		.title-row
-		> .custom-checkbox-wrapper
-		> input[type="checkbox"]:checked
-		~ .custom-checkbox
-		> img {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > input:checked ~ .custom-checkbox > img {
 		display: block;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > .button-row > button {
+	.subwindow.create-customer > .subwindow-body > .button-row {
 		width: 100%;
-		height: 50px;
-		border: 0;
-		border-radius: 4px;
+		display: flex;
+		flex-direction: column;
+		margin-top: 30px;
+	}
+
+	.subwindow.create-customer > .subwindow-body > .button-row > button {
+		width: 100%;
+		height: 44px;
+		margin-top: 16px;
 		background-color: var(--oliver-blue);
+		border: 0;
+		border-radius: 6px;
 		font-family: Poppins;
 		font-size: 18px;
 		font-weight: 400;
@@ -1199,24 +1341,14 @@ input[type="number"] {
 		color: #fff;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > .button-row > button:first-of-type {
-		margin-bottom: 16px;
+	.subwindow.create-customer > .subwindow-body > .button-row > button:first-of-type {
+		margin-top: 0 !important;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer .input-col.error > label::after {
-		content: "*Required";
-		font-family: Poppins;
-		font-size: 13px;
-		font-weight: 400;
-		line-height: 19px;
-		text-align: left;
-		color: var(--error);
-		margin-left: 4px;
+	.subwindow.create-customer > .subwindow-body > div > .input-row.hidden {
+		display: none;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer .input-col.error > input {
-		border-color: var(--error) !important;
-	}
 
 	/* Custom Fee - Cart Discount */
 
@@ -4707,6 +4839,110 @@ input[type="number"] {
 		border: 1px solid var(--oliver-blue);
 		color: var(--oliver-blue);
 		margin-bottom: 10px;
+	}
+
+	/* Receipt */
+
+	.subwindow-wrapper > .subwindow.receipt {
+		width: 344px;
+		height: 275px;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body {
+		width: 100%;
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > p {
+		font-family: Poppins;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 18px;
+		text-align: center;
+		color: var(--oliver-base-grey);
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button {
+		width: 265px;
+		height: 50px;
+		margin-top: 17px;
+		border-radius: 6px;
+		border: 0;
+		background-color: var(--oliver-blue);
+		font-family: Poppins;
+		font-size: 18px;
+		font-weight: 400;
+		line-height: 24px;
+		text-align: center;
+		color: #fff;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button:first-of-type {
+		margin-top: 21px;
+	}
+
+	/* No Variations Selected */
+
+	.subwindow-wrapper > .subwindow.no-variation-selected {
+		width: 344px;
+		height: min(323px, 95%);
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		border-radius: 8px;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > p.style1 {
+		font-family: Poppins;
+		font-size: 16px;
+		font-weight: 600;
+		line-height: 21px;
+		text-align: center;
+		color: var(--oliver-base-blue);
+		margin-bottom: 23px;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > img {
+		width: 61px;
+		height: 61px;
+		margin-bottom: 22px;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > p.style2 {
+		font-family: Poppins;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 18px;
+		text-align: center;
+		color: var(--oliver-base-blue);
+		margin-bottom: 38px;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > button {
+		width: 306px;
+		height: 50px;
+		background-color: var(--oliver-blue);
+		border: 0;
+		border-radius: 6px;
+		font-family: Poppins;
+		font-size: 18px;
+		font-weight: 400;
+		line-height: 24px;
+		text-align: center;
+		color: #fff;
+		margin-bottom: 19px;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > .auto-margin-bottom {
+		margin: 0;
 	}
 
 	/* #endregion */
@@ -9541,10 +9777,13 @@ input[type="number"] {
 
 	.cv-list > .header > .sort-wrapper > img {
 		position: absolute;
-		width: 10px;
-		height: 10px;
-		top: calc(50% - 5px);
+		width: 14px;
+		top: calc(50% - 8px);
 		right: 8px;
+	}
+
+	.cv-list > .header > .sort-wrapper.open > img {
+		transform: rotate(180deg);
 	}
 
 	.cv-list > .header > .sort-wrapper > input {
@@ -9802,22 +10041,12 @@ input[type="number"] {
 
 	.customer-view-wrapper > .cv-search > .header {
 		width: 100%;
-		padding-bottom: 20px;
 		display: flex;
 		flex-direction: column;
 	}
 
 	.customer-view-wrapper > .cv-search > .header > p:not(.mobile-only) {
 		display: none;
-	}
-
-	.customer-view-wrapper > .cv-search > .header > p.mobile-only {
-		font-family: Poppins;
-		font-size: 16px;
-		font-weight: 500;
-		line-height: 23px;
-		text-align: left;
-		color: var(--oliver-base-blue);
 	}
 
 	.customer-view-wrapper > .cv-search > .header > #cvAddCustomer {
@@ -9854,8 +10083,44 @@ input[type="number"] {
 		flex-direction: column;
 	}
 
-	.customer-view-wrapper > .cv-search > .body > .row {
-		display: none;
+	.customer-view-wrapper > .cv-search > .body > .row { 
+		width: 100%;
+		display: flex;
+		align-items: center;
+		margin-bottom: 11px;
+	}
+
+	.customer-view-wrapper > .cv-search > .body > .row > img {
+		width: 20px;
+		height: 20px;
+		margin-right: 10px;
+	}
+
+	.customer-view-wrapper > .cv-search > .body > .row > p {
+		font-family: Poppins;
+		font-size: 16px;
+		font-weight: 600;
+		line-height: 23px;
+		text-align: left;
+		color: var(--oliver-base-blue);
+		margin-right: auto;
+	}
+
+	.customer-view-wrapper > .cv-search > .body > .row > p::after {
+		content: " for Customer";
+	}
+
+	.customer-view-wrapper > .cv-search > .body > .row > button {
+		padding: 5px;
+		font-family: Poppins;
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 23px;
+		text-align: left;
+		color: var(--oliver-blue);
+		text-decoration: underline;
+		background-color: transparent;
+		border: 0;
 	}
 
 	.customer-view-wrapper > .cv-search > .body > label {
@@ -10366,9 +10631,8 @@ input[type="number"] {
 
 	.transactions-list > .header > .sort-wrapper > img {
 		position: absolute;
-		width: 10px;
-		height: 10px;
-		top: calc(50% - 5px);
+		width: 14px;
+		top: calc(50% - 8px);
 		right: 8px;
 	}
 
@@ -11275,6 +11539,12 @@ input[type="number"] {
 		flex-direction: column;
 	}
 
+	.transactions-detailed > .order-details p {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
 	.transactions-detailed > .order-details > p {
 		font-family: Poppins;
 		font-size: 16px;
@@ -11355,6 +11625,9 @@ input[type="number"] {
 		line-height: 20px;
 		text-align: left;
 		color: var(--oliver-base-blue);
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.transactions-detailed > .order-details > .item > .col > .main-row > p:first-of-type {
@@ -11405,9 +11678,6 @@ input[type="number"] {
 		text-align: left;
 		color: var(--oliver-base-blue);
 		max-width: calc(100% - 20px);
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
 	}
 
 	.transactions-detailed > .footer {
@@ -12276,7 +12546,8 @@ input[type="number"] {
 	}
 
 	.subwindow-wrapper > .subwindow > .subwindow-header {
-		min-height: 14.4vw;
+		/* min-height: 14.4vw; */
+		height: 14.4vw;
 		border-bottom: 0.2667vw solid var(--oliver-border);
 	}
 
@@ -12382,173 +12653,126 @@ input[type="number"] {
 
 	/* Create Customer */
 
-	.subwindow-wrapper > .subwindow.create-customer {
-		width: 95%;
-		height: calc(96% - 375px);
-		top: 2%;
+	.subwindow.create-customer > .subwindow-body {
+		padding: 20px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body {
-		box-sizing: border-box;
-		padding: 5.3333vw;
-		display: flex;
-		flex-direction: column;
+	.subwindow.create-customer > .subwindow-body > div:not(.button-row) {
+		border-top: 1px solid var(--oliver-border);
+		padding-top: 15px;
+		margin-top: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > section {
-		width: 100%;
-		padding-bottom: 2.0747vw;
-		border-bottom: 0.2667vw solid var(--oliver-border);
-		margin-bottom: 4.4107vw;
+	.subwindow.create-customer > .subwindow-body > div > p {
+		font-size: 15px;
+		line-height: 23px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > section:last-of-type {
-		border-bottom: 0;
-		margin-bottom: 0;
+	.subwindow.create-customer > .subwindow-body > div > .input-row {
+		margin-top: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body p {
-		font-family: Poppins;
-		font-family: Poppins;
-		font-size: 4.2667vw;
-		font-weight: 600;
-		line-height: 6.4vw;
-		text-align: left;
-		color: var(--oliver-base-blue);
-		margin: 0 auto 4.2667vw 0;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col {
+		margin-top: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > label {
+		font-size: 14px;
+		line-height: 20px;
+		padding-bottom: 4px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row.hidden {
-		display: none;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input {
+		height: 42px;
+		border: 1px solid var(--oliver-border);
+		border-radius: 6px;
+		padding: 0 12px;
+		font-size: 14px;
+		line-height: 20px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		margin-bottom: 4.7547vw;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input:focus {
+		border-width: 2px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col:nth-child(1) {
-		margin-left: 0;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error ~ .error-wrapper::after {
+		font-size: 13px;
+		line-height: 19px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > label {
-		font-family: Poppins;
-		font-size: 3.7333vw;
-		font-weight: 400;
-		line-height: 5.3333vw;
-		text-align: left;
-		color: var(--oliver-base-blue);
-		margin-bottom: 1.0267vw;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper {
+		height: 42px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > input {
-		width: 100%;
-		height: 11.2vw;
-		background-color: #fff;
-		border: 0.2667vw solid var(--oliver-border);
-		box-sizing: border-box;
-		padding: 0 3.2vw;
-		border-radius: 1.6vw;
-		outline: 0;
-		font-family: Poppins;
-		font-size: 3.7333vw;
-		font-weight: 400;
-		line-height: 5.3333vw;
-		text-align: left;
-		color: var(--oliver-base-blue);
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input:focus {
+		border-width: 1px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > input:focus {
-		border-color: var(--oliver-blue);
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > input {
+		border-radius: 6px 6px 0 0;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		margin-bottom: 4.2667vw;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > img {
+		width: 20px;
+		height: 20px;
+		right: 12px;
+		top: calc(50% - 10px);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > p {
-		margin-bottom: 0;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > img {
+		transform: rotate(180deg) translateY(-2px);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper {
-		width: fit-content;
-		display: flex;
-		align-items: center;
-		font-family: Poppins;
-		font-size: 4.2667vw;
-		font-weight: 400;
-		line-height: 6.4vw;
-		text-align: left;
-		color: var(--oliver-base-blue);
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container {
+		border: 1px solid var(--oliver-blue);
+		border-radius: 0 0 6px 6px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > input[type="checkbox"] {
-		position: fixed;
-		left: -10000px;
-		opacity: 0;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option {
+		height: 42px;
+		padding: 0 12px;
+		border-radius: 0 0 6px 6px;
+		border-top: 1px solid var(--oliver-blue);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox {
-		width: 4.187vw;
-		height: 4.187vw;
-		border: 0.2667vw solid var(--oliver-border);
-		border-radius: 1.0667vw;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-right: 3.0773vw;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option > p {
+		font-size: 14px;
+		line-height: 20px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox > img {
-		width: 2.5653vw;
-		height: 1.912vw;
-		display: none;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > p {
+		font-size: 15px;
+		line-height: 23px;
 	}
 
-	.subwindow-wrapper
-		> .subwindow.create-customer
-		> .subwindow-body
-		.title-row
-		> .custom-checkbox-wrapper
-		> input[type="checkbox"]:checked
-		~ .custom-checkbox {
-		border-color: var(--oliver-blue);
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label {
+		font-size: 16px;
+		line-height: 24px;
 	}
 
-	.subwindow-wrapper
-		> .subwindow.create-customer
-		> .subwindow-body
-		.title-row
-		> .custom-checkbox-wrapper
-		> input[type="checkbox"]:checked
-		~ .custom-checkbox
-		> img {
-		display: block;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox {
+		width: 18px;
+		height: 18px;
+		border: 1px solid var(--oliver-border);
+		border-radius: 4px;
+		margin-right: 12px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > button {
-		width: 100%;
-		height: 13.3333vw;
-		border: 0;
-		border-radius: 1.0667vw;
-		background-color: var(--oliver-blue);
-		font-family: Poppins;
-		font-size: 4.8vw;
-		font-weight: 400;
-		line-height: 6.4vw;
-		text-align: center;
-		color: #fff;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox > img {
+		width: 10px;
+		height: 10px;
+	}
+
+	.subwindow.create-customer > .subwindow-body > .button-row {
+		margin-top: 30px;
+	}
+
+	.subwindow.create-customer > .subwindow-body > .button-row > button {
+		height: 44px;
+		margin-top: 16px;
+		border-radius: 6px;
+		font-size: 18px;
+		line-height: 24px;
 	}
 
 	/* Cart Discount */
@@ -15143,6 +15367,73 @@ input[type="number"] {
 
 	.subwindow-wrapper > .subwindow.logout-confirm > .subwindow-body > button#cancelRegisterLogout {
 		margin-bottom: 10px;
+	}
+
+	/* Receipt */
+
+	.subwindow-wrapper > .subwindow.receipt {
+		width: 91.7333vw;
+		height: 73.3333vw;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > p {
+		font-size: 3.7333vw;
+		line-height: 4.8vw;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button {
+		width: 70.6667vw;
+		height: 13.3333vw;
+		margin-top: 4.5333vw;
+		border-radius: 1.6vw;
+		font-size: 4.8vw;
+		line-height: 6.4vw;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button:first-of-type {
+		margin-top: 5.6vw;
+	}
+
+	/* No Variations Selected */
+
+	.subwindow-wrapper > .subwindow.no-variation-selected {
+		width: 91.7333vw;
+		height: min(86.1333vw, 95%);
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body {
+		border-radius: 2.1333vw;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > p.style1 {
+		font-size: 4.2667vw;
+		line-height: 5.6vw;
+		margin-bottom: 6.1333vw;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > img {
+		width: 16.2667vw;
+		height: 16.2667vw;
+		margin-bottom: 5.8667vw;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > p.style2 {
+		font-family: Poppins;
+		font-size: 3.7333vw;
+		font-weight: 400;
+		line-height: 4.8vw;
+		text-align: center;
+		color: var(--oliver-base-blue);
+		margin-bottom: 10.1333vw;
+	}
+
+	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > button {
+		width: 81.6vw;
+		height: 13.3333vw;
+		border-radius: 1.6vw;
+		font-size: 4.8vw;
+		line-height: 6.4vw;
+		margin-bottom: 5.0667vw;
 	}
 	
 	/* #endregion */
@@ -17780,11 +18071,9 @@ input[type="number"] {
 	}
 
 	.cv-list > .header > .sort-wrapper > img {
-		position: absolute;
-		width: 2.6667vw;
-		height: 2.6667vw;
-		top: calc(50% - 1.3333vw);
-		right: 2.1333vw;
+		width: 0.6836vw;
+		top: calc(50% - 0.3906vw);
+		right: 0.3906vw;
 	}
 
 	.cv-list > .header > .sort-wrapper > input {
@@ -18022,7 +18311,6 @@ input[type="number"] {
 
 	.customer-view-wrapper > .cv-search > .header {
 		width: 100%;
-		padding-bottom: 5.3333vw;
 		display: flex;
 		flex-direction: column;
 	}
@@ -18066,22 +18354,31 @@ input[type="number"] {
 		margin-right: 2.1333vw;
 	}
 
-	.customer-view-wrapper > .cv-search > .body {
-		width: 100%;
-		height: 0;
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
+	.customer-view-wrapper > .cv-search > .body > .row { 
+		margin-bottom: 2.9333vw;
+	}
+
+	.customer-view-wrapper > .cv-search > .body > .row > img {
+		width: 5.3333vw;
+		height: 5.3333vw;
+		margin-right: 2.6667vw;
+	}
+
+	.customer-view-wrapper > .cv-search > .body > .row > p {
+		font-size: 4.2667vw;
+		line-height: 6.1333vw;
+	}
+
+
+	.customer-view-wrapper > .cv-search > .body > .row > button {
+		padding: 1.3333vw;
+		font-size: 4.2667vw;
+		line-height: 6.1333vw;
 	}
 
 	.customer-view-wrapper > .cv-search > .body > label {
-		width: 100%;
-		font-family: Poppins;
 		font-size: 3.7333vw;
-		font-weight: 400;
 		line-height: 5.3333vw;
-		text-align: left;
-		color: var(--oliver-base-blue);
 		margin-bottom: 1.0667vw;
 	}
 
@@ -19805,10 +20102,9 @@ input[type="number"] {
 	}
 
 	.choose-wrapper > .choose-body-default button#addNew > img {
-		width: 24px;
-		height: 24px;
-		filter: brightness(0) saturate(100%) invert(80%) sepia(10%) saturate(241%) hue-rotate(169deg) brightness(87%) contrast(84%);
-		margin-right: 10px;
+		width: 20px;
+		height: 20px;
+		margin-right: 6px;
 	}
 
 	.choose-wrapper > .choose-body-default .button-group {
@@ -20178,81 +20474,85 @@ input[type="number"] {
 
 	/* Create Customer */
 
-	.subwindow-wrapper > .subwindow.create-customer {
+	.subwindow.create-customer {
 		width: 744px;
-		height: min(835px, 95%);
-	}
-
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body {
-		box-sizing: border-box;
-		padding: 20px 40px;
+		height: min(95%, 1090px);
+		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > section {
+	.subwindow.create-customer > .subwindow-body {
+		box-sizing: border-box;
 		width: 100%;
-		padding-bottom: 20px;
-		border-bottom: 1px solid var(--oliver-border);
-		margin-bottom: 16px;
+		height: 0;
+		flex-grow: 1;
+		padding: 20px 68px;
+		display: block;
+		overflow-y: scroll;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > section:last-of-type {
-		border-bottom: 0;
-		margin-bottom: 0;
+	.subwindow.create-customer > .subwindow-body > div:not(.button-row) {
+		width: 100%;
+		border-top: 1px solid var(--oliver-border);
+		padding-top: 15px;
+		margin-top: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body p {
+	.subwindow.create-customer > .subwindow-body > div:first-of-type {
+		border-top: 0 !important;
+		padding-top: 0 !important;
+		margin-top: 0 !important;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > p {
 		font-family: Poppins;
 		font-size: 15px;
 		font-weight: 600;
 		line-height: 23px;
 		text-align: left;
 		color: var(--oliver-base-blue);
-		margin: 0 auto 12px 0;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row {
+	.subwindow.create-customer > .subwindow-body > div > .input-row {
 		width: 100%;
 		display: flex;
-		margin-bottom: 12px;
+		margin-top: 16px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row.hidden {
-		display: none;
-	}
-
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col {
 		width: 0;
 		flex: 1;
-		margin-left: 14px;
 		display: flex;
 		flex-direction: column;
+		margin-left: 14px;
+		position: relative;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col:nth-child(1) {
-		margin-left: 0;
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col:nth-child(1) {
+		margin-left: 0 !important;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > label {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > label {
 		font-family: Poppins;
 		font-size: 14px;
 		font-weight: 400;
 		line-height: 20px;
-		letter-spacing: 0em;
 		text-align: left;
 		color: var(--oliver-base-blue);
-		margin-bottom: 4px;
+		padding-bottom: 4px;
+		z-index: 2;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > input {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > label:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input {
 		height: 42px;
-		background-color: #fff;
 		border: 1px solid var(--oliver-border);
-		box-sizing: border-box;
-		padding: 0 12px;
 		border-radius: 6px;
-		outline: 0;
+		padding: 0 12px;
 		font-family: Poppins;
 		font-size: 14px;
 		font-weight: 400;
@@ -20261,18 +20561,159 @@ input[type="number"] {
 		color: var(--oliver-base-blue);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > input:focus {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input:hover {
 		border-color: var(--oliver-blue);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input:focus {
+		border-width: 2px;
+		border-color: var(--oliver-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error {
+		border-color: var(--error);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error ~ .error-wrapper {
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error ~ .error-wrapper::after {
+		content: "*Error";
+		font-family: Poppins;
+		font-size: 13px;
+		font-weight: 400;
+		line-height: 19px;
+		text-align: left;
+		color: var(--error);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error.invalid-input ~ .error-wrapper::after {
+		content: "*Invalid Input";
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error.required ~ .error-wrapper::after {
+		content: "*Required";
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper {
+		width: 100%;
+		height: 42px;
+		position: relative;
+		background-color: #fff;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open {
+		z-index: 3;
+		box-shadow: 0px 10px 20px rgba(119, 135, 147, 0.1);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input {
+		width: 100%;
+		height: 100%;
+		z-index: 2;
+		position: relative;
+		background-color: transparent;
+		padding-right: 40px;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input:focus {
+		border-width: 1px;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > input {
+		border-color: var(--oliver-blue);
+		border-radius: 6px 6px 0 0;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > img {
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		right: 12px;
+		top: calc(50% - 10px);
+		z-index: 1;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > img {
+		transform: rotate(180deg) translateY(-2px);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container {
+		display: none;
+		box-sizing: border-box;
+		width: 100%;
+		background-color: #fff;
+		max-height: 400%;
+		border: 1px solid var(--oliver-blue);
+		border-top: 0;
+		border-radius: 0 0 6px 6px;
+		overflow: auto;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > .option-container {
+		display: block;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option {
+		box-sizing: border-box;
+		width: 100%;
+		height: 42px;
+		padding: 0 12px;
+		display: flex;
+		align-items: center;
+		border-radius: 0 0 6px 6px;
+		border-top: 1px solid var(--oliver-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option:nth-child(1) {
+		border-top: 0 !important;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option > p {
+		width: 100%;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		font-family: Poppins;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 20px;
+		text-align: left;
+		color: var(--oliver-base-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option:hover > p {
+		color: var(--oliver-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .title-row {
 		width: 100%;
 		display: flex;
 		align-items: center;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper {
-		width: fit-content;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > p {
+		font-family: Poppins;
+		font-size: 15px;
+		font-weight: 600;
+		line-height: 23px;
+		text-align: left;
+		color: var(--oliver-base-blue);
+		margin-right: auto;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label {
 		display: flex;
 		align-items: center;
 		font-family: Poppins;
@@ -20283,92 +20724,70 @@ input[type="number"] {
 		color: var(--oliver-base-blue);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > input[type="checkbox"] {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label:hover {
+		cursor: pointer;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > input {
 		position: fixed;
 		left: -10000px;
 		opacity: 0;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox {
-		width: 17px;
-		height: 17px;
-		border: 1px solid var(--oliver-border);
-		border-radius: 4px;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox {
+		width: 18px;
+		height: 18px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin-right: 11px;
+		box-sizing: border-box;
+		border: 1px solid var(--oliver-border);
+		border-radius: 4px;
+		margin-right: 12px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox > img {
-		width: 11px;
-		height: 9px;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox > img {
+		width: 10px;
+		height: 10px;
 		display: none;
 	}
 
-	.subwindow-wrapper
-		> .subwindow.create-customer
-		> .subwindow-body
-		.title-row
-		> .custom-checkbox-wrapper
-		> input[type="checkbox"]:checked
-		~ .custom-checkbox {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > input:checked ~ .custom-checkbox {
 		border-color: var(--oliver-blue);
 	}
 
-	.subwindow-wrapper
-		> .subwindow.create-customer
-		> .subwindow-body
-		.title-row
-		> .custom-checkbox-wrapper
-		> input[type="checkbox"]:checked
-		~ .custom-checkbox
-		> img {
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > input:checked ~ .custom-checkbox > img {
 		display: block;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > .button-row {
+	.subwindow.create-customer > .subwindow-body > .button-row {
 		width: 100%;
 		display: flex;
-		margin-bottom: 10px;
+		margin-top: 30px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > .button-row > button {
+	.subwindow.create-customer > .subwindow-body > .button-row > button {
 		flex: 1;
+		margin-left: 14px;
 		height: 44px;
+		background-color: var(--oliver-blue);
 		border: 0;
 		border-radius: 6px;
-		background-color: var(--oliver-blue);
 		font-family: Poppins;
 		font-size: 18px;
 		font-weight: 400;
 		line-height: 24px;
 		text-align: center;
 		color: #fff;
-		align-self: center;
-		margin-left: 18px;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > .button-row > button:first-of-type {
-		margin-left: 0;
+	.subwindow.create-customer > .subwindow-body > .button-row > button:first-of-type {
+		margin-left: 0 !important;
 	}
 
-	.subwindow.create-customer > .subwindow-body .input-col.error > label::after {
-		content: "*Required";
-		font-family: Poppins;
-		font-size: 13px;
-		font-weight: 400;
-		line-height: 19px;
-		text-align: left;
-		color: var(--error);
-		margin-left: 4px;
+	.subwindow.create-customer > .subwindow-body > div > .input-row.hidden {
+		display: none;
 	}
-
-	.subwindow.create-customer > .subwindow-body .input-col.error > input {
-		border: 1px solid var(--error) !important;
-	}
-
-
 
 	/* Cart Discount-Custom Fee */
 
@@ -22233,7 +22652,7 @@ input[type="number"] {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		border-radius: 0.67vw;
+		border-radius: 8px;
 	}
 
 	.subwindow-wrapper > .subwindow.no-variation-selected > .subwindow-body > p.style1 {
@@ -23927,6 +24346,51 @@ input[type="number"] {
 		border: 1px solid var(--oliver-blue);
 		color: var(--oliver-blue);
 		margin-bottom: 10px;
+	}
+
+	/* Receipt */
+
+	.subwindow-wrapper > .subwindow.receipt {
+		width: 504px;
+		height: 295px;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body {
+		width: 100%;
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > p {
+		font-family: Poppins;
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 21px;
+		text-align: center;
+		color: var(--oliver-base-blue);
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button {
+		width: 265px;
+		height: 50px;
+		margin-top: 17px;
+		border-radius: 6px;
+		border: 0;
+		background-color: var(--oliver-blue);
+		font-family: Poppins;
+		font-size: 18px;
+		font-weight: 400;
+		line-height: 24px;
+		text-align: center;
+		color: #fff;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button:first-of-type {
+		margin-top: 21px;
 	}
 
 	/* #endregion */
@@ -25743,7 +26207,7 @@ input[type="number"] {
 	/* #region */
 
 	.app-launcher-wrapper {
-		z-index: 2;
+		z-index: 3;
 		box-sizing: border-box;
 		position: fixed;
 		width: 100%;
@@ -25788,6 +26252,7 @@ input[type="number"] {
 		letter-spacing: 0em;
 		text-align: left;
 		margin-left: calc(29px * var(--linear-multiplier));
+		color: var(--oliver-base-blue);
 	}
 
 	.app-launcher-wrapper > .app-launcher > .body {
@@ -25854,7 +26319,7 @@ input[type="number"] {
 	/* #region */
 
 	.link-launcher-wrapper {
-		z-index: 2;
+		z-index: 3;
 		box-sizing: border-box;
 		position: fixed;
 		width: 100%;
@@ -25899,6 +26364,7 @@ input[type="number"] {
 		letter-spacing: 0em;
 		text-align: left;
 		margin-left: calc(29px * var(--linear-multiplier));
+		color: var(--oliver-base-blue);
 	}
 
 	.link-launcher-wrapper > .link-launcher > .body {
@@ -29259,6 +29725,21 @@ input[type="number"] {
 		line-height: 23px;
 		text-align: left;
 		color: var(--oliver-base-blue);
+		margin-right: auto;
+	}
+
+	.cv-search > .body > .row > button {
+		padding: 5px;
+		transform: translateY(-5px);
+		background-color: transparent;
+		border: 0;
+		font-family: Poppins;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 20px;
+		text-align: left;
+		color: var(--oliver-blue);
+		text-decoration: underline;
 	}
 
 	.cv-search > .body > label {
@@ -30124,6 +30605,8 @@ input[type="number"] {
 
 	.transactions-search > .search-body > .input-row > .input-col {
 		flex: 1;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.transactions-search > .search-body > .input-row > .input-col:first-child {
@@ -30384,14 +30867,23 @@ input[type="number"] {
 		z-index: 5;
 	}
 
+	.transactions-list > .header > .sort-wrapper * {
+		user-select: none;
+	}
+
 	.transactions-list > .header > .sort-wrapper:hover {
 		cursor: pointer;
 	}
 
 	.transactions-list > .header > .sort-wrapper > img {
 		position: absolute;
-		top: calc(50% - 4px);
+		width: 14px;
+		top: calc(50% - 8px);
 		right: 8px;
+	}
+
+	.transactions-list > .header > .sort-wrapper.open > img {
+		transform: rotate(180deg);
 	}
 
 	.transactions-list > .header > .sort-wrapper > input {
@@ -31794,9 +32286,9 @@ input[type="number"] {
 	}
 
 	.choose-wrapper > .choose-body-default button#addNew > img {
-		width: 1.1719vw;
-		height: 1.1719vw;
-		margin-right: 0.4883vw;
+		width: 0.9766vw;
+		height: 0.9766vw;
+		margin-right: 0.293vw;
 	}
 
 	.choose-wrapper > .choose-body-default .button-group {
@@ -31988,88 +32480,132 @@ input[type="number"] {
 
 	/* Create Customer */
 
-	.subwindow-wrapper > .subwindow.create-customer {
+	.subwindow.create-customer {
 		width: 36.3281vw;
-		height: min(40.7715vw, 95%);
+		height: min(95%, 53.2227vw);
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body {
-		padding: 0.9766vw 1.9531vw;
+	.subwindow.create-customer > .subwindow-body {
+		padding: 0.9766vw 3.3203vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > section {
-		padding-bottom: 0.9766vw;
-		border-bottom: 0.04883vw solid var(--oliver-border);
-		margin-bottom: 0.7813vw;
+	.subwindow.create-customer > .subwindow-body > div:not(.button-row) {
+		border-top: 0.04883vw solid var(--oliver-border);
+		padding-top: 0.7324vw;
+		margin-top: 0.7813vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body p {
+	.subwindow.create-customer > .subwindow-body > div > p {
 		font-size: 0.7324vw;
 		line-height: 1.123vw;
-		margin: 0 auto 0.5859vw 0;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row {
-		margin-bottom: 0.5859vw;
+	.subwindow.create-customer > .subwindow-body > div > .input-row {
+		margin-top: 0.7813vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col {
 		margin-left: 0.6836vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > label {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > label {
 		font-size: 0.6836vw;
 		line-height: 0.9766vw;
-		margin-bottom: 0.1953vw;
+		padding-bottom: 0.1953vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .input-row > .input-col > input {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input {
 		height: 2.0508vw;
 		border: 0.04883vw solid var(--oliver-border);
-		padding: 0 0.5859vw;
 		border-radius: 0.293vw;
+		padding: 0 0.5859vw;
 		font-size: 0.6836vw;
 		line-height: 0.9766vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper {
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input:focus {
+		border-width: 0.09766vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col input.error ~ .error-wrapper::after {
+		font-size: 0.6348vw;
+		line-height: 0.9277vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper {
+		height: 2.0508vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > input:focus {
+		border-width: 0.04883vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > input {
+		border-radius: 0.293vw 0.293vw 0 0;
+		padding-right: 1.9531vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > img {
+		width: 0.9766vw;
+		height: 0.9766vw;
+		right: 0.5859vw;
+		top: calc(50% - 0.4883vw);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper.open > img {
+		transform: rotate(180deg) translateY(-0.09766vw);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container {
+		border: 0.04883vw solid var(--oliver-blue);
+		border-radius: 0 0 0.293vw 0.293vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option {
+		height: 2.0508vw;
+		padding: 0 0.5859vw;
+		border-radius: 0 0 0.293vw 0.293vw;
+		border-top: 1px solid var(--oliver-blue);
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .input-row > .input-col > .dropdown-wrapper > .option-container > .option > p {
+		font-size: 0.6836vw;
+		line-height: 0.9766vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .title-row > p {
+		font-size: 0.7324vw;
+		line-height: 1.123vw;
+	}
+
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label {
 		font-size: 0.7813vw;
 		line-height: 1.1719vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox {
-		width: 0.8301vw;
-		height: 0.8301vw;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox {
+		width: 0.8789vw;
+		height: 0.8789vw;
 		border: 0.04883vw solid var(--oliver-border);
 		border-radius: 0.1953vw;
-		margin-right: 0.5371vw;
+		margin-right: 0.5859vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body .title-row > .custom-checkbox-wrapper > .custom-checkbox > img {
-		width: 0.5371vw;
-		height: 0.4395vw;
+	.subwindow.create-customer > .subwindow-body > div > .title-row > label > .custom-checkbox > img {
+		width: 0.4883vw;
+		height: 0.4883vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > .button-row {
-		margin-bottom: 0.4883vw;
+	.subwindow.create-customer > .subwindow-body > .button-row {
+		margin-top: 1.4648vw;
 	}
 
-	.subwindow-wrapper > .subwindow.create-customer > .subwindow-body > .button-row > button {
+	.subwindow.create-customer > .subwindow-body > .button-row > button {
+		margin-left: 0.6836vw;
 		height: 2.1484vw;
 		border-radius: 0.293vw;
 		font-size: 0.8789vw;
 		line-height: 1.1719vw;
-		margin-left: 0.8789vw;
-	}
-
-	.subwindow.create-customer > .subwindow-body .input-col.error > label::after {
-		font-size: 0.6348vw;
-		line-height: 0.9277vw;
-		margin-left: 0.1953vw;
-	}
-
-	.subwindow.create-customer > .subwindow-body .input-col.error > input {
-		border: 0.04883vw solid var(--error) !important;
 	}
 
 	/* Cart Discount-Custom Fee */
@@ -33905,6 +34441,31 @@ input[type="number"] {
 		margin-bottom: 0.4883vw;
 	}
 
+	/* Receipt */
+
+	.subwindow-wrapper > .subwindow.receipt {
+		width: 24.6094vw;
+		height: 14.4043vw;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > p {
+		font-size: 0.7813vw;
+		line-height: 1.0254vw;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button {
+		width: 12.9395vw;
+		height: 2.4414vw;
+		margin-top: 0.8301vw;
+		border-radius: 0.293vw;
+		font-size: 0.8789vw;
+		line-height: 1.1719vw;
+	}
+
+	.subwindow-wrapper > .subwindow.receipt > .subwindow-body > button:first-of-type {
+		margin-top: 1.0254vw;
+	}
+
 	/* #endregion */
 
 	/* --------------------Logout Confirmation-------------------- */
@@ -35532,6 +36093,13 @@ input[type="number"] {
 		line-height: 1.123vw;
 	}
 
+	.cv-search > .body > .row > button {
+		padding: 0.2441vw;
+		transform: translateY(-0.2441vw);
+		font-size: 0.6836vw;
+		line-height: 0.9766vw;
+	}
+
 	.cv-search > .body > label {
 		font-size: 0.6836vw;
 		line-height: 0.9766vw;
@@ -36057,7 +36625,8 @@ input[type="number"] {
 	}
 
 	.transactions-list > .header > .sort-wrapper > img {
-		top: calc(50% - 0.1953vw);
+		width: 0.6836vw;
+		top: calc(50% - 0.3906vw);
 		right: 0.3906vw;
 	}
 

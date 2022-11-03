@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import avatar from '../../assets/images/svg/avatar.svg';
+// import avatar from '../../assets/images/svg/avatar.svg';
+import avatar_2 from '../../assets/images/svg/avatar-2.svg';
 import Arrow_Left from '../../assets/images/svg/Arrow_Left.svg';
 import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
 import Ellipsis_Icon_DarkBlue from '../../assets/images/svg/Ellipsis-Icon-DarkBlue.svg';
 import AddNote_Icon from '../../assets/images/svg/AddNote-Icon.svg';
+import ClearCart_Icon from '../../assets/images/svg/ClearCart-Icon.svg';
+
 import Clock from '../../assets/images/svg/Clock.svg';
 import UserInfo from "../common/commonComponents/UserInfo";
 import SwitchUser from "../common/commonComponents/SwitchUser";
@@ -19,6 +22,8 @@ import { get_UDid } from "../common/localSettings";
 import { checkTempOrderSync } from "./checkoutSlice";
 import ActiveUser from '../../settings/ActiveUser';
 import Config from '../../Config';
+import { removeCheckOutList } from '../dashboard/product/productLogic';
+import { product } from "../dashboard/product/productSlice";
 const Header = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -106,6 +111,10 @@ const Header = (props) => {
             }
         }, 10000);
     }
+    const clearCart = () => {
+        removeCheckOutList();
+        dispatch(product());
+    }
     return (<React.Fragment>
         <div className="header">
             <button id="exitCheckoutButton" onClick={() => goBack()}>
@@ -113,7 +122,7 @@ const Header = (props) => {
             </button>
             <p>{props.title ? props.title : LocalizedLanguage.checkout}</p>
             <button id="userInfoButton" onClick={() => toggleUserProfile()}>
-                <img src={avatar} alt="" />
+                <img src={avatar_2} alt="" />
             </button>
             <button id="mobileOptionsButton" onClick={() => toggleOptionPage()} className={isShowOptionPage ? "filter" : ""}>
                 <img src={Ellipsis_Icon_DarkBlue} alt="" />
@@ -126,6 +135,12 @@ const Header = (props) => {
             <div id="pageOptions" className={isShowOptionPage ? "page-options-wrapper" : "page-options-wrapper hidden"}>
                 <div className="page-options">
                     <p>Options Menu</p>
+                    <button id="clearCartButton" onClick={()=>clearCart()}>
+						<div class="img-container">
+							<img src={ClearCart_Icon} alt="" />
+						</div>
+						<p>Clear Cart</p>
+					</button>
                     <button id="parkSaleButton" onClick={() => props.toggleParkSale('park_sale')}>
                         <div className="img-container">
                             <img src={Clock} alt="" />

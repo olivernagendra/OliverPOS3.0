@@ -18,7 +18,7 @@ exports.key = {
     DATE_FORMAT_SAFARI: 'YYYY-MM-DD',
     DATETIME_FORMAT_SAFARI: 'YYYY-MM-DDTHH:mm:ss',
     TIMEDATE_FORMAT: 'h:mm A DD, MMMM YYYY',
-    RECIEPT_IMAGE_DOMAIN: "https://" + (process.env.NODE_ENV == 'production' ? 'app.oliverpos.com' : process.env.NODE_ENV == 'development' ? 'qa1.app.olivertest.com' : 'dev1.app.olivertest.com'),
+    RECIEPT_IMAGE_DOMAIN: "https://" + (process.env.NODE_ENV == 'production' ? 'app.oliverpos.com' : 'dev1.app.olivertest.com'),
     NOTIFICATION_LIMIT: 100,
     NOTIFICATION_FORMAT: 'DD/MM/YY, h:mm a',
     SYNC_COUNT_LIMIT: 100,

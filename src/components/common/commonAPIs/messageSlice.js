@@ -48,7 +48,7 @@ export const popupMessageSlice = createSlice({
       .addCase(popupMessage.fulfilled, (state, action) => {       
           state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
           state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.error=action.payload && action.payload.is_success==true?"": action.payload.exceptions[0];
+          state.error=action.payload && action.payload.is_success==true?"": action.payload.msg?action.payload.msg:"";
           state.is_success=action.payload && action.payload.is_success==true? true: false;      
       })
       .addCase(popupMessage.rejected, (state,action) => {

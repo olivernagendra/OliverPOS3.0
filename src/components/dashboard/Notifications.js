@@ -67,7 +67,7 @@ const Notifications = (props) => {
         var temp_Order = 'TempOrders_' + (ActiveUser.key.Email);
         var TempOrders = localStorage.getItem(temp_Order) ? JSON.parse(localStorage.getItem(temp_Order)) : [];  //JSON.stringify
         var notificationlist = [];
-
+        TempOrders=TempOrders.reverse();
         TempOrders && TempOrders.map(list => {
             if (list.new_customer_email !== "") {
                 var tempVar = TempOrders.find(l => l.TempOrderID == list.TempOrderID && l.new_customer_email == "")
@@ -119,7 +119,7 @@ const Notifications = (props) => {
                     <div className="main-row">
                         <img src={Info_Icon} alt="" />
                         {/* <p>Order# {list.TempOrderID}</p> */}
-                        <p>order  Refunded  successfully.</p>
+                        <p>Order  refunded  successfully.<br />Order# {list.TempOrderID}</p>
                     </div>
                 </div>))
             }//sync issue
@@ -240,7 +240,7 @@ const Notifications = (props) => {
                     if (keyA > keyB) return 1;
                     return 0;
                 });
-                _notiDate.reverse();
+                //_notiDate.reverse();
             }
         }
         setNotiDate(_notiDate);

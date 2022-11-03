@@ -1,0 +1,101 @@
+<html>
+
+
+<body>
+
+    <div> 
+         <h1>Apps for Home </h1>
+        <div>
+<table>
+<tr style="vertical-align:top;">
+    <td width="40%">
+        <button id="ClientInfoGet">ClientInfo(Get)</button></br>
+         
+    </td>
+
+    <td width="60%" align="top" > Request</br>
+        <textarea id="dvRequest" name="w3review" rows="10" cols="40"></textarea>
+        <!-- <div id="dvRequest" style="border: solid;border-color: gray; height: 200px;width:auto;text-align: left"></div>
+       --> 
+    </br> </br>
+        <button id="btnSendREquest">Click to Send Request</button> 
+    </br>
+    </br>
+    <div id="dvResponse" style="border-style: ridge; min-height: 150;"></div>
+    </td>
+       
+</tr>
+
+</tr>
+</table>
+</div>
+</div>
+  
+   
+    <script>
+
+        //Listen for message from Oliver POS 
+        var msgData = ''
+        var jsonMsg=""
+        setTimeout(() => {
+             jsonMsg = {
+                command: 'appReady',
+                version:"1.0",
+                method: 'get'
+            }
+           
+            window.parent.postMessage(jsonMsg, '*');
+            setRequest();
+
+          //  document.getElementById('dvRequest').innerText =  readyExtensionData;
+        }, 1000);
+        //----------------------------------------
+
+        window.addEventListener('message', function (e) {
+            msgData = JSON.parse(e.data);
+            console.log("Message from Oliver POS:", msgData)
+           // document.getElementById('dvResponse').innerText = "";
+            document.getElementById('dvResponse').innerText = JSON.stringify(msgData,undefined,2);
+
+        }, false);
+        var btnSendREquest = document.getElementById('btnSendREquest');
+        btnSendREquest.addEventListener('click', function (e) {
+            document.getElementById('dvResponse').value =""
+                var  requestData= document.getElementById('dvRequest').value;
+        //    jsonMsg = {
+        //         "command": "TransactionStatus",
+        //         "method": "put",
+        //         "version": "2.0",
+        //         "data": {
+        //                  "transaction_status": "void_sale"
+        //             }
+        //     }
+            //document.getElementById('dvRequest').innerText = JSON.stringify(jsonMsg);
+            console.log('------send btn clicked----', requestData);
+            window.parent.postMessage(JSON.stringify( JSON.parse(requestData)), '*');
+
+        });
+
+        
+        var btnCartValueGet = document.getElementById('ClientInfoGet');
+        btnCartValueGet.addEventListener('click', function (e) {
+           jsonMsg = {
+                command: "ClientInfo",
+                version:"2.0",
+                method: "get",
+                }
+                setRequest()
+
+        });
+
+                
+       function setRequest(){
+        document.getElementById('dvResponse').innerHTML =""
+            document.getElementById('dvRequest').value = JSON.stringify(jsonMsg,undefined,4);
+            console.log('------get btn clicked----', jsonMsg);
+        }
+    </script>
+
+</body>
+
+</html>

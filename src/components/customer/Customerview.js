@@ -7,7 +7,7 @@ import OliverIconBaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg
 import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
-import FilterCollapseIcon from '../../assets/images/svg/FilterCollapseIcon.svg'
+import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
@@ -423,7 +423,8 @@ const CustomerView = () => {
           <div className="body">
           <div class="row">
 						<img src={SearchBaseBlue} alt=""/>
-						<p>Search for Customers</p>
+						<p>Search</p>
+						<button id="customersClearSearch">Clear Search</button>
 					</div>
             <label htmlFor="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
@@ -441,7 +442,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <input type="text" id="filterType" />
-              <img src={FilterCollapseIcon} alt="" />
+              <img class="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>
@@ -521,8 +522,8 @@ const CustomerView = () => {
                 <p className="style2">{customerDetailData && customerDetailData.Email}</p>
               </div>
               <div className="text-group">
-                <p className="style2">Phone #:{customerDetailData && customerDetailData.Contact}</p>
-                {/*  <p className="style2">{customerDetailData && customerDetailData.Contact}</p> */}
+                <p className="style2">Phone #:</p>
+                 <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
               </div>
             </div>
           </div>
