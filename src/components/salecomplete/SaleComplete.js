@@ -24,11 +24,16 @@ import { isSafari } from "react-device-detect";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import STATUSES from "../../constants/apiStatus";
 import { checkTempOrderSync } from "../checkout/checkoutSlice";
+import { CheckAppDisplayInView } from '../common/commonFunctions/appDisplayFunction';
+import NoImageAvailable from '../../assets/images/svg/NoImageAvailable.svg';
+import IframeWindow from "../dashboard/IframeWindow";
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 const SaleComplete = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+    const [extApp, setExtApp] = useState('');
     const [isShowEndSession, setisShowEndSession] = useState(false);
     const [isRemember, setisRemember] = useState(false);
     const [changeAmount, setChangeAmount] = useState(0);
@@ -44,6 +49,15 @@ const SaleComplete = () => {
         //     printReceipt();
         // }
     }, [changeAmount, paymentAmount]);
+
+    function ToggleiFrameWindow(_exApp = null) {
+        if (_exApp != null) { setExtApp(_exApp); }
+        // if (isShowiFrameWindow === false) {
+        //     UpdateRecentUsedApp(_exApp, true, 0)
+        // }
+        setisShowiFrameWindow(!isShowiFrameWindow)
+    }
+
     const newSale = () => {
         localStorage.removeItem('CARD_PRODUCT_LIST');
         localStorage.removeItem('GTM_ORDER');
@@ -411,6 +425,7 @@ const SaleComplete = () => {
     }, [respSaveCustomerToTempOrder, isLoading]);
 
     //var checkList = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
+    var true_dimaond_field = localStorage.getItem('GET_EXTENTION_FIELD') ? JSON.parse(localStorage.getItem('GET_EXTENTION_FIELD')) : [];
     return (
         <React.Fragment>
             <div className="sale-complete-wrapper">
@@ -445,21 +460,24 @@ const SaleComplete = () => {
                         </button>
                     </div>
                     <div className="app-container">
-                        <button>
-                            <img src={spongebob_squarepants_2} alt="" />
-                        </button>
-                        <button>
-                            <img src={Google_Calendar_Icon} alt="" />
-                        </button>
-                        <button>
-                            <img src={DYMO_Icon} alt="" />
-                        </button>
-                        <button>
-                            <img src={QuoteApp_Icon} alt="" />
-                        </button>
-                        <button>
-                            <img src={QuoteApp_Icon} alt="" />
-                        </button>
+                        {
+                            true_dimaond_field && true_dimaond_field.length > 0 ? true_dimaond_field.map((Items, index) => {
+                                return (Items.viewManagement && Items.viewManagement !== [] && CheckAppDisplayInView(Items.viewManagement) === true) ?
+                                    <button onClick={() => ToggleiFrameWindow(Items)} key={Items.Id}>
+                                        {Items.logo != null ? <img src={Items.logo} alt="" onError={({ currentTarget }) => {
+                                            currentTarget.onerror = null; // prevents looping
+                                            currentTarget.src = NoImageAvailable;
+                                        }} /> : <img src={NoImageAvailable} alt="" />}
+                                    </button>
+                                    // <button>
+                                    //     <img src={spongebob_squarepants_2} alt="" />
+                                    // </button>
+                                    : null
+
+                            })
+                                : null
+                        }
+
                     </div>
                     <div className="button-container" onClick={() => newSale()}>
                         <button id="newSale">{LocalizedLanguage.newSale}</button>
@@ -467,6 +485,7 @@ const SaleComplete = () => {
                 </div>
             </div>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
+            {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
         </React.Fragment>)
     // }
 
