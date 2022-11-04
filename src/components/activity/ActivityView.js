@@ -62,6 +62,7 @@ const ActivityView = () => {
     const [isSortWrapper, setSortWrapper] = useState(false)
     const [responsiveCusList, setResponsiveCusList] = useState(false)
     const [activityListcount, setactivityListcount] = useState([])
+    const [activeDetailApi, setactiveDetailApi] = useState(true)
 
     // All TOGGLE 
     const toggleAppLauncher = () => {
@@ -136,7 +137,7 @@ const ActivityView = () => {
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
-    console.log("activityAllDetails", activityAllDetails)
+    //console.log("activityAllDetails", activityAllDetails)
 
     useEffect(() => {
         if (activityAllDetails && activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records.length > 0) {
@@ -263,7 +264,7 @@ const ActivityView = () => {
 
         // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
-        if (useCancelled1 == false) {
+        if (useCancelled1 == false && activeDetailApi !== false ) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
             }
@@ -527,6 +528,7 @@ const ActivityView = () => {
 
 
     const updateSomething = () => {
+        setactiveDetailApi(false)
         setDefauldNumber(defauldnumber + 1)
         if (AllActivityList.length == activityListcount) {
 

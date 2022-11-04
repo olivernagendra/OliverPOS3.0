@@ -6,7 +6,7 @@ import CartDiscount from "./CartDiscount";
 import CreateCustomer from "./CreateCustomer";
 import Notifications from "./Notifications";
 import OrderNote from "../common/commonComponents/OrderNote";
-
+import { getCountryList ,getStateList } from "../customer/CustomerSlice";
 import MsgPopup_ProductNotFound from "./MsgPopup_ProductNotFound";
 import MsgPopup_UpgradeToUnlock from "./MsgPopup_UpgradeToUnlock";
 
@@ -122,6 +122,8 @@ const Home = () => {
         dispatch(getPaymentTypeName());
         dispatch(getDetails(Cash_Management_ID));
         getFavourites();
+        dispatch(getCountryList())
+        dispatch(getStateList())
         var locationId = localStorage.getItem('Location');
         dispatch(getCloudPrinters(locationId));
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -505,6 +507,21 @@ const Home = () => {
             // console.log("---resProduct--" + JSON.stringify(resProduct.data));
         }
     }, [resProduct]);
+
+
+    const [resCountryList] = useSelector((state) => [state.CountryList])
+    useEffect(() => {
+        if (resCountryList && resCountryList.status == STATUSES.IDLE && resCountryList.is_success && resCountryList.data) {
+            localStorage.setItem('countrylist', JSON.stringify(resCountryList.data.content))
+        }
+    }, [resCountryList]);
+
+    const [resStateList] = useSelector((state) => [state.StateList])
+    useEffect(() => {
+        if (resStateList && resStateList.status == STATUSES.IDLE && resStateList.is_success && resStateList.data) {
+            localStorage.setItem('statelist', JSON.stringify(resStateList.data.content))
+        }
+    }, [resStateList]);
 
 
 

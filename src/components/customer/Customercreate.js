@@ -16,22 +16,48 @@ const Customercreate = (props) => {
     var UID = get_UDid('UDID');
 
 
+
     const initialValues = { fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", shippingCountry: "", email: "", };
     const [values, setValues] = useState(initialValues);
+    const [toggleDrowpdown, settoggleDrowpdown] = useState(false)
+    const [togglesecondDropdown, settogglesecondDropdown] = useState(false)
+    const [togglethirdDropdown, settogglethirdDropdown] = useState(false)
+    const [toggleFourDropdown, settoggleFourDropdown] = useState(false)
     const [errors, setErrors] = useState({});
     const [allCustomerList, setAllCustomerList] = useState([])
     const [phone, setPhone] = useState();
+    const [viewStateList, setviewStateList] = useState('')
+    const [country_name, setcountry_name] = useState('')
+    const [state_name, setstate_name] = useState('')
+    const [stateName, setstateName] = useState('')
+    const [selectedCountryName, setselectedCountryName] = useState('')
+    const [getCountryList, setgetCountryList] = useState(localStorage.getItem('countrylist') !== null ? typeof (localStorage.getItem('countrylist')) !== undefined ? localStorage.getItem('countrylist') !== 'undefined' ?
+        Array.isArray(JSON.parse(localStorage.getItem('countrylist'))) === true ? JSON.parse(localStorage.getItem('countrylist')) : '' : '' : '' : '')
+    const [getStateList, setgetStateList] = useState(localStorage.getItem('statelist') && localStorage.getItem('statelist') !== null ? typeof (localStorage.getItem('statelist')) !== undefined ? localStorage.getItem('statelist') !== 'undefined' ?
+        Array.isArray(JSON.parse(localStorage.getItem('statelist'))) === true ? JSON.parse(localStorage.getItem('statelist')) : '' : '' : '' : '')
 
 
-    //  Customer GetPage Api response 
-    const { customergetPagesdata, customergetPageserror, customergetPagesis_success, customergetPagesstatus } = useSelector((state) => state.customergetPage)
-    // console.log("customergetPagesdata", customergetPagesdata, "customergetPageserror", customergetPageserror, "customergetPagesstatus,customergetPagesstatus", "customergetPagesis_success", customergetPagesis_success)
 
-    if (customergetPagesstatus === STATUSES.IDLE && customergetPagesis_success) {
-        if (customergetPagesdata && customergetPagesdata.content && customergetPagesdata.content !== customergetPagesis_success) {
-
-        }
+    const hundledropdown = () => {
+        settoggleDrowpdown(!toggleDrowpdown)
     }
+
+    const hundleseconddropdown = () => {
+        settogglesecondDropdown(!togglesecondDropdown)
+    }
+
+    const hundleThirdDropdown =()=>{
+        settogglethirdDropdown(!togglethirdDropdown)
+    }
+    const hundleFourDropdown=()=>{
+        settoggleFourDropdown(!toggleFourDropdown)
+    }
+
+
+
+
+
+
 
 
     const GetCustomerFromIDB = () => {
@@ -216,6 +242,173 @@ const Customercreate = (props) => {
     }
 
 
+    const onChangeList = (e) => {
+        console.log("e.target.value", e.target.value)
+        var finalStatelist = [];
+        getStateList && getStateList.find(function (element) {
+            if (element.Country == e.target.value) {
+                finalStatelist.push(element)
+            }
+        })
+        console.log("finalStatelist", finalStatelist)
+        setviewStateList(finalStatelist)
+        setcountry_name(e.target.value)
+        setstate_name('')
+        setstateName('')
+        EditCountryToStateList()
+        getCountryAndStateName()
+    }
+
+    const onChangeStateList = (e) => {
+        console.log("e.target.value", e.target.value)
+        setstate_name(e.target.value)
+    }
+
+
+    const getCountryAndStateName = (stateCode, countryCode) => {
+        var stat_name = ''
+        var count_name = ''
+        var count_code = ''
+        var finalStatelist = []
+        getCountryList && getCountryList.find(function (element) {
+            if (element.Code == countryCode || element.Name.replace(/[^a-zA-Z]/g, ' ') == countryCode) {
+                count_name = element
+                count_code = element.Code
+            }
+        })
+        setselectedCountryName(count_name ? count_name.Name : countryCode)
+        setcountry_name(count_code)
+
+        getStateList && getStateList.find(function (element) {
+            if (element.Code === stateCode && count_code === element.Country) {
+                stat_name = element
+            } else if (element.Code === stateCode && countryCode === element.Country) {
+                stat_name = element
+            } else if (element.Name === stateCode && countryCode === element.Country) {
+                stat_name = element
+            } else if (element.Name === stateCode && count_code === element.Country) {
+                stat_name = element
+            }
+        })
+
+        setstate_name(stateCode)
+    }
+
+    const setCountryToStateList = (country_name, state_name) => {
+        const { getStateList, getCountryList } = this.state;
+        var count_code = '';
+        var finalStatelist = [];
+        getCountryList && getCountryList.find(function (element) {
+            if (element.Code == country_name || element.Name.replace(/[^a-zA-Z]/g, ' ') == country_name) {
+                count_code = element.Code
+            }
+        })
+        getStateList && getStateList.find(function (element) {
+            if (element.Country == count_code) {
+                finalStatelist.push(element)
+            } else if (element.Country == country_name) {
+                finalStatelist.push(element)
+            }
+        })
+        if (finalStatelist.length > 0) {
+            setviewStateList(finalStatelist)
+
+        }
+    }
+
+    const EditCountryToStateList = (country_name, state_name) => {
+        var count_code = '';
+        var finalStatelist = [];
+        getCountryList && getCountryList.find(function (element) {
+            if (element.Code == country_name || element.Name.replace(/[^a-zA-Z]/g, ' ') == country_name) {
+                count_code = element.Code
+            }
+        })
+        getStateList && getStateList.find(function (element) {
+            if (element.Country == count_code) {
+                finalStatelist.push(element)
+            } else if (element.Country == country_name) {
+                finalStatelist.push(element)
+            }
+        })
+        if (finalStatelist && finalStatelist !== null && finalStatelist.length > 0) {
+
+            setviewStateList(finalStatelist)
+        }
+    }
+
+
+
+
+    
+  const addCustomerToSale = () => {
+
+    // e.preventDefault();
+    // const { fName, lName, tel, website, billingAddress1, billingAddress2, billingZipPostal, billingCity, billingCountry, shippingAddress1, shippingAddress2, shippingCity, shippingCountry, email } = values
+    // if (validate(values)) {
+    //     var userExist = false;
+    //     userExist = getExistingCustomerEmail(values.email);
+    //     if (userExist == true) {
+    //         alert("Given email already exist! Please try another")
+    //     } else {
+    //         const save = {
+    //             WPId: "",
+    //             FirstName: fName,
+    //             LastName: lName,
+    //             Contact: phone,
+    //             startAmount: 0,
+    //             Email: email,
+    //             udid: UID,
+    //             notes: "notes is here",
+    //             StreetAddress: billingAddress1,
+    //             Pincode: billingZipPostal,
+    //             City: billingCity,
+    //             Country: billingCountry,
+    //             State: "state_name",
+    //             StreetAddress2: billingAddress2,
+    //             shippingAddress1: shippingAddress1,
+    //             shippingAddress2: shippingAddress2,
+    //             shippingCity: shippingCity,
+    //             shippingCountry: shippingCountry,
+    //             website: website
+
+    //         }
+    //         console.log("save", save)
+    //     }
+
+
+
+
+
+    // var data = cutomer_data;
+    // localStorage.setItem('AdCusDetail', JSON.stringify(data))
+    // var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
+    // if (list != null) {
+    //   const CheckoutList = {
+    //     ListItem: list.ListItem,
+    //     customerDetail: data ? data : [],
+    //     totalPrice: list.totalPrice,
+    //     discountCalculated: list.discountCalculated,
+    //     tax: list.tax,
+    //     subTotal: list.subTotal,
+    //     TaxId: list.TaxId,
+    //     TaxRate: list.TaxRate,
+    //     oliver_pos_receipt_id: list.oliver_pos_receipt_id,
+    //     order_date: list.order_date,
+    //     order_id: list.order_id,
+    //     status: list.status,
+    //     showTaxStaus: list.showTaxStaus,
+    //     _wc_points_redeemed: list._wc_points_redeemed,
+    //     _wc_amount_redeemed: list._wc_amount_redeemed,
+    //     _wc_points_logged_redemption: list._wc_points_logged_redemption
+    //   }
+    //   localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+    // }
+    navigate('/home')
+  }
+
+
+
 
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
@@ -260,13 +453,13 @@ const Customercreate = (props) => {
                                 {/* <p>{errors.lName}</p> */}
                             </div>
                         </div>
-                        <div className="input-row"> 
-                        <div className="input-col">
-                            <label htmlFor="newCustWebsite">Website</label>
-                            <input type="url" id="newCustWebsite" placeholder="Enter URL" name='website' value={values.website} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                            <div class="error-wrapper"></div>
-                        </div>
-                        <div class="input-col"></div>
+                        <div className="input-row">
+                            <div className="input-col">
+                                <label htmlFor="newCustWebsite">Website</label>
+                                <input type="url" id="newCustWebsite" placeholder="Enter URL" name='website' value={values.website} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <div class="error-wrapper"></div>
+                            </div>
+                            <div class="input-col"></div>
                         </div>
                         {/* </section> */}
                     </div>
@@ -295,78 +488,42 @@ const Customercreate = (props) => {
                                 <input type="text" id="newCustCityBilling" name="billingCity" placeholder="Enter City" value={values.billingCity} onChange={(e) => handleChange(e.target.name, e.target.value)} />
                                 <div class="error-wrapper"></div>
                             </div>
-                            
+
                         </div>
                         <div className="input-row">
-                        <div class="input-col">
-								<label for="newCustStateProvBilling">State/Province</label>
-								<div class="dropdown-wrapper">
-									<input type="text" id="newCustStateProvBilling" placeholder="Select State/Province" readonly />
-									<div class="error-wrapper"></div>
-									<img src={down_angled_bracket} alt="" />
-									<div class="option-container">
-										<div class="option">
-											<p>Newfoundland and Labrador</p>
-										</div>
-										<div class="option">
-											<p>Nova Scotia</p>
-										</div>
-										<div class="option">
-											<p>New Brunswick</p>
-										</div>
-										<div class="option">
-											<p>Prince Edward Island</p>
-										</div>
-										<div class="option">
-											<p>Quebec</p>
-										</div>
-										<div class="option">
-											<p>Ontario</p>
-										</div>
-										<div class="option">
-											<p>Saskatchewan</p>
-										</div>
-										<div class="option">
-											<p>Manitoba</p>
-										</div>
-										<div class="option">
-											<p>Alberta</p>
-										</div>
-										<div class="option">
-											<p>British Colombia</p>
-										</div>
-										<div class="option">
-											<p>Yukon</p>
-										</div>
-										<div class="option">
-											<p>Northwest Territories</p>
-										</div>
-										<div class="option">
-											<p>Nunavut</p>
-										</div>
-									</div>
-								</div>
-							</div>
-                        <div className="input-col">
+                            <div class="input-col">
+                                <label for="newCustStateProvBilling">State/Province</label>
+                                <div onClick={hundledropdown} className={toggleDrowpdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"} >
+                                    <input type="text" id="newCustStateProvBilling" placeholder="Select State/Province" />
+                                    <div class="error-wrapper" onChange={onChangeList}></div>
+                                    <img src={down_angled_bracket} alt="" />
+                                    <div class="option-container"  >
+                                        {getCountryList && getCountryList.map((item, index) => {
+                                            return (
+                                                <div class="option">
+                                                    <p key={index} value={item.Code}  >{item.Name.replace(/[^a-zA-Z]/g, ' ')}</p>
+                                                </div>)
+                                        })}
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="input-col">
                                 <label htmlFor="newCustCountryBilling">Country</label>
-                                {/* <input type="text" id="billingCountry" name="billingCountry" placeholder="Enter Country" value={values.billingCountry} onChange={(e) => handleChange(e.target.name, e.target.value)} />
-                                <div class="error-wrapper"></div> */}
-                                <div class="dropdown-wrapper">
-									<input type="text" id="newCustCountryBilling" placeholder="Select Country" readonly />
-									<div class="error-wrapper"></div>
-									<img src={down_angled_bracket} alt="" />
-									<div class="option-container">
-										<div class="option">
-											<p>Canada</p>
-										</div>
-										<div class="option">
-											<p>United States</p>
-										</div>
-										<div class="option">
-											<p>Mexico</p>
-										</div>
-									</div>
-								</div>
+                                <div onClick={hundleseconddropdown} className={togglesecondDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
+                                    <input type="text" id="newCustCountryBilling" onChange={onChangeStateList} placeholder="Select Country" readonly />
+                                    <div class="error-wrapper"></div>
+                                    <img src={down_angled_bracket} alt="" />
+                                    <div class="option-container" >
+                                        {getStateList && getStateList.map((item, index) => {
+                                            return (
+                                                <div class="option">
+                                                    <p key={index} value={item.Code} > {props.country_name !== '' ? item.Name.replace(/[^a-zA-Z]/g, ' ') : ''}</p>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -402,82 +559,50 @@ const Customercreate = (props) => {
                             </div>
                         </div>
                         <div className="input-row">
-                        <div class="input-col">
-								<label for="newCustStateProvShipping">State/Province</label>
-								<div class="dropdown-wrapper">
-									<input type="text" id="newCustStateProvShipping" placeholder="Select State/Province" readonly />
-									<div class="error-wrapper"></div>
-									<img src={down_angled_bracket} alt="" />
-									<div class="option-container">
-										<div class="option">
-											<p>Newfoundland and Labrador</p>
-										</div>
-										<div class="option">
-											<p>Nova Scotia</p>
-										</div>
-										<div class="option">
-											<p>New Brunswick</p>
-										</div>
-										<div class="option">
-											<p>Prince Edward Island</p>
-										</div>
-										<div class="option">
-											<p>Quebec</p>
-										</div>
-										<div class="option">
-											<p>Ontario</p>
-										</div>
-										<div class="option">
-											<p>Saskatchewan</p>
-										</div>
-										<div class="option">
-											<p>Manitoba</p>
-										</div>
-										<div class="option">
-											<p>Alberta</p>
-										</div>
-										<div class="option">
-											<p>British Colombia</p>
-										</div>
-										<div class="option">
-											<p>Yukon</p>
-										</div>
-										<div class="option">
-											<p>Northwest Territories</p>
-										</div>
-										<div class="option">
-											<p>Nunavut</p>
-										</div>
-									</div>
-								</div>
-							</div>
-                        <div className="input-col">
+                            <div className="input-col">
+                                <label for="newCustStateProvShipping">State/Province</label>
+                                <div onClick={hundleThirdDropdown} className={togglethirdDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
+                                    <input type="text" id="newCustStateProvShipping" placeholder="Select State/Province" readonly />
+                                    <div className="error-wrapper"></div>
+                                    <img src={down_angled_bracket} alt="" />
+                                    <div className="option-container">
+                                        {getCountryList && getCountryList.map((item, index) => {
+                                            return (
+                                                <div className="option">
+                                                    <p key={index} value={item.Code}  >{item.Name.replace(/[^a-zA-Z]/g, ' ')}</p>
+                                                </div>)
+                                        })}
+
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="input-col">
                                 <label htmlFor="newCustCountryShipping">Country</label>
                                 {/* <input type="text" id="newCustCountryBilling" placeholder="Select Country" name="shippingCountry" value={values.shippingCountry} onChange={(e) => handleChange(e.target.name, e.target.value)} /> */}
-                                <div class="dropdown-wrapper">
-									<input type="text" id="newCustCountryShipping" placeholder="Select Country" readonly />
-									<div class="error-wrapper"></div>
-									<img src={down_angled_bracket} alt="" />
-									<div class="option-container">
-										<div class="option">
-											<p>Canada</p>
-										</div>
-										<div class="option">
-											<p>United States</p>
-										</div>
-										<div class="option">
-											<p>Mexico</p>
-										</div>
-									</div>
-								</div>
+                                <div onClick={hundleFourDropdown} className={toggleFourDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
+                                    <input type="text" id="newCustCountryShipping" placeholder="Select Country" readonly />
+                                    <div className="error-wrapper"></div>
+                                    <img src={down_angled_bracket} alt="" />
+                                    <div className="option-container">
+                                        {getStateList && getStateList.map((item, index) => {
+                                            return (
+                                                <div className="option">
+                                                    <p key={index} value={item.Code} > {props.country_name !== '' ? item.Name.replace(/[^a-zA-Z]/g, ' ') : ''}</p>
+                                                </div>
+                                            )
+                                        })}
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     {/* </form> */}
                     {/* <button onClick={handleSubmit}>Create Customer</button> */}
-                    <div class="button-row">
+                    <div className="button-row">
                         <button onClick={handleSubmit}>Create Customer</button>
-                        <button>Create & Add to Cart</button>
+                        <button onClick={() => addCustomerToSale()}>Create & Add to Cart</button>
                     </div>
                 </div>
             </div>

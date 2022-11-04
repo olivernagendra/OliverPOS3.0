@@ -169,7 +169,7 @@ const ActivityOrderList = () => {
 
     return (
         <>
-        {activitygetdetails.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+       
             <p>Order Details</p>
             {
              lineitems && lineitems.map((item, index) => {

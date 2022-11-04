@@ -14,7 +14,7 @@ import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-import { CustomergetPageSlice, CustomerGetDetailsSlice, getAllEventsSlice, saveCustomerToTempOrderSlice } from '../components/customer/CustomerSlice'
+import { CustomergetPageSlice, CustomerGetDetailsSlice, getAllEventsSlice, saveCustomerToTempOrderSlice, getCountrySlice, getStateSlice } from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
@@ -98,7 +98,9 @@ export const store = configureStore({
     postMeta: postMetaSlice.reducer,
     getPostMeta: getPostMetaSlice.reducer,
     sendMail:sendMailSlice.reducer,
-    sendExternalMail:sendExternalMailSlice.reducer
+    sendExternalMail:sendExternalMailSlice.reducer,
+    CountryList:getCountrySlice.reducer,
+    StateList:getStateSlice.reducer,
   }
   ,
   middleware: getDefaultMiddleware =>
