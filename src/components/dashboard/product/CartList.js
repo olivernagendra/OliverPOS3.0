@@ -74,6 +74,9 @@ const CartList = (props) => {
                 _parent['new_product_discount_amount'] = a ? a.new_product_discount_amount : 0;
                 _parent['cart_after_discount'] = a.cart_after_discount?a.cart_after_discount:0;
                 _parent['cart_discount_amount'] = a.cart_discount_amount?a.cart_discount_amount:0;
+               
+                _parent['StockQuantity']=_item.StockQuantity-a.quantity;
+                _parent["quantity"]=a.quantity;
                 props.updateVariationProduct(_item);
                 props.openPopUp(_parent, index);
             }

@@ -44,12 +44,12 @@ const AdjustInventory = (props) => {
                     getByID(props.product.WPID).then(prodcut => {
                         //prodcut = prd;
                         prodcut.StockQuantity = inventory;
+                        prodcut.StockStatus = inventory > 0 ? "instock" : "outofstock";
                         update(prodcut).then(
                             () => {
-
                                 console.log("stock Updated", prodcut)
                                 setTimeout(() => {
-                                    props.fatchUpdateInventory()
+                                    props.fatchUpdateInventory();
                                     props.toggleAdjustInventory(false); //close inventory popup
                                     dispatch(updateInventory(null));
 
@@ -105,7 +105,7 @@ const AdjustInventory = (props) => {
     //     console.log("updateInventory", updateInventory)
     // }
     //console.log("isAllowUpdate", isAllowUpdate)
-    var isOutOfStock = currentWareHouseDetail.Quantity > 0 ? false : true;
+    var isOutOfStock = currentWareHouseDetail && currentWareHouseDetail.Quantity > 0 ? false : true;
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow adjust-inventory current" : "subwindow adjust-inventory"}>

@@ -71,7 +71,10 @@ const Header = (props) => {
     }
     const goBack = () => {
         if (props.title) {navigate('/transactions'); }
-        else { navigate('/home'); }
+        else { 
+            localStorage.removeItem('paybyproduct');
+            localStorage.removeItem('paybyproduct_unpaid');
+            navigate('/home'); }
     }
     const checkTempOrderSyncStatus = () => {
         var udid = get_UDid;

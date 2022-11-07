@@ -789,3 +789,262 @@ export const singleProductDiscount = (isProductX = false, productxQty = null, qt
     // function success(single_product) { return { type: cartProductConstants.PRODUCT_SINGLE_ADD_SUCCESS, single_product } }
 }
 
+// addProductXDiscount() {
+//     var selectedProductData = this.state.cartlistSelected
+//     var productX_data = localStorage.getItem('PRODUCTX_DATA') && JSON.parse(localStorage.getItem('PRODUCTX_DATA'));
+//     if (productX_data && selectedProductData) {
+//         var data = productX_data && productX_data.find(item => item.product_id == selectedProductData.WPID && item.strProductX == JSON.stringify(this.state.strProductX))
+//         var product = {
+//             type: 'product',
+//             discountType: data ? data.discount_type == "Percentage" ? 'Percentage' : 'Number' : '',
+//             discount_amount: data ? data.discount_amount : 0,
+//             Tax_rate: 0,
+//             Id: selectedProductData.WPID
+//         }
+//         // added price and old  price here for addons type productx 
+//         var selectedProductX = { ...selectedProductData }
+//         var isProdAddonsType = CommonJs.checkForProductXAddons(selectedProductX.WPID);
+//         //if(isProdAddonsType && isProdAddonsType == true){  //update product old price and price with productx line_subtotal
+//         var taxType = typeOfTax();
+
+//         selectedProductX.Price = taxType == 'incl' ? (data.line_subtotal + data.line_tax) / data.quantity : data.line_subtotal / data.quantity
+//         selectedProductX.old_price = taxType == 'incl' ? (data.line_subtotal + data.line_tax) / data.quantity : data.line_subtotal / data.quantity
+
+//         localStorage.setItem("PRODUCT", JSON.stringify(product))
+//         localStorage.setItem("SINGLE_PRODUCT", JSON.stringify(selectedProductX))
+//         this.props.dispatch(cartProductActions.singleProductDiscount(true, data.quantity));
+//     }
+// }
+
+// const extensionArray=(customTags)=> {
+//     var customTagsField = new Array()
+//     customTags && customTags.map((obj) => {
+//         var urlData = '';
+//         var displayVal = obj.display ? obj.display : urlData != '' ? urlData : obj.value;
+//         var _price = (obj.field_type && obj.field_type != "custom_price") && obj.price ?
+//             obj.price_type && obj.price_type == 'percentage_based' ? "(" + obj.price + "%)" : "($" + obj.price + ")"
+//             : "";
+//         var _displayname = (obj.name ? obj.name : obj.label ? obj.label : obj.key ? obj.key : '') + _price + ' - ' + displayVal;
+//         customTagsField.push(_displayname);
+//     });
+//     return customTagsField.join(',');
+// }
+// const extensionArrayBundle=(customTags)=> {
+//     var obj = '';
+//     for (var key in customTags) {
+//         if (customTags.hasOwnProperty(key)) {
+//             var data = customTags[key];
+//             var product = {};
+//             if (data && data.hasOwnProperty("product_id")) {
+//                 var id = data.hasOwnProperty("variation_id") ? data.variation_id : data.product_id;
+//                 var addons = data.hasOwnProperty("addons") ? data.addons : null;
+//                 var addonPrint = "";
+//                 if (addons && typeof addons != "undefined" && addons.length > 0) {
+//                     var addonPrint = this.extensionArray(addons);
+//                     if (addonPrint != "")
+//                         obj += addonPrint;
+//                 }
+//                 else if (id && typeof id != "undefined" && id != 0) {
+//                     product = this.state.AllProductList.find(vitem => {
+//                         return (vitem.WPID === parseInt(id))
+//                     });
+//                     if (typeof product != "undefined" && product && product.Title) {
+//                         obj += obj != "" ? ", " : "";
+//                         obj += product.Title;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+//     return obj;
+// }
+// export const addProductXtoCart=(productx_qty, single_product, _strProductX)=> {
+//     //const { dispatch, showSelectedProduct } = this.props;
+//     var getVariationProductData = single_product;//this.state.cartlistSelected;
+//     var taxType = typeOfTax();
+//     //var ticket_Data = this.state.ticket_status == true ? localStorage.getItem('ticket_list') ? JSON.parse(localStorage.getItem('ticket_list')) : '' : ''
+//     var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : []
+//     var tick_data = getVariationProductData && getVariationProductData.TicketInfo ? JSON.parse(getVariationProductData.TicketInfo) : '';
+//     //this.setState({ isProductxDiscount: false })
+//     var data = null;
+//     // test added
+
+
+
+//     var pro_id = getVariationProductData && getVariationProductData.WPID ? getVariationProductData.WPID : getVariationProductData && getVariationProductData.product_id ? getVariationProductData.product_id : 0;
+//     var prodXData = localStorage.getItem("PRODUCTX_DATA") ? JSON.parse(localStorage.getItem("PRODUCTX_DATA")) : 0
+//     //
+//     // var isProductXupdate = false
+
+//     var SingleProduct = null;
+//     if (single_product && single_product.WPID) {
+//         if (single_product.WPID == getVariationProductData.WPID) {
+//             SingleProduct = single_product
+//         } else {
+//             SingleProduct = getVariationProductData
+//         }
+//     } else {
+//         if (cartlist.length > 0) {
+//             cartlist.map((prdId, index) => {
+//                 if (prdId.product_id === getVariationProductData.WPID && getVariationProductData.selectedIndex == index) {
+//                     SingleProduct = getVariationProductData
+//                     SingleProduct['after_discount'] = prdId.after_discount;
+//                     SingleProduct['product_discount_amount'] = prdId.product_discount_amount;
+//                     SingleProduct['product_after_discount'] = prdId.product_after_discount;
+//                     SingleProduct['new_product_discount_amount'] = prdId.new_product_discount_amount;
+//                     SingleProduct['discount_amount'] = prdId.discount_amount;
+//                     SingleProduct['discount_type'] = prdId.discount_type;
+//                     SingleProduct['cart_after_discount'] = prdId.cart_after_discount;
+//                     SingleProduct['cart_discount_amount'] = prdId.cart_discount_amount;
+//                     SingleProduct['line_item_id'] = prdId.line_item_id;
+
+//                     // test added 
+//                     // prodXData && prodXData.map((prodX)=>{
+//                     //     if(prodX && prodX.product_id == prdId.product_id){
+//                     //         // SingleProduct['quantity'] = productx_qty + prdId.quantity;
+//                     //         // isProductXupdate = true
+//                     //         productx_qty = productx_qty + prdId.quantity
+//                     //         prodX.quantity =  productx_qty
+//                     //     }
+//                     // }) 
+//                     // localStorage.setItem("PRODUCTX_DATA", JSON.stringify(prodXData))
+//                     //
+//                 }
+//             })
+//         }
+//     }
+//     // var pro_id = getVariationProductData && getVariationProductData.WPID ? getVariationProductData.WPID : getVariationProductData && getVariationProductData.product_id ? getVariationProductData.product_id : 0;
+//     // var prodXData = localStorage.getItem("PRODUCTX_DATA") ? JSON.parse(localStorage.getItem("PRODUCTX_DATA")) : 0
+
+//     var productXSingleData = prodXData ? prodXData.find(prodX => prodX.product_id == pro_id && (_strProductX == "" || prodX.strProductX == _strProductX)) : 0
+//     var productXItemPrice = productXSingleData && productXSingleData.line_subtotal
+//     var productXItemTax = productXSingleData && productXSingleData.line_tax
+//     var psummary = "";
+//     if (productXSingleData && productXSingleData.addons && productXSingleData.addons.length > 0) {
+//         psummary = extensionArray(productXSingleData.addons);
+//         console.log("---x psummery---" + JSON.stringify(psummary));
+//     }
+//     else
+//         if (productXSingleData && (productXSingleData.stamp || productXSingleData.composite_data)) {
+//             if (productXSingleData.stamp)
+//                 psummary = extensionArrayBundle(productXSingleData.stamp);
+//             else if (productXSingleData.composite_data)
+//                 psummary = extensionArrayBundle(productXSingleData.composite_data);
+//             console.log("---Bundle psummery---" + psummary);
+//         }
+//     // var productXItemPrice = productXSingleData && productXSingleData.line_subtotal
+//     // var productXItemTax = productXSingleData && productXSingleData.line_tax
+//     if (productXSingleData && productXSingleData.cardSubToal)
+//         productXItemPrice = productXSingleData && productXSingleData.cardSubToal
+
+//     if (productXSingleData && productXSingleData.cardtax)
+//         productXItemTax = productXSingleData && productXSingleData.cardtax
+
+//     var _Price = productXItemPrice ? taxType == 'excl' ? productXItemPrice + parseFloat(productXItemTax) : parseFloat(productXItemPrice) : 0;
+
+//     // var _incl_tax = 0;
+//     // var _excl_tax=0;   
+//     // if(taxType == 'excl' ) {
+//     //     _excl_tax = productXItemTax
+//     // }else if(taxType == 'incl'){
+//     //     _incl_tax = productXItemTax
+//     // }
+//     //   console.log("getVariationProductData--",getVariationProductData)
+//     data = {
+//         line_item_id: SingleProduct ? SingleProduct.line_item_id : 0,
+//         cart_after_discount: SingleProduct ? SingleProduct.cart_after_discount : 0,
+//         cart_discount_amount: SingleProduct ? SingleProduct.cart_discount_amount : 0,
+//         after_discount: SingleProduct ? SingleProduct.after_discount : 0,
+//         // after_discount: SingleProduct ? SingleProduct.after_discount : 0,
+//         discount_amount: SingleProduct ? SingleProduct.discount_amount : 0,
+//         product_after_discount: SingleProduct ? SingleProduct.product_after_discount : 0,
+//         product_discount_amount: SingleProduct ? SingleProduct.product_discount_amount : 0,
+//         quantity: productx_qty > 0 ? productx_qty : getVariationProductData.StockQuantity,
+//         Title: getVariationProductData && getVariationProductData !== undefined ? getVariationProductData.Title : "",
+//         Sku: getVariationProductData && getVariationProductData !== undefined ? getVariationProductData.Sku : "",
+//         //Price: productXItemPrice ? productXItemPrice : 0, // add productX price directly from productX data
+//         // Price: productXItemPrice ? taxType == 'excl' ? productXItemPrice + parseFloat(productXItemTax) : parseFloat(productXItemPrice) : 0,
+//         Price: _Price, // add productX price directly from productX data
+//         product_id: getVariationProductData && getVariationProductData.WPID ? getVariationProductData.WPID : getVariationProductData && getVariationProductData.product_id ? getVariationProductData.product_id : 0,
+//         variation_id: 0,
+//         isTaxable: getVariationProductData.Taxable ? getVariationProductData.Taxable : null,
+//         // old_price: getVariationProductData.old_price,
+//         old_price: _Price/productx_qty,
+//         incl_tax: getVariationProductData.incl_tax,
+//         excl_tax: getVariationProductData.excl_tax,
+//         ticket_status: getVariationProductData.IsTicket,
+//         product_ticket: this.state.ticket_status == true && getVariationProductData.TicketInfo ? getVariationProductData.TicketInfo ? getVariationProductData.TicketInfo : '' : '',
+//         tick_event_id: getVariationProductData.IsTicket == true ? tick_data._event_name : null,
+//         discount_type: SingleProduct ? SingleProduct.discount_type : "",
+//         new_product_discount_amount: SingleProduct ? SingleProduct.new_product_discount_amount : 0,
+//         TaxStatus: getVariationProductData.TaxStatus,
+//         tcForSeating: getVariationProductData.tcForSeating,
+//         TaxClass: getVariationProductData.TaxClass,
+//         ticket_info: getVariationProductData && getVariationProductData.TicketInfo ? getVariationProductData.TicketInfo : [],
+//         Type: getVariationProductData && getVariationProductData.Type,
+//         strProductX: productXSingleData && productXSingleData.strProductX ? productXSingleData.strProductX : "",
+//         psummary: psummary
+//     }
+//     var product = getVariationProductData
+//     var qty = 0;
+//     cartlist.map((item, index) => {
+//         if (product.WPID === item.product_id && index == product.selectedIndex) {
+//             qty = item.quantity;
+//         }
+//     })
+//     var qytt = this.state.Prodefaultqty !== null && typeof this.state.Prodefaultqty !== 'undefined' ? this.state.Prodefaultqty : this.state.variationDefaultQunatity;
+//     var txtPrdQuantity = (productx_qty > 0) ? productx_qty : qytt
+//     // if (parseInt(txtPrdQuantity) <= 0 && product.InStock == false) {
+//     //     /* Created By:priyanka,Created Date:14/6/2019,Description:quantity msg poppup */
+//     //     this.CommonMsg(LocalizedLanguage.productQty)
+//     //     showModal('common_msg_popup');
+//     //     return;
+//     // }
+//     if ((product.StockQuantity == 'Unlimited' || product.InStock == true || qty <= product.StockQuantity)) {
+//         if (this.state.cartlistSelected && cartlist.length > 0) {
+//             var isItemFoundToUpdate = false;
+//             cartlist.map((item, index) => {
+//                 if (typeof this.state.cartlistSelected !== 'undefined' && this.state.cartlistSelected !== null) {
+//                     if (item.product_id == this.state.cartlistSelected.WPID && index == this.state.cartlistSelected.selectedIndex) {
+//                         isItemFoundToUpdate = true;
+//                         cartlist[index] = data
+//                     }
+//                     // var _index = -1;
+//                     // if (this.state.cartlistSelected['selectedIndex'] >= 0) { _index = parseInt(this.state.cartlistSelected.selectedIndex) }
+//                     // if (_index > -1 && this.state.cartlistSelected.selectedIndex == index) {
+//                     //     isItemFoundToUpdate = true;
+//                     //     cartlist[index] = data
+//                     // }
+//                 }
+//             })
+//             if (isItemFoundToUpdate == false) {
+//                 cartlist.push(data);
+//             }
+//         } else {
+//             cartlist.push(data);
+//         }
+//         // this.setState({
+//         //     showSelectStatus: false,
+//         //     variationfound: null
+//         // })
+//         // this.stockUpdateQuantity(cartlist, data);
+//         localStorage.removeItem("PRODUCT");
+//         localStorage.removeItem("SINGLE_PRODUCT")
+//         dispatch(cartProductActions.addtoCartProduct(cartlist)); // this.state.cartproductlist
+//         dispatch(cartProductActions.showSelectedProduct(null));
+//         dispatch(cartProductActions.singleProductDiscount());
+//         this.state.showSelectStatus = false;
+//         this.state.variationDefaultQunatity = 1;
+//     } else {
+//         this.CommonMsg('Product is out of stock.');
+//         showModal('common_msg_popup');
+//     }
+//     //Android Call----------------------------
+//     var totalPrice = 0.0;
+//     cartlist && cartlist.map(item => {
+//         totalPrice += item.Price;
+//     })
+//     androidDisplayScreen(data.Title, data.Price, totalPrice, "cart");
+//     //-----------------------------------------
+
+// }
