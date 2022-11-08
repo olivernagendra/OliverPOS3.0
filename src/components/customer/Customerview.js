@@ -28,6 +28,8 @@ import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { cashRecords } from "../cashmanagement/CashmanagementSlice";
+import { activityRecords } from "../activity/ActivitySlice";
 const CustomerView = () => {
 
   var orderCount = ''
@@ -131,6 +133,8 @@ const CustomerView = () => {
   useEffect(() => {
     if (useCancelledTwo == false) {
       getCustomerFromIDB()
+      dispatch(cashRecords(null));
+      dispatch(activityRecords(null));
     }
     return () => {
       useCancelledTwo = true;
@@ -426,13 +430,13 @@ const CustomerView = () => {
 						<p>Search</p>
 						<button id="customersClearSearch">Clear Search</button>
 					</div>
-            <label htmlFor="fName">First Name</label>
+            <label for="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
-            <label htmlFor="lName">Last Name</label>
+            <label for="lName">Last Name</label>
             <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
-            <label htmlFor="email">Email</label>
+            <label for="email">Email</label>
             <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
-            <label htmlFor="tel">Phone Number</label>
+            <label for="tel">Phone Number</label>
             <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
             <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>

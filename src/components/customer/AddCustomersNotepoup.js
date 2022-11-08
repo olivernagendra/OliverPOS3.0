@@ -45,7 +45,7 @@ const AddCustomersNotepoup = (props) => {
             </div>
             <div className="subwindow-body">
                 <div className="auto-margin-top" />
-                <label htmlFor="custNote">Enter a note for this customer:</label>
+                <label for="custNote">Enter a note for this customer:</label>
                 <textarea
                     name="custNote"
                     id="custNote"
