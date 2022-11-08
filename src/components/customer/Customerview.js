@@ -426,11 +426,11 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-            <div class="row">
-              <img src={SearchBaseBlue} alt="" />
-              <p>Search</p>
-              <button id="customersClearSearch">Clear Search</button>
-            </div>
+          <div className="row">
+						<img src={SearchBaseBlue} alt=""/>
+						<p>Search</p>
+						<button id="customersClearSearch">Clear Search</button>
+					</div>
             <label for="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
             <label for="lName">Last Name</label>
@@ -447,7 +447,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <input type="text" id="filterType" />
-              <img class="dropdown-arrow" src={DownArrowBlue} alt="" />
+              <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>

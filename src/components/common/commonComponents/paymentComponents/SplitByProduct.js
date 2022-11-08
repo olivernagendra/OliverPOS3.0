@@ -174,16 +174,16 @@ const SplitByProduct = (props) => {
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div class="subwindow-body">
-                    <div class="body">
+                <div className="subwindow-body">
+                    <div className="body">
                         {listItem && listItem.length > 0 && listItem.map(item => {
-                            return <div class="product-row" key={uuidv4()}>
-                                <div class="main-row">
-                                    <div class="text-group">
+                            return <div className="product-row" key={uuidv4()}>
+                                <div className="main-row">
+                                    <div className="text-group">
                                         <p>{item.Title}</p>
                                         <p>${item.hasOwnProperty("quantity_to_pay") ? parseFloat((item.Price / item.quantity) * item.quantity_to_pay).toFixed(2) : 0.00}</p>
                                     </div>
-                                    <div class="increment-input">
+                                    <div className="increment-input">
                                         <button onClick={() => updateQuantity(item.product_id, 'dec')}>
                                             <img src={Checkout_Minus} alt="" />
                                         </button>
@@ -195,9 +195,9 @@ const SplitByProduct = (props) => {
                                     </div>
                                 </div></div>
                         })}
-                        {/* <div class="product-row">
-                            <div class="main-row">
-                                <div class="text-group">
+                        {/* <div className="product-row">
+                            <div className="main-row">
+                                <div className="text-group">
                                     <p>Wool Hat</p>
                                     <p>$12.99</p>
                                 </div>
@@ -250,7 +250,7 @@ const SplitByProduct = (props) => {
                             </div>
                         </div> */}
                     </div>
-                    <div class="footer">
+                    <div className="footer">
                         <button onClick={() => saveCount()}>Save Count</button>
                     </div>
                 </div>
