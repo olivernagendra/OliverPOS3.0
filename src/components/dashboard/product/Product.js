@@ -1456,7 +1456,7 @@ const Product = (props) => {
                                                                 var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
                                                                 return (<React.Fragment>
                                                                     <div className="main-row" onChange={onChangeValue}>
-                                                                        <div class="input-col1" >
+                                                                        <div className="input-col1" >
                                                                             <label htmlFor={id + "-txt"}>{efm.Name}</label>
 
 
@@ -1511,12 +1511,12 @@ const Product = (props) => {
                                                                 var id = (efm.Name).replace(/ /g, "_");
                                                                 return (<React.Fragment>
                                                                     <div className="main-row" onChange={onChangeValue}>
-                                                                        <div class="input-col" >
+                                                                        <div className="input-col" >
                                                                             <label htmlFor={id + "-txt"}>{efm.Name}</label>
                                                                             <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
 
                                                                         </div>
-                                                                        <div class="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
+                                                                        <div className="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
                                                                 </React.Fragment>)
                                                             }))
                                                         })

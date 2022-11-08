@@ -294,20 +294,20 @@ const Pin = () => {
         </div>
         {/* <div class={isShowLogoutConfirm===true?"subwindow-wrapper":"subwindow-wrapper hidden"}>
             <div class={isShowLogoutConfirm===true?"subwindow logout-confirm current":"subwindow logout-confirm"}>
-                <div class="subwindow-body">
-                    <div class="auto-margin-top"></div>
-                    <p class="style1">Account Logout Confirmation</p>
-                    <p class="style2">
+                <div className="subwindow-body">
+                    <div className="auto-margin-top"></div>
+                    <p className="style1">Account Logout Confirmation</p>
+                    <p className="style2">
                         Are you sure you want to logout <br />
                         of the Oliver POS app?
                     </p>
-                    <p class="style2">
+                    <p className="style2">
                         You will need the account username and <br />
                         password to log back in.
                     </p>
                     <button id="registerLogout" onClick={()=> navigate('/login')}>Logout</button>
                     <button id="cancelRegisterLogout" onClick={()=>toggleLogoutConfirm()}>Cancel</button>
-                    <div class="auto-margin-bottom"></div>
+                    <div className="auto-margin-bottom"></div>
                 </div>
             </div>
         </div> */}

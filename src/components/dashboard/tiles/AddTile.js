@@ -303,7 +303,7 @@ const AddTile = (props) => {
                                 <img src={AdvancedSearchCancelIcon} alt="" />
                             </button>
                             <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" onFocus={() => showCancelButton()} onBlur={() => hideCancelButton()} className={msg}/>
-                            <div class="error-message">
+                            <div className="error-message">
                             </div>
                             <div className="option-container">
                                 {filterList && filterList.length > 0 && filterList.map(item => {

@@ -323,7 +323,7 @@ const CreateCustomer = (props) => {
                             </div>
                         </section>
                     {/* </form> */}
-                    {/* <div class="button-row">
+                    {/* <div className="button-row">
 						<button onClick={handleSubmit}>Create Customer</button>
 						<button>Create & Add to Cart</button>
 					</div> */}

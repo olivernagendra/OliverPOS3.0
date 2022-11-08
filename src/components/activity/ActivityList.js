@@ -59,9 +59,9 @@ const ActivityList = (props) => {
         <div ref={myRef} onScroll={onScroll} className="body">
              {activityAllDetails.status == STATUSES.LOADING ? <LoadingSmallModal></LoadingSmallModal> : null}
             {((!ordersDate) || ordersDate.length == 0) ?
-                <div class="no-results">
-                    <p class="style1">No results found.</p>
-                    <p class="style2">Sorry, you search did not <br /> match any results.</p>
+                <div className="no-results">
+                    <p className="style1">No results found.</p>
+                    <p className="style2">Sorry, you search did not <br /> match any results.</p>
                 </div>
                 :
                 orders && ordersDate && ordersDate.map((getDate, index) => {
