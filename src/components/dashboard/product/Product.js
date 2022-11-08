@@ -68,6 +68,7 @@ const Product = (props) => {
     const [discounts, setDiscounts] = useState(null);
     const [respAttribute] = useSelector((state) => [state.attribute]);
     const [stockStatusInOut, setStockStatusInOut] = useState('In Stock');
+    const [isRefereshIconInventory, setisRefereshIconInventory] = useState(false);
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
@@ -128,6 +129,7 @@ const Product = (props) => {
             else {
                 if (productQty == 0) { setProductQty(1); }
             }
+            setisRefereshIconInventory(false);
             // console.log("product Qty", currentWareHouseDetail.Quantity)
             //console.log("sel _stockStatus--", _stockStatus)
         }
@@ -621,15 +623,31 @@ const Product = (props) => {
     const setSelectedOption = (option, attribute, AttrIndex) => {
         // _disableAttribute = []
         _selVariationsEdit = selVariations;
+
+        var _slug = null;
+        let _OptionAll = attribute.OptionAll;// && JSON.parse(attribute.OptionAll);
+        var isAllOption = false;
+        if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
+            isAllOption = true;
+        }
+        else {
+            _OptionAll = attribute.options ? attribute.options.split(',') : [];
+        }
+        var result = _OptionAll.filter(b => b.slug === option);
+        if (result && typeof result != "undefined" && result.length > 0) {
+            _slug = result;
+        }
+        console.log("---setSelectedOption--slug" + JSON.stringify(_slug));
+
         var _item = _selVariationsEdit.findIndex((element) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            _selVariationsEdit.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+            _selVariationsEdit.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug[0].slug : "" });
         }
         _selVariationsEdit = _selVariationsEdit.map(obj => {
             if (obj.Name === attribute.Name) {
-                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug[0].slug : "" };
             }
             return obj;
         });
@@ -642,6 +660,7 @@ const Product = (props) => {
             }
         }
     }
+   
     const doVariationSearch = () => {
         if (props && props.selProduct) {
             var _product = props.selProduct;
@@ -720,17 +739,33 @@ const Product = (props) => {
         //     setSelOptions([]);
 
         //    }
+        //----------
+        var _slug = null;
+        let _OptionAll = attribute.OptionAll;// && JSON.parse(attribute.OptionAll);
+        var isAllOption = false;
+        if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
+            isAllOption = true;
+        }
+        else {
+            _OptionAll = attribute.options ? attribute.options.split(',') : [];
+        }
+        var result = _OptionAll.filter(b => b.slug === option);
+        if (result && typeof result != "undefined" && result.length > 0) {
+            _slug = result;
+            //selVariations.find(ele => ele.OptionTitle===result[0].name);
+        }
+        //------
         _disableAttribute = []
         var _selVariations = selVariations;
         var _item = _selVariations.findIndex((element) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug[0].slug : "", });
         }
         _selVariations = _selVariations.map(obj => {
             if (obj.Name === attribute.Name) {
-                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug[0].slug : "" };
             }
             return obj;
         });
@@ -754,10 +789,54 @@ const Product = (props) => {
                     var filteredAttribute = allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
-                        return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+
+                        //-------
+                        // var _slug = "";
+                        // selVariations && selVariations.map(v => {
+
+                        //     let _OptionAll = v.OptionAll && JSON.parse(v.OptionAll);
+                        //     var isAllOption = false;
+                        //     if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
+                        //         isAllOption = true;
+                        //     }
+                        //     else {
+                        //         _OptionAll = v.options ? v.options.split(',') : [];
+                        //     }
+                        //     var result = _OptionAll.filter(b => b.name === option);
+                        //     if (result && typeof result != "undefined" && result.length > 0) {
+                        //         _slug = result;
+                        //         //selVariations.find(ele => ele.OptionTitle===result[0].name);
+                        //     }
+                        //     console.log("------result---" + result && JSON.stringify(result));
+                        //     // _OptionAll.map((_allOpt, index) => {
+                        //     //     var newOption = isAllOption ==true && _allOpt.slug ? _allOpt.slug:_allOpt;
+                        //     // });
+                        // })
+                        //return selVariations.every(ele => ((allCombi.includes(_slug[0].slug) && (option===ele.Option)) ) && _attribute.length === selVariations.length)
+
+
+                        // var _data= selVariations.every(ele => ((allCombi.includes(_slug[0].slug) && (option===ele.Option)) ) && _attribute.length === selVariations.length)
+
+                        // if(typeof _data!="undefined" && _data!=null)
+                        // {
+                        //     return true;
+                        // }
+                        // else
+                        // {
+                        //     return false;
+                        // }
+
+                        //return (allCombi.includes(_slug)  || allCombi.includes("**")) && _attribute.length === selVariations.length;
+                        //return selVariations.every(ele => (allCombi.includes(_slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+
+                        //-------
+
+
+                        return _selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                        setisRefereshIconInventory(true);
                         dispatch(getInventory(filteredAttribute[0].WPID)); //call to get product warehouse quantity
 
                     }
@@ -769,8 +848,12 @@ const Product = (props) => {
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     var filteredAttribute1 = allProdcuts.filter(item => {
+                        // var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        // var aa = _selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
-                        var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+                        allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                        var aa = _selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")))
 
                         if (aa == true) {
                             allCombi = allCombi.map(a => {
@@ -792,18 +875,22 @@ const Product = (props) => {
                             })
                         }
 
-                        var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
-                        // if (result === true) {
-                        //     console.log("--att p count--->> ", allCombi.join(','));
-                        // }
+                        //var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        if (result === true) {
+                            console.log("--att p count--->> ", allCombi.join(','));
+                        }
                         return result;
                     })
                     // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
                     //     console.log("-------combi----" + a.combination);
                     // })
-                    // console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
-                    // console.log("--allVariations--- ", JSON.stringify(allVariations));
+                    //  console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
+                    //  console.log("--allVariations--- ", JSON.stringify(allVariations));
+                    //  console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1));
+                     var array3 = allVariations.filter(function(obj) { return _disableAttribute.indexOf(obj) == -1; });
 
+                     console.log("--array3--- ", JSON.stringify(array3));
                 }
 
             });
@@ -998,10 +1085,10 @@ const Product = (props) => {
         _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
 
         _attribute && _attribute.map((attribute, index) => {
-            var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Option: attribute.Option, Variation: attribute.Variation, OptionAll: attribute.OptionAll };
-            var isExist = _DistictAttribute && _DistictAttribute.find(function (element) {
-                return (element.Slug == item.Slug)
-            });
+            var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Variation: attribute.Variation, OptionAll: attribute.OptionAll ? JSON.parse(attribute.OptionAll) : [] };
+            // var isExist = _DistictAttribute && _DistictAttribute.find(function (element) {
+            //     return (element.Slug == item.Slug)
+            // });
             // if (!isExist)        
             _DistictAttribute.push(item);
         });
@@ -1011,6 +1098,10 @@ const Product = (props) => {
     }, 1000);
 
     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    // if (isEdit === true && _product.StockQuantity != variationStockQunatity) {
+    //     setVariationStockQunatity(_product.StockQuantity)
+    //     setProductQty(_product.quantity);
+    // }
     var product_price = 0;
     var after_discount_total_price = 0;
     if (_product) {
@@ -1032,7 +1123,7 @@ const Product = (props) => {
     //console.log("Quantity", currentWareHouseDetail.Quantity, variationStockQunatity)
 
     return (
-        props.isShowPopups == false ? <React.Fragment></React.Fragment> :
+        props.isShowPopups == false ? null :
             <React.Fragment>
                 <div className="product-wrapper" >
                     <LeftNavBar view={"Product View"}></LeftNavBar>
@@ -1070,7 +1161,7 @@ const Product = (props) => {
                                     return (
                                         attribute && attribute.Variation == true &&
                                         <React.Fragment key={attribute.Slug}><p>{attribute.Name}</p>
-                                            <div className="radio-group">
+                                            {/* <div className="radio-group">
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
                                                         let _item = a.replace(/\//g, "-").toLowerCase();
@@ -1078,7 +1169,9 @@ const Product = (props) => {
                                                         // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
                                                         //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
                                                         if (isEdit === true) {
-                                                            var selVal = selOptions ? selOptions.includes(_item) : false;
+                                                            //var selVal = selOptions ? selOptions.includes(_item) : false;
+                                                            
+                                                            var selVal = selOptions ? selOptions.some(a => a.replace(/\-/g, " ").toLowerCase() === _item.toLowerCase()) : false;
                                                             if (selVal === true) {
                                                                 setSelectedOption(a, attribute, i)
                                                             }
@@ -1090,7 +1183,7 @@ const Product = (props) => {
                                                             // }
                                                         }
                                                         else {
-                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle === _item) : false;
+                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle.replace(/\-/g, " ").toLowerCase() === _item.toLowerCase()) : false;
                                                             // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                             return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
                                                         }
@@ -1109,7 +1202,34 @@ const Product = (props) => {
                                                         // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
-                                            </div></React.Fragment>
+                                            </div> */}
+                                            <div className="radio-group">
+                                                {
+                                                   attribute.OptionAll && attribute.OptionAll.map((opt, i) => {
+                                                        let _item = opt.slug;
+                                                        allVariations.push(_item);
+                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                        //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
+                                                        if (isEdit === true) {
+                                                            //var selVal = selOptions ? selOptions.includes(_item) : false;
+
+                                                            var selVal = selOptions ? selOptions.some(a => a === _item) : false;
+                                                            if (selVal === true) {
+                                                                setSelectedOption(_item, attribute, i)
+                                                            }
+                                                            return <label key={"l_" + opt.slug} onClick={() => optionClick(opt.slug, attribute, i)}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
+
+                                                        }
+                                                        else {
+                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle.toLowerCase() === _item.toLowerCase()) : false;
+                                                            // var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
+                                                            return <label key={"l_" + opt.slug} onClick={() => optionClick(opt.slug, attribute, i)}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
+                                                        }
+
+                                                    })
+                                                }
+                                            </div>
+                                        </React.Fragment>
                                     )
                                 })
                                 )
@@ -1152,41 +1272,25 @@ const Product = (props) => {
                                                                 var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
                                                                 return (<React.Fragment>
                                                                     <div className="main-row" onChange={onChangeValue}>
-                                                                    <div class="input-col1" >
-                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
-                                                                       
-                                                                   
-                                                                        
-                                                                        {/* <div className="text-group">
+                                                                        <div class="input-col1" >
+                                                                            <label htmlFor={id + "-txt"}>{efm.Name}</label>
+
+
+
+                                                                            {/* <div className="text-group">
                                                                             <p className="label">{efm.Name}</p>
                                                                         </div> */}
-                                                                        <div className="increment-input">
-                                                                            <button onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <img src={Checkout_Minus} alt="" />
-                                                                            </button>
-                                                                            <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                            <button id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <img src={Checkout_Plus} alt="" />
-                                                                            </button>
-                                                                        </div>
-                                                                       
+                                                                            <div className="increment-input">
+                                                                                <button onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <img src={Checkout_Minus} alt="" />
+                                                                                </button>
+                                                                                <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                                <button id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <img src={Checkout_Plus} alt="" />
+                                                                                </button>
+                                                                            </div>
+
                                                                         </div><div> <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
-                                                                    {/* <div className="row" onChange={onChangeValue}>
-                                                                        <div className="increment-input">
-                                                                            <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <svg width={16} height={2} viewBox="0 0 16 2">
-                                                                                    <rect width={16} height={2} fill="var(--primary)" />
-                                                                                </svg>
-                                                                            </div>
-                                                                            <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                            <div className="increment" id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <svg className='checkout-increament-mr' width={16} height={16} viewBox="0 0 16 16" id="btn_svg_plus_popup" >
-                                                                                    <path d="M16 7H9V0H7V7H0V9H7V16H9V9H16V7Z" fill="var(--primary)" />
-                                                                                </svg>
-                                                                            </div>
-                                                                        </div>
-                                                                        <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div> */}
                                                                 </React.Fragment>)
                                                             }))
                                                         })
@@ -1218,24 +1322,17 @@ const Product = (props) => {
                                                 <React.Fragment>
                                                     <p className="labelTitle">{mod.Title}</p>
                                                     {
-
-
                                                         mod.modifierFields && mod.modifierFields.map(mf => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name).replace(/ /g, "_");
                                                                 return (<React.Fragment>
                                                                     <div className="main-row" onChange={onChangeValue}>
-                                                                    <div class="input-col" >
-                                                                        <label htmlFor={id + "-txt"}>{efm.Name}</label>
-                                                                        <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                       
-                                                                    </div>
-                                                                    <div class="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
-                                                                    {/* <p className="label">{efm.Name}</p>
-                                                                    <div className="row" onChange={onChangeValue}>
-                                                                        <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
-                                                                        <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div> */}
+                                                                        <div class="input-col" >
+                                                                            <label htmlFor={id + "-txt"}>{efm.Name}</label>
+                                                                            <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+
+                                                                        </div>
+                                                                        <div class="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
                                                                 </React.Fragment>)
                                                             }))
                                                         })
@@ -1262,14 +1359,19 @@ const Product = (props) => {
                                 <div className="group">
                                     <div className="text-row">
                                         {/* <p className="mobile-only">Currently in stock:</p> */}
+
                                         <p className="mobile-only">Currently {stockStatusInOut}:</p>
-                                        <p className="quantity">{variationStockQunatity}</p>
+                                        {isRefereshIconInventory === true ?
+                                            <p className="text-center"><img src={RefreshGrey} alt=""></img></p>
+                                            :
+                                            stockStatusInOut != LocalizedLanguage.outOfStock ? stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? <p className="quantity">{variationStockQunatity}</p> : null : <p className="quantity">0</p>}
                                     </div>
 
                                     {isOutOfStock == false && <p className="desktop-only">{stockStatusInOut}</p>}
-                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&  //no need update stock when unlimited
-                                        <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' && _product.ManagingStock === true &&   //no need update stock when unlimited
+                                        <button onClick={() => toggleAdjustInventory()} disabled={stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? false : true} style={{ opacity: stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? 1 : 0.5 }}>Adjust Stock</button>
                                     }
+                                    {/* {stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited'} */}
                                 </div>
 
                                 <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
@@ -1320,38 +1422,6 @@ const Product = (props) => {
                                     </div>
                                 </button>
                             })}
-                            {/* <button>
-                                <div className="img-container">
-                                    <img src={Shoes} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Funky Shoes</p>
-                                </div>
-                            </button>
-                            <button>
-                                <div className="img-container">
-                                    <img src={Face_Mask} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Face Mask</p>
-                                </div>
-                            </button>
-                            <button>
-                                <div className="img-container">
-                                    <img src={CoffeeCup} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Reusable Coffee Cup</p>
-                                </div>
-                            </button>
-                            <button>
-                                <div className="img-container">
-                                    <img src={SnapbackHat} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Snapback Ballcap with Logo</p>
-                                </div>
-                            </button> */}
                         </div>
                     </div>
                     <div className="product-footer">

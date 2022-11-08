@@ -24,7 +24,7 @@ import { isSafari } from "react-device-detect";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import STATUSES from "../../constants/apiStatus";
 import { checkTempOrderSync } from "../checkout/checkoutSlice";
-import { postMeta } from "../common/commonAPIs/postMetaSlice";
+
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 const SaleComplete = () => {
@@ -37,9 +37,24 @@ const SaleComplete = () => {
     const [custEmail, setCustEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [tempOrder_Id, setTempOrder_Id] = useState(localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '')
+
+    var isCalled = false;
     useEffect(() => {
-        printdetails();
-        dispatch(checkTempOrderSync(tempOrder_Id));
+        if (isCalled === false) {
+            // //Saving post meta for Pay_by_Product
+            // if (localStorage.getItem("paybyproduct")) {
+            //     var parma = { "Slug": tempOrder_Id + "_paybyproduct", "Value": localStorage.getItem("paybyproduct"), "Id": 0, "IsDeleted": 0 };
+            //     dispatch(postMeta(parma));
+            //     setTimeout(() => {
+            //         localStorage.removeItem("paybyproduct");
+            //     }, 100);
+            // }
+
+            printdetails();
+            dispatch(checkTempOrderSync(tempOrder_Id));
+            isCalled = true;
+        }
+
         // var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
         // if ((!ActiveUser.key.isSelfcheckout || ActiveUser.key.isSelfcheckout === false) && checkPrintreciept && checkPrintreciept == true) {
         //     printReceipt();
@@ -88,16 +103,6 @@ const SaleComplete = () => {
         return print_bar_code;
     }
     const printdetails = () => {
-
-        if (localStorage.getItem("paybyproduct")) {
-            var parma = { "Slug": tempOrder_Id + "paybyproduct", "Value": localStorage.getItem("paybyproduct"), "Id": 0, "IsDeleted": 0 };
-            dispatch(postMeta(parma));
-            setTimeout(() => {
-                localStorage.removeItem("paybyproduct");
-            }, 100);
-        }
-
-
         var ListItem = new Array();
         var _typeOfTax = typeOfTax()
         var addcust;
@@ -281,6 +286,11 @@ const SaleComplete = () => {
             _currentTime: (PrintDetails._currentTime && PrintDetails._currentTime != null && typeof PrintDetails._currentTime != "undefined") ? PrintDetails._currentTime : ''
         }
         localStorage.setItem("PrintCHECKLIST", JSON.stringify(CheckoutList));
+
+         var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
+        if ((!ActiveUser.key.isSelfcheckout || ActiveUser.key.isSelfcheckout === false) && checkPrintreciept && checkPrintreciept == true) {
+            printReceipt();
+        }
         //localStorage.removeItem("CHECKLIST");
     }
     const printReceipt = (appResponse = undefined) => {

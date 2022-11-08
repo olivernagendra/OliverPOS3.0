@@ -99,7 +99,7 @@ const HeadereBar = (props) => {
                 <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                     {/* <img src={avatar} alt="" /> */}
                     {/* Will use by default if no other img is given  */}
-						<img src={Avatar_Blue_Background} alt="" class="default" />
+						<img src={Avatar_Blue_Background} alt="" className="default" />
 						<img src={avatar_2} alt="" />
                 </button>
                 <button id="mobileOptionsButton" onClick={() => props.toggleOptionPage()} className={props.isShow == true ? "filter" : ""}>

@@ -78,8 +78,10 @@ const SplitByProduct = (props) => {
                 var _paid = paybyproduct.find(a => a.product_id === item.product_id);
                 if (_paid) {
                     var _index = paybyproduct.indexOf(_paid, 0);
-                    _paid.quantity = _paid.quantity + item.quantity_to_pay;
-                    paybyproduct[_index] = _paid;
+                    if (item.quantity_to_pay != null && typeof item.quantity_to_pay != "undefined") {
+                        _paid.quantity = _paid.quantity + item.quantity_to_pay;
+                        paybyproduct[_index] = _paid;
+                    }
                 }
                 else {
                     paybyproduct.push({ product_id: item.product_id, quantity: item.quantity_to_pay });
@@ -88,7 +90,8 @@ const SplitByProduct = (props) => {
             else {
                 paybyproduct.push({ product_id: item.product_id, quantity: item.quantity_to_pay });
             }
-            localStorage.setItem("paybyproduct", JSON.stringify(paybyproduct));
+            localStorage.setItem("paybyproduct_unpaid", JSON.stringify(paybyproduct));
+            //localStorage.setItem("paybyproduct", JSON.stringify(paybyproduct));
         });
         props.pay_by_product && props.pay_by_product(total);
     }

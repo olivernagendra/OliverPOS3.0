@@ -396,8 +396,8 @@ const AdvancedSearch = (props) => {
             <button className="close-subwindow" onClick={() => closePopUp()}>
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
-            <div class="input-wrapper" id="advSearchInputWrapper">
-                <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off" />
+            <div className="input-wrapper" id="advSearchInputWrapper">
+                <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autoComplete="off" />
                 <img src={Search_Icon_Blue} alt="" id="advSearchInputIcon" />
                 <button id="advSearchInputCancel" onClick={() => clearSearch()}>
                     <img src={AdvancedSearchCancelIcon} alt="" />
@@ -458,10 +458,10 @@ const AdvancedSearch = (props) => {
             <div className="right-col">
                 {/* Will only appear if right col is empty besides start-searching element  */}
                 {filteredCustomer.length === 0 && filteredGroup.length === 0 && filteredProductList.length === 0 && serachString === "" ?
-                    <div class="start-searching display-flex">
+                    <div className="start-searching display-flex">
                         <img src={Search_Icon_Blue} alt="" />
-                        <p class="style1">Start searching to display results.</p>
-                        <p class="style2">Search for any product, customer <br /> or group to display results.</p>
+                        <p className="style1">Start searching to display results.</p>
+                        <p className="style2">Search for any product, customer <br /> or group to display results.</p>
                     </div> :
                     <React.Fragment>
                         <div className="header">
