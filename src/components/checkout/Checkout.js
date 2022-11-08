@@ -862,10 +862,18 @@ const Checkout = (props) => {
                 toggleManualPayment();
             } 
             dispatch(makeOnlinePayments(null));
-            setLoading(false);
+            if(getRemainingPriceForCash()>0)
+            {
+                setLoading(false);
+            }
+            
         }
-        else if(respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR )&& respmakeOnlinePayments.is_success==false && loading==true)
-        {setLoading(false);}
+        else if(respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR )&& respmakeOnlinePayments.is_success==false && loading==true && respmakeOnlinePayments.message!="")
+        {
+            setLoading(false);
+            var data = { title: "", msg: respmakeOnlinePayments.error, is_success: true }
+            dispatch(popupMessage(data));
+        }
     }, [respmakeOnlinePayments])
 
     // handle online payment payamount

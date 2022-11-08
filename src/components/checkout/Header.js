@@ -139,7 +139,7 @@ const Header = (props) => {
                 <div className="page-options">
                     <p>Options Menu</p>
                     <button id="clearCartButton" onClick={()=>clearCart()}>
-						<div class="img-container">
+						<div className="img-container">
 							<img src={ClearCart_Icon} alt="" />
 						</div>
 						<p>Clear Cart</p>
