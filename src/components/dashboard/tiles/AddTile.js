@@ -227,7 +227,7 @@ const AddTile = (props) => {
             if (isExist == true) { //apply check to protect msg display if no item selected and click on save button
                 setMsg('error duplicate');
                 // alert("alreadyExsist");
-                
+
                 //var data = { title: "", msg: "Item already exist", is_success: true }
                 //dispatch(popupMessage(data));
             }
@@ -309,11 +309,11 @@ const AddTile = (props) => {
                                 {filterList && filterList.length > 0 && filterList.map(item => {
                                     switch (item.type) {
                                         case "product":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Title}</div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Title}</p></div>
                                         case "category":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Value}</div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Value}</p></div>
                                         case "attribute":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Description}</div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Description}</p></div>
                                         default:
                                             return ''
                                     }
@@ -343,15 +343,15 @@ const AddTile = (props) => {
                         })
                 } */}
                             <label /*onClick={() => setTileColor('violet')}*/ >
-                                <input type="radio" id="violet" name="tile-color" value="violet" disabled/>
+                                <input type="radio" id="violet" name="tile-color" value="violet" disabled />
                                 <div className="custom-radio-button background-violet"></div>
                             </label>
                             <label /*onClick={() => setTileColor('blue')}*/ >
-                                <input type="radio" id="blue" name="tile-color" value="blue" disabled/>
+                                <input type="radio" id="blue" name="tile-color" value="blue" disabled />
                                 <div className="custom-radio-button background-blue"></div>
                             </label>
                             <label /*onClick={() => setTileColor('cyan')}*/ >
-                                <input type="radio" id="cyan" name="tile-color" value="cyan" disabled/>
+                                <input type="radio" id="cyan" name="tile-color" value="cyan" disabled />
                                 <div className="custom-radio-button background-cyan"></div>
                             </label>
                             <label onClick={() => setTileColor('teal')}>

@@ -2,8 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 const LogoutConfirm = (props) => {
     const navigate = useNavigate();
-   return <div class={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"}>
-        <div class={props.isShow === true ? "subwindow logout-confirm current" : "subwindow logout-confirm"}>
+    return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"}>
+        <div className={props.isShow === true ? "subwindow logout-confirm current" : "subwindow logout-confirm"}>
             <div className="subwindow-body">
                 <div className="auto-margin-top"></div>
                 <p className="style1">Account Logout Confirmation</p>

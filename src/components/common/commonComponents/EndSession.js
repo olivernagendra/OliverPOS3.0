@@ -2,8 +2,11 @@ import React, { useEffect, useLayoutEffect } from "react";
 import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
 import AngledBracket_Left_Blue from '../../../assets/images/svg/AngledBracket-Left-Blue.svg';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { createPin, validatePin } from "../../pinPage/pinSlice"
 const EndSession = (props) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             localStorage.removeItem("user")
@@ -13,6 +16,14 @@ const EndSession = (props) => {
             e.stopPropagation();
         }
         console.log(e.target.className)
+    }
+    const handleClose = () => {
+        localStorage.removeItem("user");
+        dispatch(validatePin());
+        setTimeout(() => {
+            navigate('/pin')
+        }, 50);
+
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)} style={{ zIndex: 9 }}>
@@ -36,10 +47,10 @@ const EndSession = (props) => {
                         brought back to the User ID log-in <br />
                         screen.
                     </p>
-                    <button id="logoutButton" onClick={() => navigate('/pin')}>End Session</button>
+                    <button id="logoutButton" onClick={handleClose}>End Session</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
-            </div></div>)
+            </div></div >)
 }
 
 export default EndSession 

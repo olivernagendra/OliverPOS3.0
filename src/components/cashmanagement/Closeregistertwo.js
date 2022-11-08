@@ -1,52 +1,72 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import {  SaveClosingNote } from './CashmanagementSlice'
+import { SaveClosingNote, openRegister } from './CashmanagementSlice'
 import { useNavigate } from "react-router-dom";
 import ActiveUser from '../../settings/ActiveUser';
 import moment from 'moment';
 import Config from '../../Config'
+import { createPin, validatePin } from "../pinPage/pinSlice"
+
 const Closeregistertwo = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [enterNotes, setenterNotes] = useState('')
 
-  const  enterNote=(e)=> {
+    const enterNote = (e) => {
         const { value } = e.target;
         setenterNotes(value)
     }
 
-    
-  const  CloseRegister=()=> {
+
+    const CloseRegister = () => {
         var cashManagementID = localStorage.getItem('Cash_Management_ID');
         var saveCountParm = { "CashManagementId": cashManagementID, "Note": enterNotes }
         // console.log("saveCountParm", saveCountParm)
-       dispatch(SaveClosingNote(saveCountParm))
-       
+        dispatch(SaveClosingNote(saveCountParm))
+
+
+        localStorage.removeItem("CUSTOMER_TO_OrderId")
+        localStorage.removeItem('CASH_ROUNDING');
+        localStorage.setItem("IsCashDrawerOpen", "false");
+        localStorage.removeItem('Cash_Management_ID');
+        //Webview Android keyboard setting.................... 
+        localStorage.setItem('logoutclick', "true");
+        // setAndroidKeyboard('logout');
+        //--------------------------------------------------------
+        //this.props.dispatch(userActions.logout())
+        // redirectToURL()
+        // history.push('/loginpin');
+        dispatch(validatePin(null))
+        var open_register_param = {
+            "RegisterId": 0,
+            "RegisterName": 0,
+            "LocationId": 0,
+            "LocationName": "",
+            "LocalDateTime": null,
+            "LocalTimeZoneType": null,
+            "SalePersonId": '',
+            "SalePersonName": '',
+            "SalePersonEmail": '',
+            "ActualOpeningBalance": 0,
+            "OpeningNote": '',
+            "LocalTimeZoneOffsetValue": ''
+        }
+        dispatch(openRegister());
+        localStorage.removeItem('user');
         setTimeout(() => {
-            localStorage.removeItem("CUSTOMER_TO_OrderId")
-            localStorage.removeItem('CASH_ROUNDING');
-            localStorage.setItem("IsCashDrawerOpen", "false");
-            localStorage.removeItem('Cash_Management_ID');
-            //Webview Android keyboard setting.................... 
-            localStorage.setItem('logoutclick', "true");
-           // setAndroidKeyboard('logout');
-            //--------------------------------------------------------
-            //this.props.dispatch(userActions.logout())
-           // redirectToURL()
-            // history.push('/loginpin');
-            navigate('/register')
+            navigate('/openregister')
         }, 500);
 
     }
 
-  const printHtml = (_closeRegister)=> {
-    console.log("closeregister",_closeRegister)
+    const printHtml = (_closeRegister) => {
+        console.log("closeregister", _closeRegister)
         var PrintAndroidReceiptData = {};
         var PrintAndroidData = [];
         var rowNumber = 0;
         var _taxDetail = [];
 
-       // console.log(' this.state.enterNote', this.state.enterNote)
+        // console.log(' this.state.enterNote', this.state.enterNote)
         const pageSize = ActiveUser.key.pdfFormate;
         console.log("==-------pageSize----", pageSize)
 
@@ -209,7 +229,7 @@ const Closeregistertwo = (props) => {
 
 
             item.line_items.forEach(function (lineItem) {
-                    console.log("lineItem-----",lineItem)
+                console.log("lineItem-----", lineItem)
                 if (lineItem.Taxes) {
                     var lineItemTaxRates = lineItem.Taxes && lineItem.Taxes != "null" && JSON.parse(lineItem.Taxes).total;
                     lineItemTaxRates && lineItemTaxRates != "" && Object.keys(lineItemTaxRates).map(key => {
@@ -417,7 +437,7 @@ const Closeregistertwo = (props) => {
         //     PrintAndroidData.push({ "rn": rowNumber++, "cms": 2, "c1": "Total", "c2": _closeRegister.CashRegisterlog.length, "c3": "", "bold": "0,0,0", "fs": "24", "alg": "0,2" });
         //     PrintAndroidReceiptData["data"] = PrintAndroidData;
         // }
-       
+
         var html = (`
         <html lang="en">
         <head>
@@ -743,27 +763,27 @@ ${enterNotes && enterNotes !== "" &&
         //     showAndroidReceipt("", PrintAndroidReceiptData)
         // }
         // else {
-            var a = window.open('#', '', 'width=400', 'A2');
-            a && a.document && a.document.write(html);
-            a && a.print();
-            a && a.close();
-            return true;
+        var a = window.open('#', '', 'width=400', 'A2');
+        a && a.document && a.document.write(html);
+        a && a.print();
+        a && a.close();
+        return true;
         // }
     }
 
 
     var closeRegister = props.closeregisterPaymentDetail;
-    console.log("closeRegister",closeRegister)
+    console.log("closeRegister", closeRegister)
     var _closeRegister = null;
-    if (closeRegister &&closeRegister)
-        _closeRegister = closeRegister &&closeRegister;
+    if (closeRegister && closeRegister)
+        _closeRegister = closeRegister && closeRegister;
     var _totalDiff = _closeRegister && _closeRegister.Actual - _closeRegister.Expected
     _closeRegister && _closeRegister.PaymentSummery && _closeRegister.PaymentSummery.map(item => {
         // _totalDiff = _totalDiff + (item.DiffrenceAmount);
         _totalDiff = _totalDiff + (item.Actual - item.Expected);
         // console.log("_totalDiff",_totalDiff)
     })
-    var cashRegisterLog =  closeRegister ? closeRegister.CashRegisterlog : [];
+    var cashRegisterLog = closeRegister ? closeRegister.CashRegisterlog : [];
 
 
     return (
@@ -797,23 +817,23 @@ ${enterNotes && enterNotes !== "" &&
                     </div>
                 </div>
                 {_closeRegister && _closeRegister.PaymentSummery && _closeRegister.PaymentSummery.map((item, index) => {
-               return ( <div className="col">
-                    <p className="style2">{item.Name}</p>
-                    <div className="divider" />
-                    <div className="row">
-                        <p className="style3">Expected:</p>
-                        <p className="style3">{item.Expected}</p>
-                    </div>
-                    <div className="row">
-                        <p className="style3">Actual:</p>
-                        <p className="style3">{item.Actual}</p>
-                    </div>
-                    <div className="row">
-                        <p className="style3">Difference:</p>
-                        <p className="style3">{item.Actual - item.Expected}</p>
-                    </div>
-                </div>);
-                 })
+                    return (<div className="col">
+                        <p className="style2">{item.Name}</p>
+                        <div className="divider" />
+                        <div className="row">
+                            <p className="style3">Expected:</p>
+                            <p className="style3">{item.Expected}</p>
+                        </div>
+                        <div className="row">
+                            <p className="style3">Actual:</p>
+                            <p className="style3">{item.Actual}</p>
+                        </div>
+                        <div className="row">
+                            <p className="style3">Difference:</p>
+                            <p className="style3">{item.Actual - item.Expected}</p>
+                        </div>
+                    </div>);
+                })
                 }
 
                 <div className="tablet-divider" />

@@ -30,6 +30,7 @@ import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 import { activityRecords } from "../activity/ActivitySlice";
+import { NumericFormat } from 'react-number-format';
 const CustomerView = () => {
 
   var orderCount = ''
@@ -152,21 +153,21 @@ const CustomerView = () => {
   let useCancelled1 = false;
   useEffect(() => {
     var UID = get_UDid('UDID');
-    var Customerredirection = sessionStorage.getItem("Cusredirection")? sessionStorage.getItem("Cusredirection"):'';
-    if(Customerredirection &&Customerredirection.length > 0) {
-      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection")?sessionStorage.getItem("Cusredirection"):'';
+    var Customerredirection = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
+    if (Customerredirection && Customerredirection.length > 0) {
+      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
       setupdateCustomerId(CUSTOMER_ID)
-    }else{
-      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID")?sessionStorage.getItem("CUSTOMER_ID"):'';
+    } else {
+      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
       setupdateCustomerId(CUSTOMER_ID)
     }
- 
+
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
     }
     //  Remove saved data from sessionStorage
-      sessionStorage.removeItem('Cusredirection');
+    sessionStorage.removeItem('Cusredirection');
     return () => {
       useCancelled1 = true;
     }
@@ -380,12 +381,12 @@ const CustomerView = () => {
     navigate('/home')
   }
 
-  const OpenTransactions =(customerDetailData)=>{
+  const OpenTransactions = (customerDetailData) => {
     //console.log("customerDetailData",customerDetailData.Email)
-    if(customerDetailData.Email !=='' ){
+    if (customerDetailData.Email !== '') {
       sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : 0);
       navigate('/transactions')
-     } 
+    }
   }
 
 
@@ -527,13 +528,13 @@ const CustomerView = () => {
               </div>
               <div className="text-group">
                 <p className="style2">Phone #:</p>
-                 <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
+                <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
               </div>
             </div>
           </div>
           <div className="cust-totals">
             <div className="col">
-              <p className="style1">{OrderAmount ? OrderAmount : 0}</p>
+              <p className="style1">$<NumericFormat value={OrderAmount ? OrderAmount : 0} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
               <p className="style2">Total Spent</p>
             </div>
             <div className="col">
@@ -541,7 +542,7 @@ const CustomerView = () => {
               <p className="style2">Orders</p>
             </div>
             <div className="col">
-              <p className="style1">{customerDetailData && customerDetailData.store_credit}</p>
+              <p className="style1">${customerDetailData && <NumericFormat value={customerDetailData.store_credit} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</p>
               <p className="style2">Store Credit</p>
               <button onClick={toggleCreditModel}>Adjust Credit</button>
             </div>

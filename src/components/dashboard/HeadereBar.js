@@ -46,11 +46,11 @@ const HeadereBar = (props) => {
         removeCheckOutList();
         dispatch(product());
     }
-    useEffect(()=>{
-       checkTempOrderSyncStatus();
+    useEffect(() => {
+        checkTempOrderSyncStatus();
         //checkTempOrderStatus();
     })
-   const checkTempOrderSyncStatus=()=> {
+    const checkTempOrderSyncStatus = () => {
         const { Email } = ActiveUser.key;
         setTimeout(function () {
             var TempOrdersForSync = localStorage.getItem(`TempOrders_${Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${Email}`)) : [];
@@ -79,7 +79,7 @@ const HeadereBar = (props) => {
                     // console.log("TempOrders[0].Sync_Count", TempOrders[0].Sync_Count)
                     if (syncOrderID && TempOrders[0].Sync_Count <= 1 && TempOrders[0].new_customer_email !== "" && TempOrders[0].isCustomerEmail_send == false) {
                         // console.log("Call email customer", TempOrders[0].Sync_Count)
-                        dispatch(saveCustomerToTempOrder({"order_id":syncOrderID,"email_id":TempOrders[0].new_customer_email}));
+                        dispatch(saveCustomerToTempOrder({ "order_id": syncOrderID, "email_id": TempOrders[0].new_customer_email }));
                     }
                 }
             }
@@ -99,8 +99,8 @@ const HeadereBar = (props) => {
                 <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                     {/* <img src={avatar} alt="" /> */}
                     {/* Will use by default if no other img is given  */}
-						<img src={Avatar_Blue_Background} alt="" className="default" />
-						<img src={avatar_2} alt="" />
+                    <img src={Avatar_Blue_Background} alt="" className="default" />
+                    <img src={avatar_2} alt="" />
                 </button>
                 <button id="mobileOptionsButton" onClick={() => props.toggleOptionPage()} className={props.isShow == true ? "filter" : ""}>
                     <img src={Ellipsis_Icon_DarkBlue} alt="" />

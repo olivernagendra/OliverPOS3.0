@@ -7,7 +7,7 @@ import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg';
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useDispatch, useSelector } from 'react-redux';
 // import imgBackSpace from '../../assets/images/svg/Backspace-BaseBlue.svg'
-import { GetOpenRegister } from '../cashmanagement/CashmanagementSlice'
+import { GetOpenRegister, closeRegister } from '../cashmanagement/CashmanagementSlice'
 // import {createPin, validatePin} from "./pinSlice"
 // import { useNavigate } from "react-router-dom";
 // import { get_UDid } from "../common/localSettings"; 
@@ -34,18 +34,18 @@ const Pin = () => {
 
     let useCancelled = false;
     useEffect(() => {
-        if (useCancelled == false) {
+        //if (useCancelled == false) {
 
-            fetchData()
-            dispatch(getPostMeta("recent_apps"));
-        }
-        return () => {
-            useCancelled = true;
-        }
+        fetchData()
+        dispatch(getPostMeta("recent_apps"));
+        // }
+        // return () => {
+        //     useCancelled = true;
+        // }
     }, []);
     const resGetPostMeta = useSelector((state) => state.getPostMeta)
     if (resGetPostMeta && resGetPostMeta.is_success == true) {
-        if (resGetPostMeta.data && resGetPostMeta.data.content&& resGetPostMeta.data.content.Slug == "recent_apps") {
+        if (resGetPostMeta.data && resGetPostMeta.data.content && resGetPostMeta.data.content.Slug == "recent_apps") {
             localStorage.setItem("recent_apps", resGetPostMeta.data.content.Value)
         }
     }
@@ -273,7 +273,13 @@ const Pin = () => {
         console.log("outer click")
         setOnClick(true)
     }
+    const goToCloseRegister = () => {
+        dispatch(closeRegister(null));
+        setTimeout(() => {
+            navigate("/closeregister")
+        }, 100);
 
+    }
     return <React.Fragment>
         <div className="idle-register-wrapper" onClick={hundleTrue}>
             <button id="logoutRegisterButton" onClick={() => toggleLogoutConfirm()}>
@@ -287,7 +293,7 @@ const Pin = () => {
                     <div className="divider divider-pin"></div>
                     <p className="style2">{get_regName()}</p>
                     <p className="style3">{get_locName()}</p>
-                    <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
+                    <button id="closeRegister1" onClick={goToCloseRegister}  >{LocalizedLanguage.closeRegister}</button>
                 </div>
             </header>
             <main>{<PinPad autoFocus={true} onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>

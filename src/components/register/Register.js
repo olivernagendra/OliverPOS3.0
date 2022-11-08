@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { get_locName, get_UDid, get_userName } from "../common/localSettings";
 import { toggleSubwindow } from "../common/EventFunctions";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { GetOpenRegister, closeRegister } from '../cashmanagement/CashmanagementSlice'
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
     const [isShowTakeOver, setisShowTakeOver] = useState(false);
@@ -42,6 +43,37 @@ const Register = () => {
         firebase_registers = respFirebaseRegisters.data && respFirebaseRegisters.data.content;
     }
 
+    const openRegister = () => {
+        var result = false;
+        var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
+        var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen") ? localStorage.getItem("IsCashDrawerOpen") : "false";
+        var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+        if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
+            result = true;
+        }
+        return result;
+    }
+
+    const { status, dataone, error, is_success } = useSelector((state) => state.GetOpenRegister)
+    console.log("status", status, "dataone", dataone, "error", error, "is_success", is_success)
+
+    if (status === STATUSES.IDLE && is_success) {
+        if (dataone && dataone.content && dataone.content !== undefined) {
+            if (dataone.content && dataone.content !== '' && dataone.content !== 0) {
+                localStorage.setItem("IsCashDrawerOpen", "true");
+                localStorage.setItem("Cash_Management_ID", dataone.content.Id);
+            } else {
+                localStorage.setItem("IsCashDrawerOpen", "false");
+                localStorage.removeItem("Cash_Management_ID");
+            }
+            if (openRegister() == true) {
+                navigate('/openregister')
+            }
+            else {
+                navigate('/pin');
+            }
+        }
+    }
     useEffect(() => {
         fetchData();
     }, []);
@@ -65,28 +97,31 @@ const Register = () => {
 
         setSelRegister(item);
         if (isTakeOver == false) {
-            if (openRegister() == true) {
-                navigate('/openregister')
-            }
-            else {
-                navigate('/pin');
-            }
+            fetchRegisterData(item.id)
+            // if (openRegister() == true) {
+            //     navigate('/openregister')
+            // }
+            // else {
+            //     navigate('/pin');
+            // }
         }
         else {
             toggleShowTakeOver();
         }
         //toggleSubwindow("takeover-register");
     }
-    const openRegister = () => {
-        var result = false;
-        var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
-        var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
+    const fetchRegisterData = (register_Id) => {
+
         var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-        if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
-            result = true;
+        var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
+        if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
+            dispatch(GetOpenRegister(register_Id));
         }
-        return result;
+        else {
+            localStorage.setItem("IsCashDrawerOpen", "false");
+        }
     }
+
     const takeOver = () => {
         if (openRegister() == true) {
             navigate('/openregister')
@@ -115,7 +150,7 @@ const Register = () => {
                         <p>{LocalizedLanguage.registerdevice}</p>
                         <div className="divider"></div>
                         <div className="button-container">
-                            <p>{LocalizedLanguage.register}</p>
+                            <p>Registers</p>
                             <div className="divider"></div>
                             <div className="button-group col">
                                 {
@@ -149,23 +184,26 @@ const Register = () => {
                                     })}
 
                             </div>
-                            <p>Kiosks</p>
-                            <div className="divider"></div>
-                            <div className="button-group">
-                                {self_registers.map((item, index) => {
-                                    return <button key={index} className="option" onClick={() => handleSubmit(item)}>
-                                        <div className="img-container background-violet">
-                                            <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
-                                        </div>
-                                        <div className="col">
-                                            <p className="style1">{item.name}</p>
-                                            <p className="style2">{LocalizedLanguage.available}</p>
-                                        </div>
-                                        <img src={AngledBracket_Right_Grey} alt="" />
-                                        <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
-                                    </button>
-                                })}
-                            </div>
+                            {self_registers && self_registers.length > 0 && <>
+                                <p>Kiosks</p>
+                                <div className="divider"></div>
+                                <div className="button-group">
+                                    {self_registers.map((item, index) => {
+                                        return <button key={index} className="option" onClick={() => handleSubmit(item)}>
+                                            <div className="img-container background-violet">
+                                                <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
+                                            </div>
+                                            <div className="col">
+                                                <p className="style1">{item.name}</p>
+                                                <p className="style2">{LocalizedLanguage.available}</p>
+                                            </div>
+                                            <img src={AngledBracket_Right_Grey} alt="" />
+                                            <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
+                                        </button>
+                                    })}
+                                </div>
+                            </>
+                            }
                         </div>
                     </div>
                 </div>

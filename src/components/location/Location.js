@@ -5,7 +5,7 @@ import AngledBracket_Right_Grey from '../../assets/images/svg/AngledBracket-Righ
 import Store_Icon_White from '../../assets/images/svg/Store-Icon-White.svg'
 import { location } from './locationSlice';
 
-import { get_UDid, get_userName } from '../common/localSettings';
+import { getShopName, get_UDid, get_userName } from '../common/localSettings';
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ const Location = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [isNoRegister, setisNoRegister] = useState(false);
-    const [isLoading ,setisLoading] = useState(false);
+    const [isLoading, setisLoading] = useState(false);
     var decodedString = localStorage.getItem('UDID');
     var decod = decodedString ? atob(decodedString) : '';
     var UDID = decod;
@@ -30,7 +30,7 @@ const Location = () => {
         if (respRegister.status == STATUSES.error) {
             console.log(error)
         }
-        if (respRegister.status == STATUSES.IDLE && respRegister.is_success && respRegister.data && isLoading===true) {
+        if (respRegister.status == STATUSES.IDLE && respRegister.is_success && respRegister.data && isLoading === true) {
             setisLoading(false);
             if (respRegister.data.content && respRegister.data.content.length > 0) {
                 setisNoRegister(false)
@@ -70,7 +70,7 @@ const Location = () => {
                 <img src={AngledBracket_Left_Blue} alt="" />
                 {LocalizedLanguage.back}
             </button>
-            <p>{get_userName()}</p>
+            <p>{getShopName()}</p>
         </div>
         <div className="choose-body-default">
             <p>{LocalizedLanguage.chooseLocation}</p>
