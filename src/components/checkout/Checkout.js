@@ -121,6 +121,7 @@ const Checkout = (props) => {
                 gotoHome();
             }
             else {
+                //localStorage.removeItem('paybyproduct');
                 navigate('/salecomplete');
             }
         }
@@ -160,8 +161,9 @@ const Checkout = (props) => {
     // }
     //setPaidAmount(null);
     useEffect(() => {
+        console.log("paymentsArr----"+JSON.stringify(paymentsArr) );
         if (loading === false) { getPaymentDetails(); }
-    }, [paymentsArr]);
+    }, []);
     useEffect(() => {
         var _checklist = JSON.parse(localStorage.getItem("CHECKLIST"));
         if (_checklist && _checklist.customerDetail && _checklist.customerDetail.store_credit) {
@@ -275,6 +277,16 @@ const Checkout = (props) => {
         setPartialAmount(amount);
         setPaymentTypeItem(item);
         dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        //pay_amount(type);
+        //setPayment_Type("cash");
+    }
+    const pay_by_product = (amount) => {
+        toggleSplitByProduct();
+        //setPaidAmount(amount);
+        setPartialAmount(amount);
+        setPaidAmount(amount);
+       // setPaymentTypeItem(item);
+       // dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
         //pay_amount(type);
         //setPayment_Type("cash");
     }
@@ -568,6 +580,13 @@ const Checkout = (props) => {
 
     //  function use to check for payment types and perform action accordingly 
     const pay_amount = (paymentType, TerminalCount = 0, Support = '', paymentCode = '', paidConfirmAmount = 0) => {
+        
+        if(localStorage.getItem("paybyproduct_unpaid"))
+        {
+            localStorage.setItem("paybyproduct",  localStorage.getItem("paybyproduct_unpaid"));
+            localStorage.removeItem("paybyproduct_unpaid");
+        }
+       
         var closingTab = '';
         //const { paidAmount, closingTab } = this.state;
         if (paidConfirmAmount !== 0) {// set the achual payment done by payconiq
@@ -619,7 +638,7 @@ const Checkout = (props) => {
         setPayment_Type(paymentType);
         //this.setState({ paymentType: paymentType })
         if (parseFloat(payment_amount) > 0) {
-            if (paymentType !== true && paymentType !== paymentsType.typeName.cashPayment && TerminalCount == 0 && paymentType !== paymentsType.typeName.storeCredit && paymentType !== 'manual_global_payment' && Support !== paymentsType.typeName.Support && paymentType !== 'stripe_terminal' && Support !== paymentsType.typeName.UPISupport) {
+            if (paymentType !== true && paymentType !== paymentsType.typeName.cashPayment && TerminalCount == 0 && paymentType !== paymentsType.typeName.storeCredit && paymentType !== 'manual_global_payment' && Support !== paymentsType.typeName.Support && paymentType !== 'stripe_terminal' && Support !== paymentsType.typeName.UPISupport && paymentType != paymentsType.typeName.manualPayment) {
                 // if (closingTab == false) {
                 payment_amount = partialAmount != null ? partialAmount : parseFloat(RoundAmount(_getRemainingPrice));
                 setPartialPayment(paymentType, payment_amount)
@@ -700,7 +719,7 @@ const Checkout = (props) => {
                     setIsPaymentStart(true);
 
                     var _tempOnlinePayCardData = onlinePayCardData;
-                    _tempOnlinePayCardData.amount = online_amount;
+                   // _tempOnlinePayCardData.amount = online_amount;
                     setOnlinePayCardData(_tempOnlinePayCardData);
 
                     onlineCardPayments(paymentType, online_amount)
@@ -825,8 +844,35 @@ const Checkout = (props) => {
     }
     const [respmakeOnlinePayments] = useSelector((state) => [state.makeOnlinePayments])
     useEffect(() => {
-        if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data)) {
+        if (respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data && loading==true) {
             console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
+
+            if (respmakeOnlinePayments.data.content.RefranseCode && respmakeOnlinePayments.data.content.IsSuccess == true)
+            // if(nextProp.online_payment.content.transactionResponse && nextProp.online_payment.content.transactionResponse.transId != 0)
+            {
+                // set the current trnasaction status, Used for APP Command "TransactionStatus"
+             localStorage.setItem("CurrentTransactionStatus", JSON.stringify({"paymentType":onlinePayments,"status": "completed"}))
+                //Set the actual amount paid from card
+                var _paidAmount = paidAmount;
+                if (respmakeOnlinePayments.data.content.Amount && respmakeOnlinePayments.data.content.Amount !== "") {
+                    _paidAmount = parseFloat(respmakeOnlinePayments.data.content.Amount) / 100
+                    setPaidAmount(_paidAmount)
+                }
+                setPartialPayment(onlinePayments, _paidAmount)
+                toggleManualPayment();
+            } 
+            dispatch(makeOnlinePayments(null));
+            if(getRemainingPriceForCash()>0)
+            {
+                setLoading(false);
+            }
+            
+        }
+        else if(respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR )&& respmakeOnlinePayments.is_success==false && loading==true && respmakeOnlinePayments.message!="")
+        {
+            setLoading(false);
+            var data = { title: "", msg: respmakeOnlinePayments.error, is_success: true }
+            dispatch(popupMessage(data));
         }
     }, [respmakeOnlinePayments])
 
@@ -834,6 +880,7 @@ const Checkout = (props) => {
     const onlineCardPayments = (paycode, amount) => {
         setPaidAmount(amount);
         setOnlinePayments(paycode);
+        setLoading(true);
         dispatch(makeOnlinePayments(onlinePayCardData))
     }
     const extraPayAmount = (msg) => {
@@ -928,7 +975,7 @@ const Checkout = (props) => {
             //checkList.transection_id = 0;
         }
         var actual_amount = totalPrice == 0 ? checkList && checkList.totalPrice : totalPrice;
-        var cash_round = 0;//parseFloat(getRemainingPriceForCash())
+        var cash_round = parseFloat(getRemainingPriceForCash())
         var check_required_field = false;
         var paymentTypeName = localStorage.getItem("PAYMENT_TYPE_NAME") && JSON.parse(localStorage.getItem("PAYMENT_TYPE_NAME"))
         var isGlobalPay = false;
@@ -1288,7 +1335,8 @@ const Checkout = (props) => {
         var amountToBePaid = checkList && (typeof checkList !== 'undefined') ? parseFloat(checkList.totalPrice) : 0;
         var paidPaments = getOrderPayments(order_id);
         var paidAmount = 0;
-        var cash_round = (cash_round1 == 'undefined') ? 0 : cash_round1
+        //var cash_round = (cash_round1 == 'undefined') ? 0 : cash_round1
+        var cash_round = cashRound;
         paidPaments && paidPaments.forEach(paid_payments => {
             paidAmount += parseFloat(paid_payments.payment_amount);
         });
@@ -2034,6 +2082,9 @@ const Checkout = (props) => {
         localStorage.removeItem('PrintCHECKLIST');
 
         // dispatch(addtoCartProduct(null));
+
+        localStorage.removeItem('paybyproduct');
+        localStorage.removeItem("paybyproduct_unpaid");
         navigate('/home');
     }
     const pay_amount_cash = (item) => {
@@ -2073,7 +2124,7 @@ const Checkout = (props) => {
     }
     useEffect(() => {
         if (onlinePayCardData.hasOwnProperty("paycode")) {
-            pay_amount(onlinePayCardData.paycode);
+            pay_amount(onlinePayCardData.paycode,0,'Online');
         }
     }, [onlinePayCardData]);
     const activeDisplay = (st) => {
@@ -2310,7 +2361,7 @@ const Checkout = (props) => {
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
         <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
-        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}></SplitByProduct> : null}
+        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}  pay_by_product={pay_by_product}></SplitByProduct> : null}
     </React.Fragment>)
 }
 export default Checkout

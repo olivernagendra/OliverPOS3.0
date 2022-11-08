@@ -19,7 +19,11 @@ import { product } from "./product/productSlice";
 import { getInventory } from "./slices/inventorySlice";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
+=======
+import { postMeta, getPostMeta } from "../common/commonAPIs/postMetaSlice";
+>>>>>>> devPraveen
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -39,6 +43,7 @@ const AdvancedSearch = (props) => {
     const [isShowDDNSearch, setisShowDDNSearch] = useState(false)
     const [searchHistory, setSearchHistory] = useState([])
     const [allowGroup, setAllowGroup] = useState(false)
+    const [user, setUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "");
     const [respGroup] = useSelector((state) => [state.group])
 
     const limitArrayByNum = (arr, num) => {
@@ -83,13 +88,31 @@ const AdvancedSearch = (props) => {
         });
 
     }
+    const resGetPostMeta = useSelector((state) => state.getPostMeta)
+    if (resGetPostMeta && resGetPostMeta.is_success == true) {
+        if (resGetPostMeta.data && resGetPostMeta.data.content && resGetPostMeta.data.content.Slug == user.user_id + "_searchHistory") {
+            localStorage.setItem(user.user_id + "_searchHistory", resGetPostMeta.data.content.Value)
+            setTimeout(() => {
+                Search_History('');
+            }, 100);
+            //console.log("----resGetPostMeta.data.content--"+JSON.stringify(resGetPostMeta.data.content))
+        }
+    }
+
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
             getProductFromIDB()
             GetCustomerFromIDB()
-            Search_History('');
-            var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
+
+            //var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
+            //user.user_id
+            if (user != "") {
+                var parma = user.user_id + "_searchHistory";
+                dispatch(getPostMeta(parma));
+            }
+
+
             if (user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined" && user.group_sales === true) {
                 setAllowGroup(true);
             }
@@ -146,11 +169,12 @@ const AdvancedSearch = (props) => {
 
 
     const Search_History = (e) => {
+        //var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
         var sArray = [];
         if (e != "" && e.target.value.trim() != "") {
             let _sValue = e.target.value.trim();
-            if (localStorage.getItem("searchHistory")) {
-                sArray = JSON.parse(localStorage.getItem("searchHistory"));
+            if (localStorage.getItem(user.user_id + "_searchHistory")) {
+                sArray = JSON.parse(localStorage.getItem(user.user_id + "_searchHistory"));
                 let result = sArray.some(item => _sValue === item);
                 if (result == false) {
                     if (sArray && sArray.length >= 10) {
@@ -167,12 +191,23 @@ const AdvancedSearch = (props) => {
             }
 
             setSearchHistory(sArray);
-            localStorage.setItem("searchHistory", JSON.stringify(sArray));
+            if (user && user.user_id) {
+                localStorage.setItem(user.user_id + "_searchHistory", JSON.stringify(sArray));
+                var parma = { "Slug": user.user_id + "_searchHistory", "Value": JSON.stringify(sArray), "Id": 0, "IsDeleted": 0 };
+                dispatch(postMeta(parma));
+            }
+
         }
         else {
-            if (localStorage.getItem("searchHistory")) {
-                sArray = JSON.parse(localStorage.getItem("searchHistory"));
-                setSearchHistory(sArray);
+            // if (localStorage.getItem("searchHistory")) {
+            //     sArray = JSON.parse(localStorage.getItem("searchHistory"));
+            //     setSearchHistory(sArray);
+            // }
+            if (localStorage.getItem(user.user_id + "_searchHistory")) {
+                if (user && user.user_id) {
+                    sArray = JSON.parse(localStorage.getItem(user.user_id + "_searchHistory"));
+                    setSearchHistory(sArray);
+                }
             }
         }
         //setSearchHistory();
@@ -403,7 +438,11 @@ const AdvancedSearch = (props) => {
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
             <div className="input-wrapper" id="advSearchInputWrapper">
+<<<<<<< HEAD
                 <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off" />
+=======
+                <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autoComplete="off" />
+>>>>>>> devPraveen
                 <img src={Search_Icon_Blue} alt="" id="advSearchInputIcon" />
                 <button id="advSearchInputCancel" onClick={() => clearSearch()}>
                     <img src={AdvancedSearchCancelIcon} alt="" />

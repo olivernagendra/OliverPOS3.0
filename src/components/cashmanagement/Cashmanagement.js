@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { cashRecords, getDetails } from './CashmanagementSlice'
+import { activityRecords } from '../activity/ActivitySlice'
 import moment from 'moment';
 import Config from '../../Config'
 import { get_UDid } from '../common/localSettings';
@@ -83,6 +84,7 @@ function Cashmanagement() {
   useEffect(() => {
     if (useCancelled == false) {
       loadMore(1)
+      dispatch(activityRecords(null));
     }
     return () => {
       useCancelled = true;
@@ -211,6 +213,8 @@ function Cashmanagement() {
       }
     }
   };
+
+  // console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)
 
 
   var _balance = 0;

@@ -6,6 +6,7 @@ import OnlineSale from '../../assets/images/svg/OnlineSale.svg'
 import InStoreSale from '../../assets/images/svg/InStoreSale.svg'
 import moment from 'moment';
 import Config from '../../Config'
+import STATUSES from "../../constants/apiStatus";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
 const ActivityList = (props) => {
@@ -51,11 +52,12 @@ const ActivityList = (props) => {
         }
     };
 
-
+    const [activityAllDetails] = useSelector((state) => [state.activityRecords])
 
 
     return (
         <div ref={myRef} onScroll={onScroll} className="body">
+            {activityAllDetails.status == STATUSES.LOADING ? <LoadingSmallModal></LoadingSmallModal> : null}
             {((!ordersDate) || ordersDate.length == 0) ?
                 <div className="no-results">
                     <p className="style1">No results found.</p>

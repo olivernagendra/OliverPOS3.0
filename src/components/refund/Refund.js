@@ -36,6 +36,7 @@ import Config from '../../Config';
 import moment from "moment";
 import { getDetail } from "../activity/ActivitySlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
 const Refund = (props) => {
 
     const [refundSubTotal, setRefundSubTotal] = useState(0.00);
@@ -88,6 +89,7 @@ const Refund = (props) => {
     const [isPaymentStart, setIsPaymentStart] = useState(false);
     const [myInput, setMyInput] = useState(0);
     const [hasCustomer, setHasCustomer] = useState(null);
+    const [isShowSplitByProduct, setisShowSplitByProduct] = useState(false);
     const [paymentTypeItem, setPaymentTypeItem] = useState({
         Code: "",
         ColorCode: "",
@@ -116,6 +118,9 @@ const Refund = (props) => {
     }
     const toggleManualPayment = () => {
         setisManualPayment(!isManualPayment)
+    }
+    const toggleSplitByProduct = () => {
+        setisShowSplitByProduct(!isShowSplitByProduct)
     }
     const toggleStripeTerminalPayment = () => {
         setisStripeTerminalPayment(!isStripeTerminalPayment)
@@ -450,7 +455,8 @@ const Refund = (props) => {
         var amountToBePaid = refundTotal;
         var paidPaments = getOrderPayments(order_id);
         var paidAmount = 0;
-        var cash_round = (cash_round1 == 'undefined') ? 0 : cash_round1
+        // var cash_round = (cash_round1 == 'undefined') ? 0 : cash_round1;
+        var cash_round = cashRound;
         paidPaments && paidPaments.forEach(paid_payments => {
             paidAmount += parseFloat(paid_payments.payment_amount);
         });
@@ -772,6 +778,11 @@ const Refund = (props) => {
         setPaymentTypeItem(item);
         dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
     }
+    const pay_by_product = (amount) => {
+        toggleSplitByProduct();
+        setPartialAmount(amount);
+        setPaidAmount(amount);
+    }
     const getRemainingPrice = () => {
         //var checkList = JSON.parse(localStorage.getItem("CHECKLIST"));
         var paid_amount = 0;
@@ -913,6 +924,13 @@ const Refund = (props) => {
     //  function use to check for payment types and perform action accordingly 
     const pay_amount = (paymentType, TerminalCount = 0, Support = '', paymentCode = '', paidConfirmAmount = 0) => {
         var closingTab = '';
+
+        // if(localStorage.getItem("paybyproduct_unpaid"))
+        // {
+        //     localStorage.setItem("paybyproduct",  localStorage.getItem("paybyproduct_unpaid"));
+        //     localStorage.removeItem("paybyproduct_unpaid");
+        // }
+
         //const { paidAmount, closingTab } = this.state;
         if (paidConfirmAmount !== 0) {// set the achual payment done by payconiq
             setPaidAmount(paidConfirmAmount);
@@ -1044,7 +1062,7 @@ const Refund = (props) => {
                     setIsPaymentStart(true);
 
                     var _tempOnlinePayCardData = onlinePayCardData;
-                    _tempOnlinePayCardData.amount = online_amount;
+                    //_tempOnlinePayCardData.amount = online_amount;
                     setOnlinePayCardData(_tempOnlinePayCardData);
 
                     onlineCardPayments(paymentType, online_amount)
@@ -1205,8 +1223,30 @@ const Refund = (props) => {
     }
     const [respmakeOnlinePayments] = useSelector((state) => [state.makeOnlinePayments])
     useEffect(() => {
-        if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data)) {
+        if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data && loading==true)) {
             console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
+            if (respmakeOnlinePayments.data.content.RefranseCode && respmakeOnlinePayments.data.content.IsSuccess == true)
+            // if(nextProp.online_payment.content.transactionResponse && nextProp.online_payment.content.transactionResponse.transId != 0)
+            {
+                // set the current trnasaction status, Used for APP Command "TransactionStatus"
+                localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": onlinePayments, "status": "refunded" }))
+                //Set the actual amount paid from card
+                var _paidAmount = paidAmount;
+                if (respmakeOnlinePayments.data.content.Amount && respmakeOnlinePayments.data.content.Amount !== "") {
+                    _paidAmount = parseFloat(respmakeOnlinePayments.data.content.Amount) / 100
+                    setPaidAmount(_paidAmount)
+                }
+                setPartialPayment(onlinePayments, _paidAmount)
+                toggleManualPayment();
+            }
+            dispatch(makeOnlinePayments(null));
+            setLoading(false);
+        }
+        else if(respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR )&& respmakeOnlinePayments.is_success==false && loading==true)
+        {
+            setmsgBody(respmakeOnlinePayments.error);
+            toggleMsgPopup();
+            setLoading(false);
         }
     }, [respmakeOnlinePayments])
 
@@ -1254,6 +1294,7 @@ const Refund = (props) => {
         var _onlinePayCardData = onlinePayCardData;
         _onlinePayCardData["refId"] = ordertransId
         //-----
+        setLoading(true);
         dispatch(makeOnlinePayments(_onlinePayCardData))
     }
     const extraPayAmount = (msg) => {
@@ -1300,7 +1341,8 @@ const Refund = (props) => {
     const onlinePayCardDetails = (cardData) => { setOnlinePayCardData(cardData); }
     useEffect(() => {
         if (onlinePayCardData.hasOwnProperty("paycode")) {
-            pay_amount(onlinePayCardData.paycode);
+            // pay_amount(onlinePayCardData.paycode);
+            pay_amount(onlinePayCardData.paycode, 0, 'Online');
         }
     }, [onlinePayCardData]);
     const activeDisplay = (st) => {
@@ -1327,9 +1369,9 @@ const Refund = (props) => {
         //     setStoreCredit(0);
         // }
         // else if (storeCredit > 0) {
-            setPaidAmount(getRemainingPrice());
-            dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount": getRemainingPrice() }));
-            setStoreCredit(storeCredit + getRemainingPrice())
+        setPaidAmount(getRemainingPrice());
+        dispatch(paymentAmount({ "type": paymentsType.typeName.storeCredit, "amount": getRemainingPrice() }));
+        setStoreCredit(storeCredit + getRemainingPrice())
         // }
         // else {
         //     console.log("--no credit score--");
@@ -1424,6 +1466,7 @@ const Refund = (props) => {
                     <button onClick={() => showPartial(4)}>1/4</button>
                 </div>
                 <div className="button-row">
+                {/* <button id="splitByProductButton" onClick={() => toggleSplitByProduct()}>By Product</button> */}
                     <button id="splitByProductButton">By Product</button>
                     <button id="splitByPeopleButton" disabled>By Group (Coming Soon)</button>
                 </div>
@@ -1539,6 +1582,7 @@ const Refund = (props) => {
         {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)} getRemainingPriceForCash={getRemainingPriceForCash} ></NumberPad> : null}
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
+        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}  pay_by_product={pay_by_product}></SplitByProduct> : null}
         <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
     </React.Fragment>)
 }

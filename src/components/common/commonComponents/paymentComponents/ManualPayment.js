@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import LocalizedLanguage from '../../../../settings/LocalizedLanguage';
 import ActiveUser from '../../../../settings/ActiveUser';
 import { LoadingModal } from '../LoadingModal';
 import IconDarkBlue from '../../../../assets/images/svg/X-Icon-DarkBlue.svg'
+import STATUSES from '../../../../constants/apiStatus';
 // import { AndroidAndIOSLoader } from '../AndroidAndIOSLoader';
 const ManualPayment = (props) => {
     const [paidAmount, setpaidAmount] = useState('');
@@ -243,6 +245,18 @@ const ManualPayment = (props) => {
         }
     }, [cardData]);
 
+    // const [respmakeOnlinePayments] = useSelector((state) => [state.makeOnlinePayments])
+    // useEffect(() => {
+    //     if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data)) {
+    //         console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
+    //         props.toggleManualPayment && props.toggleManualPayment();
+    //     }
+    //     else if(respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.error && respmakeOnlinePayments.is_success===false)
+    //     {
+    //         console.log("---online payment error response--" + JSON.stringify(respmakeOnlinePayments))
+    //     }
+    // }, [respmakeOnlinePayments])
+
     const handleCardPopup = (status) => {
         const { closingTab, pay_amount, code, onlinePayCardDetails } = props;
         //const { cardData } = state
@@ -317,40 +331,40 @@ const ManualPayment = (props) => {
                 <div className="subwindow-body">
                     <div className="manual-payment">
                         {/* overflowscroll */}
-                        <h3 className="manual-title">{LocalizedLanguage.cardInformation}</h3>
-                        <p style={{ color: 'red' }}>{validationError}</p>
-                        {/* <div className="form-group">
+                            <h3 className="manual-title">{LocalizedLanguage.cardInformation}</h3>
+                            <p style={{ color: 'red' }}>{validationError}</p>
+                            {/* <div className="form-group">
                                     <div className="input-group">
                                         <div className="input-group-addon">{LocalizedLanguage.cardNumber}</div>
                                         <input type="tel" className="form-control" id="CardNo" placeholder={LocalizedLanguage.cardNumber} name="CardNo" value={CardNo} onChange={handleChange} />
                                     </div>
                                 </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.cardNumber}</label>
-                                <input type="tel" className="form-control" id="CardNo" placeholder={LocalizedLanguage.cardNumber} name="CardNo" value={CardNo} onChange={handleChange} />
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.cardNumber}</label>
+                                    <input type="tel" className="form-control" id="CardNo" placeholder={LocalizedLanguage.cardNumber} name="CardNo" value={CardNo} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.cardholderName}</label>
-                                <input type="text" className="form-control" id="cardHoldername" name="card_holder_name" placeholder={LocalizedLanguage.cardholderName} value={CardName} onChange={handleChange} />
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.cardholderName}</label>
+                                    <input type="text" className="form-control" id="cardHoldername" name="card_holder_name" placeholder={LocalizedLanguage.cardholderName} value={CardName} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.cardholderName}</div>
                                     <input type="text" className="form-control" id="cardHoldername" name="card_holder_name" placeholder={LocalizedLanguage.cardholderName} value={CardName} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.expiryMonth}</label>
-                                <input type="tel" className="form-control" maxLength={2} id="cardExpiryMonth" name='card_expiry_month' placeholder={LocalizedLanguage.expiryMonth}
-                                    value={ExpirMonth} onChange={handleChange} />
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.expiryMonth}</label>
+                                    <input type="tel" className="form-control" maxLength={2} id="cardExpiryMonth" name='card_expiry_month' placeholder={LocalizedLanguage.expiryMonth}
+                                        value={ExpirMonth} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.expiryMonth}</div>
                                     <input type="tel" className="form-control" maxLength={2} id="cardExpiryMonth" name='card_expiry_month' placeholder={LocalizedLanguage.expiryMonth}
@@ -358,134 +372,134 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
 
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.expiryYear}</label>
-                                <input type="tel" className="form-control" maxLength={4} id="cardExpiryYear" name='card_expiry_year' placeholder={LocalizedLanguage.expiryYear}
-                                    value={ExpirYear} onChange={handleChange} />
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.expiryYear}</label>
+                                    <input type="tel" className="form-control" maxLength={4} id="cardExpiryYear" name='card_expiry_year' placeholder={LocalizedLanguage.expiryYear}
+                                        value={ExpirYear} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.expiryYear}</div>
                                     <input type="tel" className="form-control" maxLength={4} id="cardExpiryYear" name='card_expiry_year' placeholder={LocalizedLanguage.expiryYear}
                                         value={ExpirYear} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.CVVAndCVC}</label>
-                                <input type="tel" className="form-control" maxLength={5} id="cardCVC" name='card_CVC' placeholder={LocalizedLanguage.CVVAndCVC}
-                                    value={CVVNo} onChange={handleChange} />
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.CVVAndCVC}</label>
+                                    <input type="tel" className="form-control" maxLength={5} id="cardCVC" name='card_CVC' placeholder={LocalizedLanguage.CVVAndCVC}
+                                        value={CVVNo} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.CVVAndCVC}</div>
                                     <input type="tel" className="form-control" maxLength={5} id="cardCVC" name='card_CVC' placeholder={LocalizedLanguage.CVVAndCVC}
                                         value={CVVNo} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                                             <div className="input-group">
                                                                 <div className="input-group-addon">City</div>
                                                                 <input type="text" className="form-control" id="cardCity" name='card_city' placeholder="City"
                                                                     value={City} onChange={handleChange} />
                                                             </div>
                                                         </div> */}
-                        <h3 className="manual-title manual-title-space">{LocalizedLanguage.billingInformation}</h3>
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.addressOne}</label>
-                                <input type="text" className="form-control" id="billingAddress" name='billing_address' placeholder={LocalizedLanguage.addressOne}
-                                    value={BillAddress} onChange={handleChange} />
+                            <h3 className="manual-title manual-title-space">{LocalizedLanguage.billingInformation}</h3>
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.addressOne}</label>
+                                    <input type="text" className="form-control" id="billingAddress" name='billing_address' placeholder={LocalizedLanguage.addressOne}
+                                        value={BillAddress} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.addressOne}</div>
                                     <input type="text" className="form-control" id="billingAddress" name='billing_address' placeholder={LocalizedLanguage.addressOne}
                                         value={BillAddress} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.addressTwo}</label>
-                                <input type="text" className="form-control" id="billingAddress2" name='billing_address2' placeholder={LocalizedLanguage.addressTwo}
-                                    value={BillAddress2} onChange={handleChange} />
+                             <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.addressTwo}</label>
+                                    <input type="text" className="form-control" id="billingAddress2" name='billing_address2' placeholder={LocalizedLanguage.addressTwo}
+                                        value={BillAddress2} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.addressTwo}</div>
                                     <input type="text" className="form-control" id="billingAddress2" name='billing_address2' placeholder={LocalizedLanguage.addressTwo}
                                         value={BillAddress2} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.country}</label>
-                                <input type="text" className="form-control" id="country" name='country' placeholder={LocalizedLanguage.country}
-                                    value={Country} onChange={handleChange} />
+                             <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.country}</label>
+                                    <input type="text" className="form-control" id="country" name='country' placeholder={LocalizedLanguage.country}
+                                        value={Country} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
 
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.country}</div>
                                     <input type="text" className="form-control" id="country" name='country' placeholder={LocalizedLanguage.country}
                                         value={Country} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.city}</label>
-                                <input type="text" className="form-control" id="city" name='city' placeholder={LocalizedLanguage.city}
-                                    value={City} onChange={handleChange} />
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.city}</label>
+                                    <input type="text" className="form-control" id="city" name='city' placeholder={LocalizedLanguage.city}
+                                        value={City} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.city}</div>
                                     <input type="text" className="form-control" id="city" name='city' placeholder={LocalizedLanguage.city}
                                         value={City} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.provinceState}</label>
-                                <input type="text" className="form-control" id="province" name='province' placeholder={LocalizedLanguage.provinceState}
-                                    value={State} onChange={handleChange} />
+                             <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.provinceState}</label>
+                                    <input type="text" className="form-control" id="province" name='province' placeholder={LocalizedLanguage.provinceState}
+                                        value={State} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
 
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.provinceState}</div>
                                     <input type="text" className="form-control" id="province" name='province' placeholder={LocalizedLanguage.provinceState}
                                         value={State} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        <div className='input-row '>
-                            <div className="input-col">
-                                <label for="email">{LocalizedLanguage.zippostalcode}</label>
-                                <input type="tel" className="form-control" id="zip" name='zip_code' placeholder={LocalizedLanguage.zippostalcode}
-                                    value={ZipCode} onChange={handleChange} />
+                            <div className='input-row '>
+                                <div class="input-col">
+                                    <label htmlFor="email">{LocalizedLanguage.zippostalcode}</label>
+                                    <input type="tel" className="form-control" id="zip" name='zip_code' placeholder={LocalizedLanguage.zippostalcode}
+                                        value={ZipCode} onChange={handleChange} />
+                                </div>
                             </div>
-                        </div>
 
-                        {/* <div className="form-group">
+                            {/* <div className="form-group">
                                 <div className="input-group">
                                     <div className="input-group-addon">{LocalizedLanguage.zippostalcode}</div>
                                     <input type="tel" className="form-control" id="zip" name='zip_code' placeholder={LocalizedLanguage.zippostalcode}
                                         value={ZipCode} onChange={handleChange} />
                                 </div>
                             </div> */}
-                        {/* <p style={{ color: 'red' }}>{validationError}</p> */}
+                            {/* <p style={{ color: 'red' }}>{validationError}</p> */}
                     </div>
-                    <button className="charge-card" onClick={handleChargeButton}>
-                        {LocalizedLanguage.chargeCard}
-                    </button>
+                        <button className="charge-card" onClick={handleChargeButton}>
+                            {LocalizedLanguage.chargeCard}
+                        </button>
                 </div>
 
             </div></div>

@@ -29,6 +29,7 @@ import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import ActivityOrderDetail from "./ActivityOrderDetail";
 import ActivityOrderList from "./ActivityOrderList";
 import { ActivityFooter } from "./ActivityFooter";
+import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 
 const ActivityView = () => {
     const [defauldnumber, setDefauldNumber] = useState(2);
@@ -61,6 +62,7 @@ const ActivityView = () => {
     const [isSortWrapper, setSortWrapper] = useState(false)
     const [responsiveCusList, setResponsiveCusList] = useState(false)
     const [activityListcount, setactivityListcount] = useState([])
+    const [activeDetailApi, setactiveDetailApi] = useState(true)
 
     // All TOGGLE 
     const toggleAppLauncher = () => {
@@ -119,9 +121,8 @@ const ActivityView = () => {
                 applyServerFilter()
             } else {
                 reload(1)
+                dispatch(cashRecords(null));
             }
-
-
         }
         return () => {
             useCancelled = true;
@@ -136,7 +137,7 @@ const ActivityView = () => {
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
-    console.log("activityAllDetails", activityAllDetails)
+    //console.log("activityAllDetails", activityAllDetails)
 
     useEffect(() => {
         if (activityAllDetails && activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records.length > 0) {
@@ -263,7 +264,7 @@ const ActivityView = () => {
 
         // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
-        if (useCancelled1 == false) {
+        if (useCancelled1 == false && activeDetailApi !== false ) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
             }
@@ -527,6 +528,7 @@ const ActivityView = () => {
 
 
     const updateSomething = () => {
+        setactiveDetailApi(false)
         setDefauldNumber(defauldnumber + 1)
         if (AllActivityList.length == activityListcount) {
 

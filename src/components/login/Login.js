@@ -170,7 +170,12 @@ function Login() {
 
             navigate('/site')
         }
+<<<<<<< HEAD
 
+=======
+        dispatch(userLogin(null));
+        navigate('/site')
+>>>>>>> devPraveen
     }
 
 

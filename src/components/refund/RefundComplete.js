@@ -36,13 +36,19 @@ const RefundComplete = () => {
     const [custEmail, setCustEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [tempOrder_Id, setTempOrder_Id] = useState(localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '')
+    var isPrint = false;
     useEffect(() => {
         //printdetails();
         //dispatch(checkTempOrderSync(tempOrder_Id));
-        // var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
-        // if ((!ActiveUser.key.isSelfcheckout || ActiveUser.key.isSelfcheckout === false) && checkPrintreciept && checkPrintreciept == true) {
-        //     printReceipt();
-        // }
+        if (isPrint === false) {
+            
+            var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
+            if ((!ActiveUser.key.isSelfcheckout || ActiveUser.key.isSelfcheckout === false) && checkPrintreciept && checkPrintreciept == true) {
+                printReceipt();
+            }
+            isPrint = true;
+        }
+
     }, [changeAmount, paymentAmount]);
     const newSale = () => {
         localStorage.removeItem('CARD_PRODUCT_LIST');
@@ -276,13 +282,13 @@ const RefundComplete = () => {
     const [activitygetdetails] = useSelector((state) => [state.activityGetDetail]);
     // useEffect(() => {
     //     if (activitygetdetails && activitygetdetails.status == STATUSES.IDLE && activitygetdetails.is_success && activitygetdetails.data) {
-           
+
 
     //     }
     // }, [activitygetdetails]);
 
-      // print function for refund
-    const  printReceipt = async () => {
+    // print function for refund
+    const printReceipt = async () => {
         // this.setState({ showPrint: false })
         var printData = localStorage.getItem('getorder') && JSON.parse(localStorage.getItem('getorder'))
         var mydate = new Date();
@@ -305,10 +311,9 @@ const RefundComplete = () => {
         if ((Totalamount - refunded_amount).toFixed(2) == '0.00') {
             isTotalRefund = true
         }
-        var data=null;
+        var data = null;
         if (activitygetdetails && activitygetdetails.status == STATUSES.IDLE && activitygetdetails.is_success && activitygetdetails.data) {
-           
-             data=activitygetdetails.data.content;
+            data = activitygetdetails.data.content;
         }
         //var data = this.props.single_Order_list && this.props.single_Order_list.content
         //Checking each product for isTaxable. 01/08/2022
@@ -323,7 +328,7 @@ const RefundComplete = () => {
         //     });
         // });
 
-        var _data= {...data};
+        var _data = { ...data };
         // _data && _data.line_items && _data.line_items.map(ele => {
         //     printData && printData.line_items && printData.line_items.map(pd => {
         //         if ((pd.hasOwnProperty("product_id") && ele.product_id == pd.product_id) || (pd.hasOwnProperty("variation_id") && ele.product_id == pd.variation_id)) {
@@ -333,7 +338,9 @@ const RefundComplete = () => {
         // });
         // {(!_env || _env=="ios") && <input type="radio" id="test3" name="radio-group" onClick={props.Details != "" ? () => PrintPage.PrintElem(props.Details, props.getPdfdateTime, isTotalRefund, props.cash_rounding_amount, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, props.redeemPointsToPrint) : props.printPOP} />}
         if (_data) {
+            setTimeout(() => {
             PrintPage.PrintElem(_data, getPdfdate, isTotalRefund, cash_rounding_amount, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, redeemPointsToPrint)
+            }, 500);
         }
     }
     // end print fun...
