@@ -24,13 +24,10 @@ import { isSafari } from "react-device-detect";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import STATUSES from "../../constants/apiStatus";
 import { checkTempOrderSync } from "../checkout/checkoutSlice";
-<<<<<<< HEAD
 import { CheckAppDisplayInView } from '../common/commonFunctions/appDisplayFunction';
 import NoImageAvailable from '../../assets/images/svg/NoImageAvailable.svg';
 import IframeWindow from "../dashboard/IframeWindow";
-=======
 
->>>>>>> devPraveen
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 const SaleComplete = () => {
@@ -304,7 +301,7 @@ const SaleComplete = () => {
         }
         localStorage.setItem("PrintCHECKLIST", JSON.stringify(CheckoutList));
 
-         var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
+        var checkPrintreciept = localStorage.getItem("user") && localStorage.getItem("user") !== '' ? JSON.parse(localStorage.getItem("user")).print_receipt_on_sale_complete : '';
         if ((!ActiveUser.key.isSelfcheckout || ActiveUser.key.isSelfcheckout === false) && checkPrintreciept && checkPrintreciept == true) {
             printReceipt();
         }

@@ -168,14 +168,10 @@ function Login() {
             localStorage.setItem("clientDetail", JSON.stringify(userSubscription));
             localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
 
+            dispatch(userLogin(null));
             navigate('/site')
         }
-<<<<<<< HEAD
 
-=======
-        dispatch(userLogin(null));
-        navigate('/site')
->>>>>>> devPraveen
     }
 
 

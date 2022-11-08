@@ -174,13 +174,6 @@ const SplitByProduct = (props) => {
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-<<<<<<< HEAD
-                <div className="subwindow-body">
-                    <div className="body">
-                        <div className="product-row">
-                            <div className="main-row">
-                                <div className="text-group">
-=======
                 <div class="subwindow-body">
                     <div class="body">
                         {listItem && listItem.length > 0 && listItem.map(item => {
@@ -205,7 +198,6 @@ const SplitByProduct = (props) => {
                         {/* <div class="product-row">
                             <div class="main-row">
                                 <div class="text-group">
->>>>>>> devPraveen
                                     <p>Wool Hat</p>
                                     <p>$12.99</p>
                                 </div>
@@ -258,13 +250,8 @@ const SplitByProduct = (props) => {
                             </div>
                         </div> */}
                     </div>
-<<<<<<< HEAD
-                    <div className="footer">
-                        <button>Save Count</button>
-=======
                     <div class="footer">
                         <button onClick={() => saveCount()}>Save Count</button>
->>>>>>> devPraveen
                     </div>
                 </div>
             </div></div>)

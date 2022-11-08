@@ -30,6 +30,7 @@ import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 import { activityRecords } from "../activity/ActivitySlice";
+import { NumericFormat } from 'react-number-format';
 const CustomerView = () => {
 
   var orderCount = ''
@@ -425,20 +426,12 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-<<<<<<< HEAD
-            <div className="row">
+            <div class="row">
               <img src={SearchBaseBlue} alt="" />
-              <p>Search for Customers</p>
+              <p>Search</p>
+              <button id="customersClearSearch">Clear Search</button>
             </div>
-            <label htmlFor="fName">First Name</label>
-=======
-          <div class="row">
-						<img src={SearchBaseBlue} alt=""/>
-						<p>Search</p>
-						<button id="customersClearSearch">Clear Search</button>
-					</div>
             <label for="fName">First Name</label>
->>>>>>> devPraveen
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
             <label for="lName">Last Name</label>
             <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
@@ -535,13 +528,13 @@ const CustomerView = () => {
               </div>
               <div className="text-group">
                 <p className="style2">Phone #:</p>
-                 <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
+                <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
               </div>
             </div>
           </div>
           <div className="cust-totals">
             <div className="col">
-              <p className="style1">{OrderAmount ? OrderAmount : 0}</p>
+              <p className="style1">$<NumericFormat value={OrderAmount ? OrderAmount : 0} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
               <p className="style2">Total Spent</p>
             </div>
             <div className="col">
@@ -549,7 +542,7 @@ const CustomerView = () => {
               <p className="style2">Orders</p>
             </div>
             <div className="col">
-              <p className="style1">{customerDetailData && customerDetailData.store_credit}</p>
+              <p className="style1">${customerDetailData && <NumericFormat value={customerDetailData.store_credit} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</p>
               <p className="style2">Store Credit</p>
               <button onClick={toggleCreditModel}>Adjust Credit</button>
             </div>

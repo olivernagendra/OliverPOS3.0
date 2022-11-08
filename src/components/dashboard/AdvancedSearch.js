@@ -19,11 +19,8 @@ import { product } from "./product/productSlice";
 import { getInventory } from "./slices/inventorySlice";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
-<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
-=======
 import { postMeta, getPostMeta } from "../common/commonAPIs/postMetaSlice";
->>>>>>> devPraveen
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -438,11 +435,7 @@ const AdvancedSearch = (props) => {
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
             <div className="input-wrapper" id="advSearchInputWrapper">
-<<<<<<< HEAD
-                <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off" />
-=======
                 <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autoComplete="off" />
->>>>>>> devPraveen
                 <img src={Search_Icon_Blue} alt="" id="advSearchInputIcon" />
                 <button id="advSearchInputCancel" onClick={() => clearSearch()}>
                     <img src={AdvancedSearchCancelIcon} alt="" />

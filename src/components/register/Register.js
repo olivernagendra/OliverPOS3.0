@@ -150,7 +150,7 @@ const Register = () => {
                         <p>{LocalizedLanguage.registerdevice}</p>
                         <div className="divider"></div>
                         <div className="button-container">
-                            <p>{LocalizedLanguage.register}</p>
+                            <p>Registers</p>
                             <div className="divider"></div>
                             <div className="button-group col">
                                 {
@@ -184,23 +184,26 @@ const Register = () => {
                                     })}
 
                             </div>
-                            <p>Kiosks</p>
-                            <div className="divider"></div>
-                            <div className="button-group">
-                                {self_registers.map((item, index) => {
-                                    return <button key={index} className="option" onClick={() => handleSubmit(item)}>
-                                        <div className="img-container background-violet">
-                                            <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
-                                        </div>
-                                        <div className="col">
-                                            <p className="style1">{item.name}</p>
-                                            <p className="style2">{LocalizedLanguage.available}</p>
-                                        </div>
-                                        <img src={AngledBracket_Right_Grey} alt="" />
-                                        <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
-                                    </button>
-                                })}
-                            </div>
+                            {self_registers && self_registers.length > 0 && <>
+                                <p>Kiosks</p>
+                                <div className="divider"></div>
+                                <div className="button-group">
+                                    {self_registers.map((item, index) => {
+                                        return <button key={index} className="option" onClick={() => handleSubmit(item)}>
+                                            <div className="img-container background-violet">
+                                                <img src={Kiosk_Icon_White} alt="" className="kiosk-icon" />
+                                            </div>
+                                            <div className="col">
+                                                <p className="style1">{item.name}</p>
+                                                <p className="style2">{LocalizedLanguage.available}</p>
+                                            </div>
+                                            <img src={AngledBracket_Right_Grey} alt="" />
+                                            <div className="fake-button background-violet">{LocalizedLanguage.select}</div>
+                                        </button>
+                                    })}
+                                </div>
+                            </>
+                            }
                         </div>
                     </div>
                 </div>

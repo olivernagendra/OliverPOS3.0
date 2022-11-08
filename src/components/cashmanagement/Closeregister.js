@@ -168,7 +168,7 @@ const Closeregister = () => {
                 <header>
                     <img src={OpenSign} alt="" />
                     <div className="col">
-                        <p className="style1">{get_userName()}</p>
+                        <p className="style1">{getShopName()}</p>
                         <div className="divider" />
                         <p className="style2">{get_regName()}</p>
                         <p className="style3">{get_locName()}</p>

@@ -72,16 +72,11 @@ const CartList = (props) => {
                 _parent['product_discount_amount'] = a ? a.product_discount_amount : 0;
                 _parent['discount_type'] = a ? a.discount_type : "";
                 _parent['new_product_discount_amount'] = a ? a.new_product_discount_amount : 0;
-<<<<<<< HEAD
                 _parent['cart_after_discount'] = a.cart_after_discount ? a.cart_after_discount : 0;
                 _parent['cart_discount_amount'] = a.cart_discount_amount ? a.cart_discount_amount : 0;
-=======
-                _parent['cart_after_discount'] = a.cart_after_discount?a.cart_after_discount:0;
-                _parent['cart_discount_amount'] = a.cart_discount_amount?a.cart_discount_amount:0;
-               
-                _parent['StockQuantity']=_item.StockQuantity-a.quantity;
-                _parent["quantity"]=a.quantity;
->>>>>>> devPraveen
+
+                _parent['StockQuantity'] = _item.StockQuantity - a.quantity;
+                _parent["quantity"] = a.quantity;
                 props.updateVariationProduct(_item);
                 props.openPopUp(_parent, index);
             }
@@ -573,7 +568,7 @@ const CartList = (props) => {
             }
         })
     }
-
+    console.log("taxRates", taxRates)
     return (
         <React.Fragment>
             {isLoading ? <LoadingModal></LoadingModal> : null}
@@ -631,10 +626,10 @@ const CartList = (props) => {
                                         <p className="quantity" onClick={() => editPopUp(a, index)}>{a.quantity && a.quantity}</p>
                                         <p className="content-style" onClick={() => editPopUp(a, index)}>{a.Title && a.Title}</p>
                                         <p className="price" onClick={() => editPopUp(a, index)}>
-                                            <NumericFormat className={a.product_discount_amount != 0 ? "strike-through" : ""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            $<NumericFormat className={a.product_discount_amount != 0 ? "strike-through" : ""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                                         </p>
                                         {a.product_discount_amount != 0 && <p className="price" onClick={() => editPopUp(a, index)}>
-                                            <NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount) : a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            $<NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount) : a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                                             {/* <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> */}
                                         </p>}
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
@@ -815,7 +810,7 @@ const CartList = (props) => {
                             </div> : null}
                         <div className="row">
                             <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes {typeOfTax() == 'incl' ? "Incl." : ""}</button>
-                            <p>({taxRates})</p>
+                            {taxes && taxes !== 0 ? <p>({taxRates})</p> : ""}
                             <p><b>${<NumericFormat value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div>
                     </div>
