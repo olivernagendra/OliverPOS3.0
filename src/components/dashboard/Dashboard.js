@@ -44,6 +44,7 @@ import { callProductXWindow } from "../../settings/CommonFunctionProductX";
 import { getInventory } from "./slices/inventorySlice";
 import { getDetails } from "../cashmanagement/CashmanagementSlice";
 import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
+import Customercreate from "../customer/Customercreate";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -565,8 +566,8 @@ const Home = () => {
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             {isShowAdvancedSearch === true ? <AdvancedSearch isShow={isShowAdvancedSearch} toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch> : null}
-            {/* <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
-            <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
+            {/* <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
+            <Customercreate searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer}/>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
