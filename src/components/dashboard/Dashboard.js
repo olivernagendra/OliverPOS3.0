@@ -610,7 +610,7 @@ const Home = () => {
 
             {isShowTaxList === true ? <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList> : null}
             <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
-            <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
+            {isShowAddTitle===true?<AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>:null}
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
