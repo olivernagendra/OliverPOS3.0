@@ -16,11 +16,10 @@ const Closeregister = () => {
     const [enteredCardAmount, setCardAmount] = useState('')
     const [enteredOthersAmount, setOtherPayment] = useState('')
     const [isSaveCount, setisSaveCount] = useState(false)
-    const [toggle, settoggle] = useState(false)
+    const [isUserExist, setIsUserExist] = useState(false)
     const [secondtoggle, setsecondtoggle] = useState(false)
     var otherPaymentID = ''
     var cardPaymentID = ''
-
 
 
 
@@ -42,9 +41,9 @@ const Closeregister = () => {
     })
 
 
-    
 
-   
+
+
 
 
     const validateEnteredCashAmount = (e) => {
@@ -126,20 +125,22 @@ const Closeregister = () => {
 
 
     // -----received data fro Api  
-    var diffrenttoggleShow = false
+    var toggleCloseRegisterSuccess = false
     const { statuscloseRegister, closeRegisterdetail, errorcloseRegister, is_successcloseRegister } = useSelector((state) => state.cashmanagementCloseRegister)
     if (is_successcloseRegister === true) {
-        diffrenttoggleShow = true
+        toggleCloseRegisterSuccess = true
+
     }
     var closeregisterPaymentDetail = closeRegisterdetail && closeRegisterdetail.content
 
 
-
-
-
-   
-
     useEffect(() => {
+        if (localStorage.getItem('user')) {
+            setIsUserExist(true)
+        }
+        if (!localStorage.getItem("selectedRegister")) {
+            navigate('/register')
+        }
         console.log("useEffect closeregister")
         var registerId = localStorage.getItem('register');
         var user = JSON.parse(localStorage.getItem("user"));
@@ -149,14 +150,13 @@ const Closeregister = () => {
             dispatch(getDetails(cashManagementID));
         }
 
-    }, [])
-
-
-
+    }, [localStorage.getItem('user')])
 
     const doAction = () => {
-        settoggle(true)
+        setIsUserExist(true)
     }
+    var IsCashDrawerOpen = localStorage.getItem("IsCashDrawerOpen") ? localStorage.getItem("IsCashDrawerOpen") : false;
+    console.log("close Register", IsCashDrawerOpen, toggleCloseRegisterSuccess)
     return (
         <>
             <div className="close-register-wrapper">
@@ -175,56 +175,58 @@ const Closeregister = () => {
                     </div>
                 </header>
                 <main>
-                    {toggle !== true ? <div className="step1 ">
+                    {isUserExist == false ? <div className="step1 ">
                         <div className="auto-margin-top" />
                         <p className="style1">Close Register</p>
                         <div className="divider" />
-                        {/* <p className="style2">Enter You User ID</p> */}
+
                         <PinPad doAction={doAction} />
 
                         <div className="auto-margin-bottom" />
-                    </div> : null}
+                    </div>
+                        :
+
+                        IsCashDrawerOpen == "true" && toggleCloseRegisterSuccess == false ? <div className="step2">
+                            <p className="style1">Close Register</p>
+                            <div className="divider" />
+                            <p className="style2">
+                                <b>Logged-in user:</b> {get_userName()}
+                            </p>
+                            <button id="openCashDrawer">Open Cash Drawer</button>
+
+                            <div className="input-column">
+                                {isSaveCount === true ? <>
+                                    <label style={{ "color": "red" }}>Amount should not be blank or empty!
+                                    </label>
+                                </> : null}
+                                <div className="input-row">
+                                    <label htmlFor="cashInTill">Cash in Till:</label>
+                                    <input type="number" id="cashInTill" placeholder="Enter Amount" onChange={(e) => validateEnteredCashAmount(e)} />
+                                </div>
 
 
-                    {toggle == true && diffrenttoggleShow !== true ? <div className="step2">
-                        <p className="style1">Close Register</p>
-                        <div className="divider" />
-                        <p className="style2">
-                            <b>Logged-in user:</b> Freddy Mercury
-                        </p>
-                        <button id="openCashDrawer">Open Cash Drawer</button>
-                        <div className="input-column">
-                            <div className="input-row">
-                                <label htmlFor="cashInTill">Cash in Till:</label>
-                                <input type="number" id="cashInTill" placeholder="Enter Amount" onChange={(e) => validateEnteredCashAmount(e)} />
+                                {CashDrawerPaymentDetail && CashDrawerPaymentDetail.PaymentSummery && CashDrawerPaymentDetail.PaymentSummery.map((item, index) => {
+                                    return (item.Slug.toLowerCase() == 'card' ? <>
+                                        <div className="input-row" key={index}>
+                                            <label htmlFor="debitCredit">{item.Name}:</label>
+                                            <input type="number" id="debitCredit" placeholder="Enter Amount" onChange={(e) => validateEnteredCardAmount(e)} />
+                                        </div>
+                                    </> : item.Slug.toLowerCase() == 'other' ? <>
+                                        <div className="input-row" key={index}>
+                                            <label htmlFor="debitCredit">{item.Name}:</label>
+                                            <input type="number" id="debitCredit" placeholder="Enter Amount" onChange={(e) => validateEnteredOthersAmount(e)} />
+                                        </div>
+                                    </> : <div className="input-row" key={index}>
+                                        <label htmlFor="debitCredit">{item.Name}:</label>
+                                        <input type="number" id="debitCredit" placeholder="Enter Amount" />
+                                    </div>)
+                                })
+                                }
                             </div>
-                            {isSaveCount === true ? <>
-                                <small style={{ "color": "red" }}>Amount should not be blank or empty!
-                                </small>
-                            </> : null}
+                            <button id="saveCount" onClick={saveCount}  >Save Count</button>
+                        </div> : null}
 
-                            {CashDrawerPaymentDetail && CashDrawerPaymentDetail.PaymentSummery && CashDrawerPaymentDetail.PaymentSummery.map((item, index) => {
-                                return (item.Slug.toLowerCase() == 'card' ? <>
-                                    <div className="input-row" key={index}>
-                                        <label htmlFor="debitCredit">{item.Name}:</label>
-                                        <input type="number" id="debitCredit" placeholder="Enter Amount" onChange={(e) => validateEnteredCardAmount(e)} />
-                                    </div>
-                                </> : item.Slug.toLowerCase() == 'other' ? <>
-                                    <div className="input-row" key={index}>
-                                        <label htmlFor="debitCredit">{item.Name}:</label>
-                                        <input type="number" id="debitCredit" placeholder="Enter Amount" onChange={(e) => validateEnteredOthersAmount(e)} />
-                                    </div>
-                                </> : <div className="input-row" key={index}>
-                                    <label htmlFor="debitCredit">{item.Name}:</label>
-                                    <input type="number" id="debitCredit" placeholder="Enter Amount" />
-                                </div>)
-                            })
-                            }
-                        </div>
-                        <button id="saveCount" onClick={saveCount}  >Save Count</button>
-                    </div> : null}
-
-                    {diffrenttoggleShow !== false ? <div className="step3  ">
+                    {toggleCloseRegisterSuccess == true ? <div className="step3  ">
                         <Closeregistertwo closeregisterPaymentDetail={closeregisterPaymentDetail} />
                     </div> : null}
 
