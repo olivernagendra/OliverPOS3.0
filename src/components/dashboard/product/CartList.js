@@ -810,7 +810,7 @@ const CartList = (props) => {
                             </div> : null}
                         <div className="row">
                             <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes {typeOfTax() == 'incl' ? "Incl." : ""}</button>
-                            {taxes && taxes !== 0 ? <p>({taxRates})</p> : ""}
+                            {taxRates && taxRates !== "" ? <p>({taxRates})</p> : ""}
                             <p><b>${<NumericFormat value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div>
                     </div>
