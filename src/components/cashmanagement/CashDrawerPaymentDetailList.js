@@ -4,18 +4,19 @@ import STATUSES from "../../constants/apiStatus";
 import moment from 'moment';
 import Config from '../../Config'
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { NumericFormat } from "react-number-format";
 
 const CashDrawerPaymentDetailList = () => {
     const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
     var paymentList = [];
     if (statusgetdetail == STATUSES.IDLE && is_successgetdetail) {
-    var CashDrawerPaymentDetail = getdetail && getdetail.content
-    var _paymentList = CashDrawerPaymentDetail && CashDrawerPaymentDetail.CashRegisterlog ? CashDrawerPaymentDetail.CashRegisterlog : [];
- 
-    if (_paymentList && _paymentList.length > 0) {
-        paymentList = [..._paymentList].reverse()
+        var CashDrawerPaymentDetail = getdetail && getdetail.content
+        var _paymentList = CashDrawerPaymentDetail && CashDrawerPaymentDetail.CashRegisterlog ? CashDrawerPaymentDetail.CashRegisterlog : [];
 
-     }
+        if (_paymentList && _paymentList.length > 0) {
+            paymentList = [..._paymentList].reverse()
+
+        }
 
     }
 
@@ -33,7 +34,7 @@ const CashDrawerPaymentDetailList = () => {
 
     return (
         <>
-         {statusgetdetail == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+            {statusgetdetail == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
             {(iscashDrawerClosed == true) ? <>
                 <div className="register-action">
                     <div className="col fill left">
@@ -50,10 +51,10 @@ const CashDrawerPaymentDetailList = () => {
                     </div>
                     <div className="col fill right">
                         <p className="style2">
-                            <b>Expected Balance:</b> {closingExpectedBal}
+                            <b>Expected Balance:</b> <NumericFormat value={closingExpectedBal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                         </p>
                         <p className="style2">
-                            <b>Actual Balance:</b> {closingActualBal}
+                            <b>Actual Balance:</b> <NumericFormat value={closingActualBal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                         </p>
                     </div>
                 </div>
@@ -70,10 +71,10 @@ const CashDrawerPaymentDetailList = () => {
                                 </div> </div>
 
                             <div className="col">
-                                <p className="style2 mobile-adjustment">{(item.Expected < 0 ? "" : "+") + item.Expected}</p>
+                                <p className="style2 mobile-adjustment">{(item.Expected < 0 ? "" : "+")}<NumericFormat value={item.Expected} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
                             </div>
                             <div className="col fill right">
-                                <p className="style2"><b>Balance:</b> {item.RemainingBalance}</p>
+                                <p className="style2"><b>Balance:</b> <NumericFormat value={item.RemainingBalance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> </p>
                             </div>
 
                             {/* <div className="col">
@@ -119,7 +120,7 @@ const CashDrawerPaymentDetailList = () => {
                         {/* <b>Expected Balance:</b> 300.00 */}
                     </p>
                     <p className="style2">
-                        <b>Open Balance:</b> {openingBal}
+                        <b>Open Balance:</b> <NumericFormat value={openingBal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                     </p>
                 </div>
             </div>
