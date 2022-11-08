@@ -19,8 +19,10 @@ import { product } from "./product/productSlice";
 import { getInventory } from "./slices/inventorySlice";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import { useNavigate } from "react-router-dom";
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { getAll } = useIndexedDB("products");
 
     const [allProductList, setAllProductList] = useState([]);
@@ -390,6 +392,10 @@ const AdvancedSearch = (props) => {
         setFilteredProductList([]);
         setFilteredGroup([]);
     }
+    const viewCustomertransaction = (email) => {
+        sessionStorage.setItem("transactionredirect", email);
+        navigate('/transactions')
+    }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
@@ -488,7 +494,7 @@ const AdvancedSearch = (props) => {
                                             <p className="style2">{item.Title}</p>
                                             {/* <p className="style3">Funky Shoe Co.</p> */}
                                             <p className="style3">${item.Price}</p>
-                                            <p className="style3">SKU#{item.Sku}</p>
+                                            <p className="style3">SKU# {item.Sku}</p>
                                         </div>
                                         <div className="row">
                                             <button className="search-view" onClick={() => viewProduct(item)}>
@@ -517,7 +523,7 @@ const AdvancedSearch = (props) => {
                                                 <img src={ViewIcon} alt="" />
                                                 View
                                             </button>
-                                            <button className="search-transactions">
+                                            <button className="search-transactions" onClick={() => viewCustomertransaction(item.Email)} >
                                                 <img src={Transactions_Icon_White} alt="" />
                                                 Transactions
                                             </button>

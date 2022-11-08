@@ -32,8 +32,8 @@ const CartList = (props) => {
     const [totalItems, setTotalItems] = useState(0)
     const [isShowMobileCartList, setisShowMobileCartList] = useState(false)
     const [discountType, setDiscountType] = useState('');
-    const [discountCalculated,setDiscountCalculated]=useState(0);
-    const [showTaxStaus,setShowTaxStaus]=useState(false);
+    const [discountCalculated, setDiscountCalculated] = useState(0);
+    const [showTaxStaus, setShowTaxStaus] = useState(false);
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const toggleMobileCartList = () => {
         setisShowMobileCartList(!isShowMobileCartList)
@@ -47,7 +47,7 @@ const CartList = (props) => {
     const editPopUp = async (a, index) => {
         if (a && (a.Type === "variation" || a.Type === "variable")) {
             var _item = await getByID(a.product_id);
-            _item["quantity"]=a.quantity;
+            _item["quantity"] = a.quantity;
 
             _item['after_discount'] = a ? a.after_discount : 0;
             _item['discount_amount'] = a ? a.discount_amount : 0;
@@ -55,8 +55,8 @@ const CartList = (props) => {
             _item['product_discount_amount'] = a ? a.product_discount_amount : 0;
             _item['discount_type'] = a ? a.discount_type : "";
             _item['new_product_discount_amount'] = a ? a.new_product_discount_amount : 0;
-            _item['cart_after_discount'] = a.cart_after_discount?a.cart_after_discount:0;
-            _item['cart_discount_amount'] = a.cart_discount_amount?a.cart_discount_amount:0;
+            _item['cart_after_discount'] = a.cart_after_discount ? a.cart_after_discount : 0;
+            _item['cart_discount_amount'] = a.cart_discount_amount ? a.cart_discount_amount : 0;
             if (_item && _item.ParentId != 0) {
                 var _parent = await getByID(_item.ParentId);
 
@@ -64,7 +64,7 @@ const CartList = (props) => {
                 allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
 
                 _parent["selectedOptions"] = allCombi;
-                _parent["quantity"]=a.quantity;
+                _parent["quantity"] = a.quantity;
 
                 _parent['after_discount'] = a ? a.after_discount : 0;
                 _parent['discount_amount'] = a ? a.discount_amount : 0;
@@ -72,8 +72,8 @@ const CartList = (props) => {
                 _parent['product_discount_amount'] = a ? a.product_discount_amount : 0;
                 _parent['discount_type'] = a ? a.discount_type : "";
                 _parent['new_product_discount_amount'] = a ? a.new_product_discount_amount : 0;
-                _parent['cart_after_discount'] = a.cart_after_discount?a.cart_after_discount:0;
-                _parent['cart_discount_amount'] = a.cart_discount_amount?a.cart_discount_amount:0;
+                _parent['cart_after_discount'] = a.cart_after_discount ? a.cart_after_discount : 0;
+                _parent['cart_discount_amount'] = a.cart_discount_amount ? a.cart_discount_amount : 0;
                 props.updateVariationProduct(_item);
                 props.openPopUp(_parent, index);
             }
@@ -84,7 +84,7 @@ const CartList = (props) => {
         }
         else {
             props.updateVariationProduct(a);
-            props.openPopUp(a,index);
+            props.openPopUp(a, index);
         }
     }
     const getDiscountAmount_Type = () => {
@@ -93,10 +93,9 @@ const CartList = (props) => {
             let dtype = cart.discountType === "Percentage" ? '%' : "$";
             let damount = cart.discount_amount;
             setDiscountType(damount + "" + dtype);
-            
+
         }
-        else
-        {
+        else {
             setDiscountType('')
         }
     }
@@ -212,7 +211,7 @@ const CartList = (props) => {
             TaxRate: taxRate,
             _checklist: _checklist !== null ? _checklist.order_id : 0,
             oliver_pos_receipt_id: _checklist && _checklist !== null && _checklist.oliver_pos_receipt_id !== null ? _checklist.oliver_pos_receipt_id : "",
-             showTaxStaus: showTaxStaus,
+            showTaxStaus: showTaxStaus,
             //showTaxStaus: typeOfTax(),
             _wc_points_redeemed: 0,
             _wc_amount_redeemed: 0,
@@ -489,7 +488,7 @@ const CartList = (props) => {
                     IsExist = true;
                 }
                 var CHECKLIST = localStorage.getItem("CHECKLIST") ? JSON.parse(localStorage.getItem("CHECKLIST")) : null;
-                var cartproductlist= localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : null;
+                var cartproductlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : null;
                 if (cartproductlist) {
                     cartproductlist && cartproductlist.map(ticketInfo => {
                         if (ticketInfo.ticket_info && ticketInfo.ticket_info.length > 0 && ticketInfo.ticket_info !== "[]") {
@@ -549,6 +548,24 @@ const CartList = (props) => {
         dispatch(product());
     }
 
+    var deafult_tax = localStorage.getItem('APPLY_DEFAULT_TAX') ? JSON.parse(localStorage.getItem("APPLY_DEFAULT_TAX")) : null;
+    var selected_tax = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : null;
+    var apply_defult_tax = localStorage.getItem('DEFAULT_TAX_STATUS') ? localStorage.getItem('DEFAULT_TAX_STATUS').toString() : null;
+    var taxRates = ''
+    var TaxRate = apply_defult_tax == "true" ? deafult_tax : selected_tax;
+    // var Price = RoundAmount(price);
+    //var Price = parseFloat(price);
+
+    if (TaxRate && TaxRate.length > 0) {
+        TaxRate.map(addTax => {
+            if (addTax.check_is == true && addTax.TaxRate !== "") {
+
+                taxRates = taxRates + (taxRates !== "" ? "," : "") + addTax.TaxRate;
+
+            }
+        })
+    }
+
     return (
         <React.Fragment>
             {isLoading ? <LoadingModal></LoadingModal> : null}
@@ -590,14 +607,14 @@ const CartList = (props) => {
                         </div>
                     </div>}
                     {props && props.listItem && props.listItem.length > 0 && props.listItem.map((a, index) => {
-                        
-                        var notes =  props.listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
-                        
+
+                        var notes = props.listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
+
                         var item_type = "";
                         if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) { item_type = "no_note"; }
                         else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
                         else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
-                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')&& !a.hasOwnProperty('pid')) { item_type = "note"; }
+                        if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id') && !a.hasOwnProperty('pid')) { item_type = "note"; }
 
                         switch (item_type) {
                             case "product":
@@ -606,18 +623,18 @@ const CartList = (props) => {
                                         <p className="quantity" onClick={() => editPopUp(a, index)}>{a.quantity && a.quantity}</p>
                                         <p className="content-style" onClick={() => editPopUp(a, index)}>{a.Title && a.Title}</p>
                                         <p className="price" onClick={() => editPopUp(a, index)}>
-                                        <NumericFormat className={a.product_discount_amount !=0?"strike-through":""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-                                            </p>
-                                            {a.product_discount_amount !=0 &&<p className="price" onClick={() => editPopUp(a, index)}>
-                                            <NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount):a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-                                              {/* <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> */}
-                                            </p>}
+                                            <NumericFormat className={a.product_discount_amount != 0 ? "strike-through" : ""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                        </p>
+                                        {a.product_discount_amount != 0 && <p className="price" onClick={() => editPopUp(a, index)}>
+                                            <NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount) : a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                            {/* <NumericFormat   value={a.Price - a.product_discount_amount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> */}
+                                        </p>}
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
                                             <img src={CircledX_Grey} alt="" />
                                         </button>
                                     </div>
                                     <div className="secondary-col" onClick={() => editPopUp(a, index)}>
-                                        {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
+                                        {typeof notes != "undefined" && notes != "" && <p>**Note: {notes.Title}</p>}
                                     </div>
                                 </div>
                             case "note":
@@ -640,7 +657,7 @@ const CartList = (props) => {
                                     <div className="main-row aligned">
                                         <div className="tag custom-fee">Custom Fee</div>
                                         <div className="content-style">{a.Title && a.Title}</div>
-                                        <div className="price"><NumericFormat  value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></div>
+                                        <div className="price"><NumericFormat value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></div>
                                         <button className="remove-cart-item" onClick={() => deleteItem(a)}>
                                             <img src={CircledX_Grey} alt="" />
                                         </button>
@@ -780,27 +797,27 @@ const CartList = (props) => {
                     <div className="totals">
                         <div className="row">
                             <p>{LocalizedLanguage.printSubtotal}</p>
-                            <p><b>${subTotal}</b></p>
+                            <p><b>${<NumericFormat value={subTotal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div>
-                        {discountType !="" ?
+                        {discountType != "" ?
                             <div className="row">
                                 <p>Cart Discount ({discountType})</p>
                                 <button id="editCartDiscount" onClick={() => props.toggleEditCartDiscount()}>edit</button>
-                                <p><b>-${<NumericFormat  value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                                <p><b>-${<NumericFormat value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                             </div> : null}
                         <div className="row">
-                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes { typeOfTax() == 'incl' ? LocalizedLanguage.inclTax : LocalizedLanguage.exclTax}</button>
-                            <p>(%)</p>
-                            <p><b>${<NumericFormat  value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
+                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes {typeOfTax() == 'incl' ? "Incl." : ""}</button>
+                            <p>({taxRates})</p>
+                            <p><b>${<NumericFormat value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div>
                     </div>
                     <div className="checkout-container">
-                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  ${<NumericFormat value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
                     </div>
                 </div>
             </div>
             <div className="mobile-homepage-footer">
-                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""}  ${<NumericFormat  value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                <button id="openMobileCart" onClick={() => toggleMobileCartList()}>View Cart {totalItems != 0 ? ("(" + totalItems + ")") : ""}  ${<NumericFormat value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
             </div>
         </React.Fragment>)
 }
