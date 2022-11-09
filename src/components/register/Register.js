@@ -57,7 +57,7 @@ const Register = () => {
     const { status, dataone, error, is_success } = useSelector((state) => state.GetOpenRegister)
     console.log("status", status, "dataone", dataone, "error", error, "is_success", is_success)
 
-    if (status === STATUSES.IDLE && is_success) {
+    if (status === STATUSES.IDLE && is_success && error == "") {
         if (dataone && dataone.content && dataone.content !== undefined) {
             if (dataone.content && dataone.content !== '' && dataone.content !== 0) {
                 localStorage.setItem("IsCashDrawerOpen", "true");

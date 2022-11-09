@@ -11,8 +11,8 @@ exports.key = {
     CUSTOMER_PAGE_SIZE: 50,
     ACTIVITY_PAGE_SIZE: 100,
     FETCH_PRODUCTS_PAGESIZE: 100,
-    ONLY_TIME:'h:mm a',
-    MONTH_DAY_FORMAT:'MMMM,DD YYYY ,h:mm a',
+    ONLY_TIME: 'h:mm a',
+    MONTH_DAY_FORMAT: 'MMMM,DD YYYY ,h:mm a',
     DATE_FORMAT: 'DD, MMMM YYYY',
     DATETIME_FORMAT: 'DD, MMMM YYYY, h:mm a',
     DATE_FORMAT_SAFARI: 'YYYY-MM-DD',
@@ -40,5 +40,5 @@ exports.key = {
 
 }
 
-exports.key_AssigneeType = { Category : 0, SubCategory : 1, Attribute : 2, SubAttribute : 3, Product : 4, Tag : 5 }
-exports.key_InputTypes = { TextField : 0 , NumberField : 1, RadioButton : 2, CheckBox : 3}
+exports.key_AssigneeType = { Category: 0, SubCategory: 1, Attribute: 2, SubAttribute: 3, Product: 4, Tag: 5 }
+exports.key_InputTypes = { TextField: 0, NumberField: 1, RadioButton: 2, CheckBox: 3 }
