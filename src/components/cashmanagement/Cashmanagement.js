@@ -16,6 +16,7 @@ import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.s
 import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { NumericFormat } from "react-number-format";
 function Cashmanagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -329,7 +330,7 @@ function Cashmanagement() {
                 </div>
                 <div className="col">
                   <p className="style1 mobile-difference">Cash Drawer Ending Balance</p>
-                  <p className="style2">{_balance}</p>
+                  <p className="style2"><NumericFormat value={_balance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
                 </div>
                 <button>Print History</button>
               </div>

@@ -86,7 +86,7 @@ const CartListBody = (props) => {
                     <div className="tag customer">Customer</div>
                     <div className="content-style">{get_customerName().Name}</div>
                 </div>
-            </div>:null}
+            </div> : null}
             {listItem && listItem.length > 0 && listItem.map(a => {
                 var notes = listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
                 var item_type = "";
@@ -103,11 +103,11 @@ const CartListBody = (props) => {
                                 <p className="quantity">{a.quantity && a.quantity}</p>
                                 <p className="content-style">{a.Title && a.Title}</p>
                                 <p className="price">
-                                    <NumericFormat className={a.product_discount_amount != 0 ? "strike-through" : ""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                    $<NumericFormat className={a.product_discount_amount != 0 ? "strike-through" : ""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                                 </p>
                                 {a.product_discount_amount != 0 &&
                                     <p className="price" >
-                                        <NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount) : a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                        $<NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount) : a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                                     </p>
                                 }
                             </div>
