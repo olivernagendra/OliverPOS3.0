@@ -478,7 +478,7 @@ function Login() {
                 <p >Sign in to your Oliver POS Account</p>
                 {/* {error !== "" && <div className="danger">{error} </div>} */}
                 {(_error !== "") &&
-                    <div className="error">
+                    <div className="error-message">
                         {_error}
                     </div>}
                 <form className="login-form">
