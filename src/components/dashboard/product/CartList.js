@@ -551,18 +551,19 @@ const CartList = (props) => {
         dispatch(product());
     }
 
-    var deafult_tax = localStorage.getItem('APPLY_DEFAULT_TAX') ? JSON.parse(localStorage.getItem("APPLY_DEFAULT_TAX")) : null;
+    // var deafult_tax = localStorage.getItem('APPLY_DEFAULT_TAX') ? JSON.parse(localStorage.getItem("APPLY_DEFAULT_TAX")) : null;
     var selected_tax = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem("TAXT_RATE_LIST")) : null;
     var apply_defult_tax = localStorage.getItem('DEFAULT_TAX_STATUS') ? localStorage.getItem('DEFAULT_TAX_STATUS').toString() : null;
     var taxRates = ''
-    var TaxRate = apply_defult_tax == "true" ? deafult_tax : selected_tax;
+    var TaxRate = selected_tax//apply_defult_tax == "true" ? deafult_tax : selected_tax;
     // var Price = RoundAmount(price);
     //var Price = parseFloat(price);
 
     if (TaxRate && TaxRate.length > 0) {
         TaxRate.map(addTax => {
-            if (addTax.check_is == true && addTax.TaxRate !== "") {
-
+            if (apply_defult_tax == "true" && addTax.TaxRate !== "" && addTax.TaxClass == "") {// for default tax
+                taxRates = taxRates + (taxRates !== "" ? "," : "") + addTax.TaxRate;
+            } else if (apply_defult_tax == "false" && addTax.check_is == true && addTax.TaxRate !== "") {
                 taxRates = taxRates + (taxRates !== "" ? "," : "") + addTax.TaxRate;
 
             }
