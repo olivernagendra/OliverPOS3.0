@@ -9,6 +9,7 @@ import { get_UDid } from "../common/localSettings";
 import STATUSES from "../../constants/apiStatus";
 import { useIndexedDB } from 'react-indexed-db';
 import Config from '../../Config'
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Customercreate = (props) => {
    // console.log("editcustomerparam", props)
     const navigate = useNavigate();
@@ -31,6 +32,7 @@ const Customercreate = (props) => {
     const [shipping_state_name, setshippingstate_name] = useState('')
     const [state_name, setstate_name] = useState('')
     const [Cust_ID, setCust_ID] = useState('')
+    const [isCusToSaveCart, setisCusToSaveCart] = useState(false)
     const [getCountryList, setgetCountryList] = useState(localStorage.getItem('countrylist') !== null ? typeof (localStorage.getItem('countrylist')) !== undefined ? localStorage.getItem('countrylist') !== 'undefined' ?
         Array.isArray(JSON.parse(localStorage.getItem('countrylist'))) === true ? JSON.parse(localStorage.getItem('countrylist')) : '' : '' : '' : '')
     const [getStateList, setgetStateList] = useState(localStorage.getItem('statelist') && localStorage.getItem('statelist') !== null ? typeof (localStorage.getItem('statelist')) !== undefined ? localStorage.getItem('statelist') !== 'undefined' ?
@@ -63,11 +65,11 @@ const Customercreate = (props) => {
             lName: lName,
             tel: tel,
             website: website,
-            billingAddress1: billingAddress1,
-            billingAddress2: billingAddress2,
-            billingZipPostal: billingZipPostal,
-            billingCity: billingCity,
-            billingCountry: billingCountry,
+            billingAddress1: billingAddress1 ? billingAddress1:'',
+            billingAddress2: billingAddress2 ? billingAddress2:"",
+            billingZipPostal: billingZipPostal ? billingZipPostal:"",
+            billingCity: billingCity ?billingCity:"",
+            billingCountry: billingCountry ? billingCountry:'',
             email: email,
             phone: phone,
             shippingAddress1: billingAddress1,
@@ -221,8 +223,8 @@ const Customercreate = (props) => {
 
 
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = (addtocart) => {
+        // e.preventDefault();
         const { fName, lName, tel, website, billingAddress1, billingAddress2, billingZipPostal, billingCity, billingCountry, shippingAddress1, shippingAddress2, shippingCity, email, shippingZipPostal } = values
         if (validate(values)) {
             var userExist = false;
@@ -230,7 +232,9 @@ const Customercreate = (props) => {
             if (userExist == true) {
                 alert("Given email already exist! Please try another")
                 return
-            } else if(props.editcustomerparam !== "editcustomer" && Cust_ID =="" ) {
+
+                // Create New Customer
+            } else if(props.editcustomerparam !== "editcustomer" && Cust_ID =="" && addtocart !=="addtocart" ) {
                 const save = {
                     WPId: "",
                     FirstName: fName,
@@ -239,29 +243,30 @@ const Customercreate = (props) => {
                     startAmount: 0,
                     Email: email,
                     udid: UID,
-                    notes: "notes is here",
+                    notes: " ",
                     //Billing
-                    StreetAddress: billingAddress1,
-                    StreetAddress2: billingAddress2,
-                    BillingPincode: billingZipPostal,
-                    BillingCity: billingCity,
-                    BillingCountry: country_name,
-                    BillingState: state_name,
+                    StreetAddress: billingAddress1 ?billingAddress1:"",
+                    StreetAddress2: billingAddress2 ?billingAddress2:"",
+                    BillingPincode: billingZipPostal ?billingZipPostal:"",
+                    BillingCity: billingCity ? billingCity:"",
+                    BillingCountry: country_name ?country_name:"",
+                    BillingState: state_name ?state_name:"",
                     //Shippig
-                    shippingAddress1: shippingAddress1,
-                    shippingAddress2: shippingAddress2,
-                    ShippingPincode: shippingZipPostal,
-                    shippingCity: shippingCity,
-                    ShippingCountry: Shippingcountry_name,
-                    ShippingState: shipping_state_name,
-                    website: website
+                    shippingAddress1: shippingAddress1 ? shippingAddress1:"",
+                    shippingAddress2: shippingAddress2 ? shippingAddress2:"",
+                    ShippingPincode: shippingZipPostal ? shippingZipPostal:"",
+                    shippingCity: shippingCity ?shippingCity:'',
+                    ShippingCountry: Shippingcountry_name ? Shippingcountry_name:"",
+                    ShippingState: shipping_state_name ? shipping_state_name:"",
+                    website: website ? website :""
 
                 }
                 console.log("save", save)
                 dispatch(customersave(save, 'create',));
                 clearInputFeild()
+                props.toggleCreateCustomer()
 
-
+            // Update and Edit Customer
             }  else if (Cust_ID && Cust_ID != "") {
                     const update = {
                         WPId: Cust_ID,
@@ -271,7 +276,7 @@ const Customercreate = (props) => {
                         startAmount: 0,
                         Email: email,
                         udid: UID,
-                        notes: "notes is here",
+                        notes: " ",
                         //Billing
                         StreetAddress: billingAddress1,
                         StreetAddress2: billingAddress2,
@@ -288,14 +293,42 @@ const Customercreate = (props) => {
                         ShippingState: shipping_state_name,
                         website: website
                     }
-                    
-                     dispatch(customerupdate(update, 'update'));
+                    dispatch(customerupdate(update, 'update'));
                     console.log("update", update)
                     clearInputFeild()
-        
+                    props.toggleEditcustomer()
+           // Create Customer and Save to Cart
+            } else if (addtocart =="addtocart") {
+               const save = {
+                WPId: "",
+                FirstName: fName,
+                LastName: lName,
+                Contact: phone,
+                startAmount: 0,
+                Email: email,
+                udid: UID,
+                notes: " ",
+                //Billing
+                StreetAddress: billingAddress1 ?billingAddress1:'',
+                StreetAddress2: billingAddress2 ?billingAddress2:'',
+                BillingPincode: billingZipPostal ?billingZipPostal:'',
+                BillingCity: billingCity ?billingCity:'',
+                BillingCountry: country_name?country_name:'',
+                BillingState: state_name?state_name:'',
+                //Shippig
+                shippingAddress1: shippingAddress1 ?shippingAddress1:'',
+                shippingAddress2: shippingAddress2 ?shippingAddress2:'',
+                ShippingPincode: shippingZipPostal ?shippingZipPostal:'',
+                shippingCity: shippingCity?shippingCity:'',
+                ShippingCountry: Shippingcountry_name ?Shippingcountry_name:'',
+                ShippingState: shipping_state_name ?shipping_state_name:'',
+                website: website ? website:''
             }
-
-
+            setisCusToSaveCart(true)
+            console.log("add to cart", save)
+            dispatch(customersave(save, 'create',));
+            clearInputFeild()
+            } 
         }
     };
 
@@ -304,19 +337,20 @@ const Customercreate = (props) => {
 
 
     const clearInputFeild = () => {
-        setTimeout(() => {
-            setValues({
-                WPId: "", fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", email: "", phone: "", shippingZipPostal: "",
-            })
+      
+            // setValues({
+            //     WPId: "", fName: "", lName: "", tel: "", website: "", billingAddress1: "", billingAddress2: "", billingZipPostal: "", billingCity: "", billingCountry: "", shippingAddress1: "", shippingAddress2: "", shippingCity: "", email: "", phone: "", shippingZipPostal: "",
+            // })
+            setValues(initialValues);
             settoggleSameBilling(false)
             setPhone('');
-            setValues({ email: "" })
+           /// setValues({ email: "" })
             setcountry_name("")
             setstate_name("")
             setShippingCountryName("")
             setshippingstate_name("")
             setCust_ID("")
-        }, 200);
+      
       
     }
 
@@ -337,15 +371,7 @@ const Customercreate = (props) => {
     }
 
 
-    // Customer create and Save API response
-    const { status, data, error, is_success } = useSelector((state) => state.customersave)
-    //console.log("status", status, "data", data, "error", error, "is_success", is_success)
-    if (status == STATUSES.IDLE && is_success) {
-        //  console.log("success")
-        var customerAdd = data && data.content
-        UpdateCustomerInIndexDB(UID, customerAdd)
-
-    }
+  
 
     // Check Email already exists !! 
     const getExistingCustomerEmail = (email) => {
@@ -359,15 +385,10 @@ const Customercreate = (props) => {
 
 
 
-
-
-
-
-
     // Close Button popup
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleCreateCustomer && props.toggleCreateCustomer();
+            props.toggleCreateCustomer() && props.toggleCreateCustomer();
             props.toggleEditcustomer() && props.toggleEditcustomer();
         }
         else {
@@ -418,21 +439,31 @@ const Customercreate = (props) => {
 
 
 
+  
+  
+  // Customer create and Save API response
+  const [customerres] = useSelector((state) => [state.customersave])
+  useEffect(() => {
+    if (customerres && customerres.status == STATUSES.IDLE && customerres.is_success && customerres.data) {
+       UpdateCustomerInIndexDB(UID, customerres.data.content)
+       if(isCusToSaveCart == true){
+        addCustomerToSale(customerres.data.content)
+       }
 
+    }
+  }, [customerres,isCusToSaveCart]);
 
 
 
     // Customer add to card
-    const addCustomerToSale =  () => {
-        handleSubmit()
-        var data = customerAdd ? customerAdd : [];
-        if (data > 0) {
-            localStorage.setItem('AdCusDetail', JSON.stringify(data))
+    const addCustomerToSale =  (customerAdd) => {
+        if (customerAdd) {
+            localStorage.setItem('AdCusDetail', JSON.stringify(customerAdd))
             var list = localStorage.getItem('CHECKLIST') !== null ? (typeof localStorage.getItem('CHECKLIST') !== 'undefined') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null : null;
             if (list != null) {
                 const CheckoutList = {
                     ListItem: list.ListItem,
-                    customerDetail: data ? data : [],
+                    customerDetail: customerAdd ? customerAdd : [],
                     totalPrice: list.totalPrice,
                     discountCalculated: list.discountCalculated,
                     tax: list.tax,
@@ -456,10 +487,13 @@ const Customercreate = (props) => {
     }
 
   
-
+   
 
 
     return (
+        <>   
+        {customerres.status == STATUSES.LOADING ? <LoadingModal /> : null}
+       
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow create-customer current" : "subwindow create-customer"}>
                 <div className="subwindow-header">
@@ -484,7 +518,7 @@ const Customercreate = (props) => {
                         <div className="input-row">
                             <div className="input-col">
                                 <label for="newCustEmail">Email*</label>
-                                <input type="email" id="newCustEmail" placeholder="Enter Email" name='email'
+                                <input type="email" placeholder="Enter Email" name='email'
                                     value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} />
                                 {/* <p>{errors.email}</p> */}
                                 <div className="error-wrapper">{errors.email}</div>
@@ -526,12 +560,12 @@ const Customercreate = (props) => {
                         <div className="input-row">
                             <div className="input-col">
                                 <label for="newCustAddress1Billing">Address 1</label>
-                                <input type="text" id="newCustAddress1Billing" placeholder="Enter Address 1" name="billingAddress1" value={values.address1} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <input type="text" id="newCustAddress1Billing" placeholder="Enter Address 1" name="billingAddress1" value={values.billingAddress1} onChange={(e) => handleChange(e.target.name, e.target.value)} />
                                 <div className="error-wrapper"></div>
                             </div>
                             <div className="input-col">
                                 <label for="newCustAddress2Billing">Address 2</label>
-                                <input type="text" id="newCustAddress2Billing" placeholder="Enter Address 2" name="billingAddress2" value={values.address2} onChange={(e) => handleChange(e.target.name, e.target.value)} />
+                                <input type="text" id="newCustAddress2Billing" placeholder="Enter Address 2" name="billingAddress2" value={values.billingAddress2} onChange={(e) => handleChange(e.target.name, e.target.value)} />
                                 <div className="error-wrapper"></div>
                             </div>
                         </div>
@@ -656,11 +690,13 @@ const Customercreate = (props) => {
                         <button  onClick={handleSubmit}>Save and Update</button>
                     </div> : <div className="button-row">
                         <button onClick={handleSubmit}>Create Customer</button>
-                        <button onClick={addCustomerToSale}>Create & Add to Cart</button>
+                        <button onClick={()=>handleSubmit("addtocart")}>Create & Add to Cart</button>
                     </div>}
                 </div>
             </div>
-        </div>)
+        </div>
+        </>
+        )
 }
 
 export default Customercreate 

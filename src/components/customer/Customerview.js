@@ -11,7 +11,7 @@ import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
-//import Pencil from '../../assets/images/svg/Pencil-Outline-Blue.svg'
+import Pencil from '../../assets/images/svg/Pencil-Outline-Blue.svg'
 import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg'
 import { useNavigate } from 'react-router-dom';
 import { customergetPage, customergetDetail, getAllEvents } from './CustomerSlice'
@@ -425,13 +425,19 @@ const CustomerView = () => {
   }
 
 
-  console.log("isShowcreatecustomerToggle",isShowcreatecustomerToggle)
-  console.log("editcustomerparam",editcustomerparam)
-
+    // Customer Edit  API response
+    const [customereditsucc] = useSelector((state) => [state.customerupdate])
+    useEffect(() => {
+      if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
+      //console.log("customereditsucc",customereditsucc)
+      }
+    }, [customereditsucc]);
+  
 
   return (
     <React.Fragment>
       {customerAllEvant.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
+      {customereditsucc.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
       <div className="customer-view-wrapper">
         <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
         <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
@@ -576,7 +582,7 @@ const CustomerView = () => {
                 <p className="style2">Phone #: {customerDetailData && customerDetailData.Contact}</p>
               </div>
               <button id="editCustomerButton" onClick={()=>toggleEditcustomer("editcustomer") }>
-                <img src="../Assets/Images/SVG/Pencil-Outline-Blue.svg" alt="" />
+                <img src={Pencil} alt="" />
                 Edit
               </button>
             </div>
