@@ -161,7 +161,7 @@ const Checkout = (props) => {
     // }
     //setPaidAmount(null);
     useEffect(() => {
-        console.log("paymentsArr----"+JSON.stringify(paymentsArr) );
+        console.log("paymentsArr----" + JSON.stringify(paymentsArr));
         if (loading === false) { getPaymentDetails(); }
     }, []);
     useEffect(() => {
@@ -285,8 +285,8 @@ const Checkout = (props) => {
         //setPaidAmount(amount);
         setPartialAmount(amount);
         setPaidAmount(amount);
-       // setPaymentTypeItem(item);
-       // dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        // setPaymentTypeItem(item);
+        // dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
         //pay_amount(type);
         //setPayment_Type("cash");
     }
@@ -580,13 +580,12 @@ const Checkout = (props) => {
 
     //  function use to check for payment types and perform action accordingly 
     const pay_amount = (paymentType, TerminalCount = 0, Support = '', paymentCode = '', paidConfirmAmount = 0) => {
-        
-        if(localStorage.getItem("paybyproduct_unpaid"))
-        {
-            localStorage.setItem("paybyproduct",  localStorage.getItem("paybyproduct_unpaid"));
+
+        if (localStorage.getItem("paybyproduct_unpaid")) {
+            localStorage.setItem("paybyproduct", localStorage.getItem("paybyproduct_unpaid"));
             localStorage.removeItem("paybyproduct_unpaid");
         }
-       
+
         var closingTab = '';
         //const { paidAmount, closingTab } = this.state;
         if (paidConfirmAmount !== 0) {// set the achual payment done by payconiq
@@ -719,7 +718,7 @@ const Checkout = (props) => {
                     setIsPaymentStart(true);
 
                     var _tempOnlinePayCardData = onlinePayCardData;
-                   // _tempOnlinePayCardData.amount = online_amount;
+                    // _tempOnlinePayCardData.amount = online_amount;
                     setOnlinePayCardData(_tempOnlinePayCardData);
 
                     onlineCardPayments(paymentType, online_amount)
@@ -844,14 +843,14 @@ const Checkout = (props) => {
     }
     const [respmakeOnlinePayments] = useSelector((state) => [state.makeOnlinePayments])
     useEffect(() => {
-        if (respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data && loading==true) {
+        if (respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data && loading == true) {
             console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
 
             if (respmakeOnlinePayments.data.content.RefranseCode && respmakeOnlinePayments.data.content.IsSuccess == true)
             // if(nextProp.online_payment.content.transactionResponse && nextProp.online_payment.content.transactionResponse.transId != 0)
             {
                 // set the current trnasaction status, Used for APP Command "TransactionStatus"
-             localStorage.setItem("CurrentTransactionStatus", JSON.stringify({"paymentType":onlinePayments,"status": "completed"}))
+                localStorage.setItem("CurrentTransactionStatus", JSON.stringify({ "paymentType": onlinePayments, "status": "completed" }))
                 //Set the actual amount paid from card
                 var _paidAmount = paidAmount;
                 if (respmakeOnlinePayments.data.content.Amount && respmakeOnlinePayments.data.content.Amount !== "") {
@@ -860,16 +859,14 @@ const Checkout = (props) => {
                 }
                 setPartialPayment(onlinePayments, _paidAmount)
                 toggleManualPayment();
-            } 
+            }
             dispatch(makeOnlinePayments(null));
-            if(getRemainingPriceForCash()>0)
-            {
+            if (getRemainingPriceForCash() > 0) {
                 setLoading(false);
             }
-            
+
         }
-        else if(respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR )&& respmakeOnlinePayments.is_success==false && loading==true && respmakeOnlinePayments.message!="")
-        {
+        else if (respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR) && respmakeOnlinePayments.is_success == false && loading == true && respmakeOnlinePayments.message != "") {
             setLoading(false);
             var data = { title: "", msg: respmakeOnlinePayments.error, is_success: true }
             dispatch(popupMessage(data));
@@ -2124,7 +2121,7 @@ const Checkout = (props) => {
     }
     useEffect(() => {
         if (onlinePayCardData.hasOwnProperty("paycode")) {
-            pay_amount(onlinePayCardData.paycode,0,'Online');
+            pay_amount(onlinePayCardData.paycode, 0, 'Online');
         }
     }, [onlinePayCardData]);
     const activeDisplay = (st) => {
@@ -2274,7 +2271,7 @@ const Checkout = (props) => {
                 <p className="style3">Please add a customer to make customer payment types available</p>
                 <div className="button-row">
                     <button disabled={get_customerName() == null ? true : false} onClick={() => toggleParkSale('lay_away')}>Layaway</button>
-                    <button disabled={get_customerName() == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit (${parseFloat(storeCredit).toFixed(2)})</button>
+                    <button disabled={storeCredit == 0 || get_customerName() == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit (${parseFloat(storeCredit).toFixed(2)})</button>
                 </div>
 
                 <div className="payment-types">
@@ -2361,7 +2358,7 @@ const Checkout = (props) => {
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
         <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
-        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}  pay_by_product={pay_by_product}></SplitByProduct> : null}
+        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct} pay_by_product={pay_by_product}></SplitByProduct> : null}
     </React.Fragment>)
 }
 export default Checkout
