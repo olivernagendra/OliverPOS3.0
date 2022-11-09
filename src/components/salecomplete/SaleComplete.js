@@ -446,6 +446,7 @@ const SaleComplete = () => {
 
     //var checkList = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
     var true_dimaond_field = localStorage.getItem('GET_EXTENTION_FIELD') ? JSON.parse(localStorage.getItem('GET_EXTENTION_FIELD')) : [];
+    var appcount = 0;
     return (
         <React.Fragment>
             <div className="sale-complete-wrapper">
@@ -482,7 +483,10 @@ const SaleComplete = () => {
                     <div className="app-container">
                         {
                             true_dimaond_field && true_dimaond_field.length > 0 ? true_dimaond_field.map((Items, index) => {
-                                return (Items.viewManagement && Items.viewManagement !== [] && CheckAppDisplayInView(Items.viewManagement) === true) ?
+                                var isVivable = CheckAppDisplayInView(Items.viewManagement);
+                                if (isVivable == true)
+                                    appcount = appcount + 1;
+                                return (Items.viewManagement && Items.viewManagement !== [] && isVivable === true && appcount <= 5) ?
                                     <button onClick={() => ToggleiFrameWindow(Items)} key={Items.Id}>
                                         {Items.logo != null ? <img src={Items.logo} alt="" onError={({ currentTarget }) => {
                                             currentTarget.onerror = null; // prevents looping
