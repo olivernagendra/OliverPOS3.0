@@ -88,7 +88,7 @@ const SplitByProduct = (props) => {
                 }
             }
             else {
-                paybyproduct.push({ product_id: item.product_id, quantity: item.quantity_to_pay });
+                paybyproduct.push({ product_id: item.product_id, quantity:item.hasOwnProperty("quantity_to_pay") ?item.quantity_to_pay:0 });
             }
             localStorage.setItem("paybyproduct_unpaid", JSON.stringify(paybyproduct));
             //localStorage.setItem("paybyproduct", JSON.stringify(paybyproduct));
