@@ -526,7 +526,7 @@ const ActivityView = () => {
     var _platform = [{ key: "both", value: "Both" }, { key: "oliver-pos", value: "Oliver POS" }, { key: "web-shop", value: "Webshop" }];
     var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
 
-
+       /// Scroll  then api call
     const updateSomething = () => {
         setactiveDetailApi(false)
         setDefauldNumber(defauldnumber + 1)

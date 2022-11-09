@@ -11,6 +11,7 @@ import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
+//import Pencil from '../../assets/images/svg/Pencil-Outline-Blue.svg'
 import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg'
 import { useNavigate } from 'react-router-dom';
 import { customergetPage, customergetDetail, getAllEvents } from './CustomerSlice'
@@ -23,7 +24,7 @@ import { LoadingSmallModal } from '../common/commonComponents/LoadingSmallModal'
 import { useIndexedDB } from 'react-indexed-db';
 import AddCustomersNotepoup from "./AddCustomersNotepoup";
 import AdjustCreditpopup from "./AdjustCreditpopup";
-import Cusomercreate from './Customercreate';
+import Customercreate from './Customercreate';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
@@ -46,6 +47,7 @@ const CustomerView = () => {
   const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
   const [isShowNoteModel, setisShowNoteModel] = useState(false)
   const [isShowcreatecustomerToggle, setisShowcreatecustomerToggle] = useState(false)
+  const [isShowEditcustomer, setisShowEditcustomer] = useState(false)
   const [isShowCreateCustomerModel, setisShowCreateCustomerModel] = useState(false)
   const [isShowCreditModel, setisShowCreditModel] = useState(false)
   const [customerlistdata, setcustomerlist] = useState([]);
@@ -63,6 +65,7 @@ const CustomerView = () => {
   const [filteredCustomer, setFilteredCustomer] = useState([]);
   const [toggleList, setToggleList] = useState(false)
   const [sortbyvaluename, SetSortByValueName] = useState('FirstName')
+  const [editcustomerparam, seteditcustomerparam] = useState('')
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
@@ -93,6 +96,13 @@ const CustomerView = () => {
   }
   const toggleCreateCustomer = () => {
     setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
+    seteditcustomerparam('')
+  }
+  const toggleEditcustomer =(param)=>{
+    ///console.log("param",param)
+    seteditcustomerparam(param)
+    setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
+    
   }
 
   const toggleMobileNav = () => {
@@ -103,8 +113,6 @@ const CustomerView = () => {
   const toggleSortWrapp = () => {
     setSortWrapper(!isSortWrapper)
   }
-
-
   const CustomerSearchMobi = () => {
     setCvmobile(!isCvmobile)
   }
@@ -152,21 +160,21 @@ const CustomerView = () => {
   let useCancelled1 = false;
   useEffect(() => {
     var UID = get_UDid('UDID');
-    var Customerredirection = sessionStorage.getItem("Cusredirection")? sessionStorage.getItem("Cusredirection"):'';
-    if(Customerredirection &&Customerredirection.length > 0) {
-      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection")?sessionStorage.getItem("Cusredirection"):'';
+    var Customerredirection = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
+    if (Customerredirection && Customerredirection.length > 0) {
+      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
       setupdateCustomerId(CUSTOMER_ID)
-    }else{
-      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID")?sessionStorage.getItem("CUSTOMER_ID"):'';
+    } else {
+      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
       setupdateCustomerId(CUSTOMER_ID)
     }
- 
+
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
     }
     //  Remove saved data from sessionStorage
-      sessionStorage.removeItem('Cusredirection');
+    sessionStorage.removeItem('Cusredirection');
     return () => {
       useCancelled1 = true;
     }
@@ -262,6 +270,24 @@ const CustomerView = () => {
     var scount = 0;
     var _filteredCustomer = customerlistdata
     ///Sort By Customer 
+
+    if (filterType == 'newestforward') {
+      alert("newest")
+      // _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+      //   if (a.Email < b.Email) { return -1; }
+      //   if (a.Email > b.Email) { return 1; }
+      //   return 0;
+      // })
+    }
+    if (filterType == 'oldestbackward') {
+      alert("oldest")
+      // _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+      //   if (a.Email < b.Email) { return -1; }
+      //   if (a.Email > b.Email) { return 1; }
+      //   return 0;
+      // })
+    }
+
     if (filterType == 'emailforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
         if (a.Email < b.Email) { return -1; }
@@ -380,15 +406,27 @@ const CustomerView = () => {
     navigate('/home')
   }
 
-  const OpenTransactions =(customerDetailData)=>{
+  const OpenTransactions = (customerDetailData) => {
     //console.log("customerDetailData",customerDetailData.Email)
-    if(customerDetailData.Email !=='' ){
+    if (customerDetailData.Email !== '') {
       sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : 0);
       navigate('/transactions')
-     } 
+    }
+  }
+
+  const clearSearch = () => {
+    if (FirstName !== '' || LastName !== '' || Email !== '' || PhoneNumber !== '') {
+      getCustomerFromIDB()
+      setFirstName("")
+      setLastName("")
+      setEmail("")
+      setPhoneNumber("")
+    }
   }
 
 
+  console.log("isShowcreatecustomerToggle",isShowcreatecustomerToggle)
+  console.log("editcustomerparam",editcustomerparam)
 
 
   return (
@@ -415,7 +453,7 @@ const CustomerView = () => {
         <div id="CVSearch" className={isCvmobile === true ? "cv-search open" : "cv-search"}   >
           <div className="header">
             <p>{LocalizedLanguage.customers}</p>
-            <button id="cvAddCustomer" onClick={toggleCreateCustomer}>
+            <button id="cvAddCustomer" onClick={()=>toggleCreateCustomer()}>
               <img src={CircledPlus_Icon_Blue} alt="" />Add New
             </button>
             <button id="mobileCVExitSearch" onClick={CustomerSearchMobi}>
@@ -425,17 +463,18 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-          <div class="row">
-						<img src={SearchBaseBlue} alt=""/>
-						<p>Search</p>
-						<button id="customersClearSearch">Clear Search</button>
-					</div>
+            <div class="row">
+              <img src={SearchBaseBlue} alt="" />
+              <p>Search</p>
+              <button id="customersClearSearch" onClick={clearSearch}>Clear Search</button>
+
+            </div>
             <label for="fName">First Name</label>
-            <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
+            <input type="text" id="FirstName" placeholder="Enter First Name" value={FirstName} onChange={e => setFirstName(e.target.value)} />
             <label for="lName">Last Name</label>
-            <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
+            <input type="text" id="LastName" placeholder="Enter Last Name" value={LastName} onChange={e => setLastName(e.target.value)} />
             <label for="email">Email</label>
-            <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
+            <input type="email" id="Email" placeholder="Enter Email" value={Email} onChange={e => setEmail(e.target.value)} />
             <label for="tel">Phone Number</label>
             <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
             <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
@@ -453,6 +492,14 @@ const CustomerView = () => {
               </div>
 
 
+              <div onClick={(e) => sortByList("newestforward", "Newest")} className="sort-option" >
+                <img src={FilterArrowUp} alt="" />
+                <p>Newest</p>
+              </div>
+              <div onClick={(e) => sortByList("oldestbackward", "Oldest")} className="sort-option" >
+                <img src={FilterArrowDown} alt="" />
+                <p>Oldest</p>
+              </div>
 
               <div onClick={(e) => sortByList("firstnameforward", "FirstName")} className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
@@ -516,21 +563,28 @@ const CustomerView = () => {
               Go Back
             </button>
           </div>
+         
+
+
           <div className="quick-info">
-            <div className="avatar">
-              <img src={AvatarIcon} alt="" />
-            </div>
-            <div className="group-merge">
+              <div className="avatar">
+                <img src={AvatarIcon} alt="" />
+              </div>
               <div className="text-group">
-                <p className="style1">{customerDetailData && customerDetailData.FirstName}</p>
+              <p className="style1">{customerDetailData && customerDetailData.FirstName}</p>
                 <p className="style2">{customerDetailData && customerDetailData.Email}</p>
+                <p className="style2">Phone #: {customerDetailData && customerDetailData.Contact}</p>
               </div>
-              <div className="text-group">
-                <p className="style2">Phone #:</p>
-                 <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
-              </div>
+              <button id="editCustomerButton" onClick={()=>toggleEditcustomer("editcustomer") }>
+                <img src="../Assets/Images/SVG/Pencil-Outline-Blue.svg" alt="" />
+                Edit
+              </button>
             </div>
-          </div>
+
+
+
+
+          
           <div className="cust-totals">
             <div className="col">
               <p className="style1">{OrderAmount ? OrderAmount : 0}</p>
@@ -606,8 +660,18 @@ const CustomerView = () => {
           </div>
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
+          <Customercreate 
+          isShow={isShowcreatecustomerToggle} 
+          toggleCreateCustomer={toggleCreateCustomer}
+          toggleEditcustomer={toggleEditcustomer}
+          editcustomerparam={editcustomerparam}
+          customerDetailData={customerDetailData ? customerDetailData:""} 
+          CustomerAddress={CustomerAddress}
+          
+         
+           />
 
-          <Cusomercreate isShow={isShowcreatecustomerToggle} toggleCreateCustomer={toggleCreateCustomer} />
+        
           <div className="footer">
             <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
             <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>

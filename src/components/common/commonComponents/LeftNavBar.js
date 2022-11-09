@@ -43,8 +43,8 @@ function LeftNavBar(props) {
 
     //-------Start short key press handlling------------------ 
     const handleKeyPress = useCallback((event) => {
-        console.log(`Key pressed: ${event.key}`);
-        console.log(`Key code: ${event.keyCode}`);
+        // console.log(`Key pressed: ${event.key}`);
+        // console.log(`Key code: ${event.keyCode}`);
         if (event.keyCode == 173) //f1
             navigate('/home')
         if (event.keyCode == 174) //f2
