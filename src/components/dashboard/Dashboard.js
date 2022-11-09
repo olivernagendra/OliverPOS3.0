@@ -250,13 +250,13 @@ const Home = () => {
             //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
         }
         else
-            if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            if ((type !== "simple" && type !== "variable" && type !=="variation") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
                 //alert(LocalizedLanguage.productxOutOfStock);
                 var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
                 dispatch(popupMessage(data));
             }
             else
-                if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
+                if ((type !== "simple" && type !== "variable" && type !=="variation") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
                     console.log("product x---" + item.ParamLink)
                     setProductxItem(item);
                     ToggleProductxWindow();
@@ -275,6 +275,13 @@ const Home = () => {
                     //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
                 }
                 else {
+                    // var vp_id=0;
+                    // if(variationProduct)
+                    // {
+                    //      vp_id=variationProduct.WPID;
+                    // }
+                    // console.log("vp_id--"+vp_id)
+
                     updateVariationProduct(null);
                     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
                     var _product = getTaxAllProduct([_item])
@@ -298,7 +305,24 @@ const Home = () => {
                     }
                     setSelProduct(_product[0]);
                     setisShowPopups(true);
-                    dispatch(getInventory(item.WPID)); // To fetch latest inventory
+
+                    if(item.hasOwnProperty("SelVariationId")) //edit variation product
+                    {
+                        dispatch(getInventory(item.SelVariationId));
+                    }
+                    else if(item.hasOwnProperty("WPID"))
+                    {
+                        dispatch(getInventory(item.WPID)); // To fetch latest inventory
+                    }
+                    else if(item.hasOwnProperty("Product_Id"))
+                    {
+                        dispatch(getInventory(item.Product_Id));
+                    }
+                    else if(item.hasOwnProperty("product_id")) // get inventory for simple product
+                    {
+                        dispatch(getInventory(item.product_id));
+                    }
+                    
                 }
     }
     const closePopUp = () => {

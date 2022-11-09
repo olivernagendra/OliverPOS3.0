@@ -77,7 +77,15 @@ const CartList = (props) => {
 
                 _parent['StockQuantity'] = _item.StockQuantity - a.quantity;
                 _parent["quantity"] = a.quantity;
+                _parent["SelVariationId"] = _item.WPID;
+
+                //---stock
+                // _item["selectedOptions"] = allCombi;
+                // _item['StockQuantity'] = _item.StockQuantity - a.quantity;
+                //------
+
                 props.updateVariationProduct(_item);
+                // props.openPopUp(_parent, index);
                 props.openPopUp(_parent, index);
             }
             else {
@@ -86,7 +94,7 @@ const CartList = (props) => {
             }
         }
         else {
-            props.updateVariationProduct(a);
+            props.updateVariationProduct(null);
             props.openPopUp(a, index);
         }
     }
