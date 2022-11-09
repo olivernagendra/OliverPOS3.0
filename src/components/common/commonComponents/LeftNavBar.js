@@ -190,7 +190,7 @@ function LeftNavBar(props) {
                     <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
                     <img src={Oliver_Type} alt="" className="oliver-text" />
                 </div>
-                <button id="registerButton" className={location.pathname === "/home" ? "page-link selected" : "page-link"} disabled={location.pathname === "/home" ? true : false} onClick={() => navigateTo('/home')}>
+                <button id="registerButton" className={(location.pathname === "/home" || location.pathname === "/checkout") ? "page-link selected" : "page-link"} disabled={location.pathname === "/home" ? true : false} onClick={() => navigateTo('/home')}>
                     <div className="img-container">
                         <img src={Register_Icon} alt="" />
                     </div>
