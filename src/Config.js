@@ -1,7 +1,7 @@
 
 exports.key = {
-    OP_API_URL: process.env.NODE_ENV == 'development' ? 'https://app.oliverpos.com/api/' : 'https://app.oliverpos.com/api/',
-    BRIDGE_DOMAIN: process.env.NODE_ENV == 'development' ? 'https://hub.oliverpos.com' : 'https://hub.oliverpos.com',
+    OP_API_URL: process.env.NODE_ENV == 'development' ? 'https://dev1.app.olivertest.com/api/' : 'https://app.oliverpos.com/api/',
+    BRIDGE_DOMAIN: process.env.NODE_ENV == 'development' ? 'https://dev1.shop.olivertest.com/' : 'https://hub.oliverpos.com',
     AUTH_KEY: sessionStorage.getItem("AUTH_KEY"),
     //"posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6" + ":" +  "poss_5a3f7d8d34dc3605ea5796eda8d6dfcf6cf82254",
     // AUTH_NAME           : "posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6",
