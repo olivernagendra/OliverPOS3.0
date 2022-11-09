@@ -70,11 +70,12 @@ const Header = (props) => {
         // }
     }
     const goBack = () => {
-        if (props.title) {navigate('/transactions'); }
-        else { 
+        if (props.title) { navigate('/transactions'); }
+        else {
             localStorage.removeItem('paybyproduct');
             localStorage.removeItem('paybyproduct_unpaid');
-            navigate('/home'); }
+            navigate('/home');
+        }
     }
     const checkTempOrderSyncStatus = () => {
         var udid = get_UDid;
@@ -138,12 +139,12 @@ const Header = (props) => {
             <div id="pageOptions" className={isShowOptionPage ? "page-options-wrapper" : "page-options-wrapper hidden"}>
                 <div className="page-options">
                     <p>Options Menu</p>
-                    <button id="clearCartButton" onClick={()=>clearCart()}>
-						<div className="img-container">
-							<img src={ClearCart_Icon} alt="" />
-						</div>
-						<p>Clear Cart</p>
-					</button>
+                    <button id="clearCartButton" onClick={() => clearCart()}>
+                        <div className="img-container">
+                            <img src={ClearCart_Icon} alt="" />
+                        </div>
+                        <p>Clear Cart</p>
+                    </button>
                     <button id="parkSaleButton" onClick={() => props.toggleParkSale('park_sale')}>
                         <div className="img-container">
                             <img src={Clock} alt="" />

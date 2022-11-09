@@ -340,13 +340,13 @@ const ManualPayment = (props) => {
                                     </div>
                                 </div> */}
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.cardNumber}</label>
                                     <input type="tel" className="form-control" id="CardNo" placeholder={LocalizedLanguage.cardNumber} name="CardNo" value={CardNo} onChange={handleChange} />
                                 </div>
                             </div>
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.cardholderName}</label>
                                     <input type="text" className="form-control" id="cardHoldername" name="card_holder_name" placeholder={LocalizedLanguage.cardholderName} value={CardName} onChange={handleChange} />
                                 </div>
@@ -358,7 +358,7 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.expiryMonth}</label>
                                     <input type="tel" className="form-control" maxLength={2} id="cardExpiryMonth" name='card_expiry_month' placeholder={LocalizedLanguage.expiryMonth}
                                         value={ExpirMonth} onChange={handleChange} />
@@ -373,7 +373,7 @@ const ManualPayment = (props) => {
                             </div> */}
 
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.expiryYear}</label>
                                     <input type="tel" className="form-control" maxLength={4} id="cardExpiryYear" name='card_expiry_year' placeholder={LocalizedLanguage.expiryYear}
                                         value={ExpirYear} onChange={handleChange} />
@@ -387,7 +387,7 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.CVVAndCVC}</label>
                                     <input type="tel" className="form-control" maxLength={5} id="cardCVC" name='card_CVC' placeholder={LocalizedLanguage.CVVAndCVC}
                                         value={CVVNo} onChange={handleChange} />
@@ -409,7 +409,7 @@ const ManualPayment = (props) => {
                                                         </div> */}
                             <h3 className="manual-title manual-title-space">{LocalizedLanguage.billingInformation}</h3>
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.addressOne}</label>
                                     <input type="text" className="form-control" id="billingAddress" name='billing_address' placeholder={LocalizedLanguage.addressOne}
                                         value={BillAddress} onChange={handleChange} />
@@ -423,7 +423,7 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
                              <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.addressTwo}</label>
                                     <input type="text" className="form-control" id="billingAddress2" name='billing_address2' placeholder={LocalizedLanguage.addressTwo}
                                         value={BillAddress2} onChange={handleChange} />
@@ -437,7 +437,7 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
                              <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.country}</label>
                                     <input type="text" className="form-control" id="country" name='country' placeholder={LocalizedLanguage.country}
                                         value={Country} onChange={handleChange} />
@@ -452,7 +452,7 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.city}</label>
                                     <input type="text" className="form-control" id="city" name='city' placeholder={LocalizedLanguage.city}
                                         value={City} onChange={handleChange} />
@@ -466,7 +466,7 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
                              <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.provinceState}</label>
                                     <input type="text" className="form-control" id="province" name='province' placeholder={LocalizedLanguage.provinceState}
                                         value={State} onChange={handleChange} />
@@ -481,7 +481,7 @@ const ManualPayment = (props) => {
                                 </div>
                             </div> */}
                             <div className='input-row '>
-                                <div class="input-col">
+                                <div className="input-col">
                                     <label htmlFor="email">{LocalizedLanguage.zippostalcode}</label>
                                     <input type="tel" className="form-control" id="zip" name='zip_code' placeholder={LocalizedLanguage.zippostalcode}
                                         value={ZipCode} onChange={handleChange} />

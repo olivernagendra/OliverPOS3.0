@@ -31,6 +31,7 @@ import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 import { activityRecords } from "../activity/ActivitySlice";
+import { NumericFormat } from 'react-number-format';
 const CustomerView = () => {
 
   var orderCount = ''
@@ -491,7 +492,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <input type="text" id="filterType" />
-              <img class="dropdown-arrow" src={DownArrowBlue} alt="" />
+              <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>
@@ -593,7 +594,7 @@ const CustomerView = () => {
           
           <div className="cust-totals">
             <div className="col">
-              <p className="style1">{OrderAmount ? OrderAmount : 0}</p>
+              <p className="style1">$<NumericFormat value={OrderAmount ? OrderAmount : 0} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
               <p className="style2">Total Spent</p>
             </div>
             <div className="col">
@@ -601,7 +602,7 @@ const CustomerView = () => {
               <p className="style2">Orders</p>
             </div>
             <div className="col">
-              <p className="style1">{customerDetailData && customerDetailData.store_credit}</p>
+              <p className="style1">${customerDetailData && <NumericFormat value={customerDetailData.store_credit} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</p>
               <p className="style2">Store Credit</p>
               <button onClick={toggleCreditModel}>Adjust Credit</button>
             </div>

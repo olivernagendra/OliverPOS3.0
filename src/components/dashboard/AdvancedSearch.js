@@ -19,9 +19,11 @@ import { product } from "./product/productSlice";
 import { getInventory } from "./slices/inventorySlice";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import { useNavigate } from "react-router-dom";
 import { postMeta, getPostMeta } from "../common/commonAPIs/postMetaSlice";
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { getAll } = useIndexedDB("products");
 
     const [allProductList, setAllProductList] = useState([]);
@@ -422,6 +424,10 @@ const AdvancedSearch = (props) => {
         setFilteredProductList([]);
         setFilteredGroup([]);
     }
+    const viewCustomertransaction = (email) => {
+        sessionStorage.setItem("transactionredirect", email);
+        navigate('/transactions')
+    }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
@@ -479,12 +485,7 @@ const AdvancedSearch = (props) => {
                     {searchHistory && searchHistory.map(s => {
                         return (<a key={s} href="#" onClick={() => setSerachString(s)}>{s}</a>)
                     })}
-                    {/* <a href="#">Sam Moss</a>
-                        <a href="#">Graphic T-Shirts</a>
-                        <a href="#">Hoodies</a>
-                        <a href="#">Freddy Mercury</a>
-                        <a href="#">Espresso Coffee</a>
-                        <a href="#">Shoes</a> */}
+
                 </div>
             </div>
             <div className="right-col">
@@ -514,43 +515,18 @@ const AdvancedSearch = (props) => {
                                     Create New Customer
                                 </button>
                             </div>
-                            {/* <div className="search-result customer">
-                        <div className="col">
-                            <p className="style1">Customer</p>
-                            <p className="style2">Freddy Mercury</p>
-                            <p className="style3">queen_of_rock@gmail.com</p>
-                            <p className="style3">1 (709) 123-4567</p>
-                        </div>
-                        <div className="row">
-                            <button className="search-view">
-                                <img src={ViewIcon} alt="" />
-                                View
-                            </button>
-                            <button className="search-transactions">
-                                <img src={Transactions_Icon_White} alt="" />
-                                Transactions
-                            </button>
-                            <button className="search-add-to-sale">
-                                <img src={Add_Icon_White} alt="" />
-                                Add to Sale
-                            </button>
-                        </div>
-                    </div> */}
+
 
                             {
                                 filteredProductList && filteredProductList.map((item, index) => {
                                     return <div className="search-result product" key={item.WPID}>
                                         <div className="col">
-                                            {/* <p className="style1">Product</p>
-                            <p className="style2">Funky Fresh White Sneakers long name to get cut off</p>
-                            <p className="style3">Funky Shoe Co.</p>
-                            <p className="style3">$34.55</p>
-                            <p className="style3">SKU# 1386425547424579201546</p> */}
+
                                             <p className="style1">Product</p>
                                             <p className="style2">{item.Title}</p>
                                             {/* <p className="style3">Funky Shoe Co.</p> */}
                                             <p className="style3">${item.Price}</p>
-                                            <p className="style3">SKU#{item.Sku}</p>
+                                            <p className="style3">SKU# {item.Sku}</p>
                                         </div>
                                         <div className="row">
                                             <button className="search-view" onClick={() => viewProduct(item)}>
@@ -579,7 +555,7 @@ const AdvancedSearch = (props) => {
                                                 <img src={ViewIcon} alt="" />
                                                 View
                                             </button>
-                                            <button className="search-transactions">
+                                            <button className="search-transactions" onClick={() => viewCustomertransaction(item.Email)} >
                                                 <img src={Transactions_Icon_White} alt="" />
                                                 Transactions
                                             </button>

@@ -29,7 +29,7 @@ const PinPad = React.memo(props => {
     var hasPin = localStorage.getItem('hasPin')
     var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-    var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
+    // var isDrawerOpen = localStorage.getItem("IsCashDrawerOpen");
     var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
     var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
 
@@ -91,19 +91,19 @@ const PinPad = React.memo(props => {
                 // window.location = '/';
 
             }
-            if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
+            if (props.doAction) {
+                props.doAction()
+            } else if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
                 navigate('/openregister')
             } else {
-                if (props.doAction) {
-                    props.doAction()
-                } else {
-                    if (props.toggleSwitchUser && props.switchUser == true) {
-                        props.toggleSwitchUser();
-                    }
-                    else {
-                        navigate('/productloader')
-                    }
+
+                if (props.toggleSwitchUser && props.switchUser == true) {
+                    props.toggleSwitchUser();
                 }
+                else {
+                    navigate('/productloader')
+                }
+
             }
         }
 
@@ -128,7 +128,7 @@ const PinPad = React.memo(props => {
                             {nm === 'c' ? (location.pathname === "/home" ? <img src={imgBackSpace} /> : <img src={Backspace_White} />) :
 
                                 location.pathname === "/openregister" ? <React.Fragment><p>{nm}</p>
-                                    <div class="text-row">{(nm!=" "&& nm!="1"&& nm!="c")? pinAlphabetList[parseInt(nm) -1]:""}</div></React.Fragment> : nm
+                                    <div className="text-row">{(nm != " " && nm != "1" && nm != "c") ? pinAlphabetList[parseInt(nm) - 1] : ""}</div></React.Fragment> : nm
                             }
                         </button>
                     )
@@ -286,9 +286,9 @@ const PinPad = React.memo(props => {
     }
     return <React.Fragment>
         {/* {(status === STATUSES.ERROR && <div>{error}</div>)} */}
-        <p class={location.pathname === "/openregister"?"step3":"style3"}>{LocalizedLanguage.enteryouruserid}</p>
-        <div class={status === STATUSES.ERROR ? "error-message" : "error-message hide"}>Invalid user ID. Please try again.</div>
-        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue" }} onChange={handle} onKeyDown={handleBack} autoComplete="off" />
+        <p className={location.pathname === "/openregister" ? "step3" : "style2"}>{LocalizedLanguage.enteryouruserid}</p>
+        {status === STATUSES.ERROR && <div className={status === STATUSES.ERROR ? "error-message" : "error-message hide"}>Invalid user ID. Please try again.</div>}
+        <input id="whichkey" ref={inputElement} maxLength="4" type="text" style={{ backgroundColor: 'transparent', color: 'transparent', border: "blue", height: '0px' }} onChange={handle} onKeyDown={handleBack} autoComplete="off" />
         <div className="pinpad">
 
             {hasPin !== "true" && <ShowCreatePin />}

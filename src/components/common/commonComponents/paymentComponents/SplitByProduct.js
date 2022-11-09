@@ -88,7 +88,7 @@ const SplitByProduct = (props) => {
                 }
             }
             else {
-                paybyproduct.push({ product_id: item.product_id, quantity: item.quantity_to_pay });
+                paybyproduct.push({ product_id: item.product_id, quantity:item.hasOwnProperty("quantity_to_pay") ?item.quantity_to_pay:0 });
             }
             localStorage.setItem("paybyproduct_unpaid", JSON.stringify(paybyproduct));
             //localStorage.setItem("paybyproduct", JSON.stringify(paybyproduct));
@@ -168,22 +168,22 @@ const SplitByProduct = (props) => {
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow split-by-product current" : "subwindow split-by-product"}>
-                <div class="subwindow-header">
+                <div className="subwindow-header">
                     <p>Split by Product</p>
-                    <button class="close-subwindow" onClick={() => props.toggleSplitByProduct()}>
+                    <button className="close-subwindow" onClick={() => props.toggleSplitByProduct()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div class="subwindow-body">
-                    <div class="body">
+                <div className="subwindow-body">
+                    <div className="body">
                         {listItem && listItem.length > 0 && listItem.map(item => {
-                            return <div class="product-row" key={uuidv4()}>
-                                <div class="main-row">
-                                    <div class="text-group">
+                            return <div className="product-row" key={uuidv4()}>
+                                <div className="main-row">
+                                    <div className="text-group">
                                         <p>{item.Title}</p>
                                         <p>${item.hasOwnProperty("quantity_to_pay") ? parseFloat((item.Price / item.quantity) * item.quantity_to_pay).toFixed(2) : 0.00}</p>
                                     </div>
-                                    <div class="increment-input">
+                                    <div className="increment-input">
                                         <button onClick={() => updateQuantity(item.product_id, 'dec')}>
                                             <img src={Checkout_Minus} alt="" />
                                         </button>
@@ -195,13 +195,13 @@ const SplitByProduct = (props) => {
                                     </div>
                                 </div></div>
                         })}
-                        {/* <div class="product-row">
-                            <div class="main-row">
-                                <div class="text-group">
+                        {/* <div className="product-row">
+                            <div className="main-row">
+                                <div className="text-group">
                                     <p>Wool Hat</p>
                                     <p>$12.99</p>
                                 </div>
-                                <div class="increment-input">
+                                <div className="increment-input">
                                     <button>
                                         <img src={Checkout_Minus} alt="" />
                                     </button>
@@ -212,13 +212,13 @@ const SplitByProduct = (props) => {
                                 </div>
                             </div>
                         </div>
-                        <div class="product-row">
-                            <div class="main-row">
-                                <div class="text-group">
+                        <div className="product-row">
+                            <div className="main-row">
+                                <div className="text-group">
                                     <p>Oliver Hoodie</p>
                                     <p>$42.99</p>
                                 </div>
-                                <div class="increment-input">
+                                <div className="increment-input">
                                     <button>
                                         <img src={Checkout_Minus} alt="" />
                                     </button>
@@ -228,17 +228,17 @@ const SplitByProduct = (props) => {
                                     </button>
                                 </div>
                             </div>
-                            <div class="secondary-row">
+                            <div className="secondary-row">
                                 <p>Red, Size 45, Leather Edition, with extra long shoe laces</p>
                             </div>
                         </div>
-                        <div class="product-row">
-                            <div class="main-row">
-                                <div class="text-group">
+                        <div className="product-row">
+                            <div className="main-row">
+                                <div className="text-group">
                                     <p>Blue Sneaker</p>
                                     <p>$39.50</p>
                                 </div>
-                                <div class="increment-input">
+                                <div className="increment-input">
                                     <button>
                                         <img src={Checkout_Minus} alt="" />
                                     </button>
@@ -250,7 +250,7 @@ const SplitByProduct = (props) => {
                             </div>
                         </div> */}
                     </div>
-                    <div class="footer">
+                    <div className="footer">
                         <button onClick={() => saveCount()}>Save Count</button>
                     </div>
                 </div>

@@ -97,12 +97,12 @@ function Cashmanagement() {
 
   const [cashdrawer] = useSelector((state) => [state.cashmanagement])
   useEffect(() => {
-      if (cashdrawer && cashdrawer.data&&cashdrawer.data.content&&cashdrawer.data.content.Records.length > 0) {
-       // setCashmanagementList(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records)
-          var temState = [..._cashmangementlist, ...cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records]
-          setCashmanagementList(temState);
-          setlistrecordscount(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.TotalRecords)
-      }
+    if (cashdrawer && cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records.length > 0) {
+      // setCashmanagementList(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records)
+      var temState = [..._cashmangementlist, ...cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.Records]
+      setCashmanagementList(temState);
+      setlistrecordscount(cashdrawer.data && cashdrawer.data.content && cashdrawer.data.content.TotalRecords)
+    }
   }, [cashdrawer]);
 
 
@@ -113,7 +113,7 @@ function Cashmanagement() {
     if (data && data.content && data.content !== undefined) {
       var _RecordArray = _cashmangementlist
       var array = [];
-     
+
       if (_RecordArray.length > 0) {
         array = _RecordArray.slice().sort((a, b) => b.LogDate - a.LogDate)
         array = [...new Set([...array, ...data.content.Records])];
@@ -138,7 +138,7 @@ function Cashmanagement() {
 
 
   //======Cash ReCords API Data Store 
-  var allCashRecords =_cashmangementlist
+  var allCashRecords = _cashmangementlist
   var current_date = moment().format(Config.key.DATE_FORMAT);
   var _newActivities = allCashRecords;
   /// Find Dates and And filter list with dates----------------------
@@ -183,9 +183,10 @@ function Cashmanagement() {
   const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
   const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
   useEffect(() => {
-    if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
+    if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail
+      && cashDrawerAllDetails.getdetail.content) {
       setcashDrawerDetailData(cashDrawerAllDetails.getdetail && getdetail.content);
-     setActivateSelect(cashDrawerAllDetails.getdetail && getdetail.content.CashManagementId)
+      setActivateSelect(cashDrawerAllDetails.getdetail && getdetail.content.CashManagementId)
 
     }
   }, [cashDrawerAllDetails]);
@@ -203,14 +204,14 @@ function Cashmanagement() {
 
   const onScroll = (e) => {
     const bottom = Number((e.target.scrollHeight - e.target.scrollTop).toFixed(0)) - e.target.clientHeight < 50;
-    if(_cashmangementlist.length == listrecordscount){
+    if (_cashmangementlist.length == listrecordscount) {
 
-    }else if (bottom) {
+    } else if (bottom) {
       setDefauldNumber(defauldnumber + 1)
-       if (defauldnumber != 1) {
-         loadMore(defauldnumber)
-       }
-    } 
+      if (defauldnumber != 1) {
+        loadMore(defauldnumber)
+      }
+    }
   };
 
   // console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)
