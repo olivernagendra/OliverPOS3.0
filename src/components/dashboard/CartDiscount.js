@@ -179,7 +179,7 @@ const CartDiscount = (props) => {
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div className={props.isShow === true ? "subwindow discount-fee custom-fee current" : "subwindow discount-fee custom-fee"}>
+            <div className={props.isShow === true ? props.isSelectDiscountBtn==false? "subwindow custom-fee current":"subwindow cart-discount current" : "subwindow cart-discount custom-fee"}>
                 <div className="subwindow-header">
                     <p>Custom Fees/Discounts</p>
                     <button className="close-subwindow" onClick={() => closePopup()}>
@@ -192,19 +192,19 @@ const CartDiscount = (props) => {
                     <div className="toggle-container">
                         <label >
                             <input type="radio" id="customFeeRadio" name="customFeeDiscount" defaultChecked={props.isSelectDiscountBtn == false ? true : false} />
-                            <div className="custom-radio" onClick={() => props.toggleSelectDiscountBtn()}>
+                            <div className="custom-radio" onClick={() => props.isSelectDiscountBtn == true ?props.toggleSelectDiscountBtn():null}>
                                 <p>Custom Fee</p>
                             </div>
                         </label>
                         <label >
                             <input type="radio" id="discountRadio" name="customFeeDiscount" defaultChecked={props.isSelectDiscountBtn == true ? true : false} />
-                            <div className="custom-radio" onClick={() => props.toggleSelectDiscountBtn()}>
+                            <div className="custom-radio" onClick={() => props.isSelectDiscountBtn == false ? props.toggleSelectDiscountBtn():null}>
                                 <p>Discount</p>
                             </div>
                         </label>
                     </div>
                     {props.isSelectDiscountBtn == false ?
-                        <div className="custom-fee">
+                        <div id="customFeeDiv">
                             <label htmlFor="customFeeLabel">{LocalizedLanguage.customFeelabel}</label>
                             <input type="text" id="customFeeLabel" placeholder="Name your custom fee" value={add_title} onChange={(e) => AddTitle(e.target.value)} />
                             <input type="number" id="customFeeAmount" placeholder="0.00" value={feeAmount} onChange={(e) => FeeAmount(e.target.value)} />
@@ -214,7 +214,7 @@ const CartDiscount = (props) => {
                                 <button onClick={() => AddFee(false)}>Without Tax</button>
                             </div>
                         </div> :
-                        <div className="cart-discount">
+                        <div id="cartDiscountDiv">
                             <div className="main">
                                 <label htmlFor="discountAmount">Discount feeAmount:</label>
                                 <input style={{ direction: "LTL" }} type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onKeyDown={(e) => discount_Amount(e)} disabled={isDiscountBtnEnable == true ? false : true} />
@@ -231,7 +231,7 @@ const CartDiscount = (props) => {
                                         <p>{d.Name} ({d.Amount} {d.Type === "Percentage" ? "%" : "$"})</p>
                                     </button>
                                 })}
-                                <button onClick={() => clearDiscount()}>
+                                <button onClick={() => clearDiscount()} id= {localStorage.getItem("CART")?"clear":"clearCartDiscountDiv"}>
                                     <p>{LocalizedLanguage.discountClr}</p>
                                 </button>
                             </div>

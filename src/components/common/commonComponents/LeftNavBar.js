@@ -163,7 +163,7 @@ function LeftNavBar(props) {
             if (b["used_count"] > a["used_count"]) { return 1; }
             return 0;
         })
-        console.log("sortDesc", mostUsedApp)
+        //  console.log("sortDesc", mostUsedApp)
         //}
     }
     var appsList = []
@@ -197,14 +197,14 @@ function LeftNavBar(props) {
                     <p>Register</p>
                     <div className="f-key">F1</div>
                 </button>
-                <button id="customersButton" className={location.pathname === "/customers" ? "page-link selected" : "page-link"} disabled={location.pathname === "/customers" ? true : false} onClick={() => navigateTo('/customers')}>
+                <button id="customersButton" className={location.pathname === "/customers" ? "page-link selected" : location.pathname === "/checkout" ? "page-link disabled" : "page-link"} disabled={(location.pathname === "/customers" || location.pathname === "/checkout") ? true : false} onClick={() => navigateTo('/customers')}>
                     <div className="img-container">
                         <img src={Customers_Icon} alt="" />
                     </div>
                     <p>Customers</p>
                     <div className="f-key">F2</div>
                 </button>
-                <button id="transactionsButton" className={location.pathname === "/transactions" ? "page-link selected" : "page-link"} disabled={location.pathname === "/transactions" ? true : false} onClick={() => navigateTo('/transactions')}>
+                <button id="transactionsButton" className={location.pathname === "/transactions" ? "page-link selected" : location.pathname === "/checkout" ? "page-link disabled" : "page-link"} disabled={(location.pathname === "/transactions" || location.pathname === "/checkout") ? true : false} onClick={() => navigateTo('/transactions')}>
                     <div className="img-container">
                         <img src={Transactions_Icon} alt="" />
                     </div>
@@ -212,7 +212,7 @@ function LeftNavBar(props) {
                     <div className="f-key">F3</div>
                 </button>
                 {client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true ?
-                    <button id="cashManagementButton" className={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? "page-link selected" : "page-link"} disabled={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? true : false}
+                    <button id="cashManagementButton" className={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? "page-link selected" : location.pathname === "/checkout" ? "page-link disabled" : "page-link"} disabled={((location.pathname === "/cashdrawer" && isAllowCashDrawer == true) || location.pathname === "/checkout") ? true : false}
                         onClick={() => isAllowCashDrawer == true ? navigateTo('/cashdrawer') : ""}>
                         <div className="img-container">
                             <img src={CashManagement_Icon} alt="" />

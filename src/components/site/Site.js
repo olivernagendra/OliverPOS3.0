@@ -6,7 +6,9 @@ import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-
 //import Oliver_Icon_White from '../../assets/images/svg/Oliver-Icon-White.svg'
 import AngledBracket_Right_Grey from '../../assets/images/svg/AngledBracket-Right-Grey.svg'
 import WWW_Icon from '../../assets/images/svg/WWW-Icon.svg'
-import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg'
+import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg';
+import Rounded_Square_Plus_Icon_NewGrey from '../../assets/images/svg/Rounded-Square-Plus-Icon-NewGrey.svg';
+
 import { encode_UDid } from "../common/localSettings";
 import { userLogin } from '../login/loginSlice';
 
@@ -109,7 +111,7 @@ const Site = () => {
                 <div className="fake-button background-blue">Select</div>
             </button> */}
                 <button id="addNew">
-                    <img src={CircledPlus_Icon_Blue} alt="" />
+                    <img src={Rounded_Square_Plus_Icon_NewGrey} alt="" />
                     Add Site
                 </button>
             </div>

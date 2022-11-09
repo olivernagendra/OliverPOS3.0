@@ -34,6 +34,9 @@ export const CheckAppDisplayInView = (viewManagement, view = null) => {
             break;
         case '/product':
             setPage('Product View');
+        case '/salecomplete':
+            setPage('Checkout Complete');
+
             break;
         default:
             break;

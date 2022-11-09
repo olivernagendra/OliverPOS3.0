@@ -19,8 +19,11 @@ import { product } from "./product/productSlice";
 import { getInventory } from "./slices/inventorySlice";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
+import { useNavigate } from "react-router-dom";
+import { postMeta, getPostMeta } from "../common/commonAPIs/postMetaSlice";
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { getAll } = useIndexedDB("products");
 
     const [allProductList, setAllProductList] = useState([]);
@@ -37,6 +40,7 @@ const AdvancedSearch = (props) => {
     const [isShowDDNSearch, setisShowDDNSearch] = useState(false)
     const [searchHistory, setSearchHistory] = useState([])
     const [allowGroup, setAllowGroup] = useState(false)
+    const [user, setUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "");
     const [respGroup] = useSelector((state) => [state.group])
 
     const limitArrayByNum = (arr, num) => {
@@ -81,13 +85,31 @@ const AdvancedSearch = (props) => {
         });
 
     }
+    const resGetPostMeta = useSelector((state) => state.getPostMeta)
+    if (resGetPostMeta && resGetPostMeta.is_success == true) {
+        if (resGetPostMeta.data && resGetPostMeta.data.content && resGetPostMeta.data.content.Slug == user.user_id + "_searchHistory") {
+            localStorage.setItem(user.user_id + "_searchHistory", resGetPostMeta.data.content.Value)
+            setTimeout(() => {
+                Search_History('');
+            }, 100);
+            //console.log("----resGetPostMeta.data.content--"+JSON.stringify(resGetPostMeta.data.content))
+        }
+    }
+
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
             getProductFromIDB()
             GetCustomerFromIDB()
-            Search_History('');
-            var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
+
+            //var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
+            //user.user_id
+            if (user != "") {
+                var parma = user.user_id + "_searchHistory";
+                dispatch(getPostMeta(parma));
+            }
+
+
             if (user.group_sales && user.group_sales !== null && user.group_sales !== "" && user.group_sales !== "undefined" && user.group_sales === true) {
                 setAllowGroup(true);
             }
@@ -144,11 +166,12 @@ const AdvancedSearch = (props) => {
 
 
     const Search_History = (e) => {
+        //var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : "";
         var sArray = [];
         if (e != "" && e.target.value.trim() != "") {
             let _sValue = e.target.value.trim();
-            if (localStorage.getItem("searchHistory")) {
-                sArray = JSON.parse(localStorage.getItem("searchHistory"));
+            if (localStorage.getItem(user.user_id + "_searchHistory")) {
+                sArray = JSON.parse(localStorage.getItem(user.user_id + "_searchHistory"));
                 let result = sArray.some(item => _sValue === item);
                 if (result == false) {
                     if (sArray && sArray.length >= 10) {
@@ -165,12 +188,23 @@ const AdvancedSearch = (props) => {
             }
 
             setSearchHistory(sArray);
-            localStorage.setItem("searchHistory", JSON.stringify(sArray));
+            if (user && user.user_id) {
+                localStorage.setItem(user.user_id + "_searchHistory", JSON.stringify(sArray));
+                var parma = { "Slug": user.user_id + "_searchHistory", "Value": JSON.stringify(sArray), "Id": 0, "IsDeleted": 0 };
+                dispatch(postMeta(parma));
+            }
+
         }
         else {
-            if (localStorage.getItem("searchHistory")) {
-                sArray = JSON.parse(localStorage.getItem("searchHistory"));
-                setSearchHistory(sArray);
+            // if (localStorage.getItem("searchHistory")) {
+            //     sArray = JSON.parse(localStorage.getItem("searchHistory"));
+            //     setSearchHistory(sArray);
+            // }
+            if (localStorage.getItem(user.user_id + "_searchHistory")) {
+                if (user && user.user_id) {
+                    sArray = JSON.parse(localStorage.getItem(user.user_id + "_searchHistory"));
+                    setSearchHistory(sArray);
+                }
             }
         }
         //setSearchHistory();
@@ -390,6 +424,10 @@ const AdvancedSearch = (props) => {
         setFilteredProductList([]);
         setFilteredGroup([]);
     }
+    const viewCustomertransaction = (email) => {
+        sessionStorage.setItem("transactionredirect", email);
+        navigate('/transactions')
+    }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
@@ -397,7 +435,7 @@ const AdvancedSearch = (props) => {
                 <img src={X_Icon_DarkBlue} alt="" />
             </button>
             <div className="input-wrapper" id="advSearchInputWrapper">
-                <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autocomplete="off" />
+                <input type="text" id="advancedSearchBar" value={serachString} placeholder="Start typing to search..." onChange={e => handleSearch(e)} onBlur={e => Search_History(e)} autoComplete="off" />
                 <img src={Search_Icon_Blue} alt="" id="advSearchInputIcon" />
                 <button id="advSearchInputCancel" onClick={() => clearSearch()}>
                     <img src={AdvancedSearchCancelIcon} alt="" />
@@ -447,12 +485,7 @@ const AdvancedSearch = (props) => {
                     {searchHistory && searchHistory.map(s => {
                         return (<a key={s} href="#" onClick={() => setSerachString(s)}>{s}</a>)
                     })}
-                    {/* <a href="#">Sam Moss</a>
-                        <a href="#">Graphic T-Shirts</a>
-                        <a href="#">Hoodies</a>
-                        <a href="#">Freddy Mercury</a>
-                        <a href="#">Espresso Coffee</a>
-                        <a href="#">Shoes</a> */}
+
                 </div>
             </div>
             <div className="right-col">
@@ -482,43 +515,18 @@ const AdvancedSearch = (props) => {
                                     Create New Customer
                                 </button>
                             </div>
-                            {/* <div className="search-result customer">
-                        <div className="col">
-                            <p className="style1">Customer</p>
-                            <p className="style2">Freddy Mercury</p>
-                            <p className="style3">queen_of_rock@gmail.com</p>
-                            <p className="style3">1 (709) 123-4567</p>
-                        </div>
-                        <div className="row">
-                            <button className="search-view">
-                                <img src={ViewIcon} alt="" />
-                                View
-                            </button>
-                            <button className="search-transactions">
-                                <img src={Transactions_Icon_White} alt="" />
-                                Transactions
-                            </button>
-                            <button className="search-add-to-sale">
-                                <img src={Add_Icon_White} alt="" />
-                                Add to Sale
-                            </button>
-                        </div>
-                    </div> */}
+
 
                             {
                                 filteredProductList && filteredProductList.map((item, index) => {
                                     return <div className="search-result product" key={item.WPID}>
                                         <div className="col">
-                                            {/* <p className="style1">Product</p>
-                            <p className="style2">Funky Fresh White Sneakers long name to get cut off</p>
-                            <p className="style3">Funky Shoe Co.</p>
-                            <p className="style3">$34.55</p>
-                            <p className="style3">SKU# 1386425547424579201546</p> */}
+
                                             <p className="style1">Product</p>
                                             <p className="style2">{item.Title}</p>
                                             {/* <p className="style3">Funky Shoe Co.</p> */}
                                             <p className="style3">${item.Price}</p>
-                                            <p className="style3">SKU#{item.Sku}</p>
+                                            <p className="style3">SKU# {item.Sku}</p>
                                         </div>
                                         <div className="row">
                                             <button className="search-view" onClick={() => viewProduct(item)}>
@@ -547,7 +555,7 @@ const AdvancedSearch = (props) => {
                                                 <img src={ViewIcon} alt="" />
                                                 View
                                             </button>
-                                            <button className="search-transactions">
+                                            <button className="search-transactions" onClick={() => viewCustomertransaction(item.Email)} >
                                                 <img src={Transactions_Icon_White} alt="" />
                                                 Transactions
                                             </button>

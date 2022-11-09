@@ -28,6 +28,9 @@ import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import { cashRecords } from "../cashmanagement/CashmanagementSlice";
+import { activityRecords } from "../activity/ActivitySlice";
+import { NumericFormat } from 'react-number-format';
 const CustomerView = () => {
 
   var orderCount = ''
@@ -131,6 +134,8 @@ const CustomerView = () => {
   useEffect(() => {
     if (useCancelledTwo == false) {
       getCustomerFromIDB()
+      dispatch(cashRecords(null));
+      dispatch(activityRecords(null));
     }
     return () => {
       useCancelledTwo = true;
@@ -421,17 +426,18 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-            <div className="row">
-              <img src={SearchBaseBlue} alt="" />
-              <p>Search for Customers</p>
-            </div>
-            <label htmlFor="fName">First Name</label>
+          <div className="row">
+						<img src={SearchBaseBlue} alt=""/>
+						<p>Search</p>
+						<button id="customersClearSearch">Clear Search</button>
+					</div>
+            <label for="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" onChange={e => setFirstName(e.target.value)} />
-            <label htmlFor="lName">Last Name</label>
+            <label for="lName">Last Name</label>
             <input type="text" id="LastName" placeholder="Enter Last Name" onChange={e => setLastName(e.target.value)} />
-            <label htmlFor="email">Email</label>
+            <label for="email">Email</label>
             <input type="email" id="Email" placeholder="Enter Email" onChange={e => setEmail(e.target.value)} />
-            <label htmlFor="tel">Phone Number</label>
+            <label for="tel">Phone Number</label>
             <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
             <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>
@@ -441,7 +447,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <input type="text" id="filterType" />
-              <img class="dropdown-arrow" src={DownArrowBlue} alt="" />
+              <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>
@@ -521,14 +527,14 @@ const CustomerView = () => {
                 <p className="style2">{customerDetailData && customerDetailData.Email}</p>
               </div>
               <div className="text-group">
-                <p className="style2">Phone #:{customerDetailData && customerDetailData.Contact}</p>
-                {/*  <p className="style2">{customerDetailData && customerDetailData.Contact}</p> */}
+                <p className="style2">Phone #:</p>
+                <p className="style2">{customerDetailData && customerDetailData.Contact}</p>
               </div>
             </div>
           </div>
           <div className="cust-totals">
             <div className="col">
-              <p className="style1">{OrderAmount ? OrderAmount : 0}</p>
+              <p className="style1">$<NumericFormat value={OrderAmount ? OrderAmount : 0} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
               <p className="style2">Total Spent</p>
             </div>
             <div className="col">
@@ -536,7 +542,7 @@ const CustomerView = () => {
               <p className="style2">Orders</p>
             </div>
             <div className="col">
-              <p className="style1">{customerDetailData && customerDetailData.store_credit}</p>
+              <p className="style1">${customerDetailData && <NumericFormat value={customerDetailData.store_credit} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</p>
               <p className="style2">Store Credit</p>
               <button onClick={toggleCreditModel}>Adjust Credit</button>
             </div>

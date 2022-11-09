@@ -14,6 +14,7 @@ import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useIndexedDB } from 'react-indexed-db';
+import { GetOpenRegister, closeRegister } from '../cashmanagement/CashmanagementSlice'
 // import $ from 'jquery'
 function Login() {
     var auth2 = ''
@@ -39,6 +40,8 @@ function Login() {
         console.log('All Clear modifiers!');
     });
     //-------------------------------------------
+
+
 
     //It will clear all local storage items
     const clearLocalStorages = () => {
@@ -95,6 +98,8 @@ function Login() {
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
     if (status == STATUSES.IDLE && is_success) {
+
+        dispatch(GetOpenRegister(0));
         navigate('/site')
     }
 
@@ -127,13 +132,13 @@ function Login() {
         } else {
             if (!userEmail && !password) {
                 setLoginError('Email and Password is required');
-               // $('#username').focus();
+                // $('#username').focus();
             } else if (!userEmail) {
                 setLoginError('Email is required');
                 // $('#username').focus();
             } else {
                 setLoginError('Password is required');
-               // $('#password').focus();
+                // $('#password').focus();
             }
         }
         e.preventDefault();
@@ -162,8 +167,11 @@ function Login() {
             localStorage.setItem('userId', loginRes.UserId)
             localStorage.setItem("clientDetail", JSON.stringify(userSubscription));
             localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
+
+            dispatch(userLogin(null));
+            navigate('/site')
         }
-        navigate('/site')
+
     }
 
 
@@ -264,6 +272,9 @@ function Login() {
 
         googleSDK();
         appleLogin();
+        localStorage.removeItem("user");
+        localStorage.removeItem("IsCashDrawerOpen");
+
     })
 
     //Apple login methods Start

@@ -5,6 +5,7 @@ import moment from 'moment';
 import STATUSES from "../../constants/apiStatus";
 import IconDarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg'
 import Cashmanagement from "./Cashmanagement";
+import { NumericFormat } from "react-number-format";
 function AddRemoveCashPopup(props) {
     const dispatch = useDispatch();
     const [Amount, setAmount] = useState(0.00)
@@ -88,9 +89,9 @@ function AddRemoveCashPopup(props) {
     return (
 
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-        <div className={props.isShow === true ? "subwindow add-cash current" : "subwindow add-cash"}>
+            <div className={props.isShow === true ? "subwindow add-cash current" : "subwindow add-cash"}>
                 <div className="subwindow-header">
-                <p>{props.popupstatus.toLowerCase() == 'add' ? "Add" : "Remove"} Cash</p>
+                    <p>{props.popupstatus.toLowerCase() == 'add' ? "Add" : "Remove"} Cash</p>
                     <button className="close-subwindow" onClick={props.HundlePOpupClose}>
                         <img src={IconDarkBlue} alt="" />
                     </button>
@@ -99,7 +100,7 @@ function AddRemoveCashPopup(props) {
                     <div className="auto-margin-top" />
                     <div className="text-row">
                         <p className="style1">Current balance:</p>
-                        <p className="style2">{props.drawerBalance}</p>
+                        <p className="style2">$<NumericFormat value={props.drawerBalance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
                     </div>
                     <div className="input-row">
                         <label htmlFor="addCashAmount">{props.popupstatus == 'add' ? "Add" : "Remove"}  Cash:</label>
@@ -110,7 +111,7 @@ function AddRemoveCashPopup(props) {
                     <button onClick={() => handleSubmit()}>{props.popupstatus == 'add' ? "Add" : "Remove"} Cash</button>
                     <div className="auto-margin-bottom" />
                 </div>
-        </div>
+            </div>
         </div>
 
     )

@@ -29,6 +29,7 @@ import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import ActivityOrderDetail from "./ActivityOrderDetail";
 import ActivityOrderList from "./ActivityOrderList";
 import { ActivityFooter } from "./ActivityFooter";
+import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 
 const ActivityView = () => {
     const [defauldnumber, setDefauldNumber] = useState(2);
@@ -46,7 +47,6 @@ const ActivityView = () => {
     const [filterByStatus, setFilterByStatus] = useState('')
     const [isloader, setSmallLoader] = useState(true)
     const [getPdfdateTime, setGetPdfdateTime] = useState('')
-
     const [filterByUser, setfilterByUser] = useState('')
     const [selectuserfilter, setSelectuserFilter] = useState('')
     // Toggle State------------
@@ -61,6 +61,8 @@ const ActivityView = () => {
     const [isMobileNav, setisMobileNav] = useState(false);
     const [isSortWrapper, setSortWrapper] = useState(false)
     const [responsiveCusList, setResponsiveCusList] = useState(false)
+    const [activityListcount, setactivityListcount] = useState([])
+    const [activeDetailApi, setactiveDetailApi] = useState(true)
 
     // All TOGGLE 
     const toggleAppLauncher = () => {
@@ -104,17 +106,7 @@ const ActivityView = () => {
     const dispatch = useDispatch();
 
 
-    // useEffect(() => {
-    //     window.addEventListener("scroll",listenToScroll)
 
-    // }, [])
-
-    // const listenToScroll =()=>{ 
-    //     const winScroll = document.body.scrollTop || document.documentElement.scrollTop
-    //     console.log("winScroll",winScroll)
-    // }
-
-   
 
 
 
@@ -123,15 +115,14 @@ const ActivityView = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-            var transactionredirect = sessionStorage.getItem("transactionredirect")?sessionStorage.getItem("transactionredirect"):'';
+            var transactionredirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '';
             setEmailNamePhone(transactionredirect)
-            if(transactionredirect !== ''){
+            if (transactionredirect !== '') {
                 applyServerFilter()
-            }else{
+            } else {
                 reload(1)
-            } 
-          
-                   
+                dispatch(cashRecords(null));
+            }
         }
         return () => {
             useCancelled = true;
@@ -146,10 +137,13 @@ const ActivityView = () => {
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
+    //console.log("activityAllDetails", activityAllDetails)
+
     useEffect(() => {
-        if (activityAllDetails && activityAllDetails.data.length > 0) {
-            var temState = [...AllActivityList, ...activityAllDetails.data]
+        if (activityAllDetails && activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records.length > 0) {
+            var temState = [...AllActivityList, ...activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records]
             setAllActivityList(temState);
+            setactivityListcount(activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.TotalRecords)
         }
     }, [activityAllDetails]);
 
@@ -159,7 +153,7 @@ const ActivityView = () => {
     useEffect(() => {
         //  console.log("activityfilter", activityfilter)
         if (activityfilter && activityfilter.data.length > 0) {
-            setAllActivityList(activityfilter.data );
+            setAllActivityList(activityfilter.data);
             setSmallLoader(false)
         }
     }, [activityfilter]);
@@ -262,15 +256,15 @@ const ActivityView = () => {
     let useCancelled1 = false;
     useEffect(() => {
         var UID = get_UDid('UDID');
-        var transactionsRedirect = sessionStorage.getItem("transactionredirect")? sessionStorage.getItem("transredirection"):'';
+        var transactionsRedirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transredirection") : '';
         // if(transactionsRedirect &&transactionsRedirect.length > 0) {
         //     var customer_to_activity_id = sessionStorage.getItem("transredirection") ?sessionStorage.getItem("transredirection"):'';
         //   }
-            var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
-          
-         // console.log("transactionsRedirect",transactionsRedirect)
+        var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
+
+        // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
-        if (useCancelled1 == false) {
+        if (useCancelled1 == false && activeDetailApi !== false ) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
             }
@@ -443,7 +437,7 @@ const ActivityView = () => {
 
     // Filter Submit Btn
     const applyServerFilter = () => {
-        var transactionredirect = sessionStorage.getItem("transactionredirect")?sessionStorage.getItem("transactionredirect"):'';
+        var transactionredirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '';
         var UID = get_UDid('UDID');
         var pagesize = Config.key.ACTIVITY_PAGE_SIZE
         // var fromdate = document.getElementById("txtfromdate");
@@ -482,45 +476,41 @@ const ActivityView = () => {
             // "EndDay": e_dd,
             // "EndMonth": e_mm,
             // "EndYear": e_yy,
-            "searchVal": emailnamephone?emailnamephone:orderidsearch
+            "searchVal": emailnamephone ? emailnamephone : orderidsearch
             //"groupSlug": this.state.filterByGroupList,
-            
+
         };
-       // console.log("_filterParameter",_filterParameter)
+        // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
         sessionStorage.removeItem('transactionredirect');
-        
+
     }
 
 
-   
+
 
     const clearFilter = () => {
-        reload(1)
-        setfilterByUser("")
-        setFilterByStatus("")
-        setFilterByPlatform("")
-        setEmailNamePhone("")
-        setSelectuserFilter('')
-        setorderId('')
-       
+        if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" || selectuserfilter !== "" || orderidsearch !== '') {
+            setupdateActivityId('')
+            reload(1)
+            setfilterByUser("")
+            setFilterByStatus("")
+            setFilterByPlatform("")
+            setEmailNamePhone("")
+            setSelectuserFilter('')
+            setorderId('')
+            localStorage.removeItem("CUSTOMER_TO_ACTVITY")
+            localStorage.removeItem('CUSTOMER_TO_OrderId')
+        }
     }
 
-    // console.log("filterByPlatform",filterByPlatform)
-    // console.log("filterByStatus",filterByStatus)
-    // console.log("filterByUser",filterByUser)
 
 
-
-    const handleUserChange = (selectedOption) => {
-        setSelectedOption(selectedOption)
-    }
-
-    const hundleChange=(event)=>{
+    const hundleChange = (event) => {
         setEmailNamePhone(event.target.value)
     }
-    const  hundleChangeID=(event)=>{
-    setorderId(event.target.value)
+    const hundleChangeID = (event) => {
+        setorderId(event.target.value)
     }
 
     const _Useroptions = [];
@@ -536,17 +526,16 @@ const ActivityView = () => {
     var _platform = [{ key: "both", value: "Both" }, { key: "oliver-pos", value: "Oliver POS" }, { key: "web-shop", value: "Webshop" }];
     var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
 
-  
 
     const updateSomething = () => {
+        setactiveDetailApi(false)
         setDefauldNumber(defauldnumber + 1)
-       // console.log("defauldnumber",defauldnumber)
-        if (defauldnumber != 1) {
+        if (AllActivityList.length == activityListcount) {
+
+        } else if (defauldnumber != 1) {
             reload(defauldnumber)
         }
-      }
-
-    //   console.log("AllActivityList",AllActivityList.length)
+    }
 
     return <>
         <div className="transactions-wrapper">
@@ -584,7 +573,7 @@ const ActivityView = () => {
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label for="custInfo">Customer Info</label>
-                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange}  value={emailnamephone} />
+                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange} value={emailnamephone} />
                     <label for="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
                         <img src={down_angled_bracket} alt="" />
@@ -704,7 +693,7 @@ const ActivityView = () => {
 
                     </div>
                 </div>
-                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader}  updateSomething={updateSomething} />
+                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} updateSomething={updateSomething} />
             </div>
             <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">

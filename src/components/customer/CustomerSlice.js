@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { saveAPI, updateAPI, getDetailAPI, getPageAPI, getAllEventsAPi, updateCustomerNoteAPI, updateCreditScoreAPI, saveCustomerToTempOrderAPI } from './CustomerAPI'
+import { saveAPI, updateAPI, getDetailAPI, getPageAPI, getAllEventsAPi, updateCustomerNoteAPI, updateCreditScoreAPI, saveCustomerToTempOrderAPI ,getCountryListAPI,getStateListAPI } from './CustomerAPI'
 import STATUSES from '../../constants/apiStatus';
 import { useIndexedDB } from 'react-indexed-db';
+
 
 const initialState = {
   "status": STATUSES.IDLE,
@@ -132,6 +133,96 @@ export const customerupdate = createAsyncThunk(
     }
   }
 );
+
+export const getCountryList = createAsyncThunk(
+  'getCountryList/getCountryListAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await getCountryListAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+
+export const getStateList = createAsyncThunk(
+  'getStateList/getStateListAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await getStateListAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+
+
+
+
+export const getCountrySlice = createSlice({
+  name: 'getCountryList',
+  initialState,
+  // The `reducers` field lets us define reducers and generate associated actions
+  reducers: {
+
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getCountryList.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(getCountryList.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_success = action.payload && action.payload.is_success == true ? true : false;
+      })
+      .addCase(getCountryList.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      })
+  },
+});
+export const { } = getCountrySlice.actions;
+
+
+export const getStateSlice = createSlice({
+  name: 'getStateList',
+  initialState,
+  // The `reducers` field lets us define reducers and generate associated actions
+  reducers: {
+
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getStateList.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(getStateList.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_success = action.payload && action.payload.is_success == true ? true : false;
+      })
+      .addCase(getStateList.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      })
+  },
+});
+export const { } = getStateSlice.actions;
 
 
 
@@ -417,5 +508,5 @@ export const saveCustomerToTempOrderSlice = createSlice({
 });
 export const { } = saveCustomerToTempOrderSlice.actions;
 
-export default { CustomerSaveSlice, CustomerUpdateSlice, CustomerGetDetailsSlice, CustomergetPageSlice, getAllEventsSlice, updateCustomerNoteSlice, updateCreditScoreSlice, saveCustomerToTempOrderSlice };
+export default { CustomerSaveSlice, CustomerUpdateSlice, CustomerGetDetailsSlice, CustomergetPageSlice, getAllEventsSlice, updateCustomerNoteSlice, updateCreditScoreSlice, saveCustomerToTempOrderSlice,getCountrySlice ,getStateSlice};
 

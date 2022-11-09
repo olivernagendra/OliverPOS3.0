@@ -6,7 +6,7 @@ import CartDiscount from "./CartDiscount";
 import CreateCustomer from "./CreateCustomer";
 import Notifications from "./Notifications";
 import OrderNote from "../common/commonComponents/OrderNote";
-
+import { getCountryList ,getStateList } from "../customer/CustomerSlice";
 import MsgPopup_ProductNotFound from "./MsgPopup_ProductNotFound";
 import MsgPopup_UpgradeToUnlock from "./MsgPopup_UpgradeToUnlock";
 
@@ -40,10 +40,12 @@ import { popupMessage } from "../common/commonAPIs/messageSlice";
 import { useNavigate } from "react-router-dom";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
-import { callProductXWindow } from "../../settings/CommonFunctionProductX";
+import { callProductXWindow,sendMessageToComposite, getCompositeAddedToCart, getCompositeSetProductxData } from "../../settings/CommonFunctionProductX";
 import { getInventory } from "./slices/inventorySlice";
 import { getDetails } from "../cashmanagement/CashmanagementSlice";
 import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
+// import ProductxWindow from "./product/ProductxWindow";
+import Customercreate from "../customer/Customercreate";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -55,6 +57,7 @@ const Home = () => {
     const [isShowAppLauncher, setisShowAppLauncher] = useState(false);
     const [isShowLinkLauncher, setisShowLinkLauncher] = useState(false);
     const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+    const [isShowProductxWindow, setisShowProductxWindow] = useState(false);
 
     const [isShowOrderNote, setisShowOrderNote] = useState(false);
     const [isShowCartDiscount, setisShowCartDiscount] = useState(false);
@@ -122,6 +125,8 @@ const Home = () => {
         dispatch(getPaymentTypeName());
         dispatch(getDetails(Cash_Management_ID));
         getFavourites();
+        dispatch(getCountryList())
+        dispatch(getStateList())
         var locationId = localStorage.getItem('Location');
         dispatch(getCloudPrinters(locationId));
         var user_ = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -144,6 +149,59 @@ const Home = () => {
     setTimeout(() => {
         initHomeFn();
     }, 1000);
+
+    const compositeSwitchCases = (jsonMsg) => {
+        console.log("compositeEvent", jsonMsg)
+        var compositeEvent = jsonMsg && jsonMsg !== '' && jsonMsg.oliverpos && jsonMsg.oliverpos.event ? jsonMsg.oliverpos.event : '';
+        if (compositeEvent && compositeEvent !== '') {
+            //console.log("compositeEvent", compositeEvent)
+            switch (compositeEvent) {
+                case "extensionReady":
+                    // this.setState({ incr: 1 })
+                    sendMessageToComposite(jsonMsg);
+                    break;
+                //oliverAddedToCart
+                case "oliverAddedToCart":
+                    getCompositeAddedToCart(jsonMsg)
+                    break;
+                //oliverSetProductxData
+                case "oliverSetProductxData":
+                    var data = getCompositeSetProductxData(jsonMsg)
+                    if (data && data.quantity /*&& this.state.incr == 1*/) // added to check data run only once
+                    {
+                        //this.setState({ incr: 2, productXQantity: data.quantity, strProductX: data.strProductX });
+                        if (data.discount_type !== '' && data.discount_amount && data.discount_amount !== '0' && data.discount_amount !== 0) {
+                            //this.setState({ isProductxDiscount: true })
+                            //addProductXDiscount()
+                        }
+                        else {
+                            // var _productX=jsonMsg && jsonMsg.data && jsonMsg.data.product && jsonMsg.data.product[0];
+                            //var _prdXItem='';
+                            // for (var k in _productX) {
+                            //     _prdXItem=_productX[k];
+                            // }
+                           
+                            //addProductXtoCart(data.quantity, null, JSON.stringify(data.strProductX));
+                           
+                            //this.addProductXtoCart(data.quantity);
+                        }
+                    }
+                    // if (typeof Android !== "undefined" && Android !== null && Android.getDatafromDevice("isWrapper") == true) {
+                    //     Android.removeAddOnPopup();
+                    //     console.log("close popup from shopview.js")
+                    // }
+
+                    break;
+                // extensionFinished
+                case "extensionFinished":
+                    //getCompositeExtensionFinished(jsonMsg)
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     // useLayoutEffect(() => {
     //     //Open Mobile Cart Button
     //     if (document.getElementById("openMobileCart")) {
@@ -173,8 +231,10 @@ const Home = () => {
     //     setisShowPopups(true)
     // }
     // useEffect(() => {
-    //     toggleiFrameWindow();
+    //     ToggleiFrameWindow();
     // }, [productxLink]);
+
+    var windowCloseEv=null;
     const openPopUp = async (item, index = null) => {
 
         let type = item.Type;
@@ -186,33 +246,42 @@ const Home = () => {
             !== "False" && item.ParamLink !== null) {
             console.log("product x with tag--" + item.ParamLink)
             setProductxItem(item);
-            //toggleiFrameWindow();
+            //ToggleiFrameWindow();
             //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
         }
         else
-            if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            if ((type !== "simple" && type !== "variable" && type !=="variation") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
                 //alert(LocalizedLanguage.productxOutOfStock);
                 var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
                 dispatch(popupMessage(data));
             }
             else
-                if ((type !== "simple" && type !== "variable") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
+                if ((type !== "simple" && type !== "variable" && type !=="variation") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
                     console.log("product x---" + item.ParamLink)
-
-                    //  var windowCloseEv = callProductXWindow(item);
-                    //     window.addEventListener('message', function (e) {
-                    //         var data = e && e.data;
-                    //         if (typeof data == 'string' && data !== "") {
-                    //             console.log(data);
-                    //             //compositeSwitchCases(JSON.parse(data))
-                    //         }
-                    //     })
-                    //+"?wopen='childwindow"
                     setProductxItem(item);
-                    toggleiFrameWindow();
+                    ToggleProductxWindow();
+                     windowCloseEv = callProductXWindow(item);
+                        window.addEventListener('message', function (e) {
+                            var data = e && e.data;
+                            if (typeof data == 'string' && data !== "") {
+                                console.log('-- -- -- --'+data);
+                                //compositeSwitchCases(JSON.parse(data))
+                            }
+                        })
+                    //+"?wopen='childwindow"
+                    // setProductxItem(item);
+                    
+                    // ToggleiFrameWindow();
                     //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
                 }
                 else {
+                    // var vp_id=0;
+                    // if(variationProduct)
+                    // {
+                    //      vp_id=variationProduct.WPID;
+                    // }
+                    // console.log("vp_id--"+vp_id)
+
                     updateVariationProduct(null);
                     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
                     var _product = getTaxAllProduct([_item])
@@ -236,7 +305,24 @@ const Home = () => {
                     }
                     setSelProduct(_product[0]);
                     setisShowPopups(true);
-                    dispatch(getInventory(item.WPID)); // To fetch latest inventory
+
+                    if(item.hasOwnProperty("SelVariationId")) //edit variation product
+                    {
+                        dispatch(getInventory(item.SelVariationId));
+                    }
+                    else if(item.hasOwnProperty("WPID"))
+                    {
+                        dispatch(getInventory(item.WPID)); // To fetch latest inventory
+                    }
+                    else if(item.hasOwnProperty("Product_Id"))
+                    {
+                        dispatch(getInventory(item.Product_Id));
+                    }
+                    else if(item.hasOwnProperty("product_id")) // get inventory for simple product
+                    {
+                        dispatch(getInventory(item.product_id));
+                    }
+                    
                 }
     }
     const closePopUp = () => {
@@ -293,8 +379,11 @@ const Home = () => {
         setisShowAppLauncher(false)
     }
 
-    const toggleiFrameWindow = () => {
+    const ToggleiFrameWindow = () => {
         setisShowiFrameWindow(!isShowiFrameWindow)
+    }
+    const ToggleProductxWindow = () => {
+        setisShowProductxWindow(!isShowProductxWindow)
     }
     const toggleOptionPage = () => {
         setisShowOptionPage(!isShowOptionPage)
@@ -361,7 +450,11 @@ const Home = () => {
                         Priority: rate.Priority ? rate.Priority : ''
                     })
                 })
-                localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxData))
+                localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxData));
+                if(!localStorage.getItem('DEFAULT_TAX_STATUS'))
+                {
+                    localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
+                }
                 // setTimeout(function () {
                 //     //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
                 //     if (typeof setHeightDesktop != "undefined") { setHeightDesktop() };
@@ -507,6 +600,21 @@ const Home = () => {
     }, [resProduct]);
 
 
+    const [resCountryList] = useSelector((state) => [state.CountryList])
+    useEffect(() => {
+        if (resCountryList && resCountryList.status == STATUSES.IDLE && resCountryList.is_success && resCountryList.data) {
+            localStorage.setItem('countrylist', JSON.stringify(resCountryList.data.content))
+        }
+    }, [resCountryList]);
+
+    const [resStateList] = useSelector((state) => [state.StateList])
+    useEffect(() => {
+        if (resStateList && resStateList.status == STATUSES.IDLE && resStateList.is_success && resStateList.data) {
+            localStorage.setItem('statelist', JSON.stringify(resStateList.data.content))
+        }
+    }, [resStateList]);
+
+
 
     return (
         <React.Fragment>
@@ -517,13 +625,14 @@ const Home = () => {
                 {/* top header */}
                 {/* prodct list/item list */}
                 {/* cart list */}
-                <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
+                <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow} ></LeftNavBar>
                 <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher}
                     toggleAdvancedSearch={toggleAdvancedSearch} toggleShowMobLeftNav={toggleShowMobLeftNav}
-                    toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleiFrameWindow={toggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
-                <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
-                <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>
-                <IframeWindow product={productxItem} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
+                    toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} ToggleiFrameWindow={ToggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                {isShowAppLauncher===true?<AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow}></AppLauncher>:null}
+                {isShowLinkLauncher===true?<LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>:null}
+                {isShowiFrameWindow===true?<IframeWindow isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow>:null}
+                {/* {isShowProductxWindow===true ? <ProductxWindow product={productxItem} isShow={isShowProductxWindow} ToggleProductxWindow={ToggleProductxWindow}></ProductxWindow> : null} */}
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
                 <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} /*editPopUp={editPopUp}*/ toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 
@@ -543,13 +652,13 @@ const Home = () => {
 
             {isShowTaxList === true ? <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList> : null}
             <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
-            <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>
+            {isShowAddTitle===true?<AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>:null}
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             {isShowAdvancedSearch === true ? <AdvancedSearch isShow={isShowAdvancedSearch} toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch> : null}
-            {/* <CreateCustomer isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
-            <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer>
+            {/* <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
+            <Customercreate searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer}/>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>

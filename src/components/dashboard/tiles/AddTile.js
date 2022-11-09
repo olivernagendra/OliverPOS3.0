@@ -30,6 +30,7 @@ const AddTile = (props) => {
     const [serachString, setSerachString] = useState('');
     const [tileToAdd, settileToAdd] = useState('');
     const [isShowCanelBtn, setisShowCanelBtn] = useState(false);
+    const [msg, setMsg] = useState('');
     const [respAttribute, respCategory, respTile] = useSelector((state) => [state.attribute, state.category, state.tile])
 
     const dispatch = useDispatch();
@@ -157,7 +158,7 @@ const AddTile = (props) => {
         // }
     }
     const submitChanges = (id, type, slug) => {
-        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0, "TileColor": tileColor ,"TextColor":"#FFFFFF"}
+        var param = { "UserID": get_userId(), "RegisterId": get_regId(), "udid": get_UDid(), "ItemId": id, "ItemType": type, "ItemSlug": slug, "order": 0, "TileColor": tileColor, "TextColor": "#FFFFFF" }
         dispatch(addTile(param));
     }
 
@@ -219,13 +220,16 @@ const AddTile = (props) => {
             setfilterList([]);
             // console.log("-----new favv--" + id, type, slug);
             setIsLoading(true);
-            submitChanges(id, type, slug)
+            submitChanges(id, type, slug);
+            setMsg('')
 
         } else {
             if (isExist == true) { //apply check to protect msg display if no item selected and click on save button
+                setMsg('error duplicate');
                 // alert("alreadyExsist");
-                var data = { title: "", msg: "Item already exist", is_success: true }
-                dispatch(popupMessage(data));
+
+                //var data = { title: "", msg: "Item already exist", is_success: true }
+                //dispatch(popupMessage(data));
             }
         }
 
@@ -260,6 +264,7 @@ const AddTile = (props) => {
         setTileColor('');
         setfilterList([]);
         settileToAdd('');
+        setMsg('');
         setisShowCanelBtn(false);
     }
     const showCancelButton = () => {
@@ -297,16 +302,18 @@ const AddTile = (props) => {
                             <button id="cancelDropdownSearch" onClick={() => clearSearch()} className={isShowCanelBtn === true ? "display-flex" : ""}>
                                 <img src={AdvancedSearchCancelIcon} alt="" />
                             </button>
-                            <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" onFocus={() => showCancelButton()} onBlur={() => hideCancelButton()} />
+                            <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" onFocus={() => showCancelButton()} onBlur={() => hideCancelButton()} className={msg}/>
+                            <div className="error-message">
+                            </div>
                             <div className="option-container">
                                 {filterList && filterList.length > 0 && filterList.map(item => {
                                     switch (item.type) {
                                         case "product":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Title}</div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Title}</p></div>
                                         case "category":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Value}</div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Value}</p></div>
                                         case "attribute":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}>{item.type + " : " + item.Description}</div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Description}</p></div>
                                         default:
                                             return ''
                                     }
@@ -335,16 +342,16 @@ const AddTile = (props) => {
                             <p>{c.name}</p>
                         })
                 } */}
-                            <label onClick={() => setTileColor('violet')}>
-                                <input type="radio" id="violet" name="tile-color" value="violet" />
+                            <label /*onClick={() => setTileColor('violet')}*/ >
+                                <input type="radio" id="violet" name="tile-color" value="violet" disabled />
                                 <div className="custom-radio-button background-violet"></div>
                             </label>
-                            <label onClick={() => setTileColor('blue')}>
-                                <input type="radio" id="blue" name="tile-color" value="blue" />
+                            <label /*onClick={() => setTileColor('blue')}*/ >
+                                <input type="radio" id="blue" name="tile-color" value="blue" disabled />
                                 <div className="custom-radio-button background-blue"></div>
                             </label>
-                            <label onClick={() => setTileColor('cyan')}>
-                                <input type="radio" id="cyan" name="tile-color" value="cyan" />
+                            <label /*onClick={() => setTileColor('cyan')}*/ >
+                                <input type="radio" id="cyan" name="tile-color" value="cyan" disabled />
                                 <div className="custom-radio-button background-cyan"></div>
                             </label>
                             <label onClick={() => setTileColor('teal')}>
