@@ -401,9 +401,9 @@ code {
 	z-index: 9;
 }
 
-.error {
+/* .error {
 	color: red !important;
-}
+} */
 
 .btn-disable {
 	opacity: .5;

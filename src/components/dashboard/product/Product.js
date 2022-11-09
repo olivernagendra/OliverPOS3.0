@@ -72,6 +72,8 @@ const Product = (props) => {
     const [respAttribute] = useSelector((state) => [state.attribute]);
     const [stockStatusInOut, setStockStatusInOut] = useState('In Stock');
     const [isRefereshIconInventory, setisRefereshIconInventory] = useState(false);
+    const [selectedVariations, setSelectedVariations] = useState([]);
+    const [checkIsSelection, setCheckIsSelection] = useState(false);
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
@@ -102,6 +104,9 @@ const Product = (props) => {
         //     setVariationStockQunatity(itemQauntity);
         // }
     }
+    useEffect(() => {
+        setSelectedVariations(selVariations);
+    }, [selVariations]);
 
     var currentWareHouseDetail = "";
     useEffect(() => {
@@ -1167,6 +1172,8 @@ const Product = (props) => {
             }
         }
         else {
+            setCheckIsSelection(true);
+            // initProuctFn();
             toggleNoVariationSelected();
         }
     }
@@ -1174,7 +1181,20 @@ const Product = (props) => {
         setNote(note);
         toggleProductNote();
     }
-
+    const isSelected = (name) => {
+        if(checkIsSelection===true)
+        {
+            if (selectedVariations && selectedVariations.length > 0) {
+                var item = selectedVariations.find(m => m.Name === name);
+                return (typeof item != "undefined" && item != null) ? true : false;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+        
+    }
     //Showing indivdual and overall discount 30sep2022
     const showDiscounts = () => {
         var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
@@ -1215,6 +1235,7 @@ const Product = (props) => {
     }, [props.selProduct]);
 
     const clearSelection = () => {
+        setCheckIsSelection(false);
         setSelVariations([]);
     }
     useEffect(() => {
@@ -1256,9 +1277,9 @@ const Product = (props) => {
             _DistictAttribute.push(item);
         });
     }
-    setTimeout(() => {
-        initProuctFn();
-    }, 1000);
+    // setTimeout(() => {
+    //     initProuctFn();
+    // }, 1000);
 
     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
     // if (isEdit === true && _product.StockQuantity != variationStockQunatity) {
@@ -1323,7 +1344,7 @@ const Product = (props) => {
                                 (_DistictAttribute.map((attribute, index) => {
                                     return (
                                         attribute && attribute.Variation == true &&
-                                        <React.Fragment key={attribute.Slug}><p>{attribute.Name}</p>
+                                        <React.Fragment key={attribute.Slug}><p className={isSelected(attribute.Name) === false ? "error" : ""}>{attribute.Name}</p>
                                             {/* <div className="radio-group">
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
@@ -1366,7 +1387,7 @@ const Product = (props) => {
                                                     })
                                                 }
                                             </div> */}
-                                            <div className="radio-group">
+                                            <div className={isSelected(attribute.Name) === false ? "radio-group error" : "radio-group"}>
                                                 {
                                                     attribute.OptionAll && attribute.OptionAll.map((opt, i) => {
                                                         let _item = opt.slug;
