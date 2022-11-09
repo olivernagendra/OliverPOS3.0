@@ -1,7 +1,7 @@
 
 exports.key = {
-    OP_API_URL: process.env.NODE_ENV == 'development' ? 'https://dev1.app.olivertest.com/api/' : 'https://app.oliverpos.com/api/',
-    BRIDGE_DOMAIN: process.env.NODE_ENV == 'development' ? 'https://dev1.shop.olivertest.com/' : 'https://hub.oliverpos.com',
+    OP_API_URL: process.env.NODE_ENV == 'development' ? 'https://app.oliverpos.com/api/' : 'https://app.oliverpos.com/api/',
+    BRIDGE_DOMAIN: process.env.NODE_ENV == 'development' ? 'https://hub.oliverpos.com' : 'https://hub.oliverpos.com',
     AUTH_KEY: sessionStorage.getItem("AUTH_KEY"),
     //"posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6" + ":" +  "poss_5a3f7d8d34dc3605ea5796eda8d6dfcf6cf82254",
     // AUTH_NAME           : "posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6",
@@ -11,8 +11,8 @@ exports.key = {
     CUSTOMER_PAGE_SIZE: 50,
     ACTIVITY_PAGE_SIZE: 100,
     FETCH_PRODUCTS_PAGESIZE: 100,
-    ONLY_TIME:'h:mm a',
-    MONTH_DAY_FORMAT:'MMMM,DD YYYY ,h:mm a',
+    ONLY_TIME: 'h:mm a',
+    MONTH_DAY_FORMAT: 'MMMM,DD YYYY ,h:mm a',
     DATE_FORMAT: 'DD, MMMM YYYY',
     DATETIME_FORMAT: 'DD, MMMM YYYY, h:mm a',
     DATE_FORMAT_SAFARI: 'YYYY-MM-DD',
@@ -40,5 +40,5 @@ exports.key = {
 
 }
 
-exports.key_AssigneeType = { Category : 0, SubCategory : 1, Attribute : 2, SubAttribute : 3, Product : 4, Tag : 5 }
-exports.key_InputTypes = { TextField : 0 , NumberField : 1, RadioButton : 2, CheckBox : 3}
+exports.key_AssigneeType = { Category: 0, SubCategory: 1, Attribute: 2, SubAttribute: 3, Product: 4, Tag: 5 }
+exports.key_InputTypes = { TextField: 0, NumberField: 1, RadioButton: 2, CheckBox: 3 }
