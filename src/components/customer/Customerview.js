@@ -99,11 +99,11 @@ const CustomerView = () => {
     setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
     seteditcustomerparam('')
   }
-  const toggleEditcustomer =(param)=>{
+  const toggleEditcustomer = (param) => {
     ///console.log("param",param)
     seteditcustomerparam(param)
     setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
-    
+
   }
 
   const toggleMobileNav = () => {
@@ -426,15 +426,20 @@ const CustomerView = () => {
   }
 
 
-    // Customer Edit  API response
-    const [customereditsucc] = useSelector((state) => [state.customerupdate])
-    useEffect(() => {
-      if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
+  // Customer Edit  API response
+  const [customereditsucc] = useSelector((state) => [state.customerupdate])
+  useEffect(() => {
+    if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
       //console.log("customereditsucc",customereditsucc)
-      }
-    }, [customereditsucc]);
-  
+    }
+  }, [customereditsucc]);
 
+  const handleKeyUp = (e) => {
+    console.log("e", e.keyCode)
+    if (e.keyCode == 13) {
+      productDataSearch();
+    }
+  }
   return (
     <React.Fragment>
       {customerAllEvant.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
@@ -460,7 +465,7 @@ const CustomerView = () => {
         <div id="CVSearch" className={isCvmobile === true ? "cv-search open" : "cv-search"}   >
           <div className="header">
             <p>{LocalizedLanguage.customers}</p>
-            <button id="cvAddCustomer" onClick={()=>toggleCreateCustomer()}>
+            <button id="cvAddCustomer" onClick={() => toggleCreateCustomer()}>
               <img src={CircledPlus_Icon_Blue} alt="" />Add New
             </button>
             <button id="mobileCVExitSearch" onClick={CustomerSearchMobi}>
@@ -477,13 +482,13 @@ const CustomerView = () => {
 
             </div>
             <label for="fName">First Name</label>
-            <input type="text" id="FirstName" placeholder="Enter First Name" value={FirstName} onChange={e => setFirstName(e.target.value)} />
+            <input type="text" id="FirstName" placeholder="Enter First Name" value={FirstName} onChange={e => setFirstName(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
             <label for="lName">Last Name</label>
-            <input type="text" id="LastName" placeholder="Enter Last Name" value={LastName} onChange={e => setLastName(e.target.value)} />
+            <input type="text" id="LastName" placeholder="Enter Last Name" value={LastName} onChange={e => setLastName(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
             <label for="email">Email</label>
-            <input type="email" id="Email" placeholder="Enter Email" value={Email} onChange={e => setEmail(e.target.value)} />
+            <input type="email" id="Email" placeholder="Enter Email" value={Email} onChange={e => setEmail(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
             <label for="tel">Phone Number</label>
-            <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} />
+            <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
             <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>
         </div>
@@ -570,28 +575,28 @@ const CustomerView = () => {
               Go Back
             </button>
           </div>
-         
+
 
 
           <div className="quick-info">
-              <div className="avatar">
-                <img src={AvatarIcon} alt="" />
-              </div>
-              <div className="text-group">
-              <p className="style1">{customerDetailData && customerDetailData.FirstName}</p>
-                <p className="style2">{customerDetailData && customerDetailData.Email}</p>
-                <p className="style2">Phone #: {customerDetailData && customerDetailData.Contact}</p>
-              </div>
-              <button id="editCustomerButton" onClick={()=>toggleEditcustomer("editcustomer") }>
-                <img src={Pencil} alt="" />
-                Edit
-              </button>
+            <div className="avatar">
+              <img src={AvatarIcon} alt="" />
             </div>
+            <div className="text-group">
+              <p className="style1">{customerDetailData && customerDetailData.FirstName}</p>
+              <p className="style2">{customerDetailData && customerDetailData.Email}</p>
+              <p className="style2">Phone #: {customerDetailData && customerDetailData.Contact}</p>
+            </div>
+            <button id="editCustomerButton" onClick={() => toggleEditcustomer("editcustomer")}>
+              <img src={Pencil} alt="" />
+              Edit
+            </button>
+          </div>
 
 
 
 
-          
+
           <div className="cust-totals">
             <div className="col">
               <p className="style1">$<NumericFormat value={OrderAmount ? OrderAmount : 0} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
@@ -667,18 +672,18 @@ const CustomerView = () => {
           </div>
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
-          <Customercreate 
-          isShow={isShowcreatecustomerToggle} 
-          toggleCreateCustomer={toggleCreateCustomer}
-          toggleEditcustomer={toggleEditcustomer}
-          editcustomerparam={editcustomerparam}
-          customerDetailData={customerDetailData ? customerDetailData:""} 
-          CustomerAddress={CustomerAddress}
-          
-         
-           />
+          <Customercreate
+            isShow={isShowcreatecustomerToggle}
+            toggleCreateCustomer={toggleCreateCustomer}
+            toggleEditcustomer={toggleEditcustomer}
+            editcustomerparam={editcustomerparam}
+            customerDetailData={customerDetailData ? customerDetailData : ""}
+            CustomerAddress={CustomerAddress}
 
-        
+
+          />
+
+
           <div className="footer">
             <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
             <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>

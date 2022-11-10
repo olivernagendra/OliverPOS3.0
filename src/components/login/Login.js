@@ -108,7 +108,7 @@ function Login() {
     const handleKey = (e) => {
         var key = e.which || e.keyCode;
         if (key === 13) {
-            this.handleSubmit(e);
+            handleSubmit(e);
         }
     }
 
@@ -477,15 +477,15 @@ function Login() {
                 <img src={imglogo} />
                 <p >Sign in to your Oliver POS Account</p>
                 {/* {error !== "" && <div className="danger">{error} </div>} */}
-                {(_error !== "") &&
+                {(_error && _error !== "") &&
                     <div className="error-message">
                         {_error}
                     </div>}
                 <form className="login-form">
                     <label htmlFor="email">Email</label>
-                    <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
+                    <input type="text" id="email" placeholder="Enter Email" onKeyUp={(e) => handleKey(e)} onChange={(e) => handleNameChange(e)} />
                     <label htmlFor="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
+                    <input type="password" id="password" placeholder="Enter Password" onKeyUp={(e) => handleKey(e)} onChange={(e) => handlePasswordChange(e)} />
                     <div className="row">
                         <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
                         <label className="custom-checkbox-wrapper">
@@ -496,7 +496,7 @@ function Login() {
                             Remember Me?
                         </label>
                     </div>
-                    <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
+                    <button type="button" onClick={handleSubmit} onKeyUp={(e) => handleKey(e)}>{LocalizedLanguage.signin}</button>
                 </form>
                 <div className="or-row">
                     <div className="divider"></div>
