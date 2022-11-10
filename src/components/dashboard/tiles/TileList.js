@@ -436,7 +436,7 @@ const TileList = (props) => {
             //     break;
             case "product":
                 //productDataSearch(item.Title, 0, null)
-                if (item.ManagingStock == true && item.hasOwnProperty("Product_Id") && item.Product_Id!=0) {
+                if (item.ManagingStock == true && item.hasOwnProperty("Product_Id") && item.Product_Id != 0) {
                     dispatch(getInventory(item.Product_Id)); //call to get product warehouse quantity
                 }
                 props.openPopUp(item);
@@ -612,77 +612,77 @@ const TileList = (props) => {
     return (
         <div className="products" onContextMenu={(e) => e.preventDefault()}>
             <div className="products-container">
-					<div className="no-product-container">
-						<img src={ErrorIconBlue} alt="" />
-						<p>No products to display.</p>
-						<button>Add a Product</button>
-					</div>
-            {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
-                <div className="category-row">
-                    {showCategorySelection()}
+                <div className="no-product-container">
+                    <img src={ErrorIconBlue} alt="" />
+                    <p>No products to display.</p>
+                    <button>Add a Product</button>
                 </div>
-            </div>}
+                {cat_breadcrumb && cat_breadcrumb.length > 0 && <div className="mod-product">
+                    <div className="category-row">
+                        {showCategorySelection()}
+                    </div>
+                </div>}
 
-            {
-                favArrayList && favArrayList.map((item, index) => {
-                    switch (item.type) {
-                        case "product":
-                            return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{backgroundColor:item.TileColor!=null && item.TileColor!=""?item.TileColor:"var(--oliver-blue)"}}>
-                                <div className="body">
-                                    {item.Image != null ?
-                                        <img src={item.Image} alt="" /> :
-                                        <img src={NoImageAvailable} alt="" />
-                                    }
-                                </div>
-                                <div className="footer">
+                {
+                    favArrayList && favArrayList.map((item, index) => {
+                        switch (item.type) {
+                            case "product":
+                                return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
+                                    <div className="body">
+                                        {item.Image != null ?
+                                            <img src={item.Image} alt="" /> :
+                                            <img src={NoImageAvailable} alt="" />
+                                        }
+                                    </div>
+                                    <div className="footer">
+                                        <p>
+                                            {item.Title}
+                                        </p>
+                                    </div>
+                                    <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+
+                                </button>
+                            case "attribute":
+                            case "sub-attribute":
+                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
                                     <p>
                                         {item.Title}
                                     </p>
-                                </div>
-                                <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
-
-                            </button>
-                        case "attribute":
-                        case "sub-attribute":
-                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{backgroundColor:item.TileColor!=null && item.TileColor!=""?item.TileColor:"var(--oliver-blue)"}}>
+                                    <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                </button>
+                            case "category":
+                            case "sub-category":
+                                return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
+                                    <p>
+                                        {item.name ? item.name : item.Value}
+                                    </p>
+                                    <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
+                                </button>
+                            default:
+                                return ''
+                        }
+                    })
+                }
+                {
+                    filtered && filtered.map((item, index) => {
+                        return <button className="product" key={index} onClick={() => props.openPopUp(item)} >
+                            <div className="body">
+                                {item.Image != null ?
+                                    <img src={item.ProductImage} alt="" /> :
+                                    <img src={NoImageAvailable} alt="" />
+                                }
+                                {/* <img src={item.ProductImage} alt="" /> */}
+                            </div>
+                            <div className="footer">
                                 <p>
-                                    {item.attribute_slug}
+                                    {item.Title}
                                 </p>
-                                <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
-                            </button>
-                        case "category":
-                        case "sub-category":
-                            return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{backgroundColor:item.TileColor!=null && item.TileColor!=""?item.TileColor:"var(--oliver-blue)"}}>
-                                <p>
-                                    {item.name ? item.name : item.Value}
-                                </p>
-                                <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
-                            </button>
-                        default:
-                            return ''
-                    }
-                })
-            }
-            {
-                filtered && filtered.map((item, index) => {
-                    return <button className="product" key={index} onClick={() => props.openPopUp(item)} >
-                        <div className="body">
-                        {item.Image != null ?
-                                        <img src={item.ProductImage} alt="" /> :
-                                        <img src={NoImageAvailable} alt="" />
-                                    }
-                            {/* <img src={item.ProductImage} alt="" /> */}
-                        </div>
-                        <div className="footer">
-                            <p>
-                                {item.Title}
-                            </p>
-                        </div>
-                    </button>
-                })
-            }
+                            </div>
+                        </button>
+                    })
+                }
 
-            {/* <button className="product">
+                {/* <button className="product">
                 <div className="body background-teal">
                     <img src="../Assets/Images/Temp/Hanged-Tshirt.png" alt="" />
                 </div>
@@ -699,11 +699,11 @@ const TileList = (props) => {
             <button className="category background-violet">
                 <p>Clothing</p>
             </button> */}
-            <button className="add-tile" onClick={() => props.toggleAddTitle()}>
-                <img src={Rounded_Square_Plus_Icon_NewGrey} alt="" />
-                Add Tile
-            </button>{isLoading === true ? <LoadingModal></LoadingModal> : null}
-        </div></div>)
+                <button className="add-tile" onClick={() => props.toggleAddTitle()}>
+                    <img src={Rounded_Square_Plus_Icon_NewGrey} alt="" />
+                    Add Tile
+                </button>{isLoading === true ? <LoadingModal></LoadingModal> : null}
+            </div></div>)
 }
 
 export default TileList 
