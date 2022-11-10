@@ -118,6 +118,7 @@ const Header = (props) => {
     const clearCart = () => {
         removeCheckOutList();
         dispatch(product());
+        navigate('/home');
     }
     return (<React.Fragment>
         <div className="header">
