@@ -120,7 +120,9 @@ const AddTile = (props) => {
         if (value != "") {
             setisShowCanelBtn(true);
             var fCList = recursivelyFindKeyValue('', value, categoryList, 0);
+            fCList=[...new Set(fCList.map((fc)=>fc))];
             var fAList = recursivelyFindKeyValue('', value, attributeList, 0);
+            fAList=[...new Set(fAList.map((fa)=>fa))];
             if (fCList && fCList.length > 0) {
                 fCList = AddItemType(fCList, "category");
                 // _filteredData.concat(fCList);
@@ -311,7 +313,7 @@ const AddTile = (props) => {
                                         case "product":
                                             return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Title}</p></div>
                                         case "category":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Value}</p></div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Code}</p></div>
                                         case "attribute":
                                             return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Description}</p></div>
                                         default:

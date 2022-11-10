@@ -1056,7 +1056,7 @@ const Product = (props) => {
                     console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
                     var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
                     //_disableAttribute=array3;
-                    setDisableAttribute(array3);
+                    //setDisableAttribute(array3);
                     console.log("--array3--- ", JSON.stringify(array3));
                 }
 

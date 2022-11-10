@@ -18,7 +18,7 @@ import { CustomergetPageSlice, CustomerGetDetailsSlice, getAllEventsSlice, saveC
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
-import { CustomerSaveSlice } from '../components/customer/CustomerSlice'
+import { CustomerSaveSlice ,CustomerUpdateSlice } from '../components/customer/CustomerSlice'
 import { checkStockSlice, getPaymentTypeNameSlice, getExtensionsSlice, getMakePaymentSlice, makeOnlinePaymentsSlice, saveSlice, paymentAmountSlice, changeReturnAmountSlice, checkTempOrderSyncSlice, checkTempOrderStatusSlice } from '../components/checkout/checkoutSlice';
 import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
@@ -62,7 +62,7 @@ export const store = configureStore({
     customer: customerSlice.reducer,
     customergetPage: CustomergetPageSlice.reducer,
     product: productSlice.reducer,
-
+    customerupdate:CustomerUpdateSlice.reducer,
     customersave: CustomerSaveSlice.reducer,
     checkStock: checkStockSlice.reducer,
     userList: userSlice.reducer,
