@@ -34,7 +34,7 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
 
 import ParkSale from "./ParkSale";
-import { CheckAppDisplayInView } from "../common/commonFunctions/appDisplayFunction";
+import { CheckAppDisplayInView } from "../common/commonFunctions/AppDisplayFunction";
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
@@ -282,9 +282,12 @@ const Checkout = (props) => {
     }
     const pay_by_product = (amount) => {
         toggleSplitByProduct();
-        //setPaidAmount(amount);
         setPartialAmount(amount);
         setPaidAmount(amount);
+        toggleShowPartialPayment();
+        setPartialType('pay_by_product');
+        //setPaidAmount(amount);
+       
         // setPaymentTypeItem(item);
         // dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
         //pay_amount(type);
@@ -581,10 +584,10 @@ const Checkout = (props) => {
     //  function use to check for payment types and perform action accordingly 
     const pay_amount = (paymentType, TerminalCount = 0, Support = '', paymentCode = '', paidConfirmAmount = 0) => {
 
-        if (localStorage.getItem("paybyproduct_unpaid")) {
-            localStorage.setItem("paybyproduct", localStorage.getItem("paybyproduct_unpaid"));
-            localStorage.removeItem("paybyproduct_unpaid");
-        }
+        // if (localStorage.getItem("paybyproduct_unpaid")) {
+        //     localStorage.setItem("paybyproduct", localStorage.getItem("paybyproduct_unpaid"));
+        //     localStorage.removeItem("paybyproduct_unpaid");
+        // }
 
         var closingTab = '';
         //const { paidAmount, closingTab } = this.state;
@@ -959,6 +962,17 @@ const Checkout = (props) => {
     }
     // its set the order payments
     const setOrderPartialPayments = (paying_amount, payment_type) => {
+
+
+        if (localStorage.getItem("paybyproduct_unpaid")) {
+
+            var _pbpun =JSON.parse(localStorage.getItem("paybyproduct_unpaid"))
+            _pbpun.forEach(function(v){ v.hasOwnProperty("unpaid_qty") && delete v.unpaid_qty });
+
+            localStorage.setItem("paybyproduct",JSON.stringify(_pbpun) );
+            localStorage.removeItem("paybyproduct_unpaid");
+        }
+
         //var checkList = JSON.parse(localStorage.getItem('CHECKLIST'));
         var _totalPrice = checkList && checkList.totalPrice
         var change_amount = 0;

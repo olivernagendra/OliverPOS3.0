@@ -627,7 +627,7 @@ const TileList = (props) => {
                 favArrayList && favArrayList.map((item, index) => {
                     switch (item.type) {
                         case "product":
-                            return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{backgroundColor:item.TileColor!=null && item.TileColor!=""?item.TileColor:"var(--oliver-blue)"}}>
+                            return <button className="product" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} /*style={{backgroundColor:item.TileColor!=null && item.TileColor!=""?item.TileColor:"var(--oliver-blue)"}}*/>
                                 <div className="body">
                                     {item.Image != null ?
                                         <img src={item.Image} alt="" /> :

@@ -6,10 +6,16 @@ import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const PartialPayment = (props) => {
     const inputElement = useRef(null);
     const [txtValue, setTxtValue] = useState(0)
+    const [pbpCount, setpbpCount] = useState(0)
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleShowPartialPayment();
+            localStorage.removeItem("paybyproduct_unpaid");
         }
+    }
+    const popupClose = () => {
+        props.toggleShowPartialPayment();
+        localStorage.removeItem("paybyproduct_unpaid");
     }
     useEffect(() => {
         if (props.getRemainingPrice && props.partialType == "") {
@@ -18,8 +24,23 @@ const PartialPayment = (props) => {
             inputElement.autoFocus = true;
         }
         else if (props.getRemainingPrice && props.partialType != "") {
-            var _amount = props.getRemainingPrice();
-            setTxtValue(parseFloat(_amount / parseInt(props.partialType)).toFixed(2));
+            if (props.partialType === "pay_by_product") {
+                var paybyproduct = localStorage.getItem("paybyproduct_unpaid") ? JSON.parse(localStorage.getItem("paybyproduct_unpaid")) : null;
+                var _amount = 0;
+                if (paybyproduct != null && paybyproduct.length > 0) {
+                    paybyproduct.map(p => {
+                        _amount += p.total;
+                    });
+                    setTxtValue(_amount);
+                    var count = paybyproduct.filter(a => a.hasOwnProperty("unpaid_qty") && a.unpaid_qty > 0);
+                    setpbpCount(count != null && typeof count != "undefined" ? count.length : 0);
+                }
+            }
+            else {
+                var _amount = props.getRemainingPrice();
+                setTxtValue(parseFloat(_amount / parseInt(props.partialType)).toFixed(2));
+            }
+
         }
         // if(props && props.amount)
         // setTxtValue(props.amount);
@@ -52,19 +73,33 @@ const PartialPayment = (props) => {
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow partial-payment current" : "subwindow partial-payment"}>
                 <div className="subwindow-header">
-                    <p> {props.partialType==""?"Partial Payments":"Split Payments"}</p>
-                    <button className="close-subwindow" onClick={() => props.toggleShowPartialPayment()}>
+                    <p> {props.partialType == "" ? "Partial Payments" : "Split Payments"}</p>
+                    <button className="close-subwindow" onClick={() => popupClose()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
                     {props.partialType != "" ?
-                        <div className="row">
-                            <label htmlFor="partialPaymentAmount">Total balance due: {parseFloat(props.getRemainingPrice()).toFixed(2)}</label><br/>
-                            <label htmlFor="partialPaymentAmount">Split Type: Person({ props.partialType})</label><br/>
-                            <label htmlFor="partialPaymentAmount">Amount per payment: {txtValue}</label><br/><br/>
-                        </div>
+                        <React.Fragment><br />
+                            <div className="partial-text-row">
+                                <p className="style1">Total balance due:</p>
+                                <p className="style2">${parseFloat(props.getRemainingPrice()).toFixed(2)}</p>
+                            </div>
+                            <div className="partial-text-row">
+                                <p className="style1">Split Type:</p>
+                                <p className="style2">{props.partialType === "pay_by_product" ? "By Product (" + pbpCount + ") " : "Person(" + props.partialType + ")"}</p>
+                            </div>
+                            <div className="partial-text-row">
+                                <p className="style1">Amount per payment:</p>
+                                <p className="style2">${parseFloat(txtValue).toFixed(2)}</p>
+                            </div><br />
+                        </React.Fragment>
+                        // <div className="partial-text-row">
+                        //     <label htmlFor="partialPaymentAmount">Total balance due: ${parseFloat(props.getRemainingPrice()).toFixed(2)}</label><br />
+                        //     <label htmlFor="partialPaymentAmount">Split Type: {props.partialType === "pay_by_product"?"By Product":"Person("+props.partialType+")"}</label><br />
+                        //     <label htmlFor="partialPaymentAmount">Amount per payment: ${txtValue}</label><br /><br />
+                        // </div>
                         :
                         <React.Fragment><label htmlFor="partialPaymentAmount">Enter partial payment amount:</label>
                             <input ref={inputElement} autoFocus={true} type="number" id="partialPaymentAmount" placeholder="0.00" value={txtValue} onChange={e => onChange(e)} disabled={props.partialType == "" ? false : true} /></React.Fragment>
