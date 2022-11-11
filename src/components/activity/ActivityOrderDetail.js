@@ -28,9 +28,10 @@ const ActivityOrderDetail = () => {
     }
     var Customerdata = activityOrderDetails && activityOrderDetails.orderCustomerInfo ? activityOrderDetails.orderCustomerInfo : ''
 
-    const OpenCustomer = (orderid) => {
-       if(orderid !==''){
-        sessionStorage.setItem("Cusredirection", orderid ? orderid : 0);
+    const OpenCustomer = (data) => {
+       // console.log("data",data)
+       if(data.orderCustomerInfo.customer_email !==''){
+        sessionStorage.setItem("customerredirect", data.orderCustomerInfo.customer_email ? data.orderCustomerInfo.customer_email : "");
         navigate('/customers')
        } 
     }
@@ -68,7 +69,7 @@ const ActivityOrderDetail = () => {
                 <p className="style2">{Customerdata && Customerdata.customer_email ? Customerdata.customer_email : ''}</p>
                 <p className="style2">{Customerdata && Customerdata.customer_phone ? Customerdata.customer_phone : ''}</p>
             </div>
-            {activityOrderDetails.orderCustomerInfo !== '' && activityOrderDetails.orderCustomerInfo !== null ? <button onClick={() => OpenCustomer(activityOrderDetails.customer_id)}>Open Customer</button> : ""}
+            {activityOrderDetails.orderCustomerInfo !== '' && activityOrderDetails.orderCustomerInfo !== null ? <button onClick={() => OpenCustomer(activityOrderDetails)}>Open Customer</button> : ""}
         </div>
     </>
     )

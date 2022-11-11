@@ -51,7 +51,6 @@ const ActivityOrderList = () => {
     var _tempIndivisualProductCartDiscountArray = [];
     var _tempProductIndividualDiscount = 0;
     const reCalculateDiscount = (item) => {
-
         var price = 0;
         var LineItem = activityOrderDetails && activityOrderDetails.line_items;
         LineItem && LineItem.map(x => {
@@ -151,12 +150,58 @@ const ActivityOrderList = () => {
         });
     }
 
-
     const productImageFind = async (item) => {
         var product = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
         //   return product.ProductImage
 
     }
+
+
+var _totalProductIndividualDiscount=0;
+var _indivisualProductDiscountArray=[];
+var _indivisualProductCartDiscountArray=[];
+
+
+
+ _totalProductIndividualDiscount=0;
+ _indivisualProductDiscountArray=[];
+ _indivisualProductCartDiscountArray=[];
+
+var taxInclusiveName= "";
+if(activityOrderDetails && activityOrderDetails && activityOrderDetails.meta_datas){
+    taxInclusiveName =getInclusiveTaxType(activityOrderDetails.meta_datas);
+}
+
+var _discount=0;
+                                                            
+if(_indivisualProductCartDiscountArray && _indivisualProductCartDiscountArray.length>0){
+    _indivisualProductCartDiscountArray && _indivisualProductCartDiscountArray.map(x=>{
+          _discount+=x.discountAmount     
+    });
+}
+else
+{
+    if(_indivisualProductDiscountArray && _indivisualProductDiscountArray.length>0){
+        _discount=0;
+    }
+    else
+    {
+        _discount= activityOrderDetails && activityOrderDetails !=="" && activityOrderDetails.discount? activityOrderDetails.discount:0;
+    }
+    
+}
+console.log("activityOrderDetails",activityOrderDetails)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -267,11 +312,20 @@ const ActivityOrderList = () => {
 
 
 
-            {/* <div className="custom-fields">
-                <p className="style1">Custom Fields</p>
-                <p className="style2">Sizing Chart ID: HIOK23498979</p>
-                <p className="style2">Employee Compensation: 20%</p>
-            </div> */}
+
+            <div className="custom-m">
+                {/* <p className="style2">Sub-Total : {activityOrderDetails.Subtotal != 'NaN' ? (activityOrderDetails.TotalAmount - activityOrderDetails.refunded_amount) == 0 ? 0.00
+                    : taxInclusiveName !== "" ?
+                        (parseFloat(activityOrderDetails.Subtotal) + parseFloat(activityOrderDetails.TotalTax) - activityOrderDetails.tax_refunded - activityOrderDetails.cash_round).toFixed(2)
+                        : (parseFloat(activityOrderDetails.Subtotal)).toFixed(2)
+                    : 0}</p> */}
+
+                <p className="style2">Total Tax(Incl) : 20%</p>
+                <p className="style2">Total : HIOK23498979</p>
+                <p className="style2">Card  : (10, November 2022)</p>
+
+                <p className="style2">Balance  : 0.00</p>
+            </div>
         </>
     )
 }

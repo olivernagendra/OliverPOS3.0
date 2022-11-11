@@ -14,7 +14,7 @@ import PlusSign from '../../assets/images/svg/PlusSign.svg'
 import Pencil from '../../assets/images/svg/Pencil-Outline-Blue.svg'
 import CircledPlus_Icon_Blue from '../../assets/images/svg/CircledPlus-Icon-Blue.svg'
 import { useNavigate } from 'react-router-dom';
-import { customergetPage, customergetDetail, getAllEvents } from './CustomerSlice'
+import { customergetPage, customergetDetail, getAllEvents, deleteCustomerNote } from './CustomerSlice'
 import { get_UDid } from '../common/localSettings';
 import moment from 'moment';
 import Config from '../../Config'
@@ -30,7 +30,7 @@ import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { cashRecords } from "../cashmanagement/CashmanagementSlice";
-import { activityRecords } from "../activity/ActivitySlice";
+import { activityRecords, getDetail } from "../activity/ActivitySlice";
 import { NumericFormat } from 'react-number-format';
 const CustomerView = () => {
 
@@ -61,15 +61,17 @@ const CustomerView = () => {
   const [filterType, setFilterType] = useState('all');
   const [FirstName, setFirstName] = useState('');
   const [LastName, setLastName] = useState('')
-  const [Email, setEmail] = useState('')
+  const [Email, setEmail] = useState(sessionStorage.getItem("customerredirect") ? sessionStorage.getItem("customerredirect") : '')
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
   const [toggleList, setToggleList] = useState(false)
   const [sortbyvaluename, SetSortByValueName] = useState('FirstName')
   const [editcustomerparam, seteditcustomerparam] = useState('')
+  const [customerupdatedetails, setcustomerupdatedetails] = useState(false)
+  const [updateCustomerState, setupdateCustomerState] = useState(false)
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
-    setisShowAppLauncher(!isShowAppLauncher)
+    setisShowAppLauncher(!isShowAppLauncher) 
     setisShowLinkLauncher(false)
   }
   const toggleClickList = () => {
@@ -85,14 +87,12 @@ const CustomerView = () => {
   }
   const toggleNoteModel = () => {
     setisShowNoteModel(!isShowNoteModel)
-
   }
   const toggleCreditModel = () => [
     setisShowCreditModel(!isShowCreditModel)
   ]
   const closeNotemodel = () => {
     setisShowNoteModel(false)
-    // setisShowNoteModel(!isShowNoteModel)
     setisShowCreditModel(false)
   }
   const toggleCreateCustomer = () => {
@@ -100,10 +100,8 @@ const CustomerView = () => {
     seteditcustomerparam('')
   }
   const toggleEditcustomer =(param)=>{
-    ///console.log("param",param)
     seteditcustomerparam(param)
     setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
-    
   }
 
   const toggleMobileNav = () => {
@@ -129,10 +127,8 @@ const CustomerView = () => {
   /// Customer Page Data form  IndexDB
   const getCustomerFromIDB = () => {
     getAll().then((rows) => {
-      //  console.log("rows", rows)
       setcustomerlist(rows ? rows : []);
       sessionStorage.setItem("CUSTOMER_ID", rows[0].WPId ? rows[0].WPId : 0);
-      // setcustomerDetailData(rows[0] ?rows[0]:[])
       setupdateCustomerId(rows[0].WPId ? rows[0].WPId : 0)
     });
     setisCustomerListLoaded(false)
@@ -142,13 +138,14 @@ const CustomerView = () => {
   useEffect(() => {
     if (useCancelledTwo == false) {
       getCustomerFromIDB()
+      dispatch(getDetail(null));
       dispatch(cashRecords(null));
       dispatch(activityRecords(null));
     }
     return () => {
       useCancelledTwo = true;
     }
-  }, []);
+  }, [updateCustomerState]);
 
 
 
@@ -161,25 +158,16 @@ const CustomerView = () => {
   let useCancelled1 = false;
   useEffect(() => {
     var UID = get_UDid('UDID');
-    var Customerredirection = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
-    if (Customerredirection && Customerredirection.length > 0) {
-      var CUSTOMER_ID = sessionStorage.getItem("Cusredirection") ? sessionStorage.getItem("Cusredirection") : '';
-      setupdateCustomerId(CUSTOMER_ID)
-    } else {
       var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
       setupdateCustomerId(CUSTOMER_ID)
-    }
-
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
     }
-    //  Remove saved data from sessionStorage
-    sessionStorage.removeItem('Cusredirection');
     return () => {
       useCancelled1 = true;
     }
-  }, []);
+  }, [customerupdatedetails]);
   // // Response from customer getDetails
   const [customerAllDetails] = useSelector((state) => [state.customergetDetail])
   useEffect(() => {
@@ -272,21 +260,17 @@ const CustomerView = () => {
     var _filteredCustomer = customerlistdata
     ///Sort By Customer 
 
+    // latest list
     if (filterType == 'newestforward') {
-      alert("newest")
-      // _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-      //   if (a.Email < b.Email) { return -1; }
-      //   if (a.Email > b.Email) { return 1; }
-      //   return 0;
-      // })
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        return b.WPId - a.WPId;
+      })
     }
+    // oldest list
     if (filterType == 'oldestbackward') {
-      alert("oldest")
-      // _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-      //   if (a.Email < b.Email) { return -1; }
-      //   if (a.Email > b.Email) { return 1; }
-      //   return 0;
-      // })
+      _filteredCustomer = _filteredCustomer.sort(function (a, b) {
+        return a.WPId - b.WPId;
+      })
     }
 
     if (filterType == 'emailforward') {
@@ -410,7 +394,7 @@ const CustomerView = () => {
   const OpenTransactions = (customerDetailData) => {
     //console.log("customerDetailData",customerDetailData.Email)
     if (customerDetailData.Email !== '') {
-      sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : 0);
+      sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : "");
       navigate('/transactions')
     }
   }
@@ -422,6 +406,7 @@ const CustomerView = () => {
       setLastName("")
       setEmail("")
       setPhoneNumber("")
+      sessionStorage.removeItem('customerredirect');
     }
   }
 
@@ -430,9 +415,43 @@ const CustomerView = () => {
     const [customereditsucc] = useSelector((state) => [state.customerupdate])
     useEffect(() => {
       if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
-      //console.log("customereditsucc",customereditsucc)
+        setcustomerupdatedetails(true)
       }
     }, [customereditsucc]);
+
+
+    const deleteNotes=(Id)=>{
+      if(Id !==""){
+        dispatch(deleteCustomerNote(Id))
+        updateSomething(updateCustomerId);
+      }
+    }
+
+    const [respDeleteCustomerNote] = useSelector((state) => [state.deleteCustomerNote])
+    useEffect(() => {
+        if (respDeleteCustomerNote && respDeleteCustomerNote.status == STATUSES.IDLE && respDeleteCustomerNote.is_success && respDeleteCustomerNote.data ) {
+          updateSomething(updateCustomerId);
+
+        }
+    }, [respDeleteCustomerNote]);
+
+    const [respUpdateCustomerNote] = useSelector((state) => [state.updateCustomerNote])
+    useEffect(() => {
+        if (respUpdateCustomerNote && respUpdateCustomerNote.status == STATUSES.IDLE && respUpdateCustomerNote.is_success && respUpdateCustomerNote.data) {
+          updateSomething(updateCustomerId);
+
+        }
+    }, [respUpdateCustomerNote]);
+
+
+
+    const [customerres] = useSelector((state) => [state.customersave])
+    useEffect(() => {
+        if (customerres && customerres.status == STATUSES.IDLE && customerres.is_success && customerres.data) {
+          setupdateCustomerState(true)
+
+        }
+    }, []);
   
 
   return (
@@ -539,6 +558,7 @@ const CustomerView = () => {
           <div className="body">
 
 
+
             {isCustomerListLoaded == true ? <LoadingSmallModal /> : <>
               {filteredCustomer && filteredCustomer.length > 0 ? filteredCustomer.map((item, index) => {
                 return (
@@ -554,7 +574,10 @@ const CustomerView = () => {
                   // className={active == index ? 'selected-indicator' : ''} 
                   />
                 )
-              }) : <div style={{ textAlign: "center", margin: "auto" }}> <h3>Record not found</h3></div>}
+              }) :<div className="no-results">
+                    <p className="style1">No results found.</p>
+                    <p className="style2">Sorry, you search did not <br /> match any results.</p>
+                </div>}
             </>}
 
           </div>
@@ -655,7 +678,7 @@ const CustomerView = () => {
                     <div className="row">
                       <p className="style1">{item.datetime}</p>
                       <p className="style2">{item.time}</p>
-                      <button>
+                      <button onClick={()=>deleteNotes(item.Id)}>
                         <img src={CircledX_Grey} alt="" />
                       </button>
                     </div>
@@ -667,16 +690,16 @@ const CustomerView = () => {
           </div>
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
-          <Customercreate 
+        {isShowcreatecustomerToggle === true ?  <Customercreate 
           isShow={isShowcreatecustomerToggle} 
           toggleCreateCustomer={toggleCreateCustomer}
           toggleEditcustomer={toggleEditcustomer}
           editcustomerparam={editcustomerparam}
           customerDetailData={customerDetailData ? customerDetailData:""} 
           CustomerAddress={CustomerAddress}
-          
-         
-           />
+          getCustomerFromIDB={getCustomerFromIDB}
+
+           /> :null} 
 
         
           <div className="footer">

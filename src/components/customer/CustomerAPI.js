@@ -63,6 +63,12 @@ export function updateCustomerNoteAPI(data) {
             return res
         })
 }
+export function deleteCustomerNoteAPI(order_id) {
+    return serverRequest.clientServiceRequest('POST', `/customers/DeleteNote?Id=${order_id}`)
+        .then(res => {
+            return res
+        })
+}
 
 export function updateCreditScoreAPI(parameter) {
 

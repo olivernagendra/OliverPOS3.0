@@ -39,7 +39,7 @@ const ActivityView = () => {
     const [FilteredActivityList, setFilteredActivityList] = useState('')
     const [selectedOption, setSelectedOption] = useState('')
     const [sortbyvaluename, SetSortByValueName] = useState('Date')
-    const [emailnamephone, setEmailNamePhone] = useState('')
+    const [emailnamephone, setEmailNamePhone] = useState(sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '')
     const [orderidsearch, setorderId] = useState('')
     const [pricefrom, setPriceFrom] = useState('')
     const [priceto, setPriceTo] = useState('')
@@ -116,7 +116,6 @@ const ActivityView = () => {
     useEffect(() => {
         if (useCancelled == false) {
             var transactionredirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '';
-            setEmailNamePhone(transactionredirect)
             if (transactionredirect !== '') {
                 applyServerFilter()
             } else {
@@ -130,6 +129,7 @@ const ActivityView = () => {
     }, []);
 
     const reload = (pagno) => {
+        console.log("Reload function call")
         var UID = get_UDid('UDID')
         var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
         dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": pagno }));
@@ -154,6 +154,9 @@ const ActivityView = () => {
         //  console.log("activityfilter", activityfilter)
         if (activityfilter && activityfilter.data.length > 0) {
             setAllActivityList(activityfilter.data);
+            setSmallLoader(false)
+        }else{
+            setAllActivityList([]);
             setSmallLoader(false)
         }
     }, [activityfilter]);
@@ -256,7 +259,7 @@ const ActivityView = () => {
     let useCancelled1 = false;
     useEffect(() => {
         var UID = get_UDid('UDID');
-        var transactionsRedirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transredirection") : '';
+        
         // if(transactionsRedirect &&transactionsRedirect.length > 0) {
         //     var customer_to_activity_id = sessionStorage.getItem("transredirection") ?sessionStorage.getItem("transredirection"):'';
         //   }
@@ -437,7 +440,6 @@ const ActivityView = () => {
 
     // Filter Submit Btn
     const applyServerFilter = () => {
-        var transactionredirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '';
         var UID = get_UDid('UDID');
         var pagesize = Config.key.ACTIVITY_PAGE_SIZE
         // var fromdate = document.getElementById("txtfromdate");
@@ -482,7 +484,7 @@ const ActivityView = () => {
         };
         // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
-        sessionStorage.removeItem('transactionredirect');
+      
 
     }
 
@@ -501,6 +503,7 @@ const ActivityView = () => {
             setorderId('')
             localStorage.removeItem("CUSTOMER_TO_ACTVITY")
             localStorage.removeItem('CUSTOMER_TO_OrderId')
+            sessionStorage.removeItem('transactionredirect');
         }
     }
 
@@ -528,11 +531,12 @@ const ActivityView = () => {
 
        /// Scroll  then api call
     const updateSomething = () => {
+        var transactionsRedirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transredirection") : '';
         setactiveDetailApi(false)
         setDefauldNumber(defauldnumber + 1)
         if (AllActivityList.length == activityListcount) {
 
-        } else if (defauldnumber != 1) {
+        } else if (defauldnumber != 1 && transactionsRedirect =='') {
             reload(defauldnumber)
         }
     }
@@ -557,14 +561,14 @@ const ActivityView = () => {
             <div id="transactionsSearch" className={isCvmobile === true ? "transactions-search open" : "transactions-search"}>
                 <div className="search-header">
                     <p>Transactions</p>
-                    <button id="clearSearchFields" onClick={clearFilter}>Clear</button>
+                    <button id="clearSearchFields" onClick={()=>clearFilter()}>Clear</button>
                 </div>
                 <div className="search-header-mobile">
                     <button id="mobileSearchExit" onClick={mobileTransactionsSearch}>
                         <img src={AngledBracketBlueleft} alt="" />
                         Go Back
                     </button>
-                    <button id="mobileSearchFieldClear" onClick={clearFilter} >Clear</button>
+                    <button id="mobileSearchFieldClear" onClick={()=>clearFilter()} >Clear</button>
                 </div>
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>

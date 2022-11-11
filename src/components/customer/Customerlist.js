@@ -8,7 +8,7 @@ const Customerlist = (props) => {
               <img src={AvatarIcon} alt="" />
             </div>
             <div className="text-group">
-              <p className="style1">{props.FirstName}  {props.LastName} </p>
+              <p className="style1">{props.FirstName +" "+ props.LastName} </p>
               <p className="style2">{props.Email}</p>
             </div>
             {props.updateCustomerId === props.CustomerId ?  <div  className="selected-indicator" ></div>:""  }
