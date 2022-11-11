@@ -674,6 +674,7 @@ const Product = (props) => {
             var _product = props.selProduct;
             var _attribute = [];
             var _attribute1 = [];
+            var _allCombi = [];
             // var ProductAttribute = [];
 
             // if (_product && _product.ProductAttributes !== null) {
@@ -698,9 +699,10 @@ const Product = (props) => {
                             }
                         }
 
-                        console.log("-_attribute combination----" + JSON.stringify(_attribute1))
-                        setAllCombinations(_attribute1);
+                        //console.log("-_attribute combination----" + JSON.stringify(_attribute1))
+                        // setAllCombinations(_attribute1);
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        _allCombi.push(allCombi);
                         allCombi = allCombi.map(a => {
                             let _a = a.replace(/\//g, "-").toLowerCase();
                             if (_attribute && _attribute.length > 0) {
@@ -719,7 +721,9 @@ const Product = (props) => {
 
                     });
                     setAvailableAttribute(_attribute);
-                    console.log("-_attribute----" + JSON.stringify(_attribute))
+                    //console.log("-_attribute----" + JSON.stringify(_attribute))
+                    setAllCombinations(_allCombi);
+                    //console.log("-_allCombi----" + JSON.stringify(_allCombi))
                     //     //-------
                     //     // var _slug = "";
                     //     // selVariations && selVariations.map(v => {
@@ -845,6 +849,7 @@ const Product = (props) => {
                     var filteredAttribute = allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                        //return selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                         return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
@@ -853,13 +858,11 @@ const Product = (props) => {
                     else {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                     }
-                    //  console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
-                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
-
+                        //var aa = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) )
                         if (aa == true) {
                             allCombi = allCombi.map(a => {
                                 var _att = a.replace(/\//g, "-").toLowerCase();
@@ -879,7 +882,8 @@ const Product = (props) => {
                         //         }
                         //     })
                         // }
-
+                        
+                        //var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")))
                         var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
                         // if (result === true) {
                         //     console.log("--att p count--->> ", allCombi.join(','));
@@ -897,10 +901,87 @@ const Product = (props) => {
             });
         }
     }
+  
+    
+    const showAvailabe = (selVari) => {
+        var _all = [];
+        // console.log("--selVari-----"+JSON.stringify(attributeall.length));
+        if (allCombinations && allCombinations.length > 0) {
+            allCombinations.map(cmb => {
+                if (cmb && cmb.length > 0) {
+                    // cmb.map(c=>
+                    //     {
+                    //         if(c===option)
+                    //         {
+                    //console.log(allVariations.length+"--matched-----"+c);
+                    // if (_all && _all.length > 0) {
+                        var found = selVari.find(a => cmb.includes(a.Slug));
+                        // var _found = selVari.filter(a => cmb.includes(a.Slug));
+                        if (typeof found != "undefined" && found != null) {
+                            var _f = cmb.find(a => a === found.Slug);
+                            if (typeof _f != "undefined" && _f != null) { _all.push(cmb); }
+                        }
+                        //   else{
+                        //     // var _f=cmb.find(a=>a===found.Slug);
+                        //     // if(typeof _f!="undefined" && _f!=null)
+                        //     // {_all.push(cmb);}
+                        //     _all.push({var:cmb,isfound:false});
+                        //     }
+                    // }
+                    // else { _all.push({var:cmb,isfound:false}); }
+
+                    //     }
+                    // }
+                    // )
+                    //console.log("-------->" + JSON.stringify(cmb));
+                }
+                //var allCombi = cmb && cmb !== null && cmb !== undefined && cmb.split("~");
+            })
+            var _temp = [];
+            _all && _all.map(d => {
+                d && d.map(e => {
+                    var _f = _temp.find(a => a === e);
+                    if (typeof _f != "undefined" && _f != null)
+                     { }
+                     else
+                     {_temp.push(e);}
+                    
+                })
+            })
+            console.log("--_all-----" + JSON.stringify(_all));
+
+            console.log("--_temp-----" + JSON.stringify(_temp));
+
+            //console.log("--allVariations-----" + JSON.stringify(allVariations));
+
+            // _all && _all.map(d => {
+            //     d && d.map(e => {
+            //         var _f = _temp.find(a => a === e);
+            //         if (typeof _f != "undefined" && _f != null)
+            //          { }
+            //          else
+            //          {_temp.push(e);}
+                    
+            //     })
+            // })
+            
+            var array3 = allVariations.filter(function (obj) { return _temp.indexOf(obj) == -1; });
+
+           // console.log(allVariations.length + "---" + "--not _all-----" + JSON.stringify(array3));
+
+            console.log("---array3 filtered---" + JSON.stringify(array3));
+            if(selVari.length>1)
+            {
+                setDisableAttribute(array3);
+            }
+
+
+        }
+    }
     //var selVariations = [];
     var _disableAttribute = [];
     const optionClick = (option, attribute, AttrIndex) => {
-        console.log("arrayindes-"+AttrIndex);
+       // console.log("arrayindes-" + AttrIndex);
         setIsEdit(false);
 
         //    if(selOptions && selOptions.length>0)
@@ -951,6 +1032,7 @@ const Product = (props) => {
                 ProductAttribute = _product.ProductAttributes;
                 _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
             }
+            showAvailabe(_selVariations);
             getAllProducts().then((rows) => {
                 var data = rows.filter(a => a.ParentId === _product.WPID);
                 var allProdcuts = getTaxAllProduct(data)
@@ -1013,18 +1095,21 @@ const Product = (props) => {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                         // dispatch(getInventory(null)); //call to get product warehouse quantity
                     }
+                   // showAvailabe(option, _selVariations);
+                    // if (allCombinations && allCombinations.length > 0) {
+                    //     allCombinations.map(cmb => {
+                    //         if(cmb && cmb.length>0)
+                    //        { console.log("-------->"+JSON.stringify(cmb));}
+                    //         //var allCombi = cmb && cmb !== null && cmb !== undefined && cmb.split("~");
+                    //     })
 
-                    if (allCombinations && allCombinations > 0) {
-                        allCombinations.map(cmb => {
-                            var allCombi = cmb && cmb !== null && cmb !== undefined && cmb.split("~");
-                        })
 
-
-                    }
+                    // }
                     //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
-                    var filteredAttribute1 = allProdcuts.filter(item => {
+                    //var filteredAttribute1 = allProdcuts.filter(item => {
+                        allProdcuts.map(item => {
                         // var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         // var aa = _selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
 
@@ -1042,9 +1127,9 @@ const Product = (props) => {
                                 return _att;
                             });
                         }
-                        if (attribute && attribute.Option) {
-                            (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
-                                var _att = a.replace(/\//g, "-").toLowerCase();
+                        if (attribute && attribute.OptionAll) {
+                            attribute.OptionAll.map((a, i) => {
+                                var _att = a.slug;// a.replace(/\//g, "-").toLowerCase();
                                 const index = _disableAttribute.findIndex(item => item === _att)
                                 if (index === -1) {
                                     _disableAttribute.push(_att);
@@ -1053,22 +1138,31 @@ const Product = (props) => {
                         }
 
                         //var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
-                        var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
-                        if (result === true) {
-                            console.log("--att p count--->> ", allCombi.join(','));
-                        }
-                        return result;
+                        //var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        // var _result = selVariations.filter(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                       
+                        // if(_result )
+                        // {
+                        //     console.log("-_result--->> ", JSON.stringify(_result));
+                        // }
+                        // if (result === true) {
+                        //     console.log("--att p count--->> ", allCombi.join(','));
+                        // }
+                        //return result;
                     })
                     // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
                     //     console.log("-------combi----" + a.combination);
                     // })
-                    console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
-                    console.log("--allVariations--- ", JSON.stringify(allVariations));
-                    console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
-                    var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
-                    //_disableAttribute=array3;
-                    //setDisableAttribute(array3);
-                    console.log("--array3--- ", JSON.stringify(array3));
+                    //console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
+                    //console.log("--allVariations--- ", JSON.stringify(allVariations));
+                    //console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
+                     var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
+                    // //_disableAttribute=array3;
+                    if(_selVariations && _selVariations.length==1 && array3)
+                    {
+                        setDisableAttribute(array3);
+                    }
+                     console.log("--array3--- ", JSON.stringify(array3));
                 }
 
             });
@@ -1247,6 +1341,8 @@ const Product = (props) => {
     const clearSelection = () => {
         setCheckIsSelection(false);
         setSelVariations([]);
+        setDisableAttribute([]);
+
     }
     useEffect(() => {
         if (props.isShowPopups == true) {
@@ -1411,12 +1507,12 @@ const Product = (props) => {
                                                             _disabled = typeof _vari != "undefined" && _vari != null ? false : true;
 
                                                         }
-                                                        if (_disabled === false) {
-                                                            console.log("----" + opt.name)
-                                                        }
-                                                        else if (_disabled === true) {
-                                                            console.log("----" + opt.name)
-                                                        }
+                                                        // if (_disabled === false) {
+                                                        //     console.log("----" + opt.name)
+                                                        // }
+                                                        // else if (_disabled === true) {
+                                                        //     console.log("----" + opt.name)
+                                                        // }
 
 
 
@@ -1430,13 +1526,13 @@ const Product = (props) => {
                                                             if (selVal === true) {
                                                                 setSelectedOption(_item, attribute, i)
                                                             }
-                                                            return <label style={{ opacity: _disabled === true ? 0.7 : 1 }} disabled={_disabled} key={"l_" + opt.slug} onClick={() => _disabled === false ? optionClick(opt.slug, attribute, i) : null}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
+                                                            return <label style={{ opacity: _disabled === true ? 0.5 : 1 }} disabled={_disabled} key={"l_" + opt.slug} onClick={() => _disabled === false ? optionClick(opt.slug, attribute, i) : null}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
 
                                                         }
                                                         else {
                                                             var selVal = selVariations ? selVariations.some(a => a.OptionTitle.toLowerCase() === _item.toLowerCase()) : false;
                                                             // var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
-                                                            return <label style={{ opacity: _disabled === true ? 0.7 : 1 }} disabled={_disabled} key={"l_" + opt.slug} onClick={() => _disabled === false ? optionClick(opt.slug, attribute, i) : null}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
+                                                            return <label style={{ opacity: _disabled === true ? 0.5 : 1 }} disabled={_disabled} key={"l_" + opt.slug} onClick={() => _disabled === false ? optionClick(opt.slug, attribute, i) : null}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
                                                         }
 
                                                     })
