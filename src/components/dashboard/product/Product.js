@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../../common/commonComponents/LeftNavBar";
 import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
@@ -19,18 +19,18 @@ import RefreshGrey from '../../../assets/images/svg/RefreshGrey.svg';
 // import CoffeeCup from '../../../assets/images/Temp/CoffeeCup.png';
 // import SnapbackHat from '../../../assets/images/Temp/SnapbackHat.png';
 // import Face_Mask from '../../../assets/images/Temp/Face Mask.png';
-import Checkmark from '../../../assets/images/svg/Checkmark.svg';
-import LockedIcon from '../../../assets/images/svg/LockedIcon.svg';
-import Hanged_Tshirt from '../../../assets/images/Temp/Hanged-Tshirt.png';
+// import Checkmark from '../../../assets/images/svg/Checkmark.svg';
+// import LockedIcon from '../../../assets/images/svg/LockedIcon.svg';
+// import Hanged_Tshirt from '../../../assets/images/Temp/Hanged-Tshirt.png';
 import { useIndexedDB } from 'react-indexed-db';
 import FormateDateAndTime from '../../../settings/FormateDateAndTime';
 import Config from '../../../Config'
-import { initProuctFn } from '../../common/commonFunctions/productFn';
+// import { initProuctFn } from '../../common/commonFunctions/productFn';
 import ProductNote from "./ProductNote";
 import ProductDiscount from "./ProductDiscount";
 import AdjustInventory from "./AdjustInventory";
 import NoVariationSelected from "./NoVariationSelected";
-import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
+import MsgPopupOutOfStock from "./MsgPopupOutOfStock";
 import { addSimpleProducttoCart, updateProductNote, addtoCartProduct } from './productLogic';
 import { getTaxAllProduct, getSettingCase, cartPriceWithTax } from "../../common/TaxSetting";
 
@@ -74,6 +74,7 @@ const Product = (props) => {
     const [isRefereshIconInventory, setisRefereshIconInventory] = useState(false);
     const [selectedVariations, setSelectedVariations] = useState([]);
     const [checkIsSelection, setCheckIsSelection] = useState(false);
+    const [allCombinations, setAllCombinations] = useState([]);
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
@@ -698,6 +699,7 @@ const Product = (props) => {
                         }
 
                         console.log("-_attribute combination----" + JSON.stringify(_attribute1))
+                        setAllCombinations(_attribute1);
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => {
                             let _a = a.replace(/\//g, "-").toLowerCase();
@@ -897,7 +899,8 @@ const Product = (props) => {
     }
     //var selVariations = [];
     var _disableAttribute = [];
-    const optionClick = async (option, attribute, AttrIndex) => {
+    const optionClick = (option, attribute, AttrIndex) => {
+        console.log("arrayindes-"+AttrIndex);
         setIsEdit(false);
 
         //    if(selOptions && selOptions.length>0)
@@ -1009,6 +1012,14 @@ const Product = (props) => {
                     else {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                         // dispatch(getInventory(null)); //call to get product warehouse quantity
+                    }
+
+                    if (allCombinations && allCombinations > 0) {
+                        allCombinations.map(cmb => {
+                            var allCombi = cmb && cmb !== null && cmb !== undefined && cmb.split("~");
+                        })
+
+
                     }
                     //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
@@ -1182,8 +1193,7 @@ const Product = (props) => {
         toggleProductNote();
     }
     const isSelected = (name) => {
-        if(checkIsSelection===true)
-        {
+        if (checkIsSelection === true) {
             if (selectedVariations && selectedVariations.length > 0) {
                 var item = selectedVariations.find(m => m.Name === name);
                 return (typeof item != "undefined" && item != null) ? true : false;
@@ -1193,7 +1203,7 @@ const Product = (props) => {
             }
         }
         return true;
-        
+
     }
     //Showing indivdual and overall discount 30sep2022
     const showDiscounts = () => {
@@ -1399,6 +1409,13 @@ const Product = (props) => {
                                                         if (_disabled === false) {
                                                             var _vari = availableAttribute && availableAttribute.find(a => a === opt.slug);
                                                             _disabled = typeof _vari != "undefined" && _vari != null ? false : true;
+
+                                                        }
+                                                        if (_disabled === false) {
+                                                            console.log("----" + opt.name)
+                                                        }
+                                                        else if (_disabled === true) {
+                                                            console.log("----" + opt.name)
                                                         }
 
 
@@ -1564,7 +1581,7 @@ const Product = (props) => {
                                     </div>
 
                                     {isOutOfStock == false && <p className="desktop-only">{stockStatusInOut}</p>}
-                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' && _product.ManagingStock === true &&   //no need update stock when unlimited
+                                    {/*variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&*/ _product.ManagingStock === true &&   //no need update stock when unlimited
                                         <button onClick={() => toggleAdjustInventory()} disabled={stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? false : true} style={{ opacity: stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? 1 : 0.5 }}>Adjust Stock</button>
                                     }
                                     {/* {stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited'} */}
@@ -1657,7 +1674,7 @@ const Product = (props) => {
                 ></AdjustInventory>
                 <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
-                <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock} toggleAdjustInventory={toggleAdjustInventory}></MsgPopup_OutOfStock>
+                <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock} toggleAdjustInventory={toggleAdjustInventory}></MsgPopupOutOfStock>
             </React.Fragment>)
 }
 export default Product 

@@ -33,7 +33,7 @@ import { getRates, isMultipleTaxSupport, getTaxRateList } from "../common/common
 import { useIndexedDB } from 'react-indexed-db';
 import STATUSES from "../../constants/apiStatus";
 import { getTaxAllProduct } from "../common/TaxSetting";
-import MsgPopup_OutOfStock from "./product/MsgPopup_OutOfStock";
+import MsgPopupOutOfStock from "./product/MsgPopupOutOfStock";
 import TaxList from "./TaxList";
 import MsgPopup from "../common/commonComponents/MsgPopup";
 import { popupMessage } from "../common/commonAPIs/messageSlice";
@@ -661,7 +661,7 @@ const Home = () => {
             <Customercreate searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer}/>
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
-            <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopup_OutOfStock>
+            <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopupOutOfStock>
             <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
             {/* iframe subview */}
             {/* create customer */}
