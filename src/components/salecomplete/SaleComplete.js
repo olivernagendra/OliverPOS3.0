@@ -24,7 +24,7 @@ import { isSafari } from "react-device-detect";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import STATUSES from "../../constants/apiStatus";
 import { checkTempOrderSync } from "../checkout/checkoutSlice";
-import { CheckAppDisplayInView } from '../common/commonFunctions/appDisplayFunction';
+import { CheckAppDisplayInView } from '../common/commonFunctions/AppDisplayFunction';
 import NoImageAvailable from '../../assets/images/svg/NoImageAvailable.svg';
 import IframeWindow from "../dashboard/IframeWindow";
 

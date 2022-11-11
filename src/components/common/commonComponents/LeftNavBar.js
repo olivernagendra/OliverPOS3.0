@@ -21,7 +21,7 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
-import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
+import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/AppDisplayFunction';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
 import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
@@ -168,7 +168,7 @@ function LeftNavBar(props) {
     }
     var appsList = []
     var appDisplayCount = 0
-    if (mostUsedApp && mostUsedApp.length > 0) {
+    if (allAppList && mostUsedApp && mostUsedApp !== null && mostUsedApp.length > 0) {
         mostUsedApp.map(function (itemUsed, index) {
             // if (index < 3) {
             var app = allAppList && allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0 && CheckAppDisplayInView(item.viewManagement) == true)
@@ -190,7 +190,7 @@ function LeftNavBar(props) {
                     <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
                     <img src={Oliver_Type} alt="" className="oliver-text" />
                 </div>
-                <button id="registerButton" className={location.pathname === "/home" ? "page-link selected" : "page-link"} disabled={location.pathname === "/home" ? true : false} onClick={() => navigateTo('/home')}>
+                <button id="registerButton" className={(location.pathname === "/home" || location.pathname === "/checkout") ? "page-link selected" : "page-link"} disabled={location.pathname === "/home" ? true : false} onClick={() => navigateTo('/home')}>
                     <div className="img-container">
                         <img src={Register_Icon} alt="" />
                     </div>

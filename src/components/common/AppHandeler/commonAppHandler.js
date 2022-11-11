@@ -26,7 +26,7 @@ import {
   transactionApp, transactionStatus, DoParkSale, AddProductToCart, payfromApp
 } from './apps';
 import { productPriceUpdate, RawProductData, sendProductQuantity } from './apps/productApp';
-import { UpdateRecentUsedApp } from '../commonFunctions/appDisplayFunction';
+import { UpdateRecentUsedApp } from '../commonFunctions/AppDisplayFunction';
 // var JsBarcode = require('jsbarcode');
 // var print_bar_code;
 // export const textToBase64Barcode = (text) => {

@@ -34,7 +34,7 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
 
 import ParkSale from "./ParkSale";
-import { CheckAppDisplayInView } from "../common/commonFunctions/appDisplayFunction";
+import { CheckAppDisplayInView } from "../common/commonFunctions/AppDisplayFunction";
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
