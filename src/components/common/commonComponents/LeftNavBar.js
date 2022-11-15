@@ -71,7 +71,7 @@ function LeftNavBar(props) {
 
                 window.addEventListener('message', function (e) {
                     var data = e && e.data;
-                    if (typeof data == 'string' && data !== "" && location.pathname !== "/checkout") {  //checkout page handle independentaly 
+                    if (typeof data == 'string' && data !== "" && location.pathname !== "/checkout" && window.location.pathname !== "/checkout") {  //checkout page handle independentaly 
                         try {
                             var _data = data && JSON.parse(data);
                             responseData(_data)

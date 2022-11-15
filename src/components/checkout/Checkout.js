@@ -398,6 +398,30 @@ const Checkout = (props) => {
     const [isInit, setisInit] = useState(false)
     const location = useLocation();
     let useCancelled = false;
+
+    // useEffect(() => {
+    //     if (isInit) {
+    //         return;
+    //     }
+    //     function msgEvent(e) {
+    //         var data = e && e.data;
+    //         if (typeof data == 'string' && data !== "" && location.pathname == "/checkout") {
+    //             responseData(JSON.parse(data))
+    //             console.log("leftnavigation");
+    //             setisInit(true);
+    //         }
+    //     }
+
+    //     if (location.pathname === "/checkout") {
+    //         window.addEventListener('message', msgEvent);
+            
+    //         return () => {
+    //             window.removeEventListener("message", msgEvent);
+    //         }
+    //     }
+    // }, [isInit]);
+
+
     useEffect(() => {
         if (isInit === false && useCancelled == false) {
             window.addEventListener('message', function (e) {
@@ -2148,7 +2172,7 @@ const Checkout = (props) => {
         // this.setState({ activeDisplay: st })
     }
     function ToggleiFrameWindow(_exApp = null) {
-        if (_exApp != null) { setExtApp(_exApp); }
+        if (_exApp != null) { setExtApp(_exApp); setisInit(false); }
         if (isShowiFrameWindow === false) {
             UpdateRecentUsedApp(_exApp, true, 0)
         }
