@@ -633,7 +633,7 @@ const Home = () => {
                 {isShowLinkLauncher===true?<LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>:null}
                 {isShowiFrameWindow===true?<IframeWindow isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow>:null}
                 {/* {isShowProductxWindow===true ? <ProductxWindow product={productxItem} isShow={isShowProductxWindow} ToggleProductxWindow={ToggleProductxWindow}></ProductxWindow> : null} */}
-                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn}></TileList>
+                <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn} toggleOutOfStock={toggleOutOfStock}></TileList>
                 <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} /*editPopUp={editPopUp}*/ toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
 
 

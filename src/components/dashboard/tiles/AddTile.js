@@ -120,9 +120,9 @@ const AddTile = (props) => {
         if (value != "") {
             setisShowCanelBtn(true);
             var fCList = recursivelyFindKeyValue('', value, categoryList, 0);
-            fCList=[...new Set(fCList.map((fc)=>fc))];
+            fCList = [...new Set(fCList.map((fc) => fc))];
             var fAList = recursivelyFindKeyValue('', value, attributeList, 0);
-            fAList=[...new Set(fAList.map((fa)=>fa))];
+            fAList = [...new Set(fAList.map((fa) => fa))];
             if (fCList && fCList.length > 0) {
                 fCList = AddItemType(fCList, "category");
                 // _filteredData.concat(fCList);
@@ -177,10 +177,17 @@ const AddTile = (props) => {
         }
         else if (type && type === "category") {
             id = item.id;
+            if (item.hasOwnProperty('parent') && item.parent!=0) {
+                type = "SubCategory";
+            }
             slug = item.Code && item.Code;
+
         }
         else if (type && type === "attribute") {
             id = item.Id;
+            if (item.hasOwnProperty('term_taxonomy_id')) {
+                type = "SubAttribute";
+            }
             slug = item.Code && item.Code;
         }
 
@@ -304,7 +311,7 @@ const AddTile = (props) => {
                             <button id="cancelDropdownSearch" onClick={() => clearSearch()} className={isShowCanelBtn === true ? "display-flex" : ""}>
                                 <img src={AdvancedSearchCancelIcon} alt="" />
                             </button>
-                            <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" onFocus={() => showCancelButton()} onBlur={() => hideCancelButton()} className={msg}/>
+                            <input type="text" id="tileLink" placeholder="Search for Tag/Category/Attributes/Product" value={serachString} onChange={filterProduct} autoComplete="off" onFocus={() => showCancelButton()} onBlur={() => hideCancelButton()} className={msg} />
                             <div className="error-message">
                             </div>
                             <div className="option-container">
