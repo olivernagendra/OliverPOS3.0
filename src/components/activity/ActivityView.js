@@ -63,7 +63,7 @@ const ActivityView = () => {
     const [responsiveCusList, setResponsiveCusList] = useState(false)
     const [activityListcount, setactivityListcount] = useState([])
     const [activeDetailApi, setactiveDetailApi] = useState(true)
-
+    const [ActivityOrderDetails, setActivityOrderDetails] = useState([])
     // All TOGGLE 
     const toggleAppLauncher = () => {
         setisShowAppLauncher(!isShowAppLauncher)
@@ -129,16 +129,25 @@ const ActivityView = () => {
     }, []);
 
     const reload = (pagno) => {
-        console.log("Reload function call")
+        // console.log("Reload function call")
         var UID = get_UDid('UDID')
         var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
         dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": pagno }));
     }
 
+
+    // Getting Response  From Order Details
+    const [respActivitygetdetails] = useSelector((state) => [state.activityGetDetail])
+    useEffect(() => {
+        if (respActivitygetdetails && respActivitygetdetails.status == STATUSES.IDLE && respActivitygetdetails.is_success && respActivitygetdetails.data) {
+            setActivityOrderDetails(respActivitygetdetails && respActivitygetdetails.data && respActivitygetdetails.data.content);
+
+        }
+    }, [respActivitygetdetails]);
+    //  console.log("ActivityOrderDetails", ActivityOrderDetails)
+
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
-    //console.log("activityAllDetails", activityAllDetails)
-
     useEffect(() => {
         if (activityAllDetails && activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records.length > 0) {
             var temState = [...AllActivityList, ...activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records]
@@ -155,7 +164,7 @@ const ActivityView = () => {
         if (activityfilter && activityfilter.data.length > 0) {
             setAllActivityList(activityfilter.data);
             setSmallLoader(false)
-        }else{
+        } else {
             setAllActivityList([]);
             setSmallLoader(false)
         }
@@ -259,7 +268,7 @@ const ActivityView = () => {
     let useCancelled1 = false;
     useEffect(() => {
         var UID = get_UDid('UDID');
-        
+
         // if(transactionsRedirect &&transactionsRedirect.length > 0) {
         //     var customer_to_activity_id = sessionStorage.getItem("transredirection") ?sessionStorage.getItem("transredirection"):'';
         //   }
@@ -267,7 +276,7 @@ const ActivityView = () => {
 
         // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
-        if (useCancelled1 == false && activeDetailApi !== false ) {
+        if (useCancelled1 == false && activeDetailApi !== false) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
             }
@@ -484,7 +493,7 @@ const ActivityView = () => {
         };
         // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
-      
+
 
     }
 
@@ -529,17 +538,27 @@ const ActivityView = () => {
     var _platform = [{ key: "both", value: "Both" }, { key: "oliver-pos", value: "Oliver POS" }, { key: "web-shop", value: "Webshop" }];
     var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
 
-       /// Scroll  then api call
+    /// Scroll  then api call
     const updateSomething = () => {
         var transactionsRedirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transredirection") : '';
         setactiveDetailApi(false)
         setDefauldNumber(defauldnumber + 1)
         if (AllActivityList.length == activityListcount) {
 
-        } else if (defauldnumber != 1 && transactionsRedirect =='') {
+        } else if (defauldnumber != 1 && transactionsRedirect == '') {
             reload(defauldnumber)
         }
     }
+
+    var subtotal = 0.0;
+    if (ActivityOrderDetails) {
+        subtotal = parseFloat(
+            parseFloat(ActivityOrderDetails.total_amount - ActivityOrderDetails.refunded_amount) -
+            parseFloat(ActivityOrderDetails.total_tax - ActivityOrderDetails.tax_refunded)
+        ).toFixed(2);
+
+    }
+
 
     return <>
         <div className="transactions-wrapper">
@@ -561,14 +580,14 @@ const ActivityView = () => {
             <div id="transactionsSearch" className={isCvmobile === true ? "transactions-search open" : "transactions-search"}>
                 <div className="search-header">
                     <p>Transactions</p>
-                    <button id="clearSearchFields" onClick={()=>clearFilter()}>Clear</button>
+                    <button id="clearSearchFields" onClick={() => clearFilter()}>Clear</button>
                 </div>
                 <div className="search-header-mobile">
                     <button id="mobileSearchExit" onClick={mobileTransactionsSearch}>
                         <img src={AngledBracketBlueleft} alt="" />
                         Go Back
                     </button>
-                    <button id="mobileSearchFieldClear" onClick={()=>clearFilter()} >Clear</button>
+                    <button id="mobileSearchFieldClear" onClick={() => clearFilter()} >Clear</button>
                 </div>
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
@@ -699,7 +718,7 @@ const ActivityView = () => {
                 </div>
                 <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} updateSomething={updateSomething} />
             </div>
-            <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
+            {_activity&&_activity.length > 0 ?   <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">
                     <button id="mobileDetailedExit" onClick={toggleResponsiveList}>
                         <img src={AngledBracketBlueleft} alt="" />
@@ -708,11 +727,40 @@ const ActivityView = () => {
                 </div>
                 <ActivityOrderDetail />
                 <div className="order-details">
-                    <ActivityOrderList />
+                    <ActivityOrderList
+                        Subtotal={subtotal ? subtotal : 0}
+                        //  Discount={_discount}
+                        TotalTax={ActivityOrderDetails && ActivityOrderDetails.total_tax}
+                        tax_refunded={ActivityOrderDetails && ActivityOrderDetails.tax_refunded}
+                        TotalAmount={ActivityOrderDetails && ActivityOrderDetails.total_amount}
+                        refunded_amount={ActivityOrderDetails && ActivityOrderDetails.refunded_amount}
+                        OrderPayment={ActivityOrderDetails && ActivityOrderDetails.order_payments}
+                        refundPayments={ActivityOrderDetails && ActivityOrderDetails.order_Refund_payments}
+                        cash_round={ActivityOrderDetails && ActivityOrderDetails.cash_rounding_amount}
+                        balence={0}
+                        TimeZone={ActivityOrderDetails && ActivityOrderDetails.time_zone}
+                        refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount }
+                        redeemPointsToPrint={ActivityOrderDetails.meta_datas ?   ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
+                        orderMetaData={ActivityOrderDetails && ActivityOrderDetails.meta_datas}
+                        // TotalIndividualProductDiscount={
+                        //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
+                        //       ? _totalProductIndividualDiscount
+                        //       : 0
+                        //   }
+                    />
                 </div>
 
                 <ActivityFooter getPdfdateTime={getPdfdateTime} />
+            </div> : <div style={{ textAlign: "center",paddingTop:"50%" }}>
+            <div className="no-results">
+                <p className="style1">No order to display.</p>
+                <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
             </div>
+            </div> }
+           
+
+        
+            
         </div>
         <div className="subwindow-wrapper hidden"></div>
     </>

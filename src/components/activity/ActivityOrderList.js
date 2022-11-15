@@ -7,7 +7,8 @@ import shirt from '../../assets/images/Temp/shirt.png'
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { useIndexedDB } from 'react-indexed-db';
 import { Await } from "react-router-dom";
-const ActivityOrderList = () => {
+const ActivityOrderList = (props) => {
+   // console.log("props", props)
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
 
@@ -37,13 +38,6 @@ const ActivityOrderList = () => {
 
 
 
-
-
-    var isTotalRefund = false;
-    if (activityOrderDetails && (activityOrderDetails.total_amount - data.refunded_amount).toFixed(2) == '0.00') {
-        isTotalRefund = true
-    }
-
     var _totalProductIndividualDiscount = 0;
     var _indivisualProductDiscountArray = [];
     var _indivisualProductCartDiscountArray = [];
@@ -51,6 +45,7 @@ const ActivityOrderList = () => {
     var _tempIndivisualProductCartDiscountArray = [];
     var _tempProductIndividualDiscount = 0;
     const reCalculateDiscount = (item) => {
+
         var price = 0;
         var LineItem = activityOrderDetails && activityOrderDetails.line_items;
         LineItem && LineItem.map(x => {
@@ -87,8 +82,6 @@ const ActivityOrderList = () => {
         });
 
     }
-
-
 
 
     var lineitems = activityOrderDetails && activityOrderDetails.line_items ? activityOrderDetails.line_items : [];
@@ -153,61 +146,75 @@ const ActivityOrderList = () => {
     const productImageFind = async (item) => {
         var product = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
         //   return product.ProductImage
-
     }
 
 
-var _totalProductIndividualDiscount=0;
-var _indivisualProductDiscountArray=[];
-var _indivisualProductCartDiscountArray=[];
+    var _discount = 0;
 
-
-
- _totalProductIndividualDiscount=0;
- _indivisualProductDiscountArray=[];
- _indivisualProductCartDiscountArray=[];
-
-var taxInclusiveName= "";
-if(activityOrderDetails && activityOrderDetails && activityOrderDetails.meta_datas){
-    taxInclusiveName =getInclusiveTaxType(activityOrderDetails.meta_datas);
-}
-
-var _discount=0;
-                                                            
-if(_indivisualProductCartDiscountArray && _indivisualProductCartDiscountArray.length>0){
-    _indivisualProductCartDiscountArray && _indivisualProductCartDiscountArray.map(x=>{
-          _discount+=x.discountAmount     
-    });
-}
-else
-{
-    if(_indivisualProductDiscountArray && _indivisualProductDiscountArray.length>0){
-        _discount=0;
+    if (
+        _indivisualProductCartDiscountArray &&
+        _indivisualProductCartDiscountArray.length > 0
+    ) {
+        _indivisualProductCartDiscountArray &&
+            _indivisualProductCartDiscountArray.map((x) => {
+                _discount += x.discountAmount;
+            });
+    } else {
+        if (
+            _indivisualProductDiscountArray &&
+            _indivisualProductDiscountArray.length > 0
+        ) {
+            _discount = 0;
+        } else {
+            _discount =
+                data && data !== "" && data.discount
+                    ? data.discount
+                    : 0;
+        }
     }
-    else
-    {
-        _discount= activityOrderDetails && activityOrderDetails !=="" && activityOrderDetails.discount? activityOrderDetails.discount:0;
+   // console.log("-----_discount-----" + _discount);
+
+    var TotalIndividualProductDiscount = _discount == data.discount ? _totalProductIndividualDiscount : 0
+    var totalDiscount = _discount - TotalIndividualProductDiscount;
+    function Capitalize(str) {
+        var value = str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        return value;
     }
-    
-}
-console.log("activityOrderDetails",activityOrderDetails)
 
 
+    var balance = 0;
+    if (props.OrderPayment && props.OrderPayment.length > 0) {
+        props.OrderPayment.map(item => {
+            balance += parseFloat(item.amount)
+        })
+    }
+    var remaining_balance = (parseFloat(props.Subtotal) + parseFloat(props.TotalTax)) - parseFloat(balance);
+    var redeemPointsForActivity = props.redeemPointsToPrint ? +props.redeemPointsToPrint.match(/\d+/) : 0
+    var cashOrderData = ''
+    var cashChange = ''
+    var cashPayment = ''
+    var taxInclusiveName = getInclusiveTaxType(props.orderMetaData);
+    props.orderMetaData && props.orderMetaData.map((meta) => {
+        // metaData && metaData.map((metaData, index) => {
+        if (meta.ItemName == '_order_oliverpos_cash_change') {
+            cashOrderData = meta.ItemValue && meta.ItemValue !== '' ? meta.ItemValue : ''
+        }
+    })
 
+    if (cashOrderData && cashOrderData !== '') {
+        cashOrderData = JSON.parse(cashOrderData)
+        cashChange = cashOrderData.change
+        cashPayment = cashOrderData.cashPayment
+    }
 
-
-
-
-
-
-
-
-
+    var isTotalRefund = false;
+    if (activityOrderDetails && (activityOrderDetails.total_amount - data.refunded_amount).toFixed(2) == '0.00') {
+        isTotalRefund = true
+    }
 
 
     return (
         <>
-
             <p>Order Details</p>
             {
                 lineitems && lineitems.map((item, index) => {
@@ -313,18 +320,69 @@ console.log("activityOrderDetails",activityOrderDetails)
 
 
 
-            <div className="custom-m">
-                {/* <p className="style2">Sub-Total : {activityOrderDetails.Subtotal != 'NaN' ? (activityOrderDetails.TotalAmount - activityOrderDetails.refunded_amount) == 0 ? 0.00
+            <div className="custom-fields" style={{display:'grid',justifyContent:'flex-end' }} >
+                <p className="style2">Sub-Total : {props.Subtotal != 'NaN' ? (props.TotalAmount - props.refunded_amount) == 0 ? 0.00
                     : taxInclusiveName !== "" ?
-                        (parseFloat(activityOrderDetails.Subtotal) + parseFloat(activityOrderDetails.TotalTax) - activityOrderDetails.tax_refunded - activityOrderDetails.cash_round).toFixed(2)
-                        : (parseFloat(activityOrderDetails.Subtotal)).toFixed(2)
-                    : 0}</p> */}
+                        ((parseFloat(props.Subtotal) + parseFloat(props.TotalTax) + totalDiscount - props.tax_refunded - props.cash_round)).toFixed(2)
+                        : (parseFloat(props.Subtotal) + totalDiscount).toFixed(2) //- props.cash_round
+                    : 0}   </p>
 
-                <p className="style2">Total Tax(Incl) : 20%</p>
-                <p className="style2">Total : HIOK23498979</p>
-                <p className="style2">Card  : (10, November 2022)</p>
+                {totalDiscount !== 0 ?
+                    <p className="style2">totalDiscount : {totalDiscount == 0 ? 0.00 : (totalDiscount).toFixed(2)}</p>
+                    : null}
 
-                <p className="style2">Balance  : 0.00</p>
+
+                <p className="style2">Total Tax(Incl) : {(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : (props.TotalTax - props.tax_refunded).toFixed(2)}</p>
+
+                {props.cash_round !== 0 ?
+                    <p className="style2">Cash Rounding : {(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : props.cash_round}</p>
+                    : null}
+                <p className="style2"> <strong>Total</strong> : {(props.TotalAmount - props.refunded_amount)}</p>
+
+                {props.OrderPayment ? props.OrderPayment.map((item, index) => {
+                    if (item.type !== null) {
+                        return (
+                            <p className="style2">{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)}) `}  : {item.amount.toFixed(2)}</p>
+                        )
+                    }
+                }) : null}
+
+
+                {cashChange !== '' && cashChange ? (
+                    <p className="style2">{`${Capitalize('change')}`}  : {cashChange}</p>
+                ) : null}
+
+                {cashPayment !== '' && cashPayment ? (
+                    <p className="style2">{`${Capitalize('cash payment')}`}  : {cashPayment}</p>
+                ) : null}
+
+                {(props.refunded_amount > 0) ?
+                    <p className="style2">Refunded tax  : {(props.tax_refunded).toFixed(2)}</p>
+                    : null}
+
+                {props.refundCashRounding !== 0 &&
+                    <p className="style2">Refund Cash Rounding  : {(props.refunded_amount - props.refundCashRounding) == 0 ? 0.00 : (props.refundCashRounding)}</p>
+                }
+
+                {(props.refunded_amount > 0) ?
+                    <p className="style2">Refunded Amount  : {(props.refunded_amount).toFixed(2)}</p>
+                    : null}
+                 {(props.refunded_amount > 0) ?
+               <p className="style2"><strong>Refund Payments</strong>  </p>
+                    :null}
+
+                {
+                    (props.refunded_amount > 0) && (
+                        (typeof props.refundPayments !== "undefined" && props.refundPayments.length > 0) && (
+                            props.refundPayments && props.refundPayments.map((item, index) => {
+                                return (
+                                    <p className="style2">{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)})`}  : {(item.amount).toFixed(2)}</p>
+                                )
+                            })
+                        )
+                    ) 
+                }
+                <p className="style2">  Balance  : {remaining_balance >= 0 ? parseFloat(remaining_balance).toFixed(2) :parseFloat(props.balence).toFixed(2)} </p>
             </div>
         </>
     )

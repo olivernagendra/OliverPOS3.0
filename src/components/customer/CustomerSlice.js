@@ -391,7 +391,7 @@ export const getAllEventsSlice = createSlice({
       .addCase(getAllEvents.fulfilled, (state, action) => {
         state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
         state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
-        state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.error = action.payload && action.payload.is_success == false ? action.payload.message : action.payload ? "Fail to fetch" : "";;
         state.is_success = action.payload && action.payload.is_success == true ? true : false;
       })
       .addCase(getAllEvents.rejected, (state, action) => {

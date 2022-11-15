@@ -71,7 +71,7 @@ const CustomerView = () => {
   const [updateCustomerState, setupdateCustomerState] = useState(false)
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
-    setisShowAppLauncher(!isShowAppLauncher) 
+    setisShowAppLauncher(!isShowAppLauncher)
     setisShowLinkLauncher(false)
   }
   const toggleClickList = () => {
@@ -99,7 +99,7 @@ const CustomerView = () => {
     setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
     seteditcustomerparam('')
   }
-  const toggleEditcustomer =(param)=>{
+  const toggleEditcustomer = (param) => {
     seteditcustomerparam(param)
     setisShowcreatecustomerToggle(!isShowcreatecustomerToggle)
   }
@@ -157,9 +157,10 @@ const CustomerView = () => {
   // First Time GetAllEvant and CustomerDetails API Call
   let useCancelled1 = false;
   useEffect(() => {
+    //  console.log("useEffect work",)
     var UID = get_UDid('UDID');
-      var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
-      setupdateCustomerId(CUSTOMER_ID)
+    var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
+    setupdateCustomerId(CUSTOMER_ID)
     if (useCancelled1 == false) {
       dispatch(customergetDetail(CUSTOMER_ID, UID));
       dispatch(getAllEvents(CUSTOMER_ID, UID));
@@ -231,6 +232,8 @@ const CustomerView = () => {
 
   /// Customer render List Click Function
   const activeClass = (item, index) => {
+    // console.log("activeClass work",)
+
     var UID = get_UDid('UDID');
     if (item && item.WPId !== '') {
       setupdateCustomerId(item.WPId)
@@ -355,9 +358,13 @@ const CustomerView = () => {
   }
 
   const updateSomething = (customer_Id) => {
+    // console.log("updateSomething work",)
     var UID = get_UDid('UDID');
-    dispatch(customergetDetail(customer_Id, UID));
-    dispatch(getAllEvents(customer_Id, UID));
+    setTimeout(() => {
+      dispatch(customergetDetail(customer_Id, UID));
+      dispatch(getAllEvents(customer_Id, UID));
+    }, 300);
+
   }
 
 
@@ -411,55 +418,60 @@ const CustomerView = () => {
   }
 
 
-    // Customer Edit  API response
-    const [customereditsucc] = useSelector((state) => [state.customerupdate])
-    useEffect(() => {
-      if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
-        setcustomerupdatedetails(true)
-      }
-    }, [customereditsucc]);
-
-
-    const deleteNotes=(Id)=>{
-      if(Id !==""){
-        dispatch(deleteCustomerNote(Id))
-        updateSomething(updateCustomerId);
-      }
+  // Customer Edit  API response
+  const [customereditsucc] = useSelector((state) => [state.customerupdate])
+  useEffect(() => {
+    if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
+      setcustomerupdatedetails(true)
     }
-
-    const [respDeleteCustomerNote] = useSelector((state) => [state.deleteCustomerNote])
-    useEffect(() => {
-        if (respDeleteCustomerNote && respDeleteCustomerNote.status == STATUSES.IDLE && respDeleteCustomerNote.is_success && respDeleteCustomerNote.data ) {
-          updateSomething(updateCustomerId);
-
-        }
-    }, [respDeleteCustomerNote]);
-
-    const [respUpdateCustomerNote] = useSelector((state) => [state.updateCustomerNote])
-    useEffect(() => {
-        if (respUpdateCustomerNote && respUpdateCustomerNote.status == STATUSES.IDLE && respUpdateCustomerNote.is_success && respUpdateCustomerNote.data) {
-          updateSomething(updateCustomerId);
-
-        }
-    }, [respUpdateCustomerNote]);
+  }, [customereditsucc]);
 
 
+  const deleteNotes = (Id) => {
+    if (Id !== "") {
+      dispatch(deleteCustomerNote(Id))
+      updateSomething(updateCustomerId);
+    }
+  }
 
-    const [customerres] = useSelector((state) => [state.customersave])
-    useEffect(() => {
-        if (customerres && customerres.status == STATUSES.IDLE && customerres.is_success && customerres.data) {
-          setupdateCustomerState(true)
+  const [respDeleteCustomerNote] = useSelector((state) => [state.deleteCustomerNote])
+  useEffect(() => {
+    if (respDeleteCustomerNote && respDeleteCustomerNote.status == STATUSES.IDLE && respDeleteCustomerNote.is_success && respDeleteCustomerNote.data) {
+      updateSomething(updateCustomerId);
 
-        }
-    }, []);
-  
+    }
+  }, [respDeleteCustomerNote]);
+
+  const [respUpdateCustomerNote] = useSelector((state) => [state.updateCustomerNote])
+  useEffect(() => {
+    if (respUpdateCustomerNote && respUpdateCustomerNote.status == STATUSES.IDLE && respUpdateCustomerNote.is_success && respUpdateCustomerNote.data) {
+      updateSomething(updateCustomerId);
+    }
+  }, [respUpdateCustomerNote]);
+
+
+
+  const [customerres] = useSelector((state) => [state.customersave])
+  useEffect(() => {
+    if (customerres && customerres.status == STATUSES.IDLE && customerres.is_success && customerres.data) {
+      setupdateCustomerState(true)
+
+    }
+  }, []);
+
 
   const handleKeyUp = (e) => {
-    console.log("e", e.keyCode)
+    // console.log("e", e.keyCode)
     if (e.keyCode == 13) {
       productDataSearch();
     }
   }
+
+  
+
+
+  var noteslength =  eventCollection&&eventCollection.filter(i => i.eventtype.toLowerCase() == 'add new note')
+  console.log("noteslength",noteslength.length)
   return (
     <React.Fragment>
       {customerAllEvant.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
@@ -580,10 +592,10 @@ const CustomerView = () => {
                   // className={active == index ? 'selected-indicator' : ''} 
                   />
                 )
-              }) :<div className="no-results">
-                    <p className="style1">No results found.</p>
-                    <p className="style2">Sorry, you search did not <br /> match any results.</p>
-                </div>}
+              }) : <div className="no-results">
+                <p className="style1">No results found.</p>
+                <p className="style2">Sorry, you search did not <br /> match any results.</p>
+              </div>}
             </>}
 
           </div>
@@ -666,18 +678,58 @@ const CustomerView = () => {
                 )
               }
             })}
-
-
-
           </div>
-
           <div className="cust-notes">
             <div className="header-row">
               <p>Customer Notes</p>
               <button id="addCustNoteButton" onClick={toggleNoteModel} >Add Note</button>
             </div>
-            {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+            {/* {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+              return (
+                item.eventtype.toLowerCase() == 'new order' ?
+                  <div className="customer-note" key={index}>
+                    <div className="row">
+                      <p className="style1"> {item.datetime ? item.datetime : ''}</p>
+                      <p className="style2"> {item.time ? item.time : ''}</p>
+                     
+                    </div>
+                    <strong>{item.status == 'refunded' ? LocalizedLanguage.refundissued
+                      : LocalizedLanguage.newOrder
+                    }</strong>
+                    <p style={{ inlineSize: "min-content" }}>{LocalizedLanguage.totalOrderAmount}</p>
+                    <p style={{ display: 'grid', justifyContent: 'center' }} >{(item.amount ? item.amount : 0)}</p>
+                  </div> : item.eventtype.toLowerCase() == 'add new note' ? <>
+                    <div className="customer-note">
+                      <div className="row">
+                      <p className="style1"> {item.datetime ? item.datetime : ''}</p>
+                      <p className="style2"> {item.time ? item.time : ''}</p>
+                        <button onClick={()=>deleteNotes(item.Id)}>
+                          <img src={CircledX_Grey} alt="" />
+                        </button>
+                      </div>
+                      <p style={{ inlineSize: "min-content" }}>{item.Description}</p>
+                     
+                    </div>
+                  </> : <div className="customer-note">
+                    <div className="row">
+                    <p className="style1"> {item.datetime ? item.datetime : ''}</p>
+                      <p className="style2"> {item.time ? item.time : ''}</p>
+                     
+                    </div>
+                    <strong> {LocalizedLanguage.updatecustomer}</strong>
+                    {item.Description ?
+                     <p style={{ inlineSize: "min-content" }}>{item.Description}</p>
+                    :null}
+                 
+                  </div>
+              )
 
+            })
+              : <div>No record found</div>
+            } */}
+
+
+             {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
               return (
                 item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
                   <div className="customer-note">
@@ -692,20 +744,29 @@ const CustomerView = () => {
                   </div>
                   : ""
               )
-            }) : <div>Record not found</div>}
+            }) : noteslength.length > 0 ?   <div>Record not found</div>:''} 
+
+
+
+
+
           </div>
+
+
+
+
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
-        {isShowcreatecustomerToggle === true ?  <Customercreate 
-          isShow={isShowcreatecustomerToggle} 
-          toggleCreateCustomer={toggleCreateCustomer}
-          toggleEditcustomer={toggleEditcustomer}
-          editcustomerparam={editcustomerparam}
-          customerDetailData={customerDetailData ? customerDetailData:""} 
-          CustomerAddress={CustomerAddress}
-          getCustomerFromIDB={getCustomerFromIDB}
+          {isShowcreatecustomerToggle === true ? <Customercreate
+            isShow={isShowcreatecustomerToggle}
+            toggleCreateCustomer={toggleCreateCustomer}
+            toggleEditcustomer={toggleEditcustomer}
+            editcustomerparam={editcustomerparam}
+            customerDetailData={customerDetailData ? customerDetailData : ""}
+            CustomerAddress={CustomerAddress}
+            getCustomerFromIDB={getCustomerFromIDB}
 
-           /> :null} 
+          /> : null}
 
           <div className="footer">
             <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>

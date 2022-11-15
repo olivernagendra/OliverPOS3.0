@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect,useRef } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
@@ -12,6 +12,7 @@ import Config from '../../Config'
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 const Customercreate = (props) => {
     // console.log("editcustomerparam", props)
+    const textInput = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     var UID = get_UDid('UDID');
@@ -93,7 +94,7 @@ const Customercreate = (props) => {
 
     let useCancelled = false;
     useEffect(() => {
-        //console.log("useeffect work")
+        textInput.current.focus();
         if (useCancelled == false) {
             GetCustomerFromIDB()
         }
@@ -521,8 +522,8 @@ const Customercreate = (props) => {
 
     }
 
-    console.log("values",values)
-    console.log(" props.searchSringCreate", props.searchSringCreate)
+   // console.log("values",values)
+   // console.log(" props.searchSringCreate", props.searchSringCreate)
 
 
 
@@ -555,7 +556,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustEmail">Email*</label>
                                     <input type="email" placeholder="Enter Email" name='email'
-                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete ='off' />
+                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete ='off' ref={textInput} />
                                     {/* <p>{errors.email}</p> */}
                                     <div className="error-wrapper">{errors.email}</div>
                                 </div>

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef  } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import {  updateCustomerNote } from './CustomerSlice'
 import IconDarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg'
 const AddCustomersNotepoup = (props) => {
+    const textInput = useRef(null);
    // console.log("props",props)
     const dispatch = useDispatch();
     const [Notes, setNotes] = useState('')
@@ -20,6 +21,11 @@ const AddCustomersNotepoup = (props) => {
             setNotes('');
         }
     }
+    useEffect(() => {
+       // console.log("textInput",textInput)
+        textInput.current.focus();
+    }, [props.isShow]);
+
 
     
     // Close Button popup
@@ -46,7 +52,7 @@ const AddCustomersNotepoup = (props) => {
             <div className="subwindow-body">
                 <div className="auto-margin-top" />
                 <label for="custNote">Enter a note for this customer:</label>
-                <textarea
+                <textarea ref={textInput}
                     name="custNote"
                     id="custNote"
                     placeholder="Add note here"
