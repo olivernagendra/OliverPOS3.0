@@ -180,7 +180,13 @@ const Product = (props) => {
                 var maxQty = (selProduct.ManagingStock == false && selProduct.StockStatus == "outofstock") ? "outofstock" :
                     (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
                 // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
-                if (maxQty == 'Unlimited' || qty < maxQty) {
+                //-- maxQty update after inventory check
+                if(typeof _currentStock!="undefined" && _currentStock!=null)
+                {
+                    maxQty = _currentStock;
+                }
+                //---
+                if (maxQty == 'Unlimited' || qty <= maxQty) {
                     qty++;
                 }
                 setProductQty(qty)
@@ -692,7 +698,7 @@ const Product = (props) => {
                                 if (typeof _result == "undefined" || _result == null) {
                                     _attribute1.push(item.combination);
                                 }
-                                console.log(_result);
+                                //console.log(_result);
                             }
                             else {
                                 _attribute1.push(item.combination);
@@ -710,7 +716,7 @@ const Product = (props) => {
                                 if (typeof _result == "undefined" || _result == null) {
                                     _attribute.push(_a);
                                 }
-                                console.log(_result);
+                                //console.log(_result);
                             }
                             else {
                                 _attribute.push(_a);
@@ -850,7 +856,7 @@ const Product = (props) => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
                         //return selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
-                        return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                        return selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
@@ -861,7 +867,7 @@ const Product = (props) => {
 
                     allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
-                        var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+                        var aa = selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")))
                         //var aa = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) )
                         if (aa == true) {
                             allCombi = allCombi.map(a => {
@@ -884,7 +890,7 @@ const Product = (props) => {
                         // }
                         
                         //var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")))
-                        var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        var result = selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
                         // if (result === true) {
                         //     console.log("--att p count--->> ", allCombi.join(','));
                         // }
@@ -915,7 +921,7 @@ const Product = (props) => {
                     //         {
                     //console.log(allVariations.length+"--matched-----"+c);
                     // if (_all && _all.length > 0) {
-                        var found = selVari.find(a => cmb.includes(a.Slug));
+                        var found = selVari.find(a => cmb.includes(a.Slug)|| cmb.includes("**"));
                         // var _found = selVari.filter(a => cmb.includes(a.Slug));
                         if (typeof found != "undefined" && found != null) {
                             var _f = cmb.find(a => a === found.Slug);
@@ -980,6 +986,7 @@ const Product = (props) => {
     }
     //var selVariations = [];
     var _disableAttribute = [];
+    var isAllOption = false;
     const optionClick = (option, attribute, AttrIndex) => {
        // console.log("arrayindes-" + AttrIndex);
         setIsEdit(false);
@@ -992,16 +999,17 @@ const Product = (props) => {
         //----------
         var _slug = null;
         let _OptionAll = attribute.OptionAll;// && JSON.parse(attribute.OptionAll);
-        var isAllOption = false;
+        
         if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
             isAllOption = true;
         }
         else {
             _OptionAll = attribute.options ? attribute.options.split(',') : [];
         }
-        var result = _OptionAll.filter(b => b.slug === option);
+        var result =isAllOption===true? _OptionAll.filter(b => (b.hasOwnProperty("slug")? b.slug:b) === option):_OptionAll.filter(b => b === option);
         if (result && typeof result != "undefined" && result.length > 0) {
-            _slug = result;
+
+            _slug= isAllOption ==true &&  result[0].hasOwnProperty("slug") ?result[0].slug:result[0];
             //selVariations.find(ele => ele.OptionTitle===result[0].name);
         }
         //------
@@ -1011,11 +1019,11 @@ const Product = (props) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug[0].slug : "", });
+            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug : "", });
         }
         _selVariations = _selVariations.map(obj => {
             if (obj.Name === attribute.Name) {
-                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug[0].slug : "" };
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug: "" };
             }
             return obj;
         });
@@ -1083,7 +1091,7 @@ const Product = (props) => {
                         //-------
 
 
-                        return _selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                            return _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
@@ -1115,7 +1123,7 @@ const Product = (props) => {
 
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
-                        var aa = _selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")))
+                        var aa = _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")))
 
                         if (aa == true) {
                             allCombi = allCombi.map(a => {
@@ -1158,7 +1166,7 @@ const Product = (props) => {
                     //console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
                      var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
                     // //_disableAttribute=array3;
-                    if(_selVariations && _selVariations.length==1 && array3)
+                    if(_selVariations && _selVariations.length==1 && array3 && _attribute && _attribute.length>1)
                     {
                         setDisableAttribute(array3);
                     }
@@ -1496,23 +1504,34 @@ const Product = (props) => {
                                             <div className={isSelected(attribute.Name) === false ? "radio-group error" : "radio-group"}>
                                                 {
                                                     attribute.OptionAll && attribute.OptionAll.map((opt, i) => {
-                                                        let _item = opt.slug;
+
+                                                        var option =  opt.hasOwnProperty("slug") ?opt.slug:opt;
+                                                        var displayOption= opt.hasOwnProperty("name") ?opt.name:opt;
+                                                        
+                                                        //var newOption = isAllOption ==true && opt.slug ? opt.slug:opt;
+
+                                                        let _item = option;//opt.slug;
 
                                                         var _disabled = false
                                                         if (disableAttribute && disableAttribute.length > 0) {
-                                                            _disabled = disableAttribute && disableAttribute.some(a => a === opt.slug);
+                                                            _disabled = disableAttribute && disableAttribute.some(a => a.toLowerCase() === option.toLowerCase());
                                                         }
                                                         if (_disabled === false) {
-                                                            var _vari = availableAttribute && availableAttribute.find(a => a === opt.slug);
-                                                            _disabled = typeof _vari != "undefined" && _vari != null ? false : true;
+                                                            if(availableAttribute && availableAttribute.length>0)
+                                                            {
+                                                                var _vari = availableAttribute.find(a => a.toLowerCase() === option.toLowerCase()|| a==="**");
+                                                                _disabled = typeof _vari != "undefined" && _vari != null ? false : true;
+                                                            }
 
                                                         }
-                                                        // if (_disabled === false) {
-                                                        //     console.log("----" + opt.name)
-                                                        // }
-                                                        // else if (_disabled === true) {
-                                                        //     console.log("----" + opt.name)
-                                                        // }
+                                                        if (_disabled === false) 
+                                                        {
+                                                            console.log("----" +displayOption +"---"+_disabled)
+                                                        }
+                                                        else if (_disabled === true) 
+                                                        {
+                                                            console.log("----" + displayOption+"---"+_disabled)
+                                                        }
 
 
 
@@ -1526,13 +1545,13 @@ const Product = (props) => {
                                                             if (selVal === true) {
                                                                 setSelectedOption(_item, attribute, i)
                                                             }
-                                                            return <label style={{ opacity: _disabled === true ? 0.5 : 1 }} disabled={_disabled} key={"l_" + opt.slug} onClick={() => _disabled === false ? optionClick(opt.slug, attribute, i) : null}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
+                                                            return <label className={_disabled === true ?"btn-disable":""}  disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null}/><div className="custom-radio"><p>{displayOption}</p></div></label>
 
                                                         }
                                                         else {
-                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle.toLowerCase() === _item.toLowerCase()) : false;
+                                                            var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
                                                             // var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
-                                                            return <label style={{ opacity: _disabled === true ? 0.5 : 1 }} disabled={_disabled} key={"l_" + opt.slug} onClick={() => _disabled === false ? optionClick(opt.slug, attribute, i) : null}><input type="radio" id={attribute.Name + "" + opt.slug} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{opt.name}</p></div></label>
+                                                            return <label className={_disabled === true ?"btn-disable":""}  disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null}/><div className="custom-radio"><p>{displayOption}</p></div></label>
                                                         }
 
                                                     })
@@ -1561,7 +1580,7 @@ const Product = (props) => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                                 return (
                                                                     <label>
-                                                                        <input type="radio" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                        <input type="radio" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null}/>
                                                                         <div className="custom-radio">
                                                                             <p>{efm.Name}</p>
                                                                         </div>
@@ -1616,7 +1635,7 @@ const Product = (props) => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                                 return (
                                                                     <label htmlFor={id}>
-                                                                        <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                        <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null}/>
                                                                         <div className="custom-radio">
                                                                             <p>{efm.Name}</p>
                                                                         </div>

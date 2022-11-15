@@ -34,13 +34,14 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { handleAppEvent, postmessage } from "../common/AppHandeler/commonAppHandler";
 
 import ParkSale from "./ParkSale";
-import { CheckAppDisplayInView } from "../common/commonFunctions/AppDisplayFunction";
+import { CheckAppDisplayInView, UpdateRecentUsedApp } from "../common/commonFunctions/AppDisplayFunction";
 import ManualPayment from "../common/commonComponents/paymentComponents/ManualPayment";
 import UPIPayments from "../common/commonComponents/paymentComponents/UPIPayment";
 import StripePayment from "../common/commonComponents/paymentComponents/StripePayment";
 import GlobalPayment from "../common/commonComponents/paymentComponents/GlobalPayment";
 import MsgPopup from "../common/commonComponents/MsgPopup";
 import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
+import IframeWindow from "../dashboard/IframeWindow";
 const Checkout = (props) => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -90,6 +91,9 @@ const Checkout = (props) => {
     const [isShowMsg, setisShowMsg] = useState(false);
     const [msgTitle, setmsgTitle] = useState('');
     const [msgBody, setmsgBody] = useState('');
+    const [isShowiFrameWindow, setisShowiFrameWindow] = useState(false);
+    const [extApp, setExtApp] = useState('');
+    //const [extensionPayments, setExtensionPayments] = useState(localStorage.getItem('GET_EXTENTION_FIELD') ? JSON.parse(localStorage.getItem('GET_EXTENTION_FIELD')) : []);
     const [paymentTypeItem, setPaymentTypeItem] = useState({
         Code: "",
         ColorCode: "",
@@ -287,7 +291,7 @@ const Checkout = (props) => {
         toggleShowPartialPayment();
         setPartialType('pay_by_product');
         //setPaidAmount(amount);
-       
+
         // setPaymentTypeItem(item);
         // dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
         //pay_amount(type);
@@ -966,10 +970,10 @@ const Checkout = (props) => {
 
         if (localStorage.getItem("paybyproduct_unpaid")) {
 
-            var _pbpun =JSON.parse(localStorage.getItem("paybyproduct_unpaid"))
-            _pbpun.forEach(function(v){ v.hasOwnProperty("unpaid_qty") && delete v.unpaid_qty });
+            var _pbpun = JSON.parse(localStorage.getItem("paybyproduct_unpaid"))
+            _pbpun.forEach(function (v) { v.hasOwnProperty("unpaid_qty") && delete v.unpaid_qty });
 
-            localStorage.setItem("paybyproduct",JSON.stringify(_pbpun) );
+            localStorage.setItem("paybyproduct", JSON.stringify(_pbpun));
             localStorage.removeItem("paybyproduct_unpaid");
         }
 
@@ -2143,6 +2147,13 @@ const Checkout = (props) => {
         // this.closingTab()
         // this.setState({ activeDisplay: st })
     }
+    function ToggleiFrameWindow(_exApp = null) {
+        if (_exApp != null) { setExtApp(_exApp); }
+        if (isShowiFrameWindow === false) {
+            UpdateRecentUsedApp(_exApp, true, 0)
+        }
+        setisShowiFrameWindow(!isShowiFrameWindow)
+    }
     var paymentTypeName = localStorage.getItem("PAYMENT_TYPE_NAME") ? JSON.parse(localStorage.getItem("PAYMENT_TYPE_NAME")) : [];
     //Arranging array to put cash and card type in the first and the second 
     if (paymentTypeName && paymentTypeName.length > 0) {
@@ -2154,42 +2165,17 @@ const Checkout = (props) => {
         if (cash && typeof cash != "undefined")
             paymentTypeName.unshift(cash);
     }
-    // var true_dimaond_field = localStorage.getItem('GET_EXTENTION_FIELD') ? JSON.parse(localStorage.getItem('GET_EXTENTION_FIELD')) : [];
-    // true_dimaond_field && true_dimaond_field.length > 0 ? true_dimaond_field.map((Items, index) => {
-
-    //         //(  Items.PluginId == 0 && Items.Name !== 'Contact Details' && Items.ShowAtCheckout === true) ||
-    //       //Items.viewManagement && Items.viewManagement !== [] && CheckAppDisplayInView(Items.viewManagement) === true) ?null:null}
-
-    //     })
-    // var pay_name = {
-    //     Code
-    //         :
-    //         "authorize_net",
-    //     ColorCode
-    //         :
-    //         "#f75f40",
-    //     EODReconcilliation
-    //         :
-    //         true,
-    //     HasTerminal
-    //         :
-    //         false,
-    //     Id
-    //         :
-    //         21,
-    //     Name
-    //         :
-    //         "Authorize.Net",
-    //     Support
-    //         :
-    //         "Online",
-    //     TerminalCount
-    //         :
-    //         0,
-    //     TerminalSerialNo
-    //         :
-    //         []
-    // }
+    var true_dimaond_field = localStorage.getItem('GET_EXTENTION_FIELD') ? JSON.parse(localStorage.getItem('GET_EXTENTION_FIELD')) : [];
+    var extensionPayments = [];
+    if (true_dimaond_field && true_dimaond_field.length > 0) {
+        true_dimaond_field.map((Item, index) => {
+            if ((Item.PluginId == 0 && Item.Name !== 'Contact Details' && Item.ShowAtCheckout === true) ||
+                Item.viewManagement && Item.viewManagement !== [] && CheckAppDisplayInView(Item.viewManagement) === true) {
+                extensionPayments.push(Item);
+            }
+        })
+    }
+    //console.log("---extensionPayments--"+JSON.stringify(extensionPayments))
     var _activeDisplay = true;
     var global_payment = null;
     return (<React.Fragment>
@@ -2309,6 +2295,14 @@ const Checkout = (props) => {
                                             </button>
                             })
                         }
+                        {
+                            extensionPayments && extensionPayments.length > 0 && extensionPayments.map(exPayment => {
+                                return <button style={{ backgroundColor: "var(--oliver-blue)" }} onClick={() => ToggleiFrameWindow(exPayment)} key={exPayment.Id}>
+                                    {exPayment.logo != null && <img src={exPayment.logo} alt=""></img>}
+                                    {exPayment.logo != null ? "" : exPayment.Name}</button>
+
+                            })
+                        }
                     </div>
                 </div>
             </div>
@@ -2373,6 +2367,7 @@ const Checkout = (props) => {
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
         <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
         {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct} pay_by_product={pay_by_product}></SplitByProduct> : null}
+        {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
     </React.Fragment>)
 }
 export default Checkout

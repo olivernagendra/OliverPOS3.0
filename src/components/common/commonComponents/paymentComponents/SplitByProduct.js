@@ -10,9 +10,9 @@ const SplitByProduct = (props) => {
     const [listItem, setListItem] = useState([]);
     const [total, setTotal] = useState(0.00);
     const [resProduct] = useSelector((state) => [state.product])
+    // const [getorder, setGetorder] = useState(localStorage.getItem("getorder") ? JSON.parse(localStorage.getItem("getorder")) : null);
     useEffect(() => {
         if (resProduct && resProduct.status === STATUSES.IDLE && resProduct.is_success) {
-
             var _list = [...resProduct.data];
             if (_list && _list.length > 0) {
                 _list.map(item => {
@@ -59,8 +59,14 @@ const SplitByProduct = (props) => {
             }
             else {
                 if (type === "inc") {
-                    _item["quantity_to_pay"] = 1
-                    _item["unpaid_qty"] = 1;
+                    if (_item.hasOwnProperty("paid_quantity") && _item.paid_quantity == 0) {
+                        _item["quantity_to_pay"] = 0
+                        _item["unpaid_qty"] = 0;
+                    }
+                    else {
+                        _item["quantity_to_pay"] = 1
+                        _item["unpaid_qty"] = 1;
+                    }
                 }
             }
             if (_index >= 0) {
@@ -71,136 +77,6 @@ const SplitByProduct = (props) => {
 
         calculateCart(_listItem);
     }
-    // const saveCount = () => {
-    //     var taxInclusiveName = typeOfTax();
-    //     var _paybyproduct =[];
-    //    var paybyproduct =[];// localStorage.getItem('paybyproduct')?JSON.parse(localStorage.getItem('paybyproduct')):[];
-    //     var checklist = localStorage.getItem("CHECKLIST") ? JSON.parse(localStorage.getItem("CHECKLIST")) : null;
-    //     var total_amount = checklist && checklist.totalPrice;
-    //     var cash_rounding_amount = checklist && checklist.cash_rounding_amount;
-    //     var _listItem = checklist && checklist.ListItem;
-    //     listItem && listItem.map((item, index) => {
-    //         if (localStorage.getItem('paybyproduct')) {
-    //             paybyproduct = JSON.parse(localStorage.getItem('paybyproduct'));
-    //             var _paid = paybyproduct.find(a => a.product_id === item.product_id);
-    //             if (_paid) {
-    //                 var _index = paybyproduct.indexOf(_paid, 0);
-    //                 if (item.quantity_to_pay != null && typeof item.quantity_to_pay != "undefined") {
-    //                     _paid.quantity = _paid.quantity + item.quantity_to_pay;
-
-    //                     //--------
-    //                     //var product_subtotal = item.old_price * item.quantity_to_pay;
-    //                     var product_subtotal= (item.Price / item.quantity) * item.quantity_to_pay
-    //                     var product_tax = 0.00;
-    //                     var product_total = 0.00;
-
-    //                     if (taxInclusiveName === "incl") {
-    //                         product_tax += (parseFloat(item.incl_tax / item.quantity) * item.quantity_to_pay);
-    //                     }
-    //                     else if (taxInclusiveName === "Tax") {
-    //                         product_tax += (parseFloat(item.excl_tax / item.quantity) * item.quantity_to_pay);
-    //                     }
-    //                     if (taxInclusiveName && (taxInclusiveName !== "" || taxInclusiveName !== "incl")) { //in inclusive tax need to add tax intosub total
-    //                         product_subtotal += product_tax;
-    //                     }
-    //                     product_total = (parseFloat(product_subtotal) + parseFloat(taxInclusiveName === "" ? product_tax : 0)); //added tax for exclusive tax
-    //                     if (product_total + (cash_rounding_amount) === total_amount) {
-    //                         product_total = product_total + (cash_rounding_amount)
-    //                     }
-    //                     _paid["tax"] = product_tax;
-    //                     _paid["total"] = product_total;
-    //                     _paid["sub_total"] = product_subtotal;
-    //                     _paid["unpaid_qty"] = item.quantity_to_pay;
-
-    //                     //-----
-
-    //                     paybyproduct[_index] = _paid;
-    //                     _paybyproduct.push(_paid);
-    //                 }
-    //             }
-    //             else {
-    //                 if (item.quantity_to_pay != null && typeof item.quantity_to_pay != "undefined") {
-    //                     //_paid.quantity = _paid.quantity + item.quantity_to_pay;
-
-    //                     //--------
-    //                     //var product_subtotal = item.old_price * item.quantity_to_pay;
-    //                     var product_subtotal= (item.Price / item.quantity) * item.quantity_to_pay
-    //                     var product_tax = 0.00;
-    //                     var product_total = 0.00;
-
-    //                     if (taxInclusiveName === "incl") {
-    //                         product_tax += (parseFloat(item.incl_tax / item.quantity) * item.quantity_to_pay);
-    //                     }
-    //                     else if (taxInclusiveName === "Tax") {
-    //                         product_tax += (parseFloat(item.excl_tax / item.quantity) * item.quantity_to_pay);
-    //                     }
-    //                     if (taxInclusiveName && (taxInclusiveName !== "" || taxInclusiveName !== "incl")) { //in inclusive tax need to add tax intosub total
-    //                         product_subtotal += product_tax;
-    //                     }
-    //                     product_total = (parseFloat(product_subtotal) + parseFloat(taxInclusiveName === "" ? product_tax : 0)); //added tax for exclusive tax
-    //                     if (product_total + (cash_rounding_amount) === total_amount) {
-    //                         product_total = product_total + (cash_rounding_amount)
-    //                     }
-    //                     // _paid["tax"] = product_tax;
-    //                     // _paid["total"] = product_total;
-    //                     // _paid["sub_total"] = product_subtotal;
-    //                     // _paid["unpaid_qty"] = item.quantity_to_pay;
-
-    //                     //-----
-
-    //                     //paybyproduct[_index] = _paid;
-    //                 //paybyproduct.push({ product_id: item.product_id, quantity: item.quantity_to_pay, tax: product_tax, total: product_total, sub_total: product_subtotal ,unpaid_qty:item.quantity_to_pay});
-    //                 _paybyproduct.push({ product_id: item.product_id, quantity: item.quantity_to_pay, tax: product_tax, total: product_total, sub_total: product_subtotal ,unpaid_qty:item.quantity_to_pay});
-
-    //                 }
-    //                 else
-    //                 {
-    //                 //paybyproduct.push({ product_id: item.product_id, quantity: 0, tax: 0, total: 0, sub_total: 0 ,unpaid_qty:-1});
-    //                 _paybyproduct.push({ product_id: item.product_id, quantity: 0, tax: 0, total: 0, sub_total: 0 ,unpaid_qty:-1});
-
-    //                 }
-    //                 // paybyproduct.push({ product_id: item.product_id, quantity: item.quantity_to_pay });
-    //             }
-    //         }
-    //         else {
-    //             //--------
-
-    //             var product_subtotal = 0.00;
-    //             var product_tax = 0.00;
-    //             var product_total = 0.00;
-    //             var qty=0;
-    //             var unpaidQty=-1;
-    //             if (item.hasOwnProperty("quantity_to_pay")) {
-    //                 //product_subtotal = item.old_price * item.quantity_to_pay;
-    //                 product_subtotal= (item.Price / item.quantity) * item.quantity_to_pay
-    //                 qty=item.quantity_to_pay;
-    //                 if (taxInclusiveName === "incl") {
-    //                     product_tax += (parseFloat(item.incl_tax / item.quantity) * item.quantity_to_pay);
-    //                 }
-    //                 else if (taxInclusiveName === "Tax") {
-    //                     product_tax += (parseFloat(item.excl_tax / item.quantity) * item.quantity_to_pay);
-    //                 }
-    //                 if (taxInclusiveName && (taxInclusiveName !== "" || taxInclusiveName !== "incl")) { //in inclusive tax need to add tax intosub total
-    //                     product_subtotal += product_tax;
-    //                 }
-    //                 product_total = (parseFloat(product_subtotal) + parseFloat(taxInclusiveName === "" ? product_tax : 0)); //added tax for exclusive tax
-    //                 if (product_total + (cash_rounding_amount) === total_amount) {
-    //                     product_total = product_total + (cash_rounding_amount)
-    //                 }
-    //                 unpaidQty=item.hasOwnProperty("unpaid_qty")?item.unpaid_qty:-1 ;
-    //             }
-
-    //             //-----
-
-    //             //paybyproduct.push({ product_id: item.product_id, quantity: qty, tax: product_tax, total: product_total, sub_total: product_subtotal ,unpaid_qty:unpaidQty});
-    //             _paybyproduct.push({ product_id: item.product_id, quantity: qty, tax: product_tax, total: product_total, sub_total: product_subtotal ,unpaid_qty:unpaidQty});
-    //         }
-
-    //         //localStorage.setItem("paybyproduct", JSON.stringify(paybyproduct));
-    //     });
-    //     localStorage.setItem("paybyproduct_unpaid", JSON.stringify(_paybyproduct));
-    //     props.pay_by_product && props.pay_by_product(total);
-    // }
     const saveCount = () => {
         var taxInclusiveName = typeOfTax();
         var _paybyproduct = [];
@@ -209,15 +85,22 @@ const SplitByProduct = (props) => {
         var total_amount = checklist && checklist.totalPrice;
         var cash_rounding_amount = checklist && checklist.cash_rounding_amount;
         var _listItem = checklist && checklist.ListItem;
+
         listItem && listItem.map((item, index) => {
             if (localStorage.getItem('paybyproduct')) {
                 paybyproduct = JSON.parse(localStorage.getItem('paybyproduct'));
 
                 if (item.quantity_to_pay != null && typeof item.quantity_to_pay != "undefined") {
-                    //--------
-                    var product_subtotal = (item.Price / item.quantity) * item.quantity_to_pay
+
                     var product_tax = 0.00;
                     var product_total = 0.00;
+                    //--------
+                    var product_subtotal = (item.Price / item.quantity) * item.quantity_to_pay;
+                    var discount_amount = 0;
+                    if (item.hasOwnProperty("discount_amount") && typeof item.discount_amount != "undefined") {
+                        discount_amount = (item.discount_amount / item.quantity) * item.quantity_to_pay;
+                        product_subtotal = product_subtotal - discount_amount;
+                    }
 
                     if (taxInclusiveName === "incl") {
                         product_tax += (parseFloat(item.incl_tax / item.quantity) * item.quantity_to_pay);
@@ -225,7 +108,7 @@ const SplitByProduct = (props) => {
                     else if (taxInclusiveName === "Tax") {
                         product_tax += (parseFloat(item.excl_tax / item.quantity) * item.quantity_to_pay);
                     }
-                    if (taxInclusiveName && (taxInclusiveName !== "" || taxInclusiveName !== "incl")) { //in inclusive tax need to add tax intosub total
+                    if (taxInclusiveName && (taxInclusiveName !== "" && taxInclusiveName !== "incl")) { //in inclusive tax need to add tax intosub total
                         product_subtotal += product_tax;
                     }
                     product_total = (parseFloat(product_subtotal) + parseFloat(taxInclusiveName === "" ? product_tax : 0)); //added tax for exclusive tax
@@ -262,6 +145,11 @@ const SplitByProduct = (props) => {
                 var unpaidQty = -1;
                 if (item.hasOwnProperty("quantity_to_pay")) {
                     product_subtotal = (item.Price / item.quantity) * item.quantity_to_pay
+                    var discount_amount = 0;
+                    if (item.hasOwnProperty("discount_amount") && typeof item.discount_amount != "undefined") {
+                        discount_amount = (item.discount_amount / item.quantity) * item.quantity_to_pay;
+                        product_subtotal = product_subtotal - discount_amount
+                    }
                     qty = item.quantity_to_pay;
                     if (taxInclusiveName === "incl") {
                         product_tax += (parseFloat(item.incl_tax / item.quantity) * item.quantity_to_pay);
@@ -269,7 +157,7 @@ const SplitByProduct = (props) => {
                     else if (taxInclusiveName === "Tax") {
                         product_tax += (parseFloat(item.excl_tax / item.quantity) * item.quantity_to_pay);
                     }
-                    if (taxInclusiveName && (taxInclusiveName !== "" || taxInclusiveName !== "incl")) { //in inclusive tax need to add tax intosub total
+                    if (taxInclusiveName && (taxInclusiveName !== "" && taxInclusiveName !== "incl")) { //in inclusive tax need to add tax intosub total
                         product_subtotal += product_tax;
                     }
                     product_total = (parseFloat(product_subtotal) + parseFloat(taxInclusiveName === "" ? product_tax : 0)); //added tax for exclusive tax
@@ -289,6 +177,7 @@ const SplitByProduct = (props) => {
         var product_subtotal = 0.0;
         var product_total = 0.0;
         var product_tax = 0.0;
+        var discount_amount = 0.0;
         var getorder = localStorage.getItem("CHECKLIST") ? JSON.parse(localStorage.getItem("CHECKLIST")) : null;
         var total_amount = getorder && getorder.totalPrice;
         var cash_rounding_amount = getorder && getorder.cash_rounding_amount;
@@ -296,7 +185,9 @@ const SplitByProduct = (props) => {
 
         _listItem && _listItem.map((item, index) => {
             if (item.hasOwnProperty("quantity_to_pay") && item.quantity_to_pay > 0) {
+                discount_amount += (item.discount_amount / item.quantity) * item.unpaid_qty;
                 product_subtotal += (item.Price / item.quantity) * item.unpaid_qty;
+                product_subtotal = product_subtotal - discount_amount;
                 //if(item.isTaxable===true)
                 //{
                 if (taxInclusiveName === "incl") {
@@ -317,6 +208,7 @@ const SplitByProduct = (props) => {
             }
 
         })
+        product_total = product_total;
         setTotal(product_total);
         setListItem(_listItem);
         //var _dis = _cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
@@ -341,7 +233,7 @@ const SplitByProduct = (props) => {
                                 <div className="main-row">
                                     <div className="text-group">
                                         <p>{item.Title}</p>
-                                        <p>${item.hasOwnProperty("quantity_to_pay") ? parseFloat((item.Price / item.quantity) * item.quantity_to_pay).toFixed(2) : 0.00}</p>
+                                        <p>${item.hasOwnProperty("quantity_to_pay") ? parseFloat((item.Price / item.quantity) * item.quantity_to_pay).toFixed(2) : "0.00"}</p>
                                     </div>
                                     <div className="increment-input">
                                         <button onClick={() => updateQuantity(item.product_id, 'dec')}>
@@ -411,7 +303,7 @@ const SplitByProduct = (props) => {
                         </div> */}
                     </div>
                     <div className="footer">
-                        <button onClick={() => saveCount()}>Save Count</button>
+                        <button onClick={() => saveCount()} disabled={total > 0 ? false : true} className={total > 0 ? "" : "btn-disable"}>Save Count</button>
                     </div>
                 </div>
             </div></div>)

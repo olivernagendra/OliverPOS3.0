@@ -25,13 +25,12 @@ function stockUpdateQuantity(cardData, data, product) {
 }
 export const updateProductNote = (note) => {
     var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : [];
-    var isExist =false;
+    var isExist = false;
     if (cartlist && cartlist.length > 0) {
         cartlist.map(findId => {
-            if(findId.hasOwnProperty("pid") && findId.pid===note.pid)
-            {
-                findId.Title=note.Title;
-                isExist=true;
+            if (findId.hasOwnProperty("pid") && findId.pid === note.pid) {
+                findId.Title = note.Title;
+                isExist = true;
             }
         });
         localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartlist));
@@ -70,16 +69,15 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             }
         })
     }
-    else if(single_product)
-    {
-            product['after_discount'] = single_product.after_discount;
-                product['product_discount_amount'] = single_product.product_discount_amount;
-                product['product_after_discount'] = single_product.product_after_discount;
-                product['new_product_discount_amount'] = single_product.new_product_discount_amount;
-                product['discount_amount'] = single_product.discount_amount;
-                product['discount_type'] = single_product.discount_type;
-                product['cart_after_discount'] = single_product.cart_after_discount;
-                product['cart_discount_amount'] = single_product.cart_discount_amount;
+    else if (single_product) {
+        product['after_discount'] = single_product.after_discount;
+        product['product_discount_amount'] = single_product.product_discount_amount;
+        product['product_after_discount'] = single_product.product_after_discount;
+        product['new_product_discount_amount'] = single_product.new_product_discount_amount;
+        product['discount_amount'] = single_product.discount_amount;
+        product['discount_type'] = single_product.discount_type;
+        product['cart_after_discount'] = single_product.cart_after_discount;
+        product['cart_discount_amount'] = single_product.cart_discount_amount;
     }
     // var setQunatity = 1;
 
@@ -122,9 +120,14 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             data["pid"] = product.pid;
         }
         var qty = 0;
-        cartproductlist.map(item => {
+        cartlist.map(item => {
             if (product.WPID == item.product_id) {
-                qty = item.quantity;
+                if (product.quantity > 1) {
+                    qty = product.quantity;
+                }
+                else {
+                    qty = item.quantity;
+                }
             }
         })
         //  add simple product with below condotions
@@ -139,11 +142,10 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             if (product.hasOwnProperty("selectedIndex")) {
                 cartlist[product.selectedIndex] = data;
             }
-            else
-            {
+            else {
                 cartlist.push(data);
             }
-         
+
             //cartlist.push(data);
             //Android Call----------------------------
             var totalPrice = 0.0;
@@ -212,8 +214,7 @@ export const addSimpleProducttoCart = (product, ticketFields = null) => {
             if (product.hasOwnProperty("selectedIndex")) {
                 cartlist[product.selectedIndex] = data;
             }
-            else
-            {
+            else {
                 cartlist.push(data);
             }
             // cartlist.push(data);
@@ -654,7 +655,7 @@ export const addtoCartProduct = (cartproductlist) => {
 
 export const singleProductDiscount = (isProductX = false, productxQty = null, qty) => {
     //var qty = $('#qualityUpdater').val() || 1;
-    var qty=1;
+    var qty = 1;
     if (isProductX && isProductX == true && productxQty) {
         qty = productxQty;
     }
