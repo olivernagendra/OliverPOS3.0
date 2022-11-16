@@ -531,13 +531,15 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <img src={DownArrowBlue} alt="" />
-              <input type="text" id="filterType" defaultValue={sortbyvaluename}  readOnly/>
+              <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
               {/* <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>
               </div> */}
               <div className="option-container" id="customerListSortOptionsContainer">
+                <div className="option" onClick={(e) => sortByList("firstnameforward", "First Name (A-Z)")}>First Name (A-Z)</div>
+                <div className="option" onClick={(e) => sortByList("firstnamebackward", "First Name (Z-A)")}>First Name (Z-A)</div>
                 <div className="option" onClick={(e) => sortByList("lastnameforward", "Last Name (A-Z)")}>Last Name (A-Z)</div>
                 <div className="option" onClick={(e) => sortByList("lastnamebackward", "Last Name (Z-A)")}>Last Name (Z-A)</div>
                 <div className="option" onClick={(e) => sortByList("emailforward", "Email (A-Z)")}>Email (A-Z)</div>
