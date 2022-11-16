@@ -2,6 +2,8 @@ import React, { useEffect, useState, useLayoutEffect } from "react";
 
 import Sale_Complete from '../../assets/images/svg/SaleComplete.svg';
 import Checkmark from '../../assets/images/svg/Checkmark.svg';
+import Refund_Complete from '../../assets/images/svg/RefundComplete.svg';
+
 import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg';
 import spongebob_squarepants_2 from '../../assets/images/svg/spongebob-squarepants-2.svg';
 import Google_Calendar_Icon from '../../assets/images/Temp/Google-Calendar-Icon.png';
@@ -238,13 +240,13 @@ const RefundComplete = () => {
     //var checkList = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : ""; // localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : "";
     return (
         <React.Fragment>
-            <div className="sale-complete-wrapper">
+            <div className="refund-complete-wrapper">
                 <div className="main">
                     <div style={{ display: 'none' }} >
                         <img src={textToBase64Barcode(tempOrder_Id)} />
                     </div>
-                    {/* <img src={Sale_Complete} alt="" /> */}
-                    <p className="refund-complete-txt">Refund completed</p>
+                    <img src={Refund_Complete} alt="" />
+                   
                     {changeAmount != 0 ? <div className="change-container">
                         <p className="style1">Change: ${parseFloat(changeAmount).toFixed(2)}</p>
                         <p className="style2">Out of ${parseFloat(paymentAmount).toFixed(2)}</p>
@@ -288,7 +290,7 @@ const RefundComplete = () => {
                         </button>
                     </div>
                     <div className="button-container" onClick={() => newSale()}>
-                        <button id="newSale">{LocalizedLanguage.newSale}</button>
+                        <button id="newSale">{LocalizedLanguage.continue}</button>
                     </div>
                 </div>
             </div>

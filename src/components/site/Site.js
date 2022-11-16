@@ -52,11 +52,11 @@ const Site = () => {
         <div className="choose-header">
             <button id="backButton" onClick={() => logout()}>
                 <img src={AngledBracket_Left_Blue} alt="" />
-                {LocalizedLanguage.logout}
+                Logout
             </button>
         </div>
         <div className="choose-body-default">
-            <p>{LocalizedLanguage.selectSite}</p>
+            <p>Choose Site</p>
             <div className="divider"></div>
             <div className="button-container">
                 {/* <button className="option">

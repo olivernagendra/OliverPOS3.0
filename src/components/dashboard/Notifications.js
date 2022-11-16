@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
-
-import NotificationsSounds from '../../assets/images/svg/NotificationsSounds.svg';
+import ErrorIconRed from '../../assets/images/svg/ErrorIconRed.svg';
+import StorefrontIconGreen from '../../assets/images/svg/StorefrontIconGreen.svg';
+import SettingsCog from '../../assets/images/svg/SettingsCog.svg';
 import Approval_Icon from '../../assets/images/svg/Approval-Icon.svg';
 import VolumeIcon from '../../assets/images/svg/VolumeIcon.svg';
 import Changelog_Icon from '../../assets/images/svg/Changelog-Icon.svg';
@@ -67,7 +68,7 @@ const Notifications = (props) => {
         var temp_Order = 'TempOrders_' + (ActiveUser.key.Email);
         var TempOrders = localStorage.getItem(temp_Order) ? JSON.parse(localStorage.getItem(temp_Order)) : [];  //JSON.stringify
         var notificationlist = [];
-        TempOrders=TempOrders.reverse();
+        TempOrders = TempOrders.reverse();
         TempOrders && TempOrders.map(list => {
             if (list.new_customer_email !== "") {
                 var tempVar = TempOrders.find(l => l.TempOrderID == list.TempOrderID && l.new_customer_email == "")
@@ -82,18 +83,28 @@ const Notifications = (props) => {
             //order completed
 
             if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true) {
-                description = ((<div className="notification approval" key={uniqueKey()}>
-                    <div className="side-color"></div>
+                description = ((
+                    <div className="notification-card" key={uniqueKey()}>
+                        {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
-                        {/* <p>Order# {list.TempOrderID}</p> */}
                         <p>Email sent succeessfully to customer for <br />order# {list.TempOrderID}</p>
+                    </div> */}
+                        <div className="icon-wrapper green">
+                            <img src={StorefrontIconGreen} alt="" />
+                        </div>
+                        <div className="col">
+                            <p className="style1">Order Created</p>
+                            <p className="style2">Order #{list.TempOrderID}</p>
+                        </div>
+                        <p>1hr ago</p>
                     </div>
-                </div>))
+
+                ))
                 //"Email sent succeessfully to customer for order#" + list.TempOrderID + ""
             }
             else if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                description = ((<div className="notification approval" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -104,37 +115,69 @@ const Notifications = (props) => {
                 //"Sending email to customer for order#" + list.TempOrderID + ""
             }
             else if (list.Status == "true" && list.order_status == "completed") {
-                description = ((<div className="notification approval" key={uniqueKey()}>
-                    <div className="side-color"></div>
+                description = ((<div className="notification-card" key={uniqueKey()}>
+                    {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
                         <p>Order# {list.TempOrderID}</p>
+                    </div> */}
+                    <div className="icon-wrapper green">
+                        <img src={StorefrontIconGreen} alt="" />
                     </div>
+                    <div className="col">
+                        <p className="style1">Order Created</p>
+                        <p className="style2">Order #{list.TempOrderID}</p>
+                    </div>
+                    <p>1hr ago</p>
                 </div>))
             }
             //order refunded successfully
             else if (list.Status == "true" && list.order_status === "refunded") {
-                description = ((<div className="notification info" key={uniqueKey()}>
-                    <div className="side-color"></div>
+                description = ((<div className="notification-card" key={uniqueKey()}>
+                    {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Info_Icon} alt="" />
-                        {/* <p>Order# {list.TempOrderID}</p> */}
                         <p>Order  refunded  successfully.<br />Order# {list.TempOrderID}</p>
+                    </div> */}
+                    <div className="icon-wrapper green">
+                        <img src={StorefrontIconGreen} alt="" />
                     </div>
+                    <div class="col">
+                        <p className="style1">Order  refunded  successfully</p>
+                        <p className="style2">
+                            Order# {list.TempOrderID}
+                        </p>
+                    </div>
+                    <p>1hr ago</p>
                 </div>))
             }//sync issue
             else if (list.Status == "failed" && list.new_customer_email == "") {
-                description = ((<div className="notification error" key={uniqueKey()}>
-                    <div className="side-color"></div>
+                description = ((
+
+                    <div className="notification-card" key={uniqueKey()}>
+                        <div classNae="side-color">
+                            <img src={ErrorIconRed} alt="" />
+                        </div>
+                        <div className="col">
+                            <p className="style1">Order Not Synced</p>
+                            <p className="style2">Order #{list.TempOrderID}</p>
+                            <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a>
+                        </div>
+                        <p>3:23PM</p>
+                        {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Error_Icon} alt="" />
                         <p>Order# {list.TempOrderID}</p>
                     </div>
-                    <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a>
-                </div>))
+                    <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a> */}
+                    </div>
+
+
+
+                ))
             }
             else if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                description = ((<div className="notification approval" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -144,7 +187,7 @@ const Notifications = (props) => {
                 </div>))
             }
             else {
-                description = ((<div className="notification info" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Info_Icon} alt="" />
@@ -253,8 +296,8 @@ const Notifications = (props) => {
     }, []);
     return (
         <div id="notificationsWrapper" className={props.isShow === true ? "notifications-wrapper" : "notifications-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div id="notificationsContent" className="notifications">
-                <div id="soundNotificationsWrapper" className={isSoundNotification === true ? "sound-notifications-wrapper" : "sound-notifications-wrapper hidden"}>
+            <div id="notificationsContent" className={isSoundNotification === true ?"notifications settings":"notifications"}>
+                {/* <div id="soundNotificationsWrapper" className={isSoundNotification === true ? "sound-notifications-wrapper" : "sound-notifications-wrapper hidden"}>
                     <div className="sound-notifications">
                         <div className="header">
                             <img src={VolumeIcon} alt="" />
@@ -282,24 +325,24 @@ const Notifications = (props) => {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="header">
+                </div> */}
+                <div className="noti-header">
                     <p>{LocalizedLanguage.notification}</p>
-                    <div className="dropdown-options"></div>
-                    <button id="notiSoundOptions" onClick={() => toggleiSoundNotification()}>
-                        <img src={NotificationsSounds} alt="" />
+                    {/* <div className="dropdown-options"></div> */}
+                    <button id="notiSettingButton" onClick={() => toggleiSoundNotification()}>
+                        <img src={SettingsCog} alt="" />
                     </button>
                     <button id="mobileNotiExit" onClick={() => props.toggleNotifications()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div className="body">
+                <div className="noti-body">
                     {/* <p>Today</p> */}
                     {
                         notificationList && notiDate && notiDate.map((getDate, index) => {
                             console.log(current_date + "----" + getDate)
                             return (<>
-                                <p key={"date" + index}> {current_date === getDate ? 'Today' : getDate}</p>
+                                <div key={"date" + index} className="date"> <p>{current_date === getDate ? 'Today' : getDate}</p></div>
                                 {
                                     getDate && notificationList && notificationList[getDate] && notificationList[getDate].map((order, index) => {
                                         return (order.description)
@@ -368,6 +411,34 @@ const Notifications = (props) => {
                         </ul>
                     </div> */}
                 </div>
+                <div className="noti-settings-background" id="notiSettingsBackground"></div>
+					<div className="noti-settings-wrapper">
+						<div class="noti-settings">
+							<div class="header">
+								<p>Settings</p>
+							</div>
+							<div class="settings-list">
+								<div class="setting-row">
+									<img src={VolumeIcon} alt="" />
+									<p>Sound Notifications</p>
+								</div>
+								<div class="setting-row">
+									<label>
+										POS Orders
+										<input type="checkbox"/>
+										<div class="toggle"></div>
+									</label>
+								</div>
+								<div class="setting-row">
+									<label>
+										Web Order
+										<input type="checkbox"/>
+										<div class="toggle"></div>
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
             </div>
         </div>)
 }
