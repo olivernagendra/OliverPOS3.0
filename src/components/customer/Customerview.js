@@ -126,6 +126,7 @@ const CustomerView = () => {
 
   /// Customer Page Data form  IndexDB
   const getCustomerFromIDB = () => {
+   // console.log("create customer")
     getAll().then((rows) => {
       setcustomerlist(rows ? rows : []);
       sessionStorage.setItem("CUSTOMER_ID", rows[0].WPId ? rows[0].WPId : 0);
@@ -157,7 +158,7 @@ const CustomerView = () => {
   // First Time GetAllEvant and CustomerDetails API Call
   let useCancelled1 = false;
   useEffect(() => {
-    //  console.log("useEffect work",)
+    //  console.log(" customergetDetail useEffect work",)
     var UID = get_UDid('UDID');
     var CUSTOMER_ID = sessionStorage.getItem("CUSTOMER_ID") ? sessionStorage.getItem("CUSTOMER_ID") : '';
     setupdateCustomerId(CUSTOMER_ID)
@@ -358,7 +359,7 @@ const CustomerView = () => {
   }
 
   const updateSomething = (customer_Id) => {
-    // console.log("updateSomething work",)
+   //  console.log("updateSomething work",)
     var UID = get_UDid('UDID');
     setTimeout(() => {
       dispatch(customergetDetail(customer_Id, UID));
@@ -422,7 +423,9 @@ const CustomerView = () => {
   const [customereditsucc] = useSelector((state) => [state.customerupdate])
   useEffect(() => {
     if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
+     // console.log("customereditsucc.data",customereditsucc.data)
       setcustomerupdatedetails(true)
+      updateSomething(updateCustomerId);
     }
   }, [customereditsucc]);
 
@@ -438,7 +441,6 @@ const CustomerView = () => {
   useEffect(() => {
     if (respDeleteCustomerNote && respDeleteCustomerNote.status == STATUSES.IDLE && respDeleteCustomerNote.is_success && respDeleteCustomerNote.data) {
       updateSomething(updateCustomerId);
-
     }
   }, [respDeleteCustomerNote]);
 
@@ -454,10 +456,10 @@ const CustomerView = () => {
   const [customerres] = useSelector((state) => [state.customersave])
   useEffect(() => {
     if (customerres && customerres.status == STATUSES.IDLE && customerres.is_success && customerres.data) {
+      // console.log("customerres.data",customerres.data)
       setupdateCustomerState(true)
-
     }
-  }, []);
+  }, [customerres]);
 
 
   const handleKeyUp = (e) => {
@@ -467,11 +469,11 @@ const CustomerView = () => {
     }
   }
 
-  
 
 
-  var noteslength =  eventCollection&&eventCollection.filter(i => i.eventtype.toLowerCase() == 'add new note')
-  console.log("noteslength",noteslength.length)
+
+  var noteslength = eventCollection && eventCollection.filter(i => i.eventtype.toLowerCase() == 'add new note')
+ // console.log("noteslength", noteslength.length)
   return (
     <React.Fragment>
       {customerAllEvant.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
@@ -604,15 +606,13 @@ const CustomerView = () => {
             <button id="mobileAddCustomerButton">Create New</button>
           </div>
         </div>
-        <div id="CVDetailed" className={toggleList === true ? "cv-detailed open " : "cv-detailed"}>
+         {filteredCustomer&&filteredCustomer.length > 0 ?  <div id="CVDetailed" className={toggleList === true ? "cv-detailed open " : "cv-detailed"}>
           <div className="mobile-back">
             <button id="exitCVDetailed" onClick={toggleClickList}>
               <img src={AngledBracketBlueleft} alt="" />
               Go Back
             </button>
           </div>
-
-
 
           <div className="quick-info">
             <div className="avatar">
@@ -684,7 +684,73 @@ const CustomerView = () => {
               <p>Customer Notes</p>
               <button id="addCustNoteButton" onClick={toggleNoteModel} >Add Note</button>
             </div>
-            {/* {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+         
+
+
+             {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+              return (
+                item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
+                  <div className="customer-note">
+                    <div className="row">
+                      <p className="style1">{item.datetime}</p>
+                      <p className="style2">{item.time}</p>
+                      <button onClick={()=>deleteNotes(item.Id)}>
+                        <img src={CircledX_Grey} alt="" />
+                      </button>
+                    </div>
+                    <p>{item.Description}</p>
+                  </div>
+                  : ""
+              )
+            }) : noteslength.length > 0 ?   <div>Record not found</div>:''} 
+
+            {noteslength.length == 0 ?   <p style={{ color:"gray" }}>Record not found</p>:''}
+
+
+
+
+
+          </div>
+
+
+
+
+          <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
+          <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
+           <Customercreate
+            isShow={isShowcreatecustomerToggle}
+            toggleCreateCustomer={toggleCreateCustomer}
+            toggleEditcustomer={toggleEditcustomer}
+            editcustomerparam={editcustomerparam}
+            customerDetailData={customerDetailData ? customerDetailData : ""}
+            CustomerAddress={CustomerAddress}
+            getCustomerFromIDB={getCustomerFromIDB}
+            updateSomething={updateSomething}
+
+          /> 
+          <div className="footer">
+            <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
+            <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
+          </div>
+        </div>  :<div style={{ textAlign: "center", paddingTop: "50%" ,color:"gray" }}>
+          <div className="no-results">
+            <p className="style1">No order to display.</p>
+            <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
+          </div>
+         </div> }
+        </div>
+    </React.Fragment>
+  )
+}
+
+export default CustomerView
+
+
+
+
+
+
+{/* {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
               return (
                 item.eventtype.toLowerCase() == 'new order' ?
                   <div className="customer-note" key={index}>
@@ -727,55 +793,3 @@ const CustomerView = () => {
             })
               : <div>No record found</div>
             } */}
-
-
-             {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
-              return (
-                item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
-                  <div className="customer-note">
-                    <div className="row">
-                      <p className="style1">{item.datetime}</p>
-                      <p className="style2">{item.time}</p>
-                      <button onClick={()=>deleteNotes(item.Id)}>
-                        <img src={CircledX_Grey} alt="" />
-                      </button>
-                    </div>
-                    <p>{item.Description}</p>
-                  </div>
-                  : ""
-              )
-            }) : noteslength.length > 0 ?   <div>Record not found</div>:''} 
-
-
-
-
-
-          </div>
-
-
-
-
-          <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
-          <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
-          {isShowcreatecustomerToggle === true ? <Customercreate
-            isShow={isShowcreatecustomerToggle}
-            toggleCreateCustomer={toggleCreateCustomer}
-            toggleEditcustomer={toggleEditcustomer}
-            editcustomerparam={editcustomerparam}
-            customerDetailData={customerDetailData ? customerDetailData : ""}
-            CustomerAddress={CustomerAddress}
-            getCustomerFromIDB={getCustomerFromIDB}
-
-          /> : null}
-
-          <div className="footer">
-            <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
-            <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  )
-}
-
-export default CustomerView

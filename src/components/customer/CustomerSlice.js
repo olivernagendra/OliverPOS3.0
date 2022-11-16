@@ -509,7 +509,7 @@ export const { } = updateCreditScoreSlice.actions;
 //---
 
 export const saveCustomerToTempOrder = createAsyncThunk(
-  'customersave/saveCustomerToTempOrderAPI',
+  'saveCustomerToTempOrder/saveCustomerToTempOrderAPI',
   async (parameter, { rejectWithValue }) => {
 
     try {

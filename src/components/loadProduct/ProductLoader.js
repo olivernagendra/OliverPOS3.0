@@ -66,6 +66,7 @@ const CustomerLoader = () => {
                 throw new Error(response.statusText)  // throw an error if there's something wrong with the response
             })
             .then(function handleData(data) {
+               
                 TotalRecord = data.content.Records.length;
                 CustomerArray = [...new Set([...CustomerArray, ...data.content.Records])];
                 //check dataExist into indexdb-------------------------
@@ -76,7 +77,7 @@ const CustomerLoader = () => {
                 else {
                     console.log("--------------all customer records are done-----------" + CustomerArray.length);
                     UpdateCustomerInIndexDB(udid, CustomerArray);
-
+                    sessionStorage.setItem("CUSTOMER_ID", CustomerArray[0].WPId ? CustomerArray[0].WPId : 0);
                 }
             })
             .catch(function handleError(error) {
