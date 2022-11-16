@@ -60,7 +60,7 @@ const Checkout = (props) => {
     const [cashPayment, setCashPayment] = useState(0);
     const [afterPaymentIs, setAfterPaymentIs] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [cashRound, setCashRound] = useState(0);
+    //const [cashRound, setCashRound] = useState(0);
     const [isPaymentStart, setIsPaymentStart] = useState(false);
     const [onlinePayCardData, setOnlinePayCardData] = useState({});
     const [global_Payments, setGlobal_Payments] = useState({});
@@ -114,7 +114,7 @@ const Checkout = (props) => {
     // change_amount: change_amount,
     // cash_payment: paying_amount,
     // after_payment_is: payment_is
-
+    var cashRound=0;
     const [resSave] = useSelector((state) => [state.save])
     useEffect(() => {
         if (resSave && resSave.status == STATUSES.IDLE && resSave.is_success && loading === true) {
@@ -263,7 +263,7 @@ const Checkout = (props) => {
         var totalPrice = checkList && checkList.totalPrice ? parseFloat(RoundAmount(checkList.totalPrice)) : 0;
         var cashRoundReturn = parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount))
         //this.state.CashRound = parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount))
-        setCashRound(parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount)));
+        //setCashRound(parseFloat(GetRoundCash(cash_rounding, totalPrice - paid_amount)));
         var new_total_price = (totalPrice - paid_amount) + parseFloat(cashRoundReturn)
         return new_total_price;
     }
@@ -626,6 +626,18 @@ const Checkout = (props) => {
         var payment_amount = partialAmount != null ? partialAmount : paidAmount ? paidAmount : 0;
         setPartialAmount(null);
         setPayment_Type(paymentType);
+
+        // var cash_round = parseFloat(getRemainingPriceForCash())
+        // if (paymentType == 'cash') {
+        //     cashRound=cash_round;
+        //     // setCashRound(cash_round);
+        // } else {
+        //     // setCashRound(0);
+        //     cashRound=0;
+        //     setTotalPrice(0);
+        // }
+
+
         const _getRemainingPrice = getRemainingPrice() ? getRemainingPrice() : 0;
         const _getRemainingPriceForCash = getRemainingPriceForCash();
 
@@ -958,7 +970,8 @@ const Checkout = (props) => {
         var order_id = (typeof checkList.order_id !== "undefined") ? checkList.order_id : 0;
         var cash_round_is = parseFloat(getRemainingPriceForCash())
         //this.setState({ cash_round: cash_round_is })
-        setCashRound(cash_round_is);
+        //setCashRound(cash_round_is);
+        cashRound=cash_round_is;
         if (localStorage.getItem("oliver_order_payments")) {
             var payments = JSON.parse(localStorage.getItem("oliver_order_payments"));
             payments.push({
@@ -1047,8 +1060,8 @@ const Checkout = (props) => {
                     })
                     var ret = payment_is;
                     var total_pay = ret + parseFloat(paying_amount);
-                    // setCashRound(cash_round);
-                    setCashRound(cash_round);
+                   // setCashRound(cash_round);
+                    cashRound=cash_round;
                     paying_amount = paying_amount ? String(paying_amount).replace(',', '') : 0;
                     if (total_pay > parseFloat(RoundAmount(_totalPrice + cash_round))) {
                         change_amount = paying_amount - (actual_amount - payment_is + cash_round);
@@ -1097,7 +1110,8 @@ const Checkout = (props) => {
                 }
                 else {
                     payments = new Array();
-                    setCashRound(cash_round);
+                    //setCashRound(cash_round);
+                    cashRound=cash_round;
                     paying_amount = paying_amount ? String(paying_amount).replace(',', '') : 0.00;
                     if (parseFloat(paying_amount) > parseFloat(RoundAmount(actual_amount + cash_round))) {
                         change_amount = paying_amount - (actual_amount + cash_round);
@@ -1374,8 +1388,8 @@ const Checkout = (props) => {
         var amountToBePaid = checkList && (typeof checkList !== 'undefined') ? parseFloat(checkList.totalPrice) : 0;
         var paidPaments = getOrderPayments(order_id);
         var paidAmount = 0;
-        //var cash_round = (cash_round1 == 'undefined') ? 0 : cash_round1
-        var cash_round = cashRound;
+        var cash_round = (cash_round1 == 'undefined') ? 0 : cash_round1
+        //var cash_round = cashRound;
         paidPaments && paidPaments.forEach(paid_payments => {
             paidAmount += parseFloat(paid_payments.payment_amount);
         });
@@ -1549,11 +1563,18 @@ const Checkout = (props) => {
 
 
         // update payments for place order
+        cashRound= getRemainingPriceForCash();
         if (cashRound > 0) {
             var length_is = order_payments.length - 1;
             var update_rounding_amount = parseFloat(totalPrice + cashRound) - parseFloat(paidAmount);
             var new_amount = parseFloat(order_payments[length_is].amount);
-            order_payments[length_is].amount = parseFloat(parseFloat(new_amount) + parseFloat(RoundAmount(update_rounding_amount)))
+           
+            if(order_payments[length_is].type=="cash" && cashRound<=1)
+            {
+                order_payments[length_is].amount = parseFloat(parseFloat(new_amount) + parseFloat(RoundAmount(update_rounding_amount)))
+                //setCashRound(0);
+                cashRound=0;
+            }
         }
 
         // update loacal staorage for show payment in rounded amount

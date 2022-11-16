@@ -18,6 +18,7 @@ import { GetOpenRegister, closeRegister } from '../cashmanagement/Cashmanagement
 const Register = () => {
     const [selRegister, setSelRegister] = useState(null);
     const [isShowTakeOver, setisShowTakeOver] = useState(false);
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     var registers = [];
@@ -58,14 +59,16 @@ const Register = () => {
     console.log("status", status, "dataone", dataone, "error", error, "is_success", is_success)
 
     if (status === STATUSES.IDLE && is_success && error == "") {
-        if (dataone && dataone.content && dataone.content !== undefined) {
-            if (dataone.content && dataone.content !== '' && dataone.content !== 0) {
-                localStorage.setItem("IsCashDrawerOpen", "true");
-                localStorage.setItem("Cash_Management_ID", dataone.content.Id);
-            } else {
-                localStorage.setItem("IsCashDrawerOpen", "false");
-                localStorage.removeItem("Cash_Management_ID");
-            }
+        //if (dataone && dataone.content && dataone.content !== undefined) {
+        if (dataone && dataone.message === "Success" && loading === true) {
+            // if (dataone.content && dataone.content !== '' && dataone.content !== 0) {
+            //     localStorage.setItem("IsCashDrawerOpen", "true");
+            //     localStorage.setItem("Cash_Management_ID", dataone.content.Id);
+            // } else {
+            //     localStorage.setItem("IsCashDrawerOpen", "false");
+            //     localStorage.removeItem("Cash_Management_ID");
+            // }
+            setLoading(false)
             if (openRegister() == true) {
                 navigate('/openregister')
             }
@@ -73,6 +76,9 @@ const Register = () => {
                 navigate('/pin');
             }
         }
+    }
+    else if (status === STATUSES.IDLE && error !== "") {
+        setLoading(false)
     }
     useEffect(() => {
         fetchData();
@@ -116,6 +122,8 @@ const Register = () => {
         var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
         if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
             dispatch(GetOpenRegister(register_Id));
+            setLoading(true);
+
         }
         else {
             localStorage.setItem("IsCashDrawerOpen", "false");
@@ -123,11 +131,12 @@ const Register = () => {
     }
 
     const takeOver = () => {
-        if (openRegister() == true) {
-            navigate('/openregister')
-        }
-        else
-            navigate('/pin');
+        selRegister && fetchRegisterData(selRegister.id);
+        // if (openRegister() == true) {
+        //     navigate('/openregister')
+        // }
+        // else
+        //     navigate('/pin');
     }
 
     // if (respRegister.status == STATUSES.LOADING) {
@@ -135,8 +144,8 @@ const Register = () => {
     // }
     return (
         <React.Fragment>
-            {respRegister.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
-            {respRegister.status !== STATUSES.LOADING &&
+            {respRegister.status == STATUSES.LOADING || loading===true ? <LoadingModal></LoadingModal> : null}
+            {
                 <div className="choose-wrapper">
                     <div className="choose-header">
                         <button id="backButton" onClick={() => navigate('/location')} >
