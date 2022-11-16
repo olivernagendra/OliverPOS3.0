@@ -177,7 +177,7 @@ const OpenRegister = () => {
                 }
                 <label htmlFor="floatAmount">Opening float amount ($):</label>
 
-                <input type="number" id="floatAmount" onChange={(e) => validateEnteredAmount(e)} />
+                <input className="floatAmountfont" type="number" id="floatAmount" onChange={(e) => validateEnteredAmount(e)} placeholder='Enter Amount' />
                 {/* placeholder='Enter Amount' */}
 
                 <button id="openCashDrawer" >Open Cash Drawer</button>
