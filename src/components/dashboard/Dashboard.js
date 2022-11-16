@@ -46,6 +46,8 @@ import { getDetails } from "../cashmanagement/CashmanagementSlice";
 import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 // import ProductxWindow from "./product/ProductxWindow";
 import Customercreate from "../customer/Customercreate";
+import {cashRounding} from "../common/commonAPIs/cashRoundingSlice";
+import { get_UDid } from "../common/localSettings";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -123,6 +125,7 @@ const Home = () => {
         dispatch(discount());
         dispatch(getExtensions());
         dispatch(getPaymentTypeName());
+        dispatch(cashRounding(get_UDid()));
         dispatch(getDetails(Cash_Management_ID));
         getFavourites();
         dispatch(getCountryList())
