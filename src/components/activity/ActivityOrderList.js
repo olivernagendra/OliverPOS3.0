@@ -8,7 +8,7 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { useIndexedDB } from 'react-indexed-db';
 import { Await } from "react-router-dom";
 const ActivityOrderList = (props) => {
-   // console.log("props", props)
+    // console.log("props", props)
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
 
@@ -172,7 +172,7 @@ const ActivityOrderList = (props) => {
                     : 0;
         }
     }
-   // console.log("-----_discount-----" + _discount);
+    // console.log("-----_discount-----" + _discount);
 
     var TotalIndividualProductDiscount = _discount == data.discount ? _totalProductIndividualDiscount : 0
     var totalDiscount = _discount - TotalIndividualProductDiscount;
@@ -316,74 +316,111 @@ const ActivityOrderList = (props) => {
                     )
                 })
             }
+            <div className="transaction-totals-wrapper">
+                <div className="transaction-totals">
+                    <div className="row">
+                        <p>Sub-total</p>
+                        <p><b>{props.Subtotal != 'NaN' ? (props.TotalAmount - props.refunded_amount) == 0 ? 0.00
+                            : taxInclusiveName !== "" ?
+                                ((parseFloat(props.Subtotal) + parseFloat(props.TotalTax) + totalDiscount - props.tax_refunded - props.cash_round)).toFixed(2)
+                                : (parseFloat(props.Subtotal) + totalDiscount).toFixed(2) //- props.cash_round
+                            : 0}  </b></p>
+                    </div>
+                    <div className="row">
+                        <p>Total Tax (15%)</p>
+                        <p><b>{(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : (props.TotalTax - props.tax_refunded).toFixed(2)}</b></p>
+                    </div>
+
+                    {totalDiscount !== 0 ?
+                        <div className="row border-bottom">
+                            <p><b className="bold2">Discount</b></p>
+                            <p><b className="bold2">{totalDiscount == 0 ? 0.00 : (totalDiscount).toFixed(2)}</b></p>
+                        </div> : null}
 
 
+                    {props.cash_round !== 0 ?
+                        <div className="row border-bottom">
+                            <p><b className="bold2">Cash Rounding</b></p>
+                            <p><b className="bold2">{(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : props.cash_round}</b></p>
+                        </div> : null}
+
+                    <div className="row">
+                        <p className="style2">Payments</p>
+                    </div>
+
+                    {props.OrderPayment ? props.OrderPayment.map((item, index) => {
+                        if (item.type !== null) {
+                            return (
+                                <div className="row">
+                                    <p>{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)}) `} </p>
+                                    <p><b>{item.amount.toFixed(2)}</b></p>
+                                </div>
+                            )
+                        }
+                    }) : null}
+
+                    {cashChange !== '' && cashChange ? (
+                        <div className="row border-bottom">
+                            <p><b className="bold2">{`${Capitalize('change')}`} </b></p>
+                            <p><b className="bold2">{cashChange}</b></p>
+                        </div>) : null}
 
 
-            <div className="custom-fields" style={{display:'grid',justifyContent:'flex-end' }} >
-                <p className="style2">Sub-Total : {props.Subtotal != 'NaN' ? (props.TotalAmount - props.refunded_amount) == 0 ? 0.00
-                    : taxInclusiveName !== "" ?
-                        ((parseFloat(props.Subtotal) + parseFloat(props.TotalTax) + totalDiscount - props.tax_refunded - props.cash_round)).toFixed(2)
-                        : (parseFloat(props.Subtotal) + totalDiscount).toFixed(2) //- props.cash_round
-                    : 0}   </p>
+                    {cashPayment !== '' && cashPayment ? (
+                        <div className="row border-bottom">
+                            <p><b className="bold2">{`${Capitalize('cash payment')}`} </b></p>
+                            <p><b className="bold2">{cashPayment}</b></p>
+                        </div>) : null}
 
-                {totalDiscount !== 0 ?
-                    <p className="style2">totalDiscount : {totalDiscount == 0 ? 0.00 : (totalDiscount).toFixed(2)}</p>
-                    : null}
+                    {(props.refunded_amount > 0) ?
+                        <div className="row border-bottom">
+                            <p><b className="bold2">Refunded tax  </b></p>
+                            <p><b className="bold2">{(props.tax_refunded).toFixed(2)}</b></p>
+                        </div> : null}
 
+                    {props.refundCashRounding !== 0 &&
+                        <div className="row border-bottom">
+                            <p><b className="bold2">Refund Cash Rounding   </b></p>
+                            <p><b className="bold2">{(props.refunded_amount - props.refundCashRounding) == 0 ? 0.00 : (props.refundCashRounding)}</b></p>
+                        </div>}
 
-                <p className="style2">Total Tax(Incl) : {(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : (props.TotalTax - props.tax_refunded).toFixed(2)}</p>
+                    {(props.refunded_amount > 0) ?
+                        <div className="row border-bottom">
+                            <p><b className="bold2">Refunded Amount   </b></p>
+                            <p><b className="bold2">{(props.refunded_amount).toFixed(2)}</b></p>
+                        </div> : null}
 
-                {props.cash_round !== 0 ?
-                    <p className="style2">Cash Rounding : {(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : props.cash_round}</p>
-                    : null}
-                <p className="style2"> <strong>Total</strong> : {(props.TotalAmount - props.refunded_amount)}</p>
+                    {(props.refunded_amount > 0) ?
+                        <div className="row">
+                            <p className="style2">Refund Payments</p>
+                        </div>
+                        : null}
 
-                {props.OrderPayment ? props.OrderPayment.map((item, index) => {
-                    if (item.type !== null) {
-                        return (
-                            <p className="style2">{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)}) `}  : {item.amount.toFixed(2)}</p>
+                    {
+                        (props.refunded_amount > 0) && (
+                            (typeof props.refundPayments !== "undefined" && props.refundPayments.length > 0) && (
+                                props.refundPayments && props.refundPayments.map((item, index) => {
+                                    return (
+                                        <div className="row">
+                                            <p>{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)}) `} </p>
+                                            <p><b>{item.amount.toFixed(2)}</b></p>
+                                        </div>
+                                    )
+                                })
+                            )
                         )
                     }
-                }) : null}
-
-
-                {cashChange !== '' && cashChange ? (
-                    <p className="style2">{`${Capitalize('change')}`}  : {cashChange}</p>
-                ) : null}
-
-                {cashPayment !== '' && cashPayment ? (
-                    <p className="style2">{`${Capitalize('cash payment')}`}  : {cashPayment}</p>
-                ) : null}
-
-                {(props.refunded_amount > 0) ?
-                    <p className="style2">Refunded tax  : {(props.tax_refunded).toFixed(2)}</p>
-                    : null}
-
-                {props.refundCashRounding !== 0 &&
-                    <p className="style2">Refund Cash Rounding  : {(props.refunded_amount - props.refundCashRounding) == 0 ? 0.00 : (props.refundCashRounding)}</p>
-                }
-
-                {(props.refunded_amount > 0) ?
-                    <p className="style2">Refunded Amount  : {(props.refunded_amount).toFixed(2)}</p>
-                    : null}
-                 {(props.refunded_amount > 0) ?
-               <p className="style2"><strong>Refund Payments</strong>  </p>
-                    :null}
-
-                {
-                    (props.refunded_amount > 0) && (
-                        (typeof props.refundPayments !== "undefined" && props.refundPayments.length > 0) && (
-                            props.refundPayments && props.refundPayments.map((item, index) => {
-                                return (
-                                    <p className="style2">{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)})`}  : {(item.amount).toFixed(2)}</p>
-                                )
-                            })
-                        )
-                    ) 
-                }
-                <p className="style2">  Balance  : {remaining_balance >= 0 ? parseFloat(remaining_balance).toFixed(2) :parseFloat(props.balence).toFixed(2)} </p>
+                    <div className="row border-top">
+                        <p><b className="bold2">Balance</b></p>
+                        <p><b className="bold2">{remaining_balance >= 0 ? parseFloat(remaining_balance).toFixed(2) : parseFloat(props.balence).toFixed(2)} </b></p>
+                    </div>
+                </div>
             </div>
+
+
+
+
+
         </>
     )
 }

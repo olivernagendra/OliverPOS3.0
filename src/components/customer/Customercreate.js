@@ -100,8 +100,8 @@ const Customercreate = (props) => {
         }
         // Edit Customer setState Save From Props Data
         if (props.editcustomerparam == "editcustomer") {
-            var ballingAddress1 = ''
-            var ballingAddress2 = ''
+            var billingAddress1 = ''
+            var billingAddress2 = ''
             var billingZipPostal = ''
             var billingCity = ''
             var billingState = ''
@@ -114,8 +114,8 @@ const Customercreate = (props) => {
             var shippingCountry
             props.CustomerAddress.map(item => {
                 if (item.TypeName == "billing") {
-                    ballingAddress1 = item.Address1
-                    ballingAddress2 = item.ballingAddress2
+                    billingAddress1 = item.Address1
+                    billingAddress2 = item.Address2
                     billingCity = item.City
                     billingState = item.State
                     billingCountry = item.Country
@@ -138,8 +138,8 @@ const Customercreate = (props) => {
                 lName: props.customerDetailData.LastName,
                 tel: "",
                 website: "",
-                billingAddress1: ballingAddress1,
-                billingAddress2: ballingAddress2,
+                billingAddress1: billingAddress1,
+                billingAddress2: billingAddress2,
                 billingZipPostal: billingZipPostal,
                 billingCity: billingCity,
                 billingCountry: "",
@@ -484,7 +484,7 @@ const Customercreate = (props) => {
      const [customereditsucc] = useSelector((state) => [state.customerupdate])
      useEffect(() => {
        if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
-       // console.log("customereditsucc",customereditsucc)
+        // console.log("customereditsucc",customereditsucc)
        UpdateCustomerInIndexDB(UID,customereditsucc.data.content)
        }
      }, [customereditsucc]);
@@ -523,7 +523,7 @@ const Customercreate = (props) => {
     }
 
    // console.log("values",values)
-   // console.log(" props.searchSringCreate", props.searchSringCreate)
+  //  console.log(" props.searchSringCreate", props.searchSringCreate)
 
 
 

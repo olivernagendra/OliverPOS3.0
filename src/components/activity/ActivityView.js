@@ -751,7 +751,7 @@ const ActivityView = () => {
                 </div>
 
                 <ActivityFooter getPdfdateTime={getPdfdateTime} />
-            </div> : <div style={{ textAlign: "center",paddingTop:"50%" }}>
+            </div> : <div style={{ textAlign: "center",paddingTop:"50%" ,color:"gray" }}>
             <div className="no-results">
                 <p className="style1">No order to display.</p>
                 <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
