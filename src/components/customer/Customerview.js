@@ -279,16 +279,16 @@ const CustomerView = () => {
 
     if (filterType == 'emailforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-        if (a.Email < b.Email) { return -1; }
-        if (a.Email > b.Email) { return 1; }
+        if (a.Email.toLowerCase() < b.Email.toLowerCase()) { return -1; }
+        if (a.Email.toLowerCase() > b.Email.toLowerCase()) { return 1; }
         return 0;
       })
     }
     if (filterType.toLowerCase() == 'emailbackward') {
       _filteredCustomer = _filteredCustomer.sort((a, b) => {
-        if (a.Email > b.Email)
+        if (a.Email.toLowerCase() > b.Email.toLowerCase())
           return -1;
-        if (a.Email < b.Email)
+        if (a.Email.toLowerCase() < b.Email.toLowerCase())
           return 1;
         return 0;
       });
@@ -297,16 +297,16 @@ const CustomerView = () => {
 
     if (filterType == 'firstnameforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-        if (a.FirstName < b.FirstName) { return -1; }
-        if (a.FirstName > b.FirstName) { return 1; }
+        if (a.FirstName.toLowerCase() < b.FirstName.toLowerCase()) { return -1; }
+        if (a.FirstName.toLowerCase() > b.FirstName.toLowerCase()) { return 1; }
         return 0;
       })
     }
     if (filterType.toLowerCase() == 'firstnamebackward') {
       _filteredCustomer = _filteredCustomer.sort((a, b) => {
-        if (a.FirstName > b.FirstName)
+        if (a.FirstName.toLowerCase() > b.FirstName.toLowerCase())
           return -1;
-        if (a.FirstName < b.FirstName)
+        if (a.FirstName.toLowerCase() < b.FirstName.toLowerCase())
           return 1;
         return 0;
       });
@@ -314,16 +314,16 @@ const CustomerView = () => {
 
     if (filterType == 'lastnameforward') {
       _filteredCustomer = _filteredCustomer.sort(function (a, b) {
-        if (a.LastName < b.LastName) { return -1; }
-        if (a.LastName > b.LastName) { return 1; }
+        if (a.LastName.toLowerCase() < b.LastName.toLowerCase()) { return -1; }
+        if (a.LastName.toLowerCase() > b.LastName.toLowerCase()) { return 1; }
         return 0;
       })
     }
     if (filterType.toLowerCase() == 'lastnamebackward') {
       _filteredCustomer = _filteredCustomer.sort((a, b) => {
-        if (a.LastName > b.LastName)
+        if (a.LastName.toLowerCase() > b.LastName.toLowerCase())
           return -1;
-        if (a.LastName < b.LastName)
+        if (a.LastName.toLowerCase() < b.LastName.toLowerCase())
           return 1;
         return 0;
       });
