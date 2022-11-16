@@ -38,7 +38,7 @@ const ActivityView = () => {
     const [SelectedTypes, setSelectedTypes] = useState('')
     const [FilteredActivityList, setFilteredActivityList] = useState('')
     const [selectedOption, setSelectedOption] = useState('')
-    const [sortbyvaluename, SetSortByValueName] = useState('Date')
+    const [sortbyvaluename, SetSortByValueName] = useState('Date (Newest)')
     const [emailnamephone, setEmailNamePhone] = useState(sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '')
     const [orderidsearch, setorderId] = useState('')
     const [pricefrom, setPriceFrom] = useState('')
@@ -689,36 +689,43 @@ const ActivityView = () => {
                     <p>Sort by:</p>
                     <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
-                        <input type="text" id="filterType" />
+                        {/* <input type="text" id="filterType" /> */}
+                        <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
+                        <input type="text" defaultValue={sortbyvaluename} id="filterType" readOnly />
+                    
+                        {/* <div id="sortCurrent" className="sort-current"  >
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
 
-                        <div id="sortCurrent" className="sort-current"  >
+                      
                             <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />
                             <p>{sortbyvaluename}</p>
+                        </div> */}
+                        <div class="option-container" id="transactionsListSortOptionsContainer">
+                            <div className="option" onClick={(e) => sortByList("dateAsc", "Date (Newest)")}>Date (Newest)</div>
+                            <div className="option" onClick={(e) => sortByList("dateDesc", "Date (Oldest)")}>Date (Oldest)</div>
                         </div>
-
-                        <div className="sort-option" data-value="dateAsc" onClick={(e) => sortByList("dateAsc", "Date")} >
+                        {/* <div className="option" data-value="dateAsc" onClick={(e) => sortByList("dateAsc", "Date")} >
                             <img src={FilterArrowUp} alt="" />
                             <p>Date</p>
                         </div>
-                        <div className="sort-option" data-value="dateDesc" onClick={(e) => sortByList("dateDesc", "Date")}>
+                        <div className="option" data-value="dateDesc" onClick={(e) => sortByList("dateDesc", "Date")}>
                             <img src={FilterArrowDown} alt="" />
                             <p>Date</p>
                         </div>
-                        <div className="sort-option" data-value="amountAsc" onClick={(e) => sortByList("amountAsc", "Amount")}>
+                        <div className="option" data-value="amountAsc" onClick={(e) => sortByList("amountAsc", "Amount")}>
                             <img src={FilterArrowUp} alt="" />
                             <p>Amount</p>
                         </div>
-                        <div className="sort-option" data-value="amountDesc" onClick={(e) => sortByList("amountDesc", "Amount")}>
+                        <div className="option" data-value="amountDesc" onClick={(e) => sortByList("amountDesc", "Amount")}>
                             <img src={FilterArrowDown} alt="" />
                             <p>Amount</p>
-                        </div>
+                        </div> */}
 
                     </div>
                 </div>
                 <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} updateSomething={updateSomething} />
             </div>
-            {_activity&&_activity.length > 0 ?   <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
+            {_activity && _activity.length > 0 ? <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">
                     <button id="mobileDetailedExit" onClick={toggleResponsiveList}>
                         <img src={AngledBracketBlueleft} alt="" />
@@ -739,28 +746,28 @@ const ActivityView = () => {
                         cash_round={ActivityOrderDetails && ActivityOrderDetails.cash_rounding_amount}
                         balence={0}
                         TimeZone={ActivityOrderDetails && ActivityOrderDetails.time_zone}
-                        refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount }
-                        redeemPointsToPrint={ActivityOrderDetails.meta_datas ?   ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
+                        refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount}
+                        redeemPointsToPrint={ActivityOrderDetails.meta_datas ? ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
                         orderMetaData={ActivityOrderDetails && ActivityOrderDetails.meta_datas}
-                        // TotalIndividualProductDiscount={
-                        //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
-                        //       ? _totalProductIndividualDiscount
-                        //       : 0
-                        //   }
+                    // TotalIndividualProductDiscount={
+                    //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
+                    //       ? _totalProductIndividualDiscount
+                    //       : 0
+                    //   }
                     />
                 </div>
 
                 <ActivityFooter getPdfdateTime={getPdfdateTime} />
-            </div> : <div style={{ textAlign: "center",paddingTop:"50%" ,color:"gray" }}>
-            <div className="no-results">
-                <p className="style1">No order to display.</p>
-                <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
-            </div>
-            </div> }
-           
+            </div> : <div style={{ textAlign: "center", paddingTop: "50%", color: "gray" }}>
+                <div className="no-results">
+                    <p className="style1">No order to display.</p>
+                    <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
+                </div>
+            </div>}
 
-        
-            
+
+
+
         </div>
         <div className="subwindow-wrapper hidden"></div>
     </>

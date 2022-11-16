@@ -65,7 +65,7 @@ const CustomerView = () => {
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [filteredCustomer, setFilteredCustomer] = useState([]);
   const [toggleList, setToggleList] = useState(false)
-  const [sortbyvaluename, SetSortByValueName] = useState('FirstName')
+  const [sortbyvaluename, SetSortByValueName] = useState('Last Name (A-Z)')
   const [editcustomerparam, seteditcustomerparam] = useState('')
   const [customerupdatedetails, setcustomerupdatedetails] = useState(false)
   const [updateCustomerState, setupdateCustomerState] = useState(false)
@@ -126,7 +126,7 @@ const CustomerView = () => {
 
   /// Customer Page Data form  IndexDB
   const getCustomerFromIDB = () => {
-   // console.log("create customer")
+    // console.log("create customer")
     getAll().then((rows) => {
       setcustomerlist(rows ? rows : []);
       sessionStorage.setItem("CUSTOMER_ID", rows[0].WPId ? rows[0].WPId : 0);
@@ -359,7 +359,7 @@ const CustomerView = () => {
   }
 
   const updateSomething = (customer_Id) => {
-   //  console.log("updateSomething work",)
+    //  console.log("updateSomething work",)
     var UID = get_UDid('UDID');
     setTimeout(() => {
       dispatch(customergetDetail(customer_Id, UID));
@@ -423,7 +423,7 @@ const CustomerView = () => {
   const [customereditsucc] = useSelector((state) => [state.customerupdate])
   useEffect(() => {
     if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
-     // console.log("customereditsucc.data",customereditsucc.data)
+      // console.log("customereditsucc.data",customereditsucc.data)
       setcustomerupdatedetails(true)
       updateSomething(updateCustomerId);
     }
@@ -473,7 +473,7 @@ const CustomerView = () => {
 
 
   var noteslength = eventCollection && eventCollection.filter(i => i.eventtype.toLowerCase() == 'add new note')
- // console.log("noteslength", noteslength.length)
+  // console.log("noteslength", noteslength.length)
   return (
     <React.Fragment>
       {customerAllEvant.status == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
@@ -509,7 +509,7 @@ const CustomerView = () => {
             <p className="mobile-only">Search for Customer</p>
           </div>
           <div className="body">
-            <div class="row">
+            <div className="row">
               <img src={SearchBaseBlue} alt="" />
               <p>Search</p>
               <button id="customersClearSearch" onClick={clearSearch}>Clear Search</button>
@@ -530,15 +530,20 @@ const CustomerView = () => {
           <div className="header" onClick={toggleSortWrapp}>
             <p>Sort by:</p>
             <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
-              <input type="text" id="filterType" />
-              <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
+              <img src={DownArrowBlue} alt="" />
+              <input type="text" id="filterType" defaultValue={sortbyvaluename}  readOnly/>
+              {/* <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
                 <p>{sortbyvaluename}</p>
+              </div> */}
+              <div className="option-container" id="customerListSortOptionsContainer">
+                <div className="option" onClick={(e) => sortByList("lastnameforward", "Last Name (A-Z)")}>Last Name (A-Z)</div>
+                <div className="option" onClick={(e) => sortByList("lastnamebackward", "Last Name (Z-A)")}>Last Name (Z-A)</div>
+                <div className="option" onClick={(e) => sortByList("emailforward", "Email (A-Z)")}>Email (A-Z)</div>
+                <div className="option" onClick={(e) => sortByList("emailbackward", "Email (Z-A)")} >Email (Z-A)</div>
               </div>
-
-
-              <div onClick={(e) => sortByList("newestforward", "Newest")} className="sort-option" >
+              {/* <div onClick={(e) => sortByList("newestforward", "Newest")} className="sort-option" >
                 <img src={FilterArrowUp} alt="" />
                 <p>Newest</p>
               </div>
@@ -570,7 +575,7 @@ const CustomerView = () => {
               <div onClick={(e) => sortByList("lastnamebackward", "LastName")} className="sort-option">
                 <img src={FilterArrowDown} alt="" />
                 <p>lastName</p>
-              </div>
+              </div> */}
 
             </div>
           </div>
@@ -606,7 +611,7 @@ const CustomerView = () => {
             <button id="mobileAddCustomerButton">Create New</button>
           </div>
         </div>
-         {filteredCustomer&&filteredCustomer.length > 0 ?  <div id="CVDetailed" className={toggleList === true ? "cv-detailed open " : "cv-detailed"}>
+        {filteredCustomer && filteredCustomer.length > 0 ? <div id="CVDetailed" className={toggleList === true ? "cv-detailed open " : "cv-detailed"}>
           <div className="mobile-back">
             <button id="exitCVDetailed" onClick={toggleClickList}>
               <img src={AngledBracketBlueleft} alt="" />
@@ -684,17 +689,17 @@ const CustomerView = () => {
               <p>Customer Notes</p>
               <button id="addCustNoteButton" onClick={toggleNoteModel} >Add Note</button>
             </div>
-         
 
 
-             {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
+
+            {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
               return (
                 item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
                   <div className="customer-note">
                     <div className="row">
                       <p className="style1">{item.datetime}</p>
                       <p className="style2">{item.time}</p>
-                      <button onClick={()=>deleteNotes(item.Id)}>
+                      <button onClick={() => deleteNotes(item.Id)}>
                         <img src={CircledX_Grey} alt="" />
                       </button>
                     </div>
@@ -702,9 +707,9 @@ const CustomerView = () => {
                   </div>
                   : ""
               )
-            }) : noteslength.length > 0 ?   <div>Record not found</div>:''} 
+            }) : noteslength.length > 0 ? <div>Record not found</div> : ''}
 
-            {noteslength.length == 0 ?   <p style={{ color:"gray" }}>Record not found</p>:''}
+            {noteslength.length == 0 ? <p style={{ color: "gray" }}>Record not found</p> : ''}
 
 
 
@@ -717,7 +722,7 @@ const CustomerView = () => {
 
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
-           <Customercreate
+          <Customercreate
             isShow={isShowcreatecustomerToggle}
             toggleCreateCustomer={toggleCreateCustomer}
             toggleEditcustomer={toggleEditcustomer}
@@ -727,18 +732,18 @@ const CustomerView = () => {
             getCustomerFromIDB={getCustomerFromIDB}
             updateSomething={updateSomething}
 
-          /> 
+          />
           <div className="footer">
             <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
             <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
           </div>
-        </div>  :<div style={{ textAlign: "center", paddingTop: "50%" ,color:"gray" }}>
+        </div> : <div style={{ textAlign: "center", paddingTop: "50%", color: "gray" }}>
           <div className="no-results">
             <p className="style1">No order to display.</p>
             <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
           </div>
-         </div> }
-        </div>
+        </div>}
+      </div>
     </React.Fragment>
   )
 }
