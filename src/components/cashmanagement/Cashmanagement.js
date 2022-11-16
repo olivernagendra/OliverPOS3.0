@@ -13,6 +13,9 @@ import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal"
 import AddRemoveCashPopup from './AddRemoveCashPopup'
 import { useNavigate } from "react-router-dom";
 import Oliver_Icon_BaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg';
+import TransactionHistoryIcon from '../../assets/images/svg/TransactionHistoryIcon.svg';
+import PrinterIcon from '../../assets/images/svg/PrinterIcon.svg';
+
 import AngledBracket_Left_Blue from '../../assets/images/svg/AngledBracket-Left-Blue.svg';
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
@@ -257,9 +260,8 @@ function Cashmanagement() {
           <p>Cash Management</p>
         </div> */}
           <div className="cm-list">
-            <div className="cm-list-header">
-              <p className="desktop">Cash Management</p>
-              <p className="mobile">Transaction History</p>
+            <div className="cm-list-header-landscape">
+            <p>Cash Management</p>
             </div>
             <div className="cm-list-body" ref={myRef} onScroll={onScroll} >
               {((!allCashRecords) || allCashRecords.length == 0) ? <>
@@ -268,14 +270,14 @@ function Cashmanagement() {
               </> :
                 <>
                   <button className="current-register no-transform selected">
-                    <p className="style1"> {localCashData && !localCashData.ClosedTime ? "Currently Active" : "Currently  Closed "}  </p>
+                    <p className="style1"> {localCashData && localCashData.ClosedTime =="" || localCashData.ClosedTime ==null ? "Currently CLosed" : "Currently  Active "}  </p>
                     <div className="text-row">
                       <p>{localCashData && localCashData.RegisterName}</p>
-                      <p className="open"> {localCashData && !localCashData.ClosedTime ? "OPEN" : "Closed "} </p>
-                      {/* <p className="smobile-fake-button">OPEN</p> */}
+                      <p className="open"> {localCashData && localCashData.ClosedTime =="" || localCashData.ClosedTime ==null  ? "Closed" : "Open "} </p>
+                      {/* <p className="smobile-fake-button">Closed</p> */}
                     </div>
                     <p className="style2">User: {localCashData && localCashData.SalePersonName}</p>
-                    <div className="mobile-fake-button">{localCashData && !localCashData.ClosedTime ? "OPEN" : "Closed "} </div>
+                    <div className="mobile-fake-button">{localCashData && localCashData.ClosedTime =="" || localCashData.ClosedTime ==null  ? "Closed" : "Open "} </div>
                   </button>
                   {/* <div className="prev-registers"> */}
 
@@ -307,7 +309,7 @@ function Cashmanagement() {
             </div>
           </div>
 
-          <div className={isMobileList === true ? "cm-detailed open " : "cm-detailed"}>
+          {/* <div className={isMobileList === true ? "cm-detailed open " : "cm-detailed"}>
             <div className="detailed-header-mobile">
               <div id="mobileDetailedExit" onClick={toggleListWrapp}   >
                 <img src={AngledBracket_Left_Blue} alt="" />
@@ -344,7 +346,51 @@ function Cashmanagement() {
               <button onClick={() => HundleCashPopup('add')}  >Add Cash  </button>
             </div>
 
+          </div> */}
+
+          <div id="cmDetailed" className={isMobileList === true ? "cm-detailed open " : "cm-detailed"}>
+            <div className="detailed-header-landscape" >
+              <img src={TransactionHistoryIcon} alt="" />
+              <p>Transaction History</p>
+            </div>
+            <div className="detailed-header-mobile">
+              <button id="mobileDetailedExit" onClick={toggleListWrapp}>
+                <img src={AngledBracket_Left_Blue} alt="" />
+                Go Back
+              </button>
+            </div>
+            <div className="detailed-quick-info">
+              <div className="row">
+                <div className="row-group">
+                  <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
+               
+                  <div className="status open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</div>
+                </div>
+            {console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)}
+                <p className="active"> {CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status == 'Close' ? <>Currenly Close</>:<>Currenly Active</>  } </p>
+              </div>
+              <div className="row">
+                <div className="col-group">
+                  <p className="style1">Cash Drawer Ending Balance:</p>
+                  <p className="style2"><NumericFormat value={_balance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
+                </div>
+                <button >
+                  <img src={PrinterIcon} alt="" />
+                  Print
+                </button>
+              </div>
+            </div>
+            <div className="detailed-body">
+            <CashDrawerPaymentDetailList />
+            </div>
+
+            {/* Footer only available if register is active */}
+            <div className="detailed-footer">
+              <button onClick={() => HundleCashPopup('remove')} id="removeCashSubwindowButton">Remove Cash</button>
+              <button onClick={() => HundleCashPopup('add')}  id="addCashSubwindowButton">Add Cash</button>
+            </div>
           </div>
+
         </div>
         <AddRemoveCashPopup popupstatus={popupstatus} isShow={cashPopUpOpen} drawerBalance={_balance} HundlePOpupClose={HundlePOpupClose} />
       </React.Fragment>

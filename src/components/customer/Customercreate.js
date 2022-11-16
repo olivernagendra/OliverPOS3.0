@@ -621,9 +621,9 @@ const Customercreate = (props) => {
                             </div>
                             <div className="input-row">
                                 <div className="input-col">
-                                    <label for="newCustStateProvBilling">State/Province</label>
+                                    <label for="newCustStateProvBilling">Country</label>
                                     <div onClick={hundledropdown} className={toggleDrowpdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"} >
-                                        <input type="text" id="newCustStateProvBilling" placeholder="Select State/Province" value={country_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustStateProvBilling" placeholder="Select Country" value={country_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
                                         <div className="error-wrapper" ></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container"    >
@@ -638,9 +638,9 @@ const Customercreate = (props) => {
                                     </div>
                                 </div>
                                 <div className="input-col">
-                                    <label for="newCustCountryBilling">Country</label>
+                                    <label for="newCustCountryBilling">    State/Province</label>
                                     <div onClick={hundleseconddropdown} className={togglesecondDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustCountryBilling" placeholder="Select Country" value={state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustCountryBilling" placeholder="   Select State/Province"    value={state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container" >
@@ -689,9 +689,9 @@ const Customercreate = (props) => {
                             </div>
                             <div className={toggleSameBilling === true ? "input-row hidden " : "input-row"}>
                                 <div className="input-col">
-                                    <label for="newCustStateProvShipping">State/Province</label>
+                                    <label for="newCustStateProvShipping">Country</label>
                                     <div onClick={hundleThirdDropdown} className={togglethirdDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustStateProvShipping" placeholder="Select State/Province" value={Shippingcountry_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustStateProvShipping" placeholder="Select Country" value={Shippingcountry_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container">
@@ -705,9 +705,9 @@ const Customercreate = (props) => {
                                     </div>
                                 </div>
                                 <div className="input-col">
-                                    <label for="newCustCountryShipping">Country</label>
+                                    <label for="newCustCountryShipping">  State/Province</label>
                                     <div onClick={hundleFourDropdown} className={toggleFourDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustCountryShipping" placeholder="Select Country" value={shipping_state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustCountryShipping" placeholder="   Select State/Province" value={shipping_state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container">

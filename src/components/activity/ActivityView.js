@@ -203,22 +203,25 @@ const ActivityView = () => {
                 return new Date(a.date) - new Date(b.date);
             });
         }
+        // console.log("_filteredActivity",_filteredActivity)
         setFilteredActivityList(_filteredActivity);
         scount += _filteredActivity.length;
-        // console.log("_filteredActivity", _filteredActivity)
         // console.log("customer count", scount)
     }
 
 
 
 
+    //console.log("FilteredActivityList", FilteredActivityList)
 
 
     // Filter activity list Accourding To Date
     var getDistinctActivity = {};
     var _activity = FilteredActivityList;
     _activity && _activity.map(item => {
+        //console.log("item", item)
         var dateKey = FormateDateAndTime.formatDateAndTime(item.date_time && item.date_time !== undefined ? item.date_time : item.CreatedDate, item.time_zone);
+      //  console.log("dateKey", dateKey)
         if (!getDistinctActivity.hasOwnProperty(dateKey)) {
             getDistinctActivity[dateKey] = new Array(item);
         } else {
@@ -226,8 +229,10 @@ const ActivityView = () => {
                 getDistinctActivity[dateKey].push(item)
             }
         }
+
+        // console.log("filterbydates", filterbydate)
+
     })
-    //  console.log("getDistinctActivity", getDistinctActivity)
     //---------------------------------------------------
 
 
@@ -691,8 +696,7 @@ const ActivityView = () => {
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         {/* <input type="text" id="filterType" /> */}
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
-                        <input type="text" defaultValue={sortbyvaluename} id="filterType" readOnly />
-                    
+                        <input type="text" value={sortbyvaluename} id="filterType" readOnly />
                         {/* <div id="sortCurrent" className="sort-current"  >
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
 
@@ -704,6 +708,8 @@ const ActivityView = () => {
                             <div className="option" onClick={(e) => sortByList("dateAsc", "Date (Newest)")}>Date (Newest)</div>
                             <div className="option" onClick={(e) => sortByList("dateDesc", "Date (Oldest)")}>Date (Oldest)</div>
                         </div>
+
+
                         {/* <div className="option" data-value="dateAsc" onClick={(e) => sortByList("dateAsc", "Date")} >
                             <img src={FilterArrowUp} alt="" />
                             <p>Date</p>
@@ -733,29 +739,29 @@ const ActivityView = () => {
                     </button>
                 </div>
                 <ActivityOrderDetail />
-                <div className="order-details">
-                    <ActivityOrderList
-                        Subtotal={subtotal ? subtotal : 0}
-                        //  Discount={_discount}
-                        TotalTax={ActivityOrderDetails && ActivityOrderDetails.total_tax}
-                        tax_refunded={ActivityOrderDetails && ActivityOrderDetails.tax_refunded}
-                        TotalAmount={ActivityOrderDetails && ActivityOrderDetails.total_amount}
-                        refunded_amount={ActivityOrderDetails && ActivityOrderDetails.refunded_amount}
-                        OrderPayment={ActivityOrderDetails && ActivityOrderDetails.order_payments}
-                        refundPayments={ActivityOrderDetails && ActivityOrderDetails.order_Refund_payments}
-                        cash_round={ActivityOrderDetails && ActivityOrderDetails.cash_rounding_amount}
-                        balence={0}
-                        TimeZone={ActivityOrderDetails && ActivityOrderDetails.time_zone}
-                        refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount}
-                        redeemPointsToPrint={ActivityOrderDetails.meta_datas ? ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
-                        orderMetaData={ActivityOrderDetails && ActivityOrderDetails.meta_datas}
-                    // TotalIndividualProductDiscount={
-                    //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
-                    //       ? _totalProductIndividualDiscount
-                    //       : 0
-                    //   }
-                    />
-                </div>
+
+                <ActivityOrderList
+                    Subtotal={subtotal ? subtotal : 0}
+                    //  Discount={_discount}
+                    TotalTax={ActivityOrderDetails && ActivityOrderDetails.total_tax}
+                    tax_refunded={ActivityOrderDetails && ActivityOrderDetails.tax_refunded}
+                    TotalAmount={ActivityOrderDetails && ActivityOrderDetails.total_amount}
+                    refunded_amount={ActivityOrderDetails && ActivityOrderDetails.refunded_amount}
+                    OrderPayment={ActivityOrderDetails && ActivityOrderDetails.order_payments}
+                    refundPayments={ActivityOrderDetails && ActivityOrderDetails.order_Refund_payments}
+                    cash_round={ActivityOrderDetails && ActivityOrderDetails.cash_rounding_amount}
+                    balence={0}
+                    TimeZone={ActivityOrderDetails && ActivityOrderDetails.time_zone}
+                    refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount}
+                    redeemPointsToPrint={ActivityOrderDetails.meta_datas ? ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
+                    orderMetaData={ActivityOrderDetails && ActivityOrderDetails.meta_datas}
+                // TotalIndividualProductDiscount={
+                //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
+                //       ? _totalProductIndividualDiscount
+                //       : 0
+                //   }
+                />
+
 
                 <ActivityFooter getPdfdateTime={getPdfdateTime} />
             </div> : <div style={{ textAlign: "center", paddingTop: "50%", color: "gray" }}>
