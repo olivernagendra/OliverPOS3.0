@@ -595,6 +595,7 @@ const CustomerView = () => {
                     LastName={item.LastName}
                     PhoneNumber={item.Contact}
                     Email={item.Email}
+                    userName={item.UserName}
                     updateCustomerId={updateCustomerId}
                   // className={active == index ? 'selected-indicator' : ''} 
                   />
