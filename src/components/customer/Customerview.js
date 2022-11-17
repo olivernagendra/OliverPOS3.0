@@ -352,6 +352,9 @@ const CustomerView = () => {
         (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
       ))
     }
+    if (_filteredCustomer.length == 1) {
+      setupdateCustomerId(_filteredCustomer[0].WPId)
+    }
     setFilteredCustomer(_filteredCustomer);
     scount += _filteredCustomer.length;
     // console.log("_filteredCustomer", _filteredCustomer)
@@ -531,7 +534,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div onClick={toggleSortWrapp} id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <img src={DownArrowBlue} alt="" />
-              <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
+              <input type="text" id="filterType" value={sortbyvaluename} readOnly />
               {/* <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />
