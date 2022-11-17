@@ -50,7 +50,7 @@ const ActivityOrderList = (props) => {
     // Getting Response from activitygetDetail Api
     const [activitygetdetails] = useSelector((state) => [state.activityGetDetail])
     useEffect(() => {
-        if (activitygetdetails && activitygetdetails.status == STATUSES.IDLE && activitygetdetails.is_success && activitygetdetails.data) {
+        if (activitygetdetails && activitygetdetails.status == STATUSES.IDLE && activitygetdetails.is_success && activitygetdetails.data && activitygetdetails.data.content && activitygetdetails.data.content.line_items) {
 
             var lineitems = activitygetdetails.data.content.line_items;
             var images = [];
@@ -299,7 +299,7 @@ const ActivityOrderList = (props) => {
             <div className="scrollable">
                 <div className="customer-info">
                     <div className="col">
-                        {activityOrderDetails.orderCustomerInfo !== '' && activityOrderDetails.orderCustomerInfo !== null  ? <>  <p className="style1">Customer Information</p></>:null }
+                        {activityOrderDetails.orderCustomerInfo !== '' && activityOrderDetails.orderCustomerInfo !== null ? <>  <p className="style1">Customer Information</p></> : null}
                         <p className="style2">{Customerdata && Customerdata.customer_name ? Customerdata.customer_name : Customerdata && Customerdata.customer_first_name}</p>
                         <p className="style2">{Customerdata && Customerdata.customer_email ? Customerdata.customer_email : ''}</p>
                         <p className="style2">{Customerdata && Customerdata.customer_phone ? Customerdata.customer_phone : ''}</p>
