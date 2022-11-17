@@ -138,11 +138,11 @@ const Home = () => {
         }
     }
     // Set First time CashManagment Datain localStore
-    const { statusgetdetail, getdetail, errorgetdetail, is_successgetdetail } = useSelector((state) => state.cashmanagementgetdetail)
+  
     const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
     useEffect(() => {
         if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
-            localStorage.setItem("Cash_Management_Data", JSON.stringify(cashDrawerAllDetails.getdetail && getdetail.content));
+            localStorage.setItem("Cash_Management_Data", JSON.stringify(cashDrawerAllDetails.getdetail && cashDrawerAllDetails.getdetail.content));
         }
     }, [cashDrawerAllDetails]);
 

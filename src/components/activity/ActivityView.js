@@ -293,7 +293,8 @@ const ActivityView = () => {
 
 
     useEffect(() => {
-        document.querySelectorAll(".date-selector-wrapper > button").forEach((button) => {
+        document.querySelectorAll(".date-selector-wrapper left > button").forEach((button) => {
+            console.log("button",button)
             button.addEventListener("click", (e) => {
                 let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
                 let openDateSelector = document.querySelector(".date-selector.open");
@@ -427,6 +428,7 @@ const ActivityView = () => {
     const sortByList = (filterType, FilterValue) => {
         SetSortByValueName(FilterValue)
         setSelectedTypes(filterType);
+        setupdateActivityId("")
     }
 
     // filter All Function 
@@ -632,7 +634,7 @@ const ActivityView = () => {
                             <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
                                 <input type="text" id="dateTo" placeholder="dd/mm/yyyy" />
-                                <button className="open-date-selector">
+                                <button className="open-date-selector open">
                                     <img src={calendar} alt="" />
                                 </button>
                                 <div className="date-selector"></div>
@@ -708,6 +710,8 @@ const ActivityView = () => {
                         <div class="option-container" id="transactionsListSortOptionsContainer">
                             <div className="option" onClick={(e) => sortByList("dateAsc", "Date (Newest)")}>Date (Newest)</div>
                             <div className="option" onClick={(e) => sortByList("dateDesc", "Date (Oldest)")}>Date (Oldest)</div>
+                            <div className="option" onClick={(e) => sortByList("amountAsc", "Amount (Highest)")}>Amount (Highest)</div>
+                            <div className="option" onClick={(e) => sortByList("amountDesc", "Amount (Lowest)")}>Amount (Lowest)</div>
                         </div>
 
 
