@@ -708,6 +708,8 @@ const ActivityView = () => {
                         <div class="option-container" id="transactionsListSortOptionsContainer">
                             <div className="option" onClick={(e) => sortByList("dateAsc", "Date (Newest)")}>Date (Newest)</div>
                             <div className="option" onClick={(e) => sortByList("dateDesc", "Date (Oldest)")}>Date (Oldest)</div>
+                            <div className="option" onClick={(e) => sortByList("amountAsc", "Amount (Newest)")}>Amount (Newest)</div>
+                            <div className="option" onClick={(e) => sortByList("amountDesc", "Amount (Oldest)")}>Amount (Oldest)</div>
                         </div>
 
 
