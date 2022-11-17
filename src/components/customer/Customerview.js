@@ -527,9 +527,9 @@ const CustomerView = () => {
           </div>
         </div>
         <div className="cv-list" >
-          <div className="header" onClick={toggleSortWrapp}>
+          <div className="header">
             <p>Sort by:</p>
-            <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
+            <div onClick={toggleSortWrapp} id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <img src={DownArrowBlue} alt="" />
               <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
               {/* <img className="dropdown-arrow" src={DownArrowBlue} alt="" />

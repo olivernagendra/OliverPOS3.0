@@ -80,7 +80,7 @@ function Login() {
         localStorage.removeItem('CART');
         localStorage.removeItem('firebaseStaffName');
         localStorage.removeItem('firebaseSelectedRegisters');
-
+        localStorage.removeItem('Cash_Management_Data');
         localStorage.removeItem('pdf_format');
         localStorage.removeItem("CustomerList");
         localStorage.removeItem("FAV_LIST_ARRAY");

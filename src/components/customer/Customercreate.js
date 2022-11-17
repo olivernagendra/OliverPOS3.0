@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
@@ -39,6 +39,10 @@ const Customercreate = (props) => {
     const [getStateList, setgetStateList] = useState(localStorage.getItem('statelist') && localStorage.getItem('statelist') !== null ? typeof (localStorage.getItem('statelist')) !== undefined ? localStorage.getItem('statelist') !== 'undefined' ?
         Array.isArray(JSON.parse(localStorage.getItem('statelist'))) === true ? JSON.parse(localStorage.getItem('statelist')) : '' : '' : '' : '')
 
+    const [billingCountryCode, setbillingCountryCode] = useState('')
+    const [billingStateCode, setbillingStateCode] = useState('')
+    const [shippingCountryCode, setshippingCountryCode] = useState('')
+    const [shippingStateCode, setshippingStateCode] = useState('')
 
 
     // Toggle dropDown country and state
@@ -247,17 +251,16 @@ const Customercreate = (props) => {
                     StreetAddress2: billingAddress2 ? billingAddress2 : "",
                     BillingPincode: billingZipPostal ? billingZipPostal : "",
                     BillingCity: billingCity ? billingCity : "",
-                    BillingCountry: country_name ? country_name : "",
-                    BillingState: state_name ? state_name : "",
+                    BillingCountry: billingCountryCode ? billingCountryCode : "",
+                    BillingState: billingStateCode ? billingStateCode : "",
                     //Shippig
                     shippingAddress1: shippingAddress1 ? shippingAddress1 : "",
                     shippingAddress2: shippingAddress2 ? shippingAddress2 : "",
                     ShippingPincode: shippingZipPostal ? shippingZipPostal : "",
                     shippingCity: shippingCity ? shippingCity : '',
-                    ShippingCountry: Shippingcountry_name ? Shippingcountry_name : "",
-                    ShippingState: shipping_state_name ? shipping_state_name : "",
+                    ShippingCountry: shippingCountryCode ? shippingCountryCode : "",
+                    ShippingState: shippingStateCode ? shippingStateCode : "",
                     website: website ? website : ""
-
                 }
                 console.log("save", save)
                 dispatch(customersave(save, 'create',));
@@ -280,15 +283,15 @@ const Customercreate = (props) => {
                     StreetAddress2: billingAddress2 ? billingAddress2 : '',
                     BillingPincode: billingZipPostal ? billingZipPostal : '',
                     BillingCity: billingCity ? billingCity : '',
-                    BillingCountry: country_name ? country_name : '',
-                    BillingState: state_name ? state_name : '',
+                    BillingCountry: billingCountryCode ? billingCountryCode : "",
+                    BillingState: billingStateCode ? billingStateCode : "",
                     //Shippig
                     shippingAddress1: shippingAddress1 ? shippingAddress1 : '',
                     shippingAddress2: shippingAddress2 ? shippingAddress2 : '',
                     ShippingPincode: shippingZipPostal ? shippingZipPostal : '',
                     shippingCity: shippingCity ? shippingCity : '',
-                    ShippingCountry: Shippingcountry_name ? Shippingcountry_name : '',
-                    ShippingState: shipping_state_name ? shipping_state_name : '',
+                    ShippingCountry: shippingCountryCode ? shippingCountryCode : "",
+                    ShippingState: shippingStateCode ? shippingStateCode : "",
                     website: website ? website : ''
                 }
                 setisCusToSaveCart(true)
@@ -317,19 +320,19 @@ const Customercreate = (props) => {
                     udid: UID,
                     notes: " ",
                     //Billing
-                    StreetAddress: billingAddress1 ?billingAddress1:"",
-                    StreetAddress2: billingAddress2 ?billingAddress2:"",
-                    BillingPincode: billingZipPostal ?billingZipPostal:"",
-                    BillingCity: billingCity ?billingCity:'',
-                    BillingCountry: country_name,
-                    BillingState: state_name,
+                    StreetAddress: billingAddress1 ? billingAddress1 : "",
+                    StreetAddress2: billingAddress2 ? billingAddress2 : "",
+                    BillingPincode: billingZipPostal ? billingZipPostal : "",
+                    BillingCity: billingCity ? billingCity : '',
+                    BillingCountry: billingCountryCode,
+                    BillingState: billingStateCode,
                     //Shippig
                     shippingAddress1: shippingAddress1,
                     shippingAddress2: shippingAddress2,
                     ShippingPincode: shippingZipPostal,
                     shippingCity: shippingCity,
-                    ShippingCountry: Shippingcountry_name,
-                    ShippingState: shipping_state_name,
+                    ShippingCountry: shippingCountryCode,
+                    ShippingState: shippingStateCode,
                     website: website
                 }
                 dispatch(customerupdate(update, 'update'));
@@ -341,6 +344,7 @@ const Customercreate = (props) => {
 
 
     }
+
 
 
 
@@ -360,6 +364,10 @@ const Customercreate = (props) => {
         setShippingCountryName("")
         setshippingstate_name("")
         setCust_ID("")
+        setbillingCountryCode("")
+        setbillingStateCode("")
+        setshippingCountryCode("")
+        setshippingStateCode("")
 
 
     }
@@ -393,7 +401,7 @@ const Customercreate = (props) => {
         )
     }
 
-    
+
 
 
 
@@ -430,13 +438,16 @@ const Customercreate = (props) => {
                 finalStatelist.push(element)
             }
         })
+        setbillingCountryCode(code)
         setviewStateList(finalStatelist)
         setcountry_name(name)
         setstate_name('')
     }
     // Billing DropDown Click  
+
     const onChangeStateList = (code, name) => {
         setstate_name(name.replace(/[^a-zA-Z]/g, ' '))
+        setbillingStateCode(code)
     }
 
 
@@ -448,6 +459,7 @@ const Customercreate = (props) => {
                 finalStatelist.push(element)
             }
         })
+        setshippingCountryCode(code)
         setShippingViewStateList(finalStatelist)
         setShippingCountryName(name)
         setshippingstate_name('')
@@ -455,12 +467,16 @@ const Customercreate = (props) => {
     }
 
     // shipping DropDown Click  
+
     const onChangeShipStateList = (code, name) => {
         setshippingstate_name(name.replace(/[^a-zA-Z]/g, ' '))
+        setshippingStateCode(code)
     }
 
 
-
+        const handleKeyPress=(e)=>{
+                console.log("handleKeyPress",e)
+        }
 
 
 
@@ -470,7 +486,7 @@ const Customercreate = (props) => {
     const [customerres] = useSelector((state) => [state.customersave])
     useEffect(() => {
         if (customerres && customerres.status == STATUSES.IDLE && customerres.is_success && customerres.data) {
-           // console.log("customersave",customerres)
+            // console.log("customersave",customerres)
             AddCustomerInIndexDB(UID, customerres.data.content)
             if (isCusToSaveCart == true) {
                 addCustomerToSale(customerres.data.content)
@@ -480,14 +496,14 @@ const Customercreate = (props) => {
     }, [customerres, isCusToSaveCart]);
 
 
-     // Customer Edit  API response
-     const [customereditsucc] = useSelector((state) => [state.customerupdate])
-     useEffect(() => {
-       if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
-        // console.log("customereditsucc",customereditsucc)
-       UpdateCustomerInIndexDB(UID,customereditsucc.data.content)
-       }
-     }, [customereditsucc]);
+    // Customer Edit  API response
+    const [customereditsucc] = useSelector((state) => [state.customerupdate])
+    useEffect(() => {
+        if (customereditsucc && customereditsucc.status == STATUSES.IDLE && customereditsucc.is_success && customereditsucc.data) {
+            // console.log("customereditsucc",customereditsucc)
+            UpdateCustomerInIndexDB(UID, customereditsucc.data.content)
+        }
+    }, [customereditsucc]);
 
 
 
@@ -522,8 +538,8 @@ const Customercreate = (props) => {
 
     }
 
-   // console.log("values",values)
-  //  console.log(" props.searchSringCreate", props.searchSringCreate)
+    // console.log("values",values)
+    //  console.log(" props.searchSringCreate", props.searchSringCreate)
 
 
 
@@ -556,7 +572,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustEmail">Email*</label>
                                     <input type="email" placeholder="Enter Email" name='email'
-                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete ='off' ref={textInput} />
+                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput} />
                                     {/* <p>{errors.email}</p> */}
                                     <div className="error-wrapper">{errors.email}</div>
                                 </div>
@@ -626,7 +642,7 @@ const Customercreate = (props) => {
                                         <input type="text" id="newCustStateProvBilling" placeholder="Select Country" value={country_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
                                         <div className="error-wrapper" ></div>
                                         <img src={down_angled_bracket} alt="" />
-                                        <div className="option-container"    >
+                                        <div className="option-container"  onKeyPress={handleKeyPress}   >
                                             {getCountryList && getCountryList.map((item, index) => {
                                                 return (
                                                     <div className="option" onClick={() => onChangeList(item.Code, item.Name)} >
@@ -640,7 +656,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustCountryBilling">    State/Province</label>
                                     <div onClick={hundleseconddropdown} className={togglesecondDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustCountryBilling" placeholder="   Select State/Province"    value={state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustCountryBilling" placeholder="   Select State/Province" value={state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container" >

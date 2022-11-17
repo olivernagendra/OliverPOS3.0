@@ -424,7 +424,11 @@ alert('canceled')
     return (
         <React.Fragment>
             <div className="footer">
-                <button id="refundButton" onClick={() =>
+                <button id="refundButton" disabled={activityOrderDetails&&activityOrderDetails.order_status == "refunded" ||  activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
+                        || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
+                        || activityOrderDetails.order_status == ""    ? true : false} style={{ opacity: activityOrderDetails&&activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
+                        || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
+                        || activityOrderDetails.order_status == ""  ? 0.5 : 1 }} onClick={() =>
                     activityOrderDetails.order_status == 'completed' ? onClick1()
                         : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold" || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing") ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '')
                             : activityOrderDetails.order_status == "refunded" ? RefundPOP
@@ -433,16 +437,14 @@ alert('canceled')
                 }  > {activityOrderDetails.order_status == 'completed' ? LocalizedLanguage.refundSale
                     : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
                         || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
-                        || activityOrderDetails.order_status == "") ? LocalizedLanguage.openSale
+                        || activityOrderDetails.order_status == "") ? LocalizedLanguage.refundedSale
                         : activityOrderDetails.order_status == "refunded" ? LocalizedLanguage.refundedSale
                             : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? LocalizedLanguage.cancel
                                 : null
                     }</button>
 
-
-
                 <button id="receiptButton" onClick={() => toggleViewReceipt()}>Receipt</button>
-                <button id="openSaleButton">Open Sale</button>
+                <button disabled={activityOrderDetails&&activityOrderDetails.order_status == 'completed' || activityOrderDetails&&activityOrderDetails.order_status == 'refunded' || (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? true : false} style={{ opacity: activityOrderDetails&&activityOrderDetails.order_status == 'completed' || activityOrderDetails&&activityOrderDetails.order_status == 'refunded' || (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale")    ? 0.5 : 1 }}  id="openSaleButton">Open Sale</button>
             </div>
             {isShowViewReceipt?<ViewReceipt isShow={isShowViewReceipt} toggleViewReceipt={toggleViewReceipt} PrintClick={PrintClick}></ViewReceipt>:null}
         </React.Fragment>
