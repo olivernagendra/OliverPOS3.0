@@ -596,13 +596,13 @@ const ActivityView = () => {
                 </div>
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
-                    <label for="orderID">Order ID</label>
+                    <label htmlFor="orderID">Order ID</label>
                     <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChangeID} value={orderidsearch} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
-                    <label for="custInfo">Customer Info</label>
+                    <label htmlFor="custInfo">Customer Info</label>
                     <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange} value={emailnamephone} />
-                    <label for="orderStatus">Order Status</label>
+                    <label htmlFor="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
                         <img src={down_angled_bracket} alt="" />
                         <input type="text" id="orderStatus" placeholder={filterByStatus == '' ? "All" : filterByStatus !== "" ? filterByStatus : "Select Status"} />
@@ -696,7 +696,8 @@ const ActivityView = () => {
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         {/* <input type="text" id="filterType" /> */}
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
-                        <input type="text" value={sortbyvaluename} id="filterType" readOnly />
+                        <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
+                        {/* <p>{sortbyvaluename}</p> */}
                         {/* <div id="sortCurrent" className="sort-current"  >
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
 
