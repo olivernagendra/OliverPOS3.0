@@ -96,7 +96,8 @@ function Cashmanagement() {
   }, []);
 
   const loadMore = (pageNo) => {
-    dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.CUSTOMER_PAGE_SIZE, "pageNumber": pageNo }));
+    console.log("pageNo",pageNo)
+    dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.ACTIVITY_PAGE_SIZE, "pageNumber": 1 }));
   }
 
   const [cashdrawer] = useSelector((state) => [state.cashmanagement])
@@ -206,17 +207,17 @@ function Cashmanagement() {
     firstRecordId = ""
   }
 
-  const onScroll = (e) => {
-    const bottom = Number((e.target.scrollHeight - e.target.scrollTop).toFixed(0)) - e.target.clientHeight < 50;
-    if (_cashmangementlist.length == listrecordscount) {
+   const onScroll = (e) => {
+    // const bottom = Number((e.target.scrollHeight - e.target.scrollTop).toFixed(0)) - e.target.clientHeight < 50;
+    // if (_cashmangementlist.length == listrecordscount) {
 
-    } else if (bottom) {
-      setDefauldNumber(defauldnumber + 1)
-      if (defauldnumber != 1) {
-        loadMore(defauldnumber)
-      }
-    }
-  };
+    // } else if (bottom) {
+    //   setDefauldNumber(defauldnumber + 1)
+    //   if (defauldnumber != 1) {
+    //     loadMore(defauldnumber)
+    //   }
+    // }
+   };
 
   // console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)
 
@@ -270,14 +271,14 @@ function Cashmanagement() {
               </> :
                 <>
                   <button className="current-register no-transform selected">
-                    <p className="style1"> {localCashData && localCashData.ClosedTime =="" || localCashData.ClosedTime ==null ? "Currently CLosed" : "Currently  Active "}  </p>
+                    <p className="style1"> {localCashData && localCashData.Status =="Open"  ? "Currently Active" : "Currently  Closed "}  </p>
                     <div className="text-row">
                       <p>{localCashData && localCashData.RegisterName}</p>
-                      <p className="open"> {localCashData && localCashData.ClosedTime =="" || localCashData.ClosedTime ==null  ? "Closed" : "Open "} </p>
+                      <p className="open"> {localCashData && localCashData.Status =="Open"  ? "Open" : "Closed "}  </p>
                       {/* <p className="smobile-fake-button">Closed</p> */}
                     </div>
                     <p className="style2">User: {localCashData && localCashData.SalePersonName}</p>
-                    <div className="mobile-fake-button">{localCashData && localCashData.ClosedTime =="" || localCashData.ClosedTime ==null  ? "Closed" : "Open "} </div>
+                    <div className="mobile-fake-button">{localCashData && localCashData.Status =="Open"  ? "Open" : "Closed "}</div>
                   </button>
                   {/* <div className="prev-registers"> */}
 

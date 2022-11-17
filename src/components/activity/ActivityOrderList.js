@@ -281,7 +281,7 @@ const ActivityOrderList = (props) => {
             <div className="scrollable">
                 <div className="customer-info">
                     <div className="col">
-                        <p className="style1">Customer Information</p>
+                        {activityOrderDetails.orderCustomerInfo !== '' && activityOrderDetails.orderCustomerInfo !== null  ? <>  <p className="style1">Customer Information</p></>:null }
                         <p className="style2">{Customerdata && Customerdata.customer_name ? Customerdata.customer_name : Customerdata && Customerdata.customer_first_name}</p>
                         <p className="style2">{Customerdata && Customerdata.customer_email ? Customerdata.customer_email : ''}</p>
                         <p className="style2">{Customerdata && Customerdata.customer_phone ? Customerdata.customer_phone : ''}</p>

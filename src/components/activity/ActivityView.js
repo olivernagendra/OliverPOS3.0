@@ -293,7 +293,8 @@ const ActivityView = () => {
 
 
     useEffect(() => {
-        document.querySelectorAll(".date-selector-wrapper > button").forEach((button) => {
+        document.querySelectorAll(".date-selector-wrapper left > button").forEach((button) => {
+            console.log("button",button)
             button.addEventListener("click", (e) => {
                 let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
                 let openDateSelector = document.querySelector(".date-selector.open");
@@ -632,7 +633,7 @@ const ActivityView = () => {
                             <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
                                 <input type="text" id="dateTo" placeholder="dd/mm/yyyy" />
-                                <button className="open-date-selector">
+                                <button className="open-date-selector open">
                                     <img src={calendar} alt="" />
                                 </button>
                                 <div className="date-selector"></div>
