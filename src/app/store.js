@@ -18,7 +18,7 @@ import { CustomergetPageSlice, CustomerGetDetailsSlice, getAllEventsSlice, saveC
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
-import { CustomerSaveSlice ,CustomerUpdateSlice } from '../components/customer/CustomerSlice'
+import { CustomerSaveSlice, CustomerUpdateSlice } from '../components/customer/CustomerSlice'
 import { checkStockSlice, getPaymentTypeNameSlice, getExtensionsSlice, getMakePaymentSlice, makeOnlinePaymentsSlice, saveSlice, paymentAmountSlice, changeReturnAmountSlice, checkTempOrderSyncSlice, checkTempOrderStatusSlice } from '../components/checkout/checkoutSlice';
 import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
@@ -63,7 +63,7 @@ export const store = configureStore({
     customer: customerSlice.reducer,
     customergetPage: CustomergetPageSlice.reducer,
     product: productSlice.reducer,
-    customerupdate:CustomerUpdateSlice.reducer,
+    customerupdate: CustomerUpdateSlice.reducer,
     customersave: CustomerSaveSlice.reducer,
     checkStock: checkStockSlice.reducer,
     userList: userSlice.reducer,
@@ -76,33 +76,33 @@ export const store = configureStore({
     popupMessage: popupMessageSlice.reducer,
     discountList: discountSlice.reducer,
     inventories: inventoryReducer,
-    addRemoveCashmanagement:addRemoveCashSlice.reducer,
-    customergetDetail:CustomerGetDetailsSlice.reducer,
-    getAllEvents:getAllEventsSlice.reducer,
-    getExtensions:getExtensionsSlice.reducer,
-    getPaymentTypeName:getPaymentTypeNameSlice.reducer,
-    makePayment:getMakePaymentSlice.reducer,
-    makeOnlinePayments:makeOnlinePaymentsSlice.reducer,
-    save:saveSlice.reducer,
-    paymentAmount:paymentAmountSlice.reducer,
-    changeReturnAmount:changeReturnAmountSlice.reducer,
-    checkTempOrderSync:checkTempOrderSyncSlice.reducer,
-    checkTempOrderStatus:checkTempOrderStatusSlice.reducer,
-    saveCustomerToTempOrder:saveCustomerToTempOrderSlice.reducer,
-    activityRecords:getAllActivityListSlice.reducer,
-    activityGetDetail:getDetailSlice.reducer,
-    getFilteredActivities:getFilteredActivitiesSlice.reducer,
-    make_payconiq_payment:make_payconiq_paymentSlice.reducer,
-    check_payconiq_pay_status:check_payconiq_pay_statusSlice.reducer,
-    cancel_payconiq_payment:cancel_payconiq_paymentSlice.reducer,
-    refundOrder:refundOrderSlice.reducer,
+    addRemoveCashmanagement: addRemoveCashSlice.reducer,
+    customergetDetail: CustomerGetDetailsSlice.reducer,
+    getAllEvents: getAllEventsSlice.reducer,
+    getExtensions: getExtensionsSlice.reducer,
+    getPaymentTypeName: getPaymentTypeNameSlice.reducer,
+    makePayment: getMakePaymentSlice.reducer,
+    makeOnlinePayments: makeOnlinePaymentsSlice.reducer,
+    save: saveSlice.reducer,
+    paymentAmount: paymentAmountSlice.reducer,
+    changeReturnAmount: changeReturnAmountSlice.reducer,
+    checkTempOrderSync: checkTempOrderSyncSlice.reducer,
+    checkTempOrderStatus: checkTempOrderStatusSlice.reducer,
+    saveCustomerToTempOrder: saveCustomerToTempOrderSlice.reducer,
+    activityRecords: getAllActivityListSlice.reducer,
+    activityGetDetail: getDetailSlice.reducer,
+    getFilteredActivities: getFilteredActivitiesSlice.reducer,
+    make_payconiq_payment: make_payconiq_paymentSlice.reducer,
+    check_payconiq_pay_status: check_payconiq_pay_statusSlice.reducer,
+    cancel_payconiq_payment: cancel_payconiq_paymentSlice.reducer,
+    refundOrder: refundOrderSlice.reducer,
     postMeta: postMetaSlice.reducer,
     getPostMeta: getPostMetaSlice.reducer,
-    sendMail:sendMailSlice.reducer,
-    sendExternalMail:sendExternalMailSlice.reducer,
-    CountryList:getCountrySlice.reducer,
-    StateList:getStateSlice.reducer,
-    cashRounding:cashRoundingSlice.reducer
+    sendMail: sendMailSlice.reducer,
+    sendExternalMail: sendExternalMailSlice.reducer,
+    CountryList: getCountrySlice.reducer,
+    StateList: getStateSlice.reducer,
+    cashRounding: cashRoundingSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>
