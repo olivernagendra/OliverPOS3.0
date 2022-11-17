@@ -2340,14 +2340,14 @@ const Checkout = (props) => {
                                             </button>
                             })
                         }
-                        {
+                        {/* {
                             extensionPayments && extensionPayments.length > 0 && extensionPayments.map(exPayment => {
                                 return <button style={{ backgroundColor: "var(--oliver-blue)" }} onClick={() => ToggleiFrameWindow(exPayment)} key={exPayment.Id}>
                                     {exPayment.logo != null && <img src={exPayment.logo} alt=""></img>}
                                     {exPayment.logo != null ? "" : exPayment.Name}</button>
 
                             })
-                        }
+                        } */}
                     </div>
                 </div>
             </div>

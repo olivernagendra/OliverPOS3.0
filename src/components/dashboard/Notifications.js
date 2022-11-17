@@ -80,6 +80,8 @@ const Notifications = (props) => {
         })
         TempOrders && TempOrders.map(list => {
             var description = "";
+
+            var time = list.date.includes(',') ? list.date.split(',')[1] : "";
             //order completed
             // const d = new Date(list.date);
 
@@ -100,7 +102,8 @@ const Notifications = (props) => {
                             <p className="style1">Order Created</p>
                             <p className="style2">Order #{list.TempOrderID}</p>
                         </div>
-                        <p>{_openDateTime}</p>
+                        {/* <p>1hr ago</p> */}
+                        <p>{time}</p>
                     </div>
 
                 ))
@@ -131,7 +134,8 @@ const Notifications = (props) => {
                         <p className="style1">Order Created</p>
                         <p className="style2">Order #{list.TempOrderID}</p>
                     </div>
-                    <p>{_openDateTime}</p>
+                    {/* <p>1hr ago</p> */}
+                    <p>{time}</p>
                 </div>))
             }
             //order refunded successfully
@@ -151,7 +155,8 @@ const Notifications = (props) => {
                             Order# {list.TempOrderID}
                         </p>
                     </div>
-                    <p>{_openDateTime}</p>
+                    {/* <p>1hr ago</p> */}
+                    <p>{time}</p>
                 </div>))
             }//sync issue
             else if (list.Status == "failed" && list.new_customer_email == "") {
@@ -166,7 +171,8 @@ const Notifications = (props) => {
                             <p className="style2">Order #{list.TempOrderID}</p>
                             <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a>
                         </div>
-                        <p>{_openDateTime}</p>
+                        {/* <p>3:23PM</p> */}
+                        <p>{time}</p>
                         {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Error_Icon} alt="" />

@@ -45,11 +45,29 @@ const ActivityOrderList = (props) => {
 
 
     const [activityOrderDetails, setActivityOrderDetails] = useState([])
+    const [pImages, setpImages] = useState([])
     var TaxSetting = localStorage.getItem("TAX_SETTING") ? JSON.parse(localStorage.getItem("TAX_SETTING")) : null;
     // Getting Response from activitygetDetail Api
     const [activitygetdetails] = useSelector((state) => [state.activityGetDetail])
     useEffect(() => {
         if (activitygetdetails && activitygetdetails.status == STATUSES.IDLE && activitygetdetails.is_success && activitygetdetails.data) {
+
+            var lineitems = activitygetdetails.data.content.line_items;
+            var images = [];
+            var count = 0;
+            lineitems.map(item => {
+                const id = item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id;
+                getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id).then(a => {
+                    count++;
+                    if (typeof a != "undefined" && a != null && a.hasOwnProperty('ProductImage')) {
+                        images.push({ id: id, image: a.ProductImage });
+                    }
+                    if (count == lineitems.length) {
+                        setpImages(images);
+                        console.log("-------images------" + JSON.stringify(images));
+                    }
+                });
+            })
             setActivityOrderDetails(activitygetdetails && activitygetdetails.data.content);
 
         }
@@ -295,12 +313,17 @@ const ActivityOrderList = (props) => {
                     {
                         lineitems && lineitems.map((item, index) => {
                             var productImage = '';
-                            var IndexImage = ''
-                            IndexImage = productImageFind(item);
-                            IndexImage.then((a) => {
-                                /// console.log(a);
-                                productImage = a
-                            });
+                            var IndexImage = pImages.find(a => a.id == (item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id));
+                            if (typeof IndexImage != "undefined" && IndexImage != null) {
+                                productImage = IndexImage.image;
+
+                            }
+                            // var IndexImage = ''
+                            // IndexImage = productImageFind(item);
+                            // IndexImage.then((a) => {
+                            //     /// console.log(a);
+                            //     productImage = a
+                            // });
                             // console.log("productImage",productImage)
                             var sku = item.sku ? item.sku : ''
                             var varDetail = item.ProductSummery.toString();
