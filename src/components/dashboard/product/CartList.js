@@ -528,7 +528,18 @@ const CartList = (props) => {
         }
     }, [resCheckStock]);
 
-
+    const showTaxListIfSubscription = () => {
+        if (typeOfTax() !== "incl") {
+            var subscriptionClientDetail = localStorage.getItem('clientDetail') ? JSON.parse(localStorage.getItem('clientDetail')) : '';
+            if (subscriptionClientDetail && subscriptionClientDetail.subscription_detail && subscriptionClientDetail.subscription_detail.subscription_type == "oliverpos-free") {
+                var data = { title: "This “Feature” is not included in your plan!", msg: 'In order to upgrade please go to the Oliver HUB', is_success: true }
+                dispatch(popupMessage(data));
+            }
+            else {
+                props.toggleTaxList()
+            }
+        }
+    }
     const RemoveCustomer = () => {
         localStorage.removeItem('AdCusDetail');
         sessionStorage.removeItem("CUSTOMER_ID");
@@ -577,6 +588,7 @@ const CartList = (props) => {
             }
         })
     }
+
     console.log("taxRates", taxRates)
     return (
         <React.Fragment>
@@ -818,7 +830,8 @@ const CartList = (props) => {
                                 <p><b>-${<NumericFormat value={discount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                             </div> : null}
                         <div className="row">
-                            <button id="taxesButton" onClick={() => props.toggleTaxList()}>Taxes {typeOfTax() == 'incl' ? "Incl." : ""}</button>
+
+                            <button id="taxesButton" onClick={() => showTaxListIfSubscription()}>Taxes {typeOfTax() == 'incl' ? "Incl." : ""}</button>
                             {taxRates && taxRates !== "" ? <p>({taxRates})</p> : ""}
                             <p><b>${<NumericFormat value={taxes} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div>
