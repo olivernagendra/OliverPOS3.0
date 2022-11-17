@@ -55,7 +55,9 @@ function AddRemoveCashPopup(props) {
             }
             //  console.log("addRemoveParm", addRemoveParm)
             dispatch(addRemoveCash(addRemoveParm));
-            callApi()
+            setTimeout(() => {
+                callApi()
+            }, 100);
             setAmount(0.00)
             setremoveAmount(0.00)
             setNotes('')
@@ -104,7 +106,7 @@ function AddRemoveCashPopup(props) {
                     </div>
                     <div className="input-row">
                         <label htmlFor="addCashAmount">{props.popupstatus == 'add' ? "Add" : "Remove"}  Cash:</label>
-                        <input type="number" id="addCashAmount" placeholder="Enter Amount" />
+                        <input type="number" id="addCashAmount" placeholder="Enter Amount" onChange={(e) => validateAddNumber(e, props.popupstatus)} />
                     </div>
                     <label htmlFor="addCashNote">Add a note:</label>
                     <textarea id="addCashNote" placeholder="Please add a note here." onChange={(e) => addNote(e)} defaultValue={""} />
