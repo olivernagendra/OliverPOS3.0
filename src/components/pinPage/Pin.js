@@ -27,7 +27,8 @@ const Pin = () => {
     const [onClick, setOnClick] = useState(false);
     const [isShowLogoutConfirm, setisShowLogoutConfirm] = useState(false)
     const register_Id = localStorage.getItem('register');
-
+    var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+    var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
     const toggleLogoutConfirm = () => {
         setisShowLogoutConfirm(!isShowLogoutConfirm)
     }
@@ -57,8 +58,7 @@ const Pin = () => {
     const fetchData = () => {
         if (UID && register_Id) {
             // this.props.dispatch(favouriteListActions.getAll(UID, register_Id));
-            var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-            var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
+           
             if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
                 dispatch(GetOpenRegister(register_Id));
             }
@@ -293,7 +293,8 @@ const Pin = () => {
                     <div className="divider divider-pin"></div>
                     <p className="style2">{get_regName()}</p>
                     <p className="style3">{get_locName()}</p>
-                    <button id="closeRegister1" onClick={goToCloseRegister}  >{LocalizedLanguage.closeRegister}</button>
+
+                    <button id="closeRegister1" disabled={client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement !== true  ? true : false} style={{ opacity: client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement !== true  ? 0.5 : 1 }}  onClick={goToCloseRegister}  >{LocalizedLanguage.closeRegister}</button>
                 </div>
             </header>
             <main>{<PinPad autoFocus={true} onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>
