@@ -232,6 +232,10 @@ const ProductLoader = () => {
                     console.log("--------------all customer records are done-----------" + CustomerArray.length);
                     UpdateCustomerInIndexDB(udid, CustomerArray);
                     sessionStorage.setItem("CUSTOMER_ID", CustomerArray[0].WPId ? CustomerArray[0].WPId : 0);
+                    tableCount = tableCount + 1;
+                    if (tableCount >= 2) {
+                        navigate('/home');
+                    }
                 }
             })
             .catch(function handleError(error) {
