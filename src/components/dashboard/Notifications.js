@@ -82,6 +82,9 @@ const Notifications = (props) => {
             var description = "";
 
             var time = list.date.includes(',') ? list.date.split(',')[1] : "";
+            if (typeof time != "undefined" && time != null) {
+                time = time.toUpperCase();
+            }
             //order completed
             // const d = new Date(list.date);
 
@@ -99,7 +102,7 @@ const Notifications = (props) => {
                             <img src={StorefrontIconGreen} alt="" />
                         </div>
                         <div className="col">
-                            <p className="style1">Order Created</p>
+                            <p className="style1">Email sent succeessfully</p>
                             <p className="style2">Order #{list.TempOrderID}</p>
                         </div>
                         {/* <p>1hr ago</p> */}
@@ -163,7 +166,7 @@ const Notifications = (props) => {
                 description = ((
 
                     <div className="notification-card" key={uniqueKey()}>
-                        <div classNae="side-color">
+                        <div className="icon-wrapper red">
                             <img src={ErrorIconRed} alt="" />
                         </div>
                         <div className="col">

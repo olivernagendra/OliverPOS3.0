@@ -6,7 +6,7 @@ import CartDiscount from "./CartDiscount";
 import CreateCustomer from "./CreateCustomer";
 import Notifications from "./Notifications";
 import OrderNote from "../common/commonComponents/OrderNote";
-import { getCountryList ,getStateList } from "../customer/CustomerSlice";
+import { getCountryList, getStateList } from "../customer/CustomerSlice";
 import MsgPopup_ProductNotFound from "./MsgPopup_ProductNotFound";
 import MsgPopup_UpgradeToUnlock from "./MsgPopup_UpgradeToUnlock";
 
@@ -40,13 +40,13 @@ import { popupMessage } from "../common/commonAPIs/messageSlice";
 import { useNavigate } from "react-router-dom";
 import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
-import { callProductXWindow,sendMessageToComposite, getCompositeAddedToCart, getCompositeSetProductxData } from "../../settings/CommonFunctionProductX";
+import { callProductXWindow, sendMessageToComposite, getCompositeAddedToCart, getCompositeSetProductxData } from "../../settings/CommonFunctionProductX";
 import { getInventory } from "./slices/inventorySlice";
 import { getDetails } from "../cashmanagement/CashmanagementSlice";
 import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 // import ProductxWindow from "./product/ProductxWindow";
 import Customercreate from "../customer/Customercreate";
-import {cashRounding} from "../common/commonAPIs/cashRoundingSlice";
+import { cashRounding } from "../common/commonAPIs/cashRoundingSlice";
 import { get_UDid } from "../common/localSettings";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
@@ -138,7 +138,7 @@ const Home = () => {
         }
     }
     // Set First time CashManagment Datain localStore
-  
+
     const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
     useEffect(() => {
         if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
@@ -183,9 +183,9 @@ const Home = () => {
                             // for (var k in _productX) {
                             //     _prdXItem=_productX[k];
                             // }
-                           
+
                             //addProductXtoCart(data.quantity, null, JSON.stringify(data.strProductX));
-                           
+
                             //this.addProductXtoCart(data.quantity);
                         }
                     }
@@ -237,7 +237,7 @@ const Home = () => {
     //     ToggleiFrameWindow();
     // }, [productxLink]);
 
-    var windowCloseEv=null;
+    var windowCloseEv = null;
     const openPopUp = async (item, index = null) => {
 
         let type = item.Type;
@@ -253,27 +253,27 @@ const Home = () => {
             //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
         }
         else
-            if ((type !== "simple" && type !== "variable" && type !=="variation") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            if ((type !== "simple" && type !== "variable" && type !== "variation") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
                 //alert(LocalizedLanguage.productxOutOfStock);
                 var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
                 dispatch(popupMessage(data));
             }
             else
-                if ((type !== "simple" && type !== "variable" && type !=="variation") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
+                if ((type !== "simple" && type !== "variable" && type !== "variation") && item !== null && item.ParamLink !== "" && item.ParamLink !== "False" && item.ParamLink !== null && typeof item.ParamLink !== "undefined") {
                     console.log("product x---" + item.ParamLink)
                     setProductxItem(item);
                     ToggleProductxWindow();
-                     windowCloseEv = callProductXWindow(item);
-                        window.addEventListener('message', function (e) {
-                            var data = e && e.data;
-                            if (typeof data == 'string' && data !== "") {
-                                console.log('-- -- -- --'+data);
-                                //compositeSwitchCases(JSON.parse(data))
-                            }
-                        })
+                    windowCloseEv = callProductXWindow(item);
+                    window.addEventListener('message', function (e) {
+                        var data = e && e.data;
+                        if (typeof data == 'string' && data !== "") {
+                            console.log('-- -- -- --' + data);
+                            //compositeSwitchCases(JSON.parse(data))
+                        }
+                    })
                     //+"?wopen='childwindow"
                     // setProductxItem(item);
-                    
+
                     // ToggleiFrameWindow();
                     //this.props.showPopuponcartlistView(product, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
                 }
@@ -309,23 +309,21 @@ const Home = () => {
                     setSelProduct(_product[0]);
                     setisShowPopups(true);
 
-                    if(item.hasOwnProperty("SelVariationId")) //edit variation product
+                    if (item.hasOwnProperty("SelVariationId")) //edit variation product
                     {
                         dispatch(getInventory(item.SelVariationId));
                     }
-                    else if(item.hasOwnProperty("WPID"))
-                    {
+                    else if (item.hasOwnProperty("WPID")) {
                         dispatch(getInventory(item.WPID)); // To fetch latest inventory
                     }
-                    else if(item.hasOwnProperty("Product_Id"))
-                    {
+                    else if (item.hasOwnProperty("Product_Id")) {
                         dispatch(getInventory(item.Product_Id));
                     }
-                    else if(item.hasOwnProperty("product_id")) // get inventory for simple product
+                    else if (item.hasOwnProperty("product_id")) // get inventory for simple product
                     {
                         dispatch(getInventory(item.product_id));
                     }
-                    
+
                 }
     }
     const closePopUp = () => {
@@ -454,8 +452,7 @@ const Home = () => {
                     })
                 })
                 localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxData));
-                if(!localStorage.getItem('DEFAULT_TAX_STATUS'))
-                {
+                if (!localStorage.getItem('DEFAULT_TAX_STATUS')) {
                     localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
                 }
                 // setTimeout(function () {
@@ -537,6 +534,7 @@ const Home = () => {
                     localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData));
                 }
             }
+
         } else if (!multiple_tax_support || multiple_tax_support == false) {
             var taxList = localStorage.getItem('TAXT_RATE_LIST') ? JSON.parse(localStorage.getItem('TAXT_RATE_LIST')) : [];
             if (taxList && taxList.length == 0) {
@@ -562,6 +560,80 @@ const Home = () => {
                         localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(taxRateListIs))
                     }
                 }
+            }
+        }
+        if (!localStorage.getItem('APPLY_DEFAULT_TAX') && localStorage.getItem('DEFAULT_TAX_STATUS') && localStorage.getItem('DEFAULT_TAX_STATUS') === 'true') {
+            var taxData = [];
+            var inactiveTaxData = [];
+            if (get_tax_rates && get_tax_rates.length > 0) {
+                get_tax_rates && get_tax_rates.length > 0 && get_tax_rates.map(rate => {
+                    taxData.push({
+                        check_is: true,
+                        TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                        TaxName: rate.TaxName ? rate.TaxName : '',
+                        TaxId: rate.TaxId ? rate.TaxId : '',
+                        Country: rate.Country ? rate.Country : '',
+                        State: rate.State ? rate.State : '',
+                        TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                        Priority: rate.Priority ? rate.Priority : ''
+                    })
+                    inactiveTaxData.push({
+                        check_is: false,
+                        TaxRate: rate.TaxRate ? rate.TaxRate : '0%',
+                        TaxName: rate.TaxName ? rate.TaxName : '',
+                        TaxId: rate.TaxId ? rate.TaxId : '',
+                        Country: rate.Country ? rate.Country : '',
+                        State: rate.State ? rate.State : '',
+                        TaxClass: rate.TaxClass ? rate.TaxClass : '',
+                        Priority: rate.Priority ? rate.Priority : ''
+                    })
+                })
+                localStorage.setItem('TAXT_RATE_LIST', JSON.stringify(inactiveTaxData))
+                if (!localStorage.getItem("SELECTED_TAX")) {
+                    localStorage.setItem("SELECTED_TAX", JSON.stringify(inactiveTaxData));
+                }
+                //Update by Nagendra: Remove the tax which has same priority and lower rate, only for default tax..................................
+                taxData && taxData.length > 0 && taxData.map(rate => {
+                    var duplicateArr = taxData.filter((ele, index) => ele.TaxClass == rate.TaxClass && ele.Priority == rate.Priority && ele.TaxClass == "");
+                    if (duplicateArr && duplicateArr.length > 0) {
+                        duplicateArr.map(dup => {
+                            if (rate.TaxId < dup.TaxId) {
+                                taxData.splice(taxData.indexOf(dup), 1);
+                            }
+                        });
+
+                        if (taxData && taxData.length > 0) {
+                            var taxfilterData = taxData.filter((ele, index) => ele.TaxClass == "");
+                            if (taxfilterData) {
+                                taxData = taxfilterData;
+                            }
+                        }
+
+                        //..............................................................................
+                    }
+                })
+                // taxData && taxData.length > 0 && taxData.map(rate => {
+                //     var duplicateArr = taxData.filter((ele, index) => ele.TaxId !== rate.TaxId && ele.Priority == rate.Priority && ele.TaxClass == "");
+                //     if (duplicateArr && duplicateArr.length > 0) {
+                //         duplicateArr && duplicateArr.length > 0 && duplicateArr.map(dup => {
+                //             if (parseFloat(rate.TaxRate.replace("%", '')) > parseFloat(dup.TaxRate.replace("%", ''))) {
+                //                 taxData.splice(taxData.indexOf(dup), 1);
+                //             }
+                //         });
+                //         //Apply only single default tax rate which have Priority One.
+                //         if (duplicateArr && duplicateArr.length == 1) {
+                //             taxData = duplicateArr;
+                //         }
+                //         else if (taxData && taxData.length > 1) {
+                //             var taxfilterData = taxData.filter((ele, index) => ele.Priority == 1 && ele.TaxClass == "");
+                //             if (taxfilterData) {
+                //                 taxData = taxfilterData;
+                //             }
+                //         }
+                //         //..............................................................................
+                //     }
+                // })
+                localStorage.setItem('APPLY_DEFAULT_TAX', JSON.stringify(taxData));
             }
         }
     }
@@ -632,9 +704,9 @@ const Home = () => {
                 <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher}
                     toggleAdvancedSearch={toggleAdvancedSearch} toggleShowMobLeftNav={toggleShowMobLeftNav}
                     toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} ToggleiFrameWindow={ToggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
-                {isShowAppLauncher===true?<AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow}></AppLauncher>:null}
-                {isShowLinkLauncher===true?<LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher>:null}
-                {isShowiFrameWindow===true?<IframeWindow isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow>:null}
+                {isShowAppLauncher === true ? <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow}></AppLauncher> : null}
+                {isShowLinkLauncher === true ? <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher> : null}
+                {isShowiFrameWindow === true ? <IframeWindow isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
                 {/* {isShowProductxWindow===true ? <ProductxWindow product={productxItem} isShow={isShowProductxWindow} ToggleProductxWindow={ToggleProductxWindow}></ProductxWindow> : null} */}
                 <TileList openPopUp={openPopUp} toggleAddTitle={toggleAddTitle} clearDeleteTileBtn={clearDeleteTileBtn} toggleOutOfStock={toggleOutOfStock}></TileList>
                 <CartList updateVariationProduct={updateVariationProduct} openPopUp={openPopUp} selProduct={selProduct} variationProduct={variationProduct} listItem={listItem} /*editPopUp={editPopUp}*/ toggleEditCartDiscount={toggleEditCartDiscount} toggleTaxList={toggleTaxList}></CartList>
@@ -655,13 +727,13 @@ const Home = () => {
 
             {isShowTaxList === true ? <TaxList isShow={isShowTaxList} toggleTaxList={toggleTaxList}></TaxList> : null}
             <CartDiscount isShow={isShowCartDiscount} toggleSelectDiscountBtn={toggleSelectDiscountBtn} isSelectDiscountBtn={isSelectDiscountBtn} toggleCartDiscount={toggleCartDiscount}> </CartDiscount>
-            {isShowAddTitle===true?<AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile>:null}
+            {isShowAddTitle === true ? <AddTile isShow={isShowAddTitle} toggleAddTitle={toggleAddTitle}></AddTile> : null}
             <OrderNote isShow={isShowOrderNote} toggleOrderNote={toggleOrderNote} ></OrderNote>
             <MsgPopup_ProductNotFound></MsgPopup_ProductNotFound>
             <MsgPopup_UpgradeToUnlock></MsgPopup_UpgradeToUnlock>
             {isShowAdvancedSearch === true ? <AdvancedSearch isShow={isShowAdvancedSearch} toggleCreateCustomer={toggleCreateCustomer} openPopUp={openPopUp} closePopUp={closePopUp} toggleAdvancedSearch={toggleAdvancedSearch} toggleOutOfStock={toggleOutOfStock}></AdvancedSearch> : null}
             {/* <CreateCustomer searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} ></CreateCustomer> */}
-            <Customercreate searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer}/>
+            <Customercreate searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} />
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
             <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopupOutOfStock>
