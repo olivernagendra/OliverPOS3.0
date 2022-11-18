@@ -126,11 +126,16 @@ const CustomerView = () => {
 
   /// Customer Page Data form  IndexDB
   const getCustomerFromIDB = () => {
-    // console.log("create customer")
     getAll().then((rows) => {
-      setcustomerlist(rows ? rows : []);
-      sessionStorage.setItem("CUSTOMER_ID", rows[0].WPId ? rows[0].WPId : 0);
-      setupdateCustomerId(rows[0].WPId ? rows[0].WPId : 0)
+      var customerList = [];
+      customerList = rows ? rows : [];
+      customerList = customerList.sort(function (a, b) {
+        return b.WPId - a.WPId;
+      })
+      setcustomerlist(customerList);
+      // setcustomerlist(rows ? rows : []);
+      sessionStorage.setItem("CUSTOMER_ID", customerList[0].WPId ? customerList[0].WPId : 0);
+      setupdateCustomerId(customerList[0].WPId ? customerList[0].WPId : 0)
     });
     setisCustomerListLoaded(false)
   }

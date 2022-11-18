@@ -77,7 +77,15 @@ const CustomerLoader = () => {
                 else {
                     console.log("--------------all customer records are done-----------" + CustomerArray.length);
                     UpdateCustomerInIndexDB(udid, CustomerArray);
-                    sessionStorage.setItem("CUSTOMER_ID", CustomerArray[0].WPId ? CustomerArray[0].WPId : 0);
+                    console.log("CustomerArray",CustomerArray)
+                    var customerList = [];
+                    customerList = CustomerArray ? CustomerArray : [];
+                    customerList = customerList.sort(function (a, b) {
+                        return b.WPId - a.WPId;
+                    })
+                    console.log("customerList",customerList)
+
+                    sessionStorage.setItem("CUSTOMER_ID", customerList[0].WPId ? customerList[0].WPId : 0);
                 }
             })
             .catch(function handleError(error) {
