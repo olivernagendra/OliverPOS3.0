@@ -7,6 +7,8 @@ const NumberPad = (props) => {
     const inputElement = useRef(null);
     const [totalSize, setTotalSize] = useState(0)
     const [txtValue, setTxtValue] = useState(0)
+    const [temporary_vaule, setTemporaryValue] = useState('')
+
     const outerClick = (e) => {
 
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
@@ -14,18 +16,16 @@ const NumberPad = (props) => {
         }
     }
     useEffect(() => {
-        if(props.getRemainingPriceForCash)
-        {
-          var _amount=  props.getRemainingPriceForCash();
-          setTxtValue(parseFloat(_amount).toFixed(2) );
-          inputElement.autoFocus=true;
+        if (props.getRemainingPriceForCash) {
+            var _amount = props.getRemainingPriceForCash();
+            setTxtValue(parseFloat(_amount).toFixed(2));
+            inputElement.autoFocus = true;
         }
         // if(props && props.amount)
         // setTxtValue(props.amount);
-    },[props.amount]);
-    const setValue=()=>
-    {
-        props.pay_by_cash && props.pay_by_cash(txtValue);
+    }, [props.amount]);
+    const setValue = () => {
+        props.pay_by_cash && props.pay_by_cash(temporary_vaule !== "" ? temporary_vaule : txtValue);
     }
     const pinNumberList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "c"];
     const NumInput = props =>
@@ -46,22 +46,42 @@ const NumberPad = (props) => {
         ))
 
     const resetScreen = () => {
-        var str = txtValue;
+        var str = temporary_vaule;// txtValue;
         if (totalSize > 0) {
             setTotalSize(totalSize - 1);
-            setTxtValue(str.substring(0, str.length - 1));
+            //setTxtValue(str.substring(0, str.length - 1));
+            setTemporaryValue(str.substring(0, str.length - 1));
         } else {
             setTotalSize(0);
-            setTxtValue("");
+            //setTxtValue("");
+            setTemporaryValue("")
         }
     }
+    // const onChange = (e) => {
+    //     const re = /^[0-9\.]+$/;
+    //     var val = e.target.value
+    //     if (val === '' || re.test(val)) {
+    //         if (val.split('.').length > 2)
+    //             val = val.replace(/\.+$/, "");
+    //         setTxtValue(val)
+    //         var size = totalSize + 1
+    //         setTotalSize(size);
+    //     }
+    // }
     const onChange = (e) => {
         const re = /^[0-9\.]+$/;
-        var val = e.target.value
-        if (val === '' || re.test(val)) {
+        var val = e.key
+        if (e.code == "Backspace" || e.key == "Backspace" || e.keyCode == 8) { //handle back button
+            if (temporary_vaule.length > 0) {
+                var _temporary_vaule = temporary_vaule.substring(0, temporary_vaule.length - 1)
+                setTemporaryValue(_temporary_vaule)
+            }
+        }
+        else if (val === '' || re.test(val)) {
             if (val.split('.').length > 2)
                 val = val.replace(/\.+$/, "");
-            setTxtValue(val)
+            setTemporaryValue(temporary_vaule + val)
+            //  setTxtValue(val)
             var size = totalSize + 1
             setTotalSize(size);
         }
@@ -75,14 +95,17 @@ const NumberPad = (props) => {
             } else {
                 setTotalSize(0);
                 setTxtValue('');
+                setTemporaryValue('');
             }
             return;
         }
-        var value = txtValue + newString
+        // var value = txtValue + newString
+        var value = temporary_vaule + newString
         if (value.split('.').length > 2)
             value = value.replace(/\.+$/, "");
         var size = totalSize + 1
-        setTxtValue(value);
+        // setTxtValue(value);
+        setTemporaryValue(value);
         setTotalSize(size);
     }
     return (<div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
@@ -98,12 +121,12 @@ const NumberPad = (props) => {
                     <div className="auto-margin-top"></div>
                     <div className="text-row">
                         <p className="style1">Total balance:</p>
-                        <p className="style2" id="cashStep1Balance">${props.amount && parseFloat(props.amount).toFixed(2) }</p>
+                        <p className="style2" id="cashStep1Balance">${props.amount && parseFloat(props.amount).toFixed(2)}</p>
                     </div>
                     <div className="input-numpad">
                         <div className="input-container">
                             <label htmlFor="cashPaymentAmount">{LocalizedLanguage.amountTendered}:</label>
-                            <input ref={inputElement} autoFocus={true} type="text" id="cashPaymentAmount" placeholder="$0" value={txtValue} onChange={e => onChange(e)} />
+                            <input ref={inputElement} autoFocus={true} type="text" id="cashPaymentAmount" placeholder="$0" value={temporary_vaule !== '' ? temporary_vaule : txtValue} onKeyUp={(e) => onChange(e)} />
                         </div>
                         <div id="numpad2">
                             <NumInput id="keyss" type="button" numbers={pinNumberList} readOnly={false} />
@@ -131,7 +154,7 @@ const NumberPad = (props) => {
                             </div> */}
                         </div>
                     </div>
-                    <button id="enterCashPaymentButton" disabled={parseFloat(txtValue) > 0 ? false : true} onClick={()=>setValue()}>Enter</button>
+                    <button id="enterCashPaymentButton" disabled={parseFloat(txtValue) > 0 ? false : true} onClick={() => setValue()}>Enter</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
                 <div className="step2">

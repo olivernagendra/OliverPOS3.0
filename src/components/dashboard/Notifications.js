@@ -86,7 +86,10 @@ const Notifications = (props) => {
                 time = time.toUpperCase();
             }
             //order completed
+            // const d = new Date(list.date);
 
+            const _openDateTime = list.date && list.date !== "" ? list.date.split(',')[1] : "";
+            console.log("_openDateTime", _openDateTime)
             if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true) {
                 description = ((
                     <div className="notification-card" key={uniqueKey()}>
