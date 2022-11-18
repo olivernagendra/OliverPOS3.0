@@ -232,21 +232,6 @@ const ProductLoader = () => {
                     console.log("--------------all customer records are done-----------" + CustomerArray.length);
                     UpdateCustomerInIndexDB(udid, CustomerArray);
                     sessionStorage.setItem("CUSTOMER_ID", CustomerArray[0].WPId ? CustomerArray[0].WPId : 0);
-
-
-                    // if (localStorage.getItem("tableCount")) {
-                    //     var tc = JSON.parse(localStorage.getItem("tableCount"));
-                    //     tc = tc + 1;
-                    //     localStorage.setItem("tableCount", JSON.stringify(tc));
-                    // }
-                    // else {
-                    //     localStorage.setItem("tableCount", "1");
-                    // }
-                    //setTableCount(tableCount + 1);
-                    tableCount = tableCount + 1;
-                    if (tableCount >= 2) {
-                        navigate('/home');
-                    }
                 }
             })
             .catch(function handleError(error) {

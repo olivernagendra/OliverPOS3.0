@@ -474,9 +474,7 @@ const Customercreate = (props) => {
     }
 
 
-        const handleKeyPress=(e)=>{
-                console.log("handleKeyPress",e)
-        }
+      
 
 
 
@@ -572,7 +570,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustEmail">Email*</label>
                                     <input type="email" placeholder="Enter Email" name='email'
-                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput} />
+                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput}  />
                                     {/* <p>{errors.email}</p> */}
                                     <div className="error-wrapper">{errors.email}</div>
                                 </div>
@@ -642,11 +640,11 @@ const Customercreate = (props) => {
                                         <input type="text" id="newCustStateProvBilling" placeholder="Select Country" value={country_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
                                         <div className="error-wrapper" ></div>
                                         <img src={down_angled_bracket} alt="" />
-                                        <div className="option-container"  onKeyPress={handleKeyPress}   >
+                                        <div className="option-container"   >
                                             {getCountryList && getCountryList.map((item, index) => {
                                                 return (
                                                     <div className="option" onClick={() => onChangeList(item.Code, item.Name)} >
-                                                        <p key={index} value={item.Code}>{item.Name.replace(/[^a-zA-Z]/g, ' ')}</p>
+                                                        <p key={index}  value={item.Code}>{item.Name.replace(/[^a-zA-Z]/g, ' ')}</p>
                                                     </div>)
                                             })}
 
