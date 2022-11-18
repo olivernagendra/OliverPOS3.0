@@ -1,7 +1,7 @@
 import React from "react";
 import OutOfStock from '../../../assets/images/svg/OutOfStock.svg';
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
-const MsgPopup_OutOfStock = (props) => {
+const MsgPopupOutOfStock = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleOutOfStock();
@@ -33,4 +33,4 @@ const MsgPopup_OutOfStock = (props) => {
             </div></div>)
 }
 
-export default MsgPopup_OutOfStock 
+export default MsgPopupOutOfStock 

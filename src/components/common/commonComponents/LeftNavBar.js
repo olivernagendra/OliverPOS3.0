@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import Oliver_Icon_Color from '../../../assets/images/svg/Oliver-Icon-Color.svg';
 import Oliver_Type from '../../../assets/images/svg/Oliver-Type.svg';
@@ -21,13 +21,13 @@ import { isMobile } from "react-device-detect";
 import CommonModuleJS from "../../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { popupMessage } from "../commonAPIs/messageSlice";
-import { CheckAppDisplayInView, updateRecentUsedApp } from '../commonFunctions/appDisplayFunction'
+import { CheckAppDisplayInView, UpdateRecentUsedApp } from '../commonFunctions/AppDisplayFunction';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 
 import { handleAppEvent } from '../../common/AppHandeler/commonAppHandler';
 import LinkLauncherPage from "./LinkLauncherPage";
 
-const LeftNavBar = (props) => {
+function LeftNavBar(props) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
@@ -41,25 +41,51 @@ const LeftNavBar = (props) => {
     let useCancelled = false;
     const [isShowLinkLauncherPage, setisShowLinkLauncherPage] = useState(false);
 
+    //-------Start short key press handlling------------------ 
+    const handleKeyPress = useCallback((event) => {
+        // console.log(`Key pressed: ${event.key}`);
+        // console.log(`Key code: ${event.keyCode}`);
+        if (event.keyCode == 173) //f1
+            navigate('/home')
+        if (event.keyCode == 174) //f2
+            navigate('/customers')
+        if (event.keyCode == 175)  //f3
+            navigate('/transactions')
+        if (event.keyCode == 255) //f4
+            navigate('/cashdrawer')
+    }, []);
+
     useEffect(() => {
-        if (isInit === false && useCancelled == false) {
+        // attach the event listener
+        document.addEventListener('keydown', handleKeyPress);
 
-            window.addEventListener('message', function (e) {
-                var data = e && e.data;
-                if (typeof data == 'string' && data !== "" && window.location.pathname !== "/checkout") {  //checkout page handle independentaly 
-                    try {
-                        var _data = data && JSON.parse(data);
-                        responseData(_data)
-                    } catch (e) {
-                        console.log(e);
-                    }
-
-                }
-            })
-            setisInit(true);
-        }
+        // remove the event listener
         return () => {
-            useCancelled = true;
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleKeyPress]);
+    //-------End short key press handlling------------------ 
+    useEffect(() => {
+        if (location.pathname !== "/checkout") {
+            if (isInit === false && useCancelled == false) {
+
+                window.addEventListener('message', function (e) {
+                    var data = e && e.data;
+                    if (typeof data == 'string' && data !== "" && location.pathname !== "/checkout" && window.location.pathname !== "/checkout") {  //checkout page handle independentaly 
+                        try {
+                            var _data = data && JSON.parse(data);
+                            responseData(_data)
+                        } catch (e) {
+                           // console.log(e);
+                        }
+
+                    }
+                })
+                setisInit(true);
+            }
+            return () => {
+                useCancelled = true;
+            }
         }
     }, [isInit]);
 
@@ -71,7 +97,8 @@ const LeftNavBar = (props) => {
             whereToview = "CheckoutView"
         else
             whereToview = "home"
-        handleAppEvent(data, whereToview)
+        var response = handleAppEvent(data, whereToview, false, navigate);
+        console.log("-----command response from handler--" + response)
     }
     const toggleLeftMenu = () => {
         setisShowLeftMenu(!isShowLeftMenu)
@@ -91,10 +118,10 @@ const LeftNavBar = (props) => {
     const navigateTo = (page) => {
         navigate(page);
     }
-    const toggleiFrameWindow = (_exApp = null) => {
+    function ToggleiFrameWindow(_exApp = null) {
         if (_exApp != null) { setExtApp(_exApp); }
         if (isShowiFrameWindow === false) {
-            updateRecentUsedApp(_exApp, true, 0)
+            UpdateRecentUsedApp(_exApp, true, 0)
         }
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
@@ -127,7 +154,7 @@ const LeftNavBar = (props) => {
     }
 
     //Display 3 Most used app---------------------***********----------------------- 
-    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD"));
+    var allAppList = JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) ? JSON.parse(localStorage.getItem("GET_EXTENTION_FIELD")) : [];
     var mostUsedApp = localStorage.getItem("recent_apps") && JSON.parse(localStorage.getItem("recent_apps"));
     if (mostUsedApp && mostUsedApp.length > 0) {
         //const sortDesc = (_recentApp, used_count) => {
@@ -136,21 +163,25 @@ const LeftNavBar = (props) => {
             if (b["used_count"] > a["used_count"]) { return 1; }
             return 0;
         })
-        console.log("sortDesc", mostUsedApp)
+        //  console.log("sortDesc", mostUsedApp)
         //}
     }
     var appsList = []
-    if (mostUsedApp && mostUsedApp.length > 0) {
+    var appDisplayCount = 0
+    if (allAppList && mostUsedApp && mostUsedApp !== null && mostUsedApp.length > 0) {
         mostUsedApp.map(function (itemUsed, index) {
-            if (index < 3) {//only 3 item need to display
-                var app = allAppList.find(item => item.Id == itemUsed.app_id)
-                if (app)
-                    appsList.push(app);
+            // if (index < 3) {
+            var app = allAppList && allAppList.find(item => item.Id == itemUsed.app_id && itemUsed.used_count !== 0 && CheckAppDisplayInView(item.viewManagement) == true)
+            if (app && appDisplayCount < 3)//only 3 item need to display 
+            {
+                appsList.push(app);
+                appDisplayCount++
             }
+            // }
         });
     }
     //----------------------------**************----------------------------------------
-    console.log("appsList", appsList)
+    //console.log("appsList", appsList)
     var displayAppCount = 0;
     return (
         <React.Fragment>
@@ -159,21 +190,21 @@ const LeftNavBar = (props) => {
                     <img src={Oliver_Icon_Color} alt="" className="oliver-logo" />
                     <img src={Oliver_Type} alt="" className="oliver-text" />
                 </div>
-                <button id="registerButton" className={location.pathname === "/home" ? "page-link selected" : "page-link"} disabled={location.pathname === "/home" ? true : false} onClick={() => navigateTo('/home')}>
+                <button id="registerButton" className={(location.pathname === "/home" || location.pathname === "/checkout") ? "page-link selected" : "page-link"} disabled={location.pathname === "/home" ? true : false} onClick={() => navigateTo('/home')}>
                     <div className="img-container">
                         <img src={Register_Icon} alt="" />
                     </div>
                     <p>Register</p>
                     <div className="f-key">F1</div>
                 </button>
-                <button id="customersButton" className={location.pathname === "/customers" ? "page-link selected" : "page-link"} disabled={location.pathname === "/customers" ? true : false} onClick={() => navigateTo('/customers')}>
+                <button id="customersButton" className={location.pathname === "/customers" ? "page-link selected" : location.pathname === "/checkout" ? "page-link disabled" : "page-link"} disabled={(location.pathname === "/customers" || location.pathname === "/checkout") ? true : false} onClick={() => navigateTo('/customers')}>
                     <div className="img-container">
                         <img src={Customers_Icon} alt="" />
                     </div>
                     <p>Customers</p>
                     <div className="f-key">F2</div>
                 </button>
-                <button id="transactionsButton" className={location.pathname === "/transactions" ? "page-link selected" : "page-link"} disabled={location.pathname === "/transactions" ? true : false} onClick={() => navigateTo('/transactions')}>
+                <button id="transactionsButton" className={location.pathname === "/transactions" ? "page-link selected" : location.pathname === "/checkout" ? "page-link disabled" : "page-link"} disabled={(location.pathname === "/transactions" || location.pathname === "/checkout") ? true : false} onClick={() => navigateTo('/transactions')}>
                     <div className="img-container">
                         <img src={Transactions_Icon} alt="" />
                     </div>
@@ -181,7 +212,7 @@ const LeftNavBar = (props) => {
                     <div className="f-key">F3</div>
                 </button>
                 {client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true ?
-                    <button id="cashManagementButton" className={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? "page-link selected" : "page-link"} disabled={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? true : false}
+                    <button id="cashManagementButton" className={location.pathname === "/cashdrawer" && isAllowCashDrawer == true ? "page-link selected" : location.pathname === "/checkout" ? "page-link disabled" : "page-link"} disabled={((location.pathname === "/cashdrawer" && isAllowCashDrawer == true) || location.pathname === "/checkout") ? true : false}
                         onClick={() => isAllowCashDrawer == true ? navigateTo('/cashdrawer') : ""}>
                         <div className="img-container">
                             <img src={CashManagement_Icon} alt="" />
@@ -205,6 +236,7 @@ const LeftNavBar = (props) => {
                         <img src={LinkLauncher_Icon} alt="" />
                     </div>
                     <p>Link Launcher</p>
+                    <div className="f-key">F5</div>
                 </button>
                 <div className="divider"></div>
                 <button id="appLauncherButton" className={isShowAppLauncher === true ? "launcher filter" : "launcher"} onClick={() => toggleAppLauncher()}>
@@ -212,43 +244,47 @@ const LeftNavBar = (props) => {
                         <img src={Oliver_Icon_BaseBlue} alt="" />
                     </div>
                     <p>App Launcher</p>
+                    <div className="f-key">F6</div>
                 </button>
 
 
                 {/* display Apps for home page */}
-                {appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
-                    var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
-                    {
-                        return isDisplay == true &&
-                            <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => toggleiFrameWindow(appItem)}>
-                                <div className="img-container">
-                                    {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
-                                    {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
-                                        currentTarget.onerror = null; // prevents looping
-                                        currentTarget.src = NoImageAvailable;
-                                    }} /> : <img src={NoImageAvailable} alt="" />}
-                                </div>
-                                <p>{appItem.Name}</p>
-                            </button>
 
-                    }
-                })}
+                {
+                    appsList && appsList !== [] && appsList.length > 0 && appsList.map((appItem, index) => {
+                        var isDisplay = CheckAppDisplayInView(appItem.viewManagement)
+                        {
+                            return isDisplay == true &&
+                                <button key={appItem.Id + "_" + index} id={appItem.Id + "_" + index} className="launcher app" onClick={() => ToggleiFrameWindow(appItem)}>
+                                    <div className="img-container">
+                                        {/* <img src={appItem.logo && appItem.logo !== "" ? appItem.logo : ClockIn_Icon} alt="" /> */}
+                                        {appItem && appItem.logo != null ? <img src={appItem.logo} alt="" onError={({ currentTarget }) => {
+                                            currentTarget.onerror = null; // prevents looping
+                                            currentTarget.src = NoImageAvailable;
+                                        }} /> : <img src={NoImageAvailable} alt="" />}
+                                    </div>
+                                    <p>{appItem.Name}</p>
+                                    <div className="f-key">F{6 + displayAppCount}</div>
+                                </button>
+
+                        }
+                    })}
 
 
 
-                {/* <button id="navApp1" className="launcher app" onClick={() => toggleiFrameWindow()}>
+                {/* <button id="navApp1" className="launcher app" onClick={() => ToggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={ClockIn_Icon} alt="" />
                     </div>
                     <p>{"Clock-in App"}</p>
                 </button>
-                <button id="navApp2" className="launcher app" onClick={() => toggleiFrameWindow()}>
+                <button id="navApp2" className="launcher app" onClick={() => ToggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={MC_Logo1} alt="" />
                     </div>
                     <p>MailChimp</p>
                 </button>
-                <button id="navApp3" className="launcher app" onClick={() => toggleiFrameWindow()}>
+                <button id="navApp3" className="launcher app" onClick={() => ToggleiFrameWindow()}>
                     <div className="img-container">
                         <img src={Quickbooks1} alt="" />
                     </div>
@@ -261,10 +297,10 @@ const LeftNavBar = (props) => {
                     <p>Minimize Sidebar</p>
                 </button>
             </div>
-            {isShowAppLauncher === true ? <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher> : null}
+            {isShowAppLauncher === true ? <AppLauncher view={props.view} isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow}></AppLauncher> : null}
             {isShowLinkLauncher === true ? <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} toggleLinkLauncherPage={toggleLinkLauncherPage}></LinkLauncher> : null}
             {isShowLinkLauncherPage === true ? <LinkLauncherPage isShow={isShowLinkLauncherPage} toggleLinkLauncherPage={toggleLinkLauncherPage}></LinkLauncherPage> : null}
-            {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow> : null}
+            {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
         </React.Fragment>)
 }
 

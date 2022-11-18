@@ -58,6 +58,12 @@ var LocalizedLanguage = new LocalizedStrings({
 if (lang) {
     LocalizedLanguage.setLanguage(lang);
 }
+export function changeLanguage(d)
+{
+    formatedLanguage(language[d]);
+    LocalizedLanguage.setLanguage(d);
+}
 export default LocalizedLanguage;
+
 
 

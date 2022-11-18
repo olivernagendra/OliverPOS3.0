@@ -53,9 +53,17 @@ export function GetOpenRegisterAPI(RegisterId) {
     //console.log("Servicecall",RegisterId);
     // console.log("Param", RegisterId)
     return serverRequest.clientServiceRequest('GET', `/CashManagement/GetOpenRegister?registerId=${RegisterId}&salesPersonId=''`, '')
-        .then(cashDetail => {
-            console.log("cashDetail", cashDetail);
-            return cashDetail;
+        .then(cashRegister => {
+            console.log("cashDetail", cashRegister);
+            if(cashRegister.content && cashRegister.content !=='' && cashRegister.content !==0){
+                localStorage.setItem("IsCashDrawerOpen","true");
+                localStorage.setItem("Cash_Management_ID",cashRegister.content.Id);                  
+             }else{
+                 localStorage.setItem("IsCashDrawerOpen","false");
+                 localStorage.removeItem("Cash_Management_ID");
+             }
+
+            return cashRegister;
         })
 }
 
@@ -68,3 +76,9 @@ export function addRemoveCashAPI(addRemoveCashParm) {
 }
 
 
+export function addPaymentListLogAPI(PaymentLogs) {
+    return serverRequest.clientServiceRequest('POST', `/CashManagement/addPaymentListLog`, PaymentLogs)
+        .then(result => {
+            return result;
+        });
+}

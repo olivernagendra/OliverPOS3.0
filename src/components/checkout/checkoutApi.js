@@ -5,6 +5,9 @@ import moment from 'moment';
 import ActiveUser from '../../settings/ActiveUser';
 import Config from '../../Config';
 import { handleAppEvent } from '../common/AppHandeler/commonAppHandler';
+import { postMeta } from "../common/commonAPIs/postMetaSlice";
+import { addPaymentListLog } from '../../components/cashmanagement/CashmanagementSlice';
+import { store } from '../../app/store';
 export function checkStockAPI(cartlist) {
     var items = [];
     var data;
@@ -109,6 +112,17 @@ export function saveAPI(shopOrder, path, updatedBy = "") {
                     handleAppEvent({ method: "post", command: "ParkSale", tempOrderId: shop_order.content ? shop_order.content.tempOrderId : 0 }, null);
                 }
 
+                //Saving post meta for Pay_by_Product
+                if (localStorage.getItem("paybyproduct")) {
+                    var _tempOrder_Id = shop_order.content ? shop_order.content.tempOrderId : 0
+                    var parma = { "Slug": _tempOrder_Id + "_paybyproduct", "Value": localStorage.getItem("paybyproduct"), "Id": 0, "IsDeleted": 0 };
+                    store.dispatch(postMeta(parma));
+                    setTimeout(() => {
+                        localStorage.removeItem("paybyproduct");
+                        localStorage.removeItem("paybyproduct_unpaid");
+                    }, 100);
+                }
+
                 //dispatch(success(shop_order));
 
                 //Created By : Nagendra
@@ -147,7 +161,8 @@ export function saveAPI(shopOrder, path, updatedBy = "") {
                         })
                         console.log("paymentLog", paymentLog)
                         if (paymentLog.length > 0) {
-                            //dispatch(cashManagementAction.addPaymentListLog(paymentLog));
+                            store.dispatch(addPaymentListLog(paymentLog));
+                            //dispatch(addPaymentListLog(paymentLog));
                         }
                     }
                     //----------------------------------------------------------
@@ -320,10 +335,50 @@ export function changeReturnAmountAPI(amount) {
     return amount;
 }
 export function checkTempOrderSyncAPI(tempOrderId) {
+    var notificationLimit = Config.key.NOTIFICATION_LIMIT;
     return serverRequest.clientServiceRequest('GET', `/orders/IsSynced?OrderId=${tempOrderId}`, '')
-        .then(synckRes => {
-            console.log("synckRes", synckRes);
-            return synckRes;
+        .then(order_status => {
+            // Update Temp Order Status------------------------------------
+            var TempOrders = localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`)) : [];
+            if (TempOrders && TempOrders.length > 0) {
+                if (TempOrders.length > notificationLimit) {
+                    TempOrders.splice(0, 1);
+                }
+                TempOrders.map(ele => {
+                    if (ele.TempOrderID == tempOrderId) {
+                        if (order_status && order_status.message == "Success") {
+
+                            //var placedOrderList = localStorage.getItem('placedOrderList') ? JSON.parse(localStorage.getItem('placedOrderList')) : "";
+                            //if (placedOrderList) {
+                            // for order complete then call api for pruduct quantity update
+                            //localStorage.removeItem('placedOrderList')
+                            // dispatch(idbProductActions.updateOrderProductDB(placedOrderList));
+                            // setTimeout(function () {
+                            //     dispatch(idbProductActions.updateConfirmProductDB(true));
+                            //     //AllProduct.someMethod()
+                            //     // history.push('/shopview')
+                            //     // location.reload()
+                            // }, 1000)
+                            // }
+                            ele.Status = "true";
+                            ele.OrderID = order_status.content.OrderNumber;
+                            //console.log("OrderStatusSuccess", ele);
+                            ele.Sync_Count = ele.Sync_Count + 1
+                        }
+                        else {
+                            ele.Sync_Count = ele.Sync_Count + 1
+                            if (ele.Sync_Count === Config.key.SYNC_COUNT_LIMIT)
+                                ele.Status = "failed";
+                            //console.log("OrderStatusFailed", ele);
+                            //  recheckTempOrderSync(udid,ele.TempOrderID)
+                        }
+                    }
+                })
+                localStorage.setItem(`TempOrders_${ActiveUser.key.Email}`, JSON.stringify(TempOrders))
+            }
+            //--------------------------------------------------------------
+            //console.log("orderStatus", order_status);
+            return order_status;
         });
 
 }

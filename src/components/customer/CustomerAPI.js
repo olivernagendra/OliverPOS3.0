@@ -1,6 +1,7 @@
 import { serverRequest } from '../../CommonServiceRequest/serverRequest'
 import Config from '../../Config';
 import ActiveUser from '../../settings/ActiveUser';
+import { get_UDid } from '../common/localSettings';
 export function saveAPI(customer) {
     return serverRequest.clientServiceRequest('POST', `/customers/Save`, customer)
         .then(res => {
@@ -34,7 +35,7 @@ export function getPageAPI(parameter) {
                         customer_list.push(item)
                     }
                 })
-                console.log("result",result)
+               // console.log("result",result)
                 result.content['Records'] = customer_list;
                 //console.log("customer_list[0].WPId",customer_list[0].WPId)
                 sessionStorage.setItem("CUSTOMER_ID", customer_list[0].WPId)
@@ -58,6 +59,12 @@ export function getAllEventsAPi(id, uid) {
 
 export function updateCustomerNoteAPI(data) {
     return serverRequest.clientServiceRequest('POST', `/customers/SaveNote`, data)
+        .then(res => {
+            return res
+        })
+}
+export function deleteCustomerNoteAPI(order_id) {
+    return serverRequest.clientServiceRequest('POST', `/customers/DeleteNote?Id=${order_id}`)
         .then(res => {
             return res
         })
@@ -97,4 +104,37 @@ export function saveCustomerToTempOrderAPI(order_id, email_id) {
             return response;
         }
         );
+}
+
+export function getCountryListAPI() {
+    var UID = get_UDid('UDID');
+    //Added by Aatifa 15/7/2020
+    try {
+        return serverRequest.clientServiceRequest('GET', `/Country/Get`, '')
+            .then(countrylist => {
+                return countrylist;
+            })
+            .catch(error => {
+                return error
+            });
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+export function getStateListAPI() {
+    var UID = get_UDid('UDID');
+    try {
+        return serverRequest.clientServiceRequest('GET', `/States/Get`, '')
+            .then(statelist => {
+                return statelist;
+            })
+            .catch(error => {
+                return error
+            });
+    }
+    catch (error) {
+        console.log(error)
+    }
 }

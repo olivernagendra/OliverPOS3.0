@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AngledBracket_Left_White from '../../assets/images/svg/AngledBracket-Left-White.svg'
 import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg'
 import Closed_Sign_White from '../../assets/images/svg/Closed-Sign-White.svg'
+
 import PinPad from "../pinPage/PinPad"
 import { get_locName, get_regName, get_userName, getShopName } from "../common/localSettings"
 
@@ -12,7 +13,7 @@ import { openRegister } from './CashmanagementSlice'
 import moment from 'moment';
 import STATUSES from "../../constants/apiStatus";
 import { initOpenRegisterFn } from "../common/commonFunctions/openRegisterFn"
-
+import LogoutConfirm from "../common/commonComponents/LogoutConfirm";
 const OpenRegister = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -22,8 +23,21 @@ const OpenRegister = () => {
     const [togglePin, settogglePin] = useState(false)
     const [isAmountEntered, setIsAmountEntered] = useState(false);
 
+    const [isShowLogoutConfirm, setisShowLogoutConfirm] = useState(false)
+    const toggleLogoutConfirm = () => {
+        setisShowLogoutConfirm(!isShowLogoutConfirm)
+    }
+
     const hundleToggle = () => {
         settoggle(true)
+        // if (localStorage.getItem('user')) {
+
+        // }
+        // else {
+        //     settogglePin(true)
+        // }
+
+
     }
 
 
@@ -41,7 +55,10 @@ const OpenRegister = () => {
         setNotes(value)
     }
 
-
+    const doAction = () => {
+        //toggle(true)
+        settogglePin(true)
+    }
 
 
 
@@ -76,7 +93,7 @@ const OpenRegister = () => {
             }
             dispatch(openRegister(open_register_param));
 
-            settogglePin(true)
+
         }
         else {
             setIsAmountEntered(true)
@@ -85,7 +102,7 @@ const OpenRegister = () => {
 
     //  Save cashManagementID when response
     const { statusopenRegister, dataopenRegister, erroropenRegister, is_successopenRegister } = useSelector((state) => state.openRegister)
-    // console.log("statusopenRegister", statusopenRegister, "dataopenRegister", dataopenRegister, "erroropenRegister", erroropenRegister, "is_successopenRegister", is_successopenRegister)
+    console.log("statusopenRegister", statusopenRegister, "dataopenRegister", dataopenRegister, "erroropenRegister", erroropenRegister, "is_successopenRegister", is_successopenRegister)
 
 
 
@@ -94,30 +111,43 @@ const OpenRegister = () => {
             console.log(" dashboard first array id .Id", dataopenRegister.content.Id)
             localStorage.setItem("Cash_Management_ID", dataopenRegister.content.Id);
             localStorage.setItem("IsCashDrawerOpen", "true");
-            // navigate('/productloader')
+            navigate('/productloader')
         }
     }
 
 
-
+    const handleGoBack = () => {
+        settoggle(false)
+        settogglePin(false)
+    }
 
 
 
 
     useEffect(() => {
         //openRegisterFn();
-        // initOpenRegisterFn();
+        // initOpenRegisterFn();      
     }, []);
 
-    return <React.Fragment><div className="open-register-wrapper">
-        <button id="cancel" onClick={()=>navigate('/register')}>
+    var isUserExist = localStorage.getItem("user") ? true : false
+    // console.log("toggle", toggle)
+    // console.log("togglePin", togglePin)
+    // console.log("isUserExist", isUserExist)
+    return <React.Fragment><div className="open-register-wrapper state-1">
+
+        {toggle == true && <button id="cancel" onClick={handleGoBack}>
+            <img src={AngledBracket_Left_White} alt="" />
+            Go Back
+        </button>}
+
+        {toggle == false && <button id="cancel" onClick={() => navigate('/register')}>
             <img src={AngledBracket_Left_White} alt="" />
             Cancel
-        </button>
-        <button id="logout" onClick={() => navigate('/')} className={toggle == true ?"hidden":""}>
+        </button>}
+        {toggle == false && <button id="logout-landscape" onClick={() => toggleLogoutConfirm()} className={toggle == true ? "hidden" : ""}>
             <img src={LogOut_Icon_White} alt="" />
             Log Out
-        </button>
+        </button>}
         <header>
             <div className="auto-margin-top"></div>
             <img src={Closed_Sign_White} alt="" />
@@ -134,34 +164,40 @@ const OpenRegister = () => {
             <div className="auto-margin-top"></div>
 
             <div className="step1">
-                {toggle !== true && togglePin !== true ? <>  <p>Ready to Open?</p>
+                {toggle == false ? <>  <p>Ready to Open?</p>
                     <button id="" onClick={hundleToggle}>Open Register</button> </> : null}
 
 
-            </div>{toggle == true && togglePin !== true ? <div className="step2 ">
+            </div>{toggle == true && isUserExist == true ? <div className="step2 ">
                 <p>Start Your Cash Float</p>
-                <label htmlFor="floatAmount">Opening float amount ($):</label>
-
-                <input type="number" placeholder='Enter Amount' id="floatAmount" onChange={(e) => validateEnteredAmount(e)} />
                 {
                     (isAmountEntered === true) ?
-                        <small style={{ "color": "red" }} >Amount field can not be blank"</small>
+                        <label style={{ "color": "red", "marginBottom": "10px" }} >Amount field can not be blank"</label>
                         : null
                 }
+                <label htmlFor="floatAmount">Opening float amount ($):</label>
+
+                <input className="floatAmountfont" type="number" id="floatAmount" onChange={(e) => validateEnteredAmount(e)} placeholder='Enter Amount' />
+                {/* placeholder='Enter Amount' */}
+
                 <button id="openCashDrawer" >Open Cash Drawer</button>
                 <label htmlFor="openNote">Optional - add a note:</label>
                 <textarea name="openNote" id="openNote" placeholder="Add your note here" onChange={(e) => enterNote(e)}></textarea>
                 <button id="openFloatButton" onClick={openRegisterhundle} >Open Float</button>
             </div> : null}
-            {togglePin == true ? <div className="step3 ">
+            {toggle == true && togglePin == false && isUserExist == false ? <div className="step3 ">
                 {<PinPad enteredAmount={enteredAmount}
                     notes={notes}
+                    doAction={doAction}
                 ></PinPad>}
             </div> : null}
 
             <div className="auto-margin-bottom"></div>
         </main>
-
+        <button id="logout-mobile" onClick={() => toggleLogoutConfirm()}>
+            <img src={LogOut_Icon_White} alt="" />
+            Log Out
+        </button>
 
     </div>
         {/* // <div className="logout-confirmation-wrapper hidden">
@@ -178,6 +214,7 @@ const OpenRegister = () => {
         //     <button id="logoutCancel">Cancel</button>
         //     <div className="auto-margin-bottom"></div>
         // </div> */}
+        {isShowLogoutConfirm === true ? <LogoutConfirm isShow={isShowLogoutConfirm} toggleLogoutConfirm={toggleLogoutConfirm}></LogoutConfirm> : null}
     </React.Fragment>
 
 

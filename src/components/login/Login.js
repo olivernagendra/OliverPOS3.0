@@ -14,6 +14,7 @@ import Config from "../../Config";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useIndexedDB } from 'react-indexed-db';
+import { GetOpenRegister, closeRegister } from '../cashmanagement/CashmanagementSlice'
 // import $ from 'jquery'
 function Login() {
     var auth2 = ''
@@ -40,10 +41,55 @@ function Login() {
     });
     //-------------------------------------------
 
+
+
     //It will clear all local storage items
     const clearLocalStorages = () => {
-        localStorage.clear();
+        //localStorage.clear();
+        localStorage.removeItem("cloudPrinters");
+        localStorage.removeItem("DemoGuid");
+        localStorage.removeItem("VisiterUserID");
+        localStorage.removeItem("VisiterUserEmail");
+        localStorage.removeItem("shopstatus");
+        localStorage.removeItem('UserLocations');
+        localStorage.removeItem("userId");
+        localStorage.removeItem("LANG");
+        localStorage.removeItem('AdCusDetail')
+        localStorage.removeItem("clientDetail");
+        localStorage.removeItem("selectedRegister");
+        localStorage.removeItem("RegisterPermissions");
+        localStorage.removeItem('user');
+        localStorage.removeItem('demoUser');
+        localStorage.removeItem('productcount');
+        localStorage.removeItem("PRODUCTX_DATA");
+        localStorage.removeItem("GET_EXTENTION_FIELD");
+        localStorage.removeItem("GroupSaleRecord")
 
+
+        localStorage.removeItem("shopstatus");
+        localStorage.removeItem('UserLocations');
+        localStorage.removeItem("userId");
+        localStorage.removeItem("LANG");
+        localStorage.removeItem('AdCusDetail')
+        localStorage.removeItem("clientDetail");
+        localStorage.removeItem("selectedRegister");
+        localStorage.removeItem("RegisterPermissions");
+        localStorage.removeItem('user');
+        localStorage.removeItem('demoUser');
+        localStorage.removeItem("PRODUCTX_DATA");
+        localStorage.removeItem('CART');
+        localStorage.removeItem('firebaseStaffName');
+        localStorage.removeItem('firebaseSelectedRegisters');
+        localStorage.removeItem('Cash_Management_Data');
+        localStorage.removeItem('pdf_format');
+        localStorage.removeItem("CustomerList");
+        localStorage.removeItem("FAV_LIST_ARRAY");
+        localStorage.removeItem("FAVROUTE_LIST_ARRAY");
+        localStorage.removeItem("categorieslist");
+        localStorage.removeItem("WarehouseId");
+        localStorage.removeItem('DEFAULT_TAX_STATUS');
+        localStorage.removeItem('APPLY_DEFAULT_TAX');
+        localStorage.removeItem("oliver_refund_order_payments");
     }
 
 
@@ -52,6 +98,8 @@ function Login() {
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
     if (status == STATUSES.IDLE && is_success) {
+
+        dispatch(GetOpenRegister(0));
         navigate('/site')
     }
 
@@ -60,7 +108,7 @@ function Login() {
     const handleKey = (e) => {
         var key = e.which || e.keyCode;
         if (key === 13) {
-            this.handleSubmit(e);
+            handleSubmit(e);
         }
     }
 
@@ -84,13 +132,13 @@ function Login() {
         } else {
             if (!userEmail && !password) {
                 setLoginError('Email and Password is required');
-               // $('#username').focus();
+                // $('#username').focus();
             } else if (!userEmail) {
                 setLoginError('Email is required');
                 // $('#username').focus();
             } else {
                 setLoginError('Password is required');
-               // $('#password').focus();
+                // $('#password').focus();
             }
         }
         e.preventDefault();
@@ -119,8 +167,11 @@ function Login() {
             localStorage.setItem('userId', loginRes.UserId)
             localStorage.setItem("clientDetail", JSON.stringify(userSubscription));
             localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
+
+            dispatch(userLogin(null));
+            navigate('/site')
         }
-        navigate('/site')
+
     }
 
 
@@ -221,6 +272,9 @@ function Login() {
 
         googleSDK();
         appleLogin();
+        localStorage.removeItem("user");
+        localStorage.removeItem("IsCashDrawerOpen");
+
     })
 
     //Apple login methods Start
@@ -423,15 +477,15 @@ function Login() {
                 <img src={imglogo} />
                 <p >Sign in to your Oliver POS Account</p>
                 {/* {error !== "" && <div className="danger">{error} </div>} */}
-                {(_error !== "") &&
-                    <div className="error">
+                {(_error && _error !== "") &&
+                    <div className="error-message">
                         {_error}
                     </div>}
                 <form className="login-form">
                     <label htmlFor="email">Email</label>
-                    <input type="text" id="email" placeholder="Enter Email" onKeyDown={handleKey} onChange={(e) => handleNameChange(e)} />
+                    <input type="text" id="email" placeholder="Enter Email" onKeyUp={(e) => handleKey(e)} onChange={(e) => handleNameChange(e)} />
                     <label htmlFor="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter Password" onKeyDown={handleKey} onChange={(e) => handlePasswordChange(e)} />
+                    <input type="password" id="password" placeholder="Enter Password" onKeyUp={(e) => handleKey(e)} onChange={(e) => handlePasswordChange(e)} />
                     <div className="row">
                         <a href={bridgDomain + "/Account/ForgotPassword?_refrence=sell"} >Forgot your Password?</a>
                         <label className="custom-checkbox-wrapper">
@@ -442,7 +496,7 @@ function Login() {
                             Remember Me?
                         </label>
                     </div>
-                    <button type="button" onClick={handleSubmit} onKeyDown={handleKey}>{LocalizedLanguage.signin}</button>
+                    <button type="button" onClick={handleSubmit} onKeyUp={(e) => handleKey(e)}>{LocalizedLanguage.signin}</button>
                 </form>
                 <div className="or-row">
                     <div className="divider"></div>

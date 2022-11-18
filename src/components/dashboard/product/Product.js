@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../../common/commonComponents/LeftNavBar";
 import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
@@ -10,25 +10,28 @@ import CircledPlus_White from '../../../assets/images/svg/CircledPlus-White.svg'
 import NoVariationDisplay from '../../../assets/images/svg/NoVariationDisplay.svg';
 import NoImageAvailable from '../../../assets/images/svg/NoImageAvailable.svg';
 import Product_OutOfStock from '../../../assets/images/svg/ProductOutOfStock.svg';
+import Checkout_Minus from '../../../assets/images/svg/Checkout-Minus.svg';
+import Checkout_Plus from '../../../assets/images/svg/Checkout-Plus.svg';
+
 import Pencil from '../../../assets/images/svg/Pencil.svg';
 import RefreshGrey from '../../../assets/images/svg/RefreshGrey.svg';
 // import Shoes from '../../../assets/images/Temp/Shoes.png';
 // import CoffeeCup from '../../../assets/images/Temp/CoffeeCup.png';
 // import SnapbackHat from '../../../assets/images/Temp/SnapbackHat.png';
 // import Face_Mask from '../../../assets/images/Temp/Face Mask.png';
-import Checkmark from '../../../assets/images/svg/Checkmark.svg';
-import LockedIcon from '../../../assets/images/svg/LockedIcon.svg';
-import Hanged_Tshirt from '../../../assets/images/Temp/Hanged-Tshirt.png';
+// import Checkmark from '../../../assets/images/svg/Checkmark.svg';
+// import LockedIcon from '../../../assets/images/svg/LockedIcon.svg';
+// import Hanged_Tshirt from '../../../assets/images/Temp/Hanged-Tshirt.png';
 import { useIndexedDB } from 'react-indexed-db';
 import FormateDateAndTime from '../../../settings/FormateDateAndTime';
 import Config from '../../../Config'
-import { initProuctFn } from '../../common/commonFunctions/productFn';
+// import { initProuctFn } from '../../common/commonFunctions/productFn';
 import ProductNote from "./ProductNote";
 import ProductDiscount from "./ProductDiscount";
 import AdjustInventory from "./AdjustInventory";
 import NoVariationSelected from "./NoVariationSelected";
-import MsgPopup_OutOfStock from "./MsgPopup_OutOfStock";
-import { addSimpleProducttoCart, updateProductNote } from './productLogic';
+import MsgPopupOutOfStock from "./MsgPopupOutOfStock";
+import { addSimpleProducttoCart, updateProductNote, addtoCartProduct } from './productLogic';
 import { getTaxAllProduct, getSettingCase, cartPriceWithTax } from "../../common/TaxSetting";
 
 import { product } from "./productSlice";
@@ -63,8 +66,15 @@ const Product = (props) => {
     const [variationStockQunatity, setVariationStockQunatity] = useState(0)
     const [customFeeModifiers, setCustomFeeModifiers] = useState([]);
     const [discounts, setDiscounts] = useState(null);
+    const [disableAttribute, setDisableAttribute] = useState([]);
+    const [availableAttribute, setAvailableAttribute] = useState([]);
+
     const [respAttribute] = useSelector((state) => [state.attribute]);
     const [stockStatusInOut, setStockStatusInOut] = useState('In Stock');
+    const [isRefereshIconInventory, setisRefereshIconInventory] = useState(false);
+    const [selectedVariations, setSelectedVariations] = useState([]);
+    const [checkIsSelection, setCheckIsSelection] = useState(false);
+    const [allCombinations, setAllCombinations] = useState([]);
     var allVariations = [];
     // useIndexedDB("modifiers").getAll().then((rows) => {
     //     setModifierList(rows);
@@ -95,6 +105,9 @@ const Product = (props) => {
         //     setVariationStockQunatity(itemQauntity);
         // }
     }
+    useEffect(() => {
+        setSelectedVariations(selVariations);
+    }, [selVariations]);
 
     var currentWareHouseDetail = "";
     useEffect(() => {
@@ -108,30 +121,26 @@ const Product = (props) => {
         if (currentWareHouseDetail && currentWareHouseDetail.hasOwnProperty("Quantity")) {
 
             var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
-            var _stockStatus=_product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? LocalizedLanguage.outOfStock :
+            var _stockStatus = _product ? ((_product.ManagingStock == true && _product.StockStatus == "outofstock") ? LocalizedLanguage.outOfStock :
                 (_product.StockStatus == null || _product.StockStatus == 'instock') && _product.ManagingStock == false ? LocalizedLanguage.unlimited : (typeof _product.StockQuantity != 'undefined') && currentWareHouseDetail.Quantity != '' ? currentWareHouseDetail.Quantity : 0
             ) : 0;
-             if(typeof _stockStatus==="string")
-             {
+            if (typeof _stockStatus === "string") {
                 setStockStatusInOut(_stockStatus);
-             }
-             else
-             {
+            }
+            else {
                 setStockStatusInOut("In Stock");
-             }
+            }
 
             setVariationStockQunatity(currentWareHouseDetail.Quantity)
-            if(currentWareHouseDetail.Quantity==0)
-            {
+            if (currentWareHouseDetail.Quantity == 0) {
                 setProductQty(0);
             }
-            else
-            {
-                if(productQty==0)
-                {setProductQty(1);}
+            else {
+                if (productQty == 0) { setProductQty(1); }
             }
+            setisRefereshIconInventory(false);
             // console.log("product Qty", currentWareHouseDetail.Quantity)
-             //console.log("sel _stockStatus--", _stockStatus)
+            //console.log("sel _stockStatus--", _stockStatus)
         }
     }, [inventoryStatus])
     const toggleProductNote = () => {
@@ -171,7 +180,13 @@ const Product = (props) => {
                 var maxQty = (selProduct.ManagingStock == false && selProduct.StockStatus == "outofstock") ? "outofstock" :
                     (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
                 // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
-                if (maxQty == 'Unlimited' || qty < maxQty) {
+                //-- maxQty update after inventory check
+                if(typeof _currentStock!="undefined" && _currentStock!=null)
+                {
+                    maxQty = _currentStock;
+                }
+                //---
+                if (maxQty == 'Unlimited' || qty <= maxQty) {
                     qty++;
                 }
                 setProductQty(qty)
@@ -540,13 +555,13 @@ const Product = (props) => {
             // closeModifier();
         }, 300);
     }
-    const addModifierAsCustomFee = () => {
-
+    const addModifierAsCustomFee = (_selectedModifiers) => {
+        var _saveSelectedModifiers = _selectedModifiers;
         var tax_is = props.selProduct; //this.props.getVariationProductData && getVariatioModalProduct(this.props.single_product ? this.props.single_product : this.state.variationfound ? this.state.variationfound : this.props.getVariationProductData, this.state.variationDefaultQunatity);
         var product_price = props.selProduct.Price;//getSettingCase() == 2 || getSettingCase() == 4 || getSettingCase() == 7 ? tax_is && cartPriceWithTax(tax_is.old_price, getSettingCase(), tax_is.TaxClass) : getSettingCase() == 6 ? tax_is && tax_is.old_price : tax_is && tax_is.old_price;
         // console.log("---product_price---" + product_price);
         var _data = [];
-        saveSelectedModifiers && saveSelectedModifiers.map(m => {
+        _saveSelectedModifiers && _saveSelectedModifiers.map(m => {
             if (m.is_active == true) {
                 var _summary = "";
                 var _sum = 0;
@@ -575,7 +590,16 @@ const Product = (props) => {
             }
         })
         if (_data && _data.length > 0) {
-            setCustomFeeModifiers(_data)
+            var cartlist = localStorage.getItem("CARD_PRODUCT_LIST") ? JSON.parse(localStorage.getItem("CARD_PRODUCT_LIST")) : []
+            cartlist = cartlist == null ? [] : cartlist;
+            cartlist = cartlist.concat(_data);
+            addtoCartProduct(cartlist);
+            // cartlist.push(data)
+            // _data.map(m=>{
+            //     addSimpleProducttoCart(m);
+            // })
+
+            // setCustomFeeModifiers(_data)
         }
         //this.setState({ CustomFee_Modifiers: _data });
         //console.log("----modifier as custom fee----" + JSON.stringify(_data));
@@ -614,15 +638,31 @@ const Product = (props) => {
     const setSelectedOption = (option, attribute, AttrIndex) => {
         // _disableAttribute = []
         _selVariationsEdit = selVariations;
+
+        var _slug = null;
+        let _OptionAll = attribute.OptionAll;// && JSON.parse(attribute.OptionAll);
+        var isAllOption = false;
+        if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
+            isAllOption = true;
+        }
+        else {
+            _OptionAll = attribute.options ? attribute.options.split(',') : [];
+        }
+        var result = _OptionAll.filter(b => b.slug === option);
+        if (result && typeof result != "undefined" && result.length > 0) {
+            _slug = result;
+        }
+        console.log("---setSelectedOption--slug" + JSON.stringify(_slug));
+
         var _item = _selVariationsEdit.findIndex((element) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            _selVariationsEdit.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+            _selVariationsEdit.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug[0].slug : "" });
         }
         _selVariationsEdit = _selVariationsEdit.map(obj => {
             if (obj.Name === attribute.Name) {
-                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug[0].slug : "" };
             }
             return obj;
         });
@@ -633,6 +673,169 @@ const Product = (props) => {
                 // console.log("----_selVariations" + JSON.stringify(_selVariationsEdit))
                 setSelVariations(_selVariationsEdit);
             }
+        }
+    }
+    const availableVariations = () => {
+        if (props && props.selProduct) {
+            var _product = props.selProduct;
+            var _attribute = [];
+            var _attribute1 = [];
+            var _allCombi = [];
+            // var ProductAttribute = [];
+
+            // if (_product && _product.ProductAttributes !== null) {
+            //     ProductAttribute = _product.ProductAttributes;
+            //     _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
+            // }
+            getAllProducts().then((rows) => {
+                var data = rows.filter(a => a.ParentId === _product.WPID);
+                var allProdcuts = getTaxAllProduct(data)
+                if (allProdcuts && allProdcuts.length > 0) {
+                    var filteredAttribute = allProdcuts.filter(item => {
+                        if (item && item.combination !== null && item.combination !== undefined) {
+                            if (_attribute1 && _attribute1.length > 0) {
+                                var _result = _attribute1.find(b => b == item.combination);
+                                if (typeof _result == "undefined" || _result == null) {
+                                    _attribute1.push(item.combination);
+                                }
+                                //console.log(_result);
+                            }
+                            else {
+                                _attribute1.push(item.combination);
+                            }
+                        }
+
+                        //console.log("-_attribute combination----" + JSON.stringify(_attribute1))
+                        // setAllCombinations(_attribute1);
+                        var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        _allCombi.push(allCombi);
+                        allCombi = allCombi.map(a => {
+                            let _a = a.replace(/\//g, "-").toLowerCase();
+                            if (_attribute && _attribute.length > 0) {
+                                var _result = _attribute.find(b => b == _a);
+                                if (typeof _result == "undefined" || _result == null) {
+                                    _attribute.push(_a);
+                                }
+                                //console.log(_result);
+                            }
+                            else {
+                                _attribute.push(_a);
+                            }
+
+                            // return  _a;
+                        });
+
+                    });
+                    setAvailableAttribute(_attribute);
+                    //console.log("-_attribute----" + JSON.stringify(_attribute))
+                    setAllCombinations(_allCombi);
+                    //console.log("-_allCombi----" + JSON.stringify(_allCombi))
+                    //     //-------
+                    //     // var _slug = "";
+                    //     // selVariations && selVariations.map(v => {
+
+                    //     //     let _OptionAll = v.OptionAll && JSON.parse(v.OptionAll);
+                    //     //     var isAllOption = false;
+                    //     //     if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
+                    //     //         isAllOption = true;
+                    //     //     }
+                    //     //     else {
+                    //     //         _OptionAll = v.options ? v.options.split(',') : [];
+                    //     //     }
+                    //     //     var result = _OptionAll.filter(b => b.name === option);
+                    //     //     if (result && typeof result != "undefined" && result.length > 0) {
+                    //     //         _slug = result;
+                    //     //         //selVariations.find(ele => ele.OptionTitle===result[0].name);
+                    //     //     }
+                    //     //     console.log("------result---" + result && JSON.stringify(result));
+                    //     //     // _OptionAll.map((_allOpt, index) => {
+                    //     //     //     var newOption = isAllOption ==true && _allOpt.slug ? _allOpt.slug:_allOpt;
+                    //     //     // });
+                    //     // })
+                    //     //return selVariations.every(ele => ((allCombi.includes(_slug[0].slug) && (option===ele.Option)) ) && _attribute.length === selVariations.length)
+
+
+                    //     // var _data= selVariations.every(ele => ((allCombi.includes(_slug[0].slug) && (option===ele.Option)) ) && _attribute.length === selVariations.length)
+
+                    //     // if(typeof _data!="undefined" && _data!=null)
+                    //     // {
+                    //     //     return true;
+                    //     // }
+                    //     // else
+                    //     // {
+                    //     //     return false;
+                    //     // }
+
+                    //     //return (allCombi.includes(_slug)  || allCombi.includes("**")) && _attribute.length === selVariations.length;
+                    //     //return selVariations.every(ele => (allCombi.includes(_slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+
+                    //     //-------
+
+
+                    //     return _selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                    // })
+                    // if (filteredAttribute && filteredAttribute.length == 1) {
+                    //     props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                    //     setisRefereshIconInventory(true);
+                    //     dispatch(getInventory(filteredAttribute[0].WPID)); //call to get product warehouse quantity
+
+                    // }
+                    // else {
+                    //     props.updateVariationProduct && props.updateVariationProduct(null);
+                    //     // dispatch(getInventory(null)); //call to get product warehouse quantity
+                    // }
+                    //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
+                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
+
+                    // var filteredAttribute1 = allProdcuts.filter(item => {
+                    //     // var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                    //     // var aa = _selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+
+                    //     var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                    //     allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                    //     // var aa = _selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")))
+
+                    //     // if (aa == true) {
+                    //     //     allCombi = allCombi.map(a => {
+                    //     //         var _att = a.replace(/\//g, "-").toLowerCase();
+                    //     //         const index = _disableAttribute.findIndex(item => item === _att)
+                    //     //         if (index === -1) {
+                    //     //             _disableAttribute.push(_att);
+                    //     //         }
+                    //     //         return _att;
+                    //     //     });
+                    //     // }
+                    //     // if (attribute && attribute.Option) {
+                    //     //     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
+                    //     //         var _att = a.replace(/\//g, "-").toLowerCase();
+                    //     //         const index = _disableAttribute.findIndex(item => item === _att)
+                    //     //         if (index === -1) {
+                    //     //             _disableAttribute.push(_att);
+                    //     //         }
+                    //     //     })
+                    //     // }
+
+                    //     // //var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                    //     // var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                    //     // if (result === true) {
+                    //     //     console.log("--att p count--->> ", allCombi.join(','));
+                    //     // }
+                    //     // return result;
+                    // })
+                    // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
+                    //     console.log("-------combi----" + a.combination);
+                    // })
+                    //  console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
+                    //  console.log("--allVariations--- ", JSON.stringify(allVariations));
+                    //  console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
+                    //  var array3 = allVariations.filter(function(obj) { return _disableAttribute.indexOf(obj) == -1; });
+                    //  //_disableAttribute=array3;
+                    //  setDisableAttribute(array3);
+                    //  console.log("--array3--- ", JSON.stringify(array3));
+                }
+
+            });
+
         }
     }
     const doVariationSearch = () => {
@@ -652,7 +855,8 @@ const Product = (props) => {
                     var filteredAttribute = allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
-                        return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                        //return selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                        return selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
@@ -660,13 +864,11 @@ const Product = (props) => {
                     else {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                     }
-                    //  console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
-                    //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
-                        var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
-
+                        var aa = selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")))
+                        //var aa = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) )
                         if (aa == true) {
                             allCombi = allCombi.map(a => {
                                 var _att = a.replace(/\//g, "-").toLowerCase();
@@ -686,8 +888,9 @@ const Product = (props) => {
                         //         }
                         //     })
                         // }
-
-                        var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        
+                        //var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")))
+                        var result = selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
                         // if (result === true) {
                         //     console.log("--att p count--->> ", allCombi.join(','));
                         // }
@@ -704,26 +907,123 @@ const Product = (props) => {
             });
         }
     }
+  
+    
+    const showAvailabe = (selVari) => {
+        var _all = [];
+        // console.log("--selVari-----"+JSON.stringify(attributeall.length));
+        if (allCombinations && allCombinations.length > 0) {
+            allCombinations.map(cmb => {
+                if (cmb && cmb.length > 0) {
+                    // cmb.map(c=>
+                    //     {
+                    //         if(c===option)
+                    //         {
+                    //console.log(allVariations.length+"--matched-----"+c);
+                    // if (_all && _all.length > 0) {
+                        var found = selVari.find(a => cmb.includes(a.Slug)|| cmb.includes("**"));
+                        // var _found = selVari.filter(a => cmb.includes(a.Slug));
+                        if (typeof found != "undefined" && found != null) {
+                            var _f = cmb.find(a => a === found.Slug);
+                            if (typeof _f != "undefined" && _f != null) { _all.push(cmb); }
+                        }
+                        //   else{
+                        //     // var _f=cmb.find(a=>a===found.Slug);
+                        //     // if(typeof _f!="undefined" && _f!=null)
+                        //     // {_all.push(cmb);}
+                        //     _all.push({var:cmb,isfound:false});
+                        //     }
+                    // }
+                    // else { _all.push({var:cmb,isfound:false}); }
+
+                    //     }
+                    // }
+                    // )
+                    //console.log("-------->" + JSON.stringify(cmb));
+                }
+                //var allCombi = cmb && cmb !== null && cmb !== undefined && cmb.split("~");
+            })
+            var _temp = [];
+            _all && _all.map(d => {
+                d && d.map(e => {
+                    var _f = _temp.find(a => a === e);
+                    if (typeof _f != "undefined" && _f != null)
+                     { }
+                     else
+                     {_temp.push(e);}
+                    
+                })
+            })
+            console.log("--_all-----" + JSON.stringify(_all));
+
+            console.log("--_temp-----" + JSON.stringify(_temp));
+
+            //console.log("--allVariations-----" + JSON.stringify(allVariations));
+
+            // _all && _all.map(d => {
+            //     d && d.map(e => {
+            //         var _f = _temp.find(a => a === e);
+            //         if (typeof _f != "undefined" && _f != null)
+            //          { }
+            //          else
+            //          {_temp.push(e);}
+                    
+            //     })
+            // })
+            
+            var array3 = allVariations.filter(function (obj) { return _temp.indexOf(obj) == -1; });
+
+           // console.log(allVariations.length + "---" + "--not _all-----" + JSON.stringify(array3));
+
+            console.log("---array3 filtered---" + JSON.stringify(array3));
+            if(selVari.length>1)
+            {
+                setDisableAttribute(array3);
+            }
+
+
+        }
+    }
     //var selVariations = [];
     var _disableAttribute = [];
-    const optionClick = async (option, attribute, AttrIndex) => {
+    var isAllOption = false;
+    const optionClick = (option, attribute, AttrIndex) => {
+       // console.log("arrayindes-" + AttrIndex);
         setIsEdit(false);
+
         //    if(selOptions && selOptions.length>0)
         //    {
         //     setSelOptions([]);
 
         //    }
+        //----------
+        var _slug = null;
+        let _OptionAll = attribute.OptionAll;// && JSON.parse(attribute.OptionAll);
+        
+        if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
+            isAllOption = true;
+        }
+        else {
+            _OptionAll = attribute.options ? attribute.options.split(',') : [];
+        }
+        var result =isAllOption===true? _OptionAll.filter(b => (b.hasOwnProperty("slug")? b.slug:b) === option):_OptionAll.filter(b => b === option);
+        if (result && typeof result != "undefined" && result.length > 0) {
+
+            _slug= isAllOption ==true &&  result[0].hasOwnProperty("slug") ?result[0].slug:result[0];
+            //selVariations.find(ele => ele.OptionTitle===result[0].name);
+        }
+        //------
         _disableAttribute = []
         var _selVariations = selVariations;
         var _item = _selVariations.findIndex((element) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase() });
+            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug : "", });
         }
         _selVariations = _selVariations.map(obj => {
             if (obj.Name === attribute.Name) {
-                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase() };
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug: "" };
             }
             return obj;
         });
@@ -740,6 +1040,7 @@ const Product = (props) => {
                 ProductAttribute = _product.ProductAttributes;
                 _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
             }
+            showAvailabe(_selVariations);
             getAllProducts().then((rows) => {
                 var data = rows.filter(a => a.ParentId === _product.WPID);
                 var allProdcuts = getTaxAllProduct(data)
@@ -747,10 +1048,54 @@ const Product = (props) => {
                     var filteredAttribute = allProdcuts.filter(item => {
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
-                        return selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+
+                        //-------
+                        // var _slug = "";
+                        // selVariations && selVariations.map(v => {
+
+                        //     let _OptionAll = v.OptionAll && JSON.parse(v.OptionAll);
+                        //     var isAllOption = false;
+                        //     if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
+                        //         isAllOption = true;
+                        //     }
+                        //     else {
+                        //         _OptionAll = v.options ? v.options.split(',') : [];
+                        //     }
+                        //     var result = _OptionAll.filter(b => b.name === option);
+                        //     if (result && typeof result != "undefined" && result.length > 0) {
+                        //         _slug = result;
+                        //         //selVariations.find(ele => ele.OptionTitle===result[0].name);
+                        //     }
+                        //     console.log("------result---" + result && JSON.stringify(result));
+                        //     // _OptionAll.map((_allOpt, index) => {
+                        //     //     var newOption = isAllOption ==true && _allOpt.slug ? _allOpt.slug:_allOpt;
+                        //     // });
+                        // })
+                        //return selVariations.every(ele => ((allCombi.includes(_slug[0].slug) && (option===ele.Option)) ) && _attribute.length === selVariations.length)
+
+
+                        // var _data= selVariations.every(ele => ((allCombi.includes(_slug[0].slug) && (option===ele.Option)) ) && _attribute.length === selVariations.length)
+
+                        // if(typeof _data!="undefined" && _data!=null)
+                        // {
+                        //     return true;
+                        // }
+                        // else
+                        // {
+                        //     return false;
+                        // }
+
+                        //return (allCombi.includes(_slug)  || allCombi.includes("**")) && _attribute.length === selVariations.length;
+                        //return selVariations.every(ele => (allCombi.includes(_slug) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+
+                        //-------
+
+
+                            return _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
+                        setisRefereshIconInventory(true);
                         dispatch(getInventory(filteredAttribute[0].WPID)); //call to get product warehouse quantity
 
                     }
@@ -758,12 +1103,27 @@ const Product = (props) => {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                         // dispatch(getInventory(null)); //call to get product warehouse quantity
                     }
+                   // showAvailabe(option, _selVariations);
+                    // if (allCombinations && allCombinations.length > 0) {
+                    //     allCombinations.map(cmb => {
+                    //         if(cmb && cmb.length>0)
+                    //        { console.log("-------->"+JSON.stringify(cmb));}
+                    //         //var allCombi = cmb && cmb !== null && cmb !== undefined && cmb.split("~");
+                    //     })
+
+
+                    // }
                     //console.log("--filteredAttribute--- ", JSON.stringify(filteredAttribute));
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
-                    var filteredAttribute1 = allProdcuts.filter(item => {
+                    //var filteredAttribute1 = allProdcuts.filter(item => {
+                        allProdcuts.map(item => {
+                        // var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
+                        // var aa = _selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
-                        var aa = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
+                        allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
+                        var aa = _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")))
 
                         if (aa == true) {
                             allCombi = allCombi.map(a => {
@@ -775,9 +1135,9 @@ const Product = (props) => {
                                 return _att;
                             });
                         }
-                        if (attribute && attribute.Option) {
-                            (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
-                                var _att = a.replace(/\//g, "-").toLowerCase();
+                        if (attribute && attribute.OptionAll) {
+                            attribute.OptionAll.map((a, i) => {
+                                var _att = a.slug;// a.replace(/\//g, "-").toLowerCase();
                                 const index = _disableAttribute.findIndex(item => item === _att)
                                 if (index === -1) {
                                     _disableAttribute.push(_att);
@@ -785,18 +1145,32 @@ const Product = (props) => {
                             })
                         }
 
-                        var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        //var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        //var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                        // var _result = selVariations.filter(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
+                       
+                        // if(_result )
+                        // {
+                        //     console.log("-_result--->> ", JSON.stringify(_result));
+                        // }
                         // if (result === true) {
                         //     console.log("--att p count--->> ", allCombi.join(','));
                         // }
-                        return result;
+                        //return result;
                     })
                     // filteredAttribute1 && filteredAttribute1.length > 0 && filteredAttribute1.map(a => {
                     //     console.log("-------combi----" + a.combination);
                     // })
-                    // console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
-                    // console.log("--allVariations--- ", JSON.stringify(allVariations));
-
+                    //console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
+                    //console.log("--allVariations--- ", JSON.stringify(allVariations));
+                    //console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
+                     var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
+                    // //_disableAttribute=array3;
+                    if(_selVariations && _selVariations.length==1 && array3 && _attribute && _attribute.length>1)
+                    {
+                        setDisableAttribute(array3);
+                    }
+                     console.log("--array3--- ", JSON.stringify(array3));
                 }
 
             });
@@ -895,7 +1269,12 @@ const Product = (props) => {
                     }
                     console.log("----product note---" + note);
                 }
-                if (customFeeModifiers && customFeeModifiers.length > 0) {
+                if (selectedModifiers && selectedModifiers.length > 0) {
+
+                    addModifierAsCustomFee(selectedModifiers);
+                    // customFeeModifiers.map(m=>{
+                    //     addSimpleProducttoCart(m);
+                    // })
                     //cartItemList= cartItemList.concat(this.state.CustomFee_Modifiers);
                 }
                 if (result !== 'outofstock') {
@@ -906,6 +1285,8 @@ const Product = (props) => {
             }
         }
         else {
+            setCheckIsSelection(true);
+            // initProuctFn();
             toggleNoVariationSelected();
         }
     }
@@ -913,7 +1294,19 @@ const Product = (props) => {
         setNote(note);
         toggleProductNote();
     }
+    const isSelected = (name) => {
+        if (checkIsSelection === true) {
+            if (selectedVariations && selectedVariations.length > 0) {
+                var item = selectedVariations.find(m => m.Name === name);
+                return (typeof item != "undefined" && item != null) ? true : false;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
 
+    }
     //Showing indivdual and overall discount 30sep2022
     const showDiscounts = () => {
         var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
@@ -954,7 +1347,10 @@ const Product = (props) => {
     }, [props.selProduct]);
 
     const clearSelection = () => {
+        setCheckIsSelection(false);
         setSelVariations([]);
+        setDisableAttribute([]);
+
     }
     useEffect(() => {
         if (props.isShowPopups == true) {
@@ -962,6 +1358,7 @@ const Product = (props) => {
             getModifiers();
             getRecomProducts();
             showDiscounts();
+            availableVariations();
 
         }
     }, [props.isShowPopups, props.selProduct]);
@@ -986,19 +1383,23 @@ const Product = (props) => {
         _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
 
         _attribute && _attribute.map((attribute, index) => {
-            var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Option: attribute.Option, Variation: attribute.Variation, OptionAll: attribute.OptionAll };
-            var isExist = _DistictAttribute && _DistictAttribute.find(function (element) {
-                return (element.Slug == item.Slug)
-            });
+            var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Variation: attribute.Variation, OptionAll: attribute.OptionAll ? JSON.parse(attribute.OptionAll) : [] };
+            // var isExist = _DistictAttribute && _DistictAttribute.find(function (element) {
+            //     return (element.Slug == item.Slug)
+            // });
             // if (!isExist)        
             _DistictAttribute.push(item);
         });
     }
-    setTimeout(() => {
-        initProuctFn();
-    }, 1000);
+    // setTimeout(() => {
+    //     initProuctFn();
+    // }, 1000);
 
     var _product = props.variationProduct != null ? props.variationProduct : props.selProduct;
+    // if (isEdit === true && _product.StockQuantity != variationStockQunatity) {
+    //     setVariationStockQunatity(_product.StockQuantity)
+    //     setProductQty(_product.quantity);
+    // }
     var product_price = 0;
     var after_discount_total_price = 0;
     if (_product) {
@@ -1020,7 +1421,7 @@ const Product = (props) => {
     //console.log("Quantity", currentWareHouseDetail.Quantity, variationStockQunatity)
 
     return (
-        props.isShowPopups == false ? <React.Fragment></React.Fragment> :
+        props.isShowPopups == false ? null :
             <React.Fragment>
                 <div className="product-wrapper" >
                     <LeftNavBar view={"Product View"}></LeftNavBar>
@@ -1057,8 +1458,8 @@ const Product = (props) => {
                                 (_DistictAttribute.map((attribute, index) => {
                                     return (
                                         attribute && attribute.Variation == true &&
-                                        <React.Fragment key={attribute.Slug}><p>{attribute.Name}</p>
-                                            <div className="radio-group">
+                                        <React.Fragment key={attribute.Slug}><p className={isSelected(attribute.Name) === false ? "error" : ""}>{attribute.Name}</p>
+                                            {/* <div className="radio-group">
                                                 {
                                                     (attribute.Option ? attribute.Option.split(',') : []).map((a, i) => {
                                                         let _item = a.replace(/\//g, "-").toLowerCase();
@@ -1066,7 +1467,9 @@ const Product = (props) => {
                                                         // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
                                                         //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
                                                         if (isEdit === true) {
-                                                            var selVal = selOptions ? selOptions.includes(_item) : false;
+                                                            //var selVal = selOptions ? selOptions.includes(_item) : false;
+                                                            
+                                                            var selVal = selOptions ? selOptions.some(a => a.replace(/\-/g, " ").toLowerCase() === _item.toLowerCase()) : false;
                                                             if (selVal === true) {
                                                                 setSelectedOption(a, attribute, i)
                                                             }
@@ -1078,7 +1481,7 @@ const Product = (props) => {
                                                             // }
                                                         }
                                                         else {
-                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle === _item) : false;
+                                                            var selVal = selVariations ? selVariations.some(a => a.OptionTitle.replace(/\-/g, " ").toLowerCase() === _item.toLowerCase()) : false;
                                                             // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                             return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal} /><div className="custom-radio"><p>{a}</p></div></label>
                                                         }
@@ -1097,14 +1500,71 @@ const Product = (props) => {
                                                         // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} /><div className="custom-radio"><p>{a}</p></div></label>
                                                     })
                                                 }
-                                            </div></React.Fragment>
+                                            </div> */}
+                                            <div className={isSelected(attribute.Name) === false ? "radio-group error" : "radio-group"}>
+                                                {
+                                                    attribute.OptionAll && attribute.OptionAll.map((opt, i) => {
+
+                                                        var option =  opt.hasOwnProperty("slug") ?opt.slug:opt;
+                                                        var displayOption= opt.hasOwnProperty("name") ?opt.name:opt;
+                                                        
+                                                        //var newOption = isAllOption ==true && opt.slug ? opt.slug:opt;
+
+                                                        let _item = option;//opt.slug;
+
+                                                        var _disabled = false
+                                                        if (disableAttribute && disableAttribute.length > 0) {
+                                                            _disabled = disableAttribute && disableAttribute.some(a => a.toLowerCase() === option.toLowerCase());
+                                                        }
+                                                        if (_disabled === false) {
+                                                            if(availableAttribute && availableAttribute.length>0)
+                                                            {
+                                                                var _vari = availableAttribute.find(a => a.toLowerCase() === option.toLowerCase()|| a==="**");
+                                                                _disabled = typeof _vari != "undefined" && _vari != null ? false : true;
+                                                            }
+
+                                                        }
+                                                        if (_disabled === false) 
+                                                        {
+                                                            console.log("----" +displayOption +"---"+_disabled)
+                                                        }
+                                                        else if (_disabled === true) 
+                                                        {
+                                                            console.log("----" + displayOption+"---"+_disabled)
+                                                        }
+
+
+
+                                                        allVariations.push(_item);
+                                                        // return <label key={"l_" + a} onClick={() => optionClick(a, attribute, i)}><input type="radio" id={attribute.Name + "" + a} name={attribute.Name} checked={selVal}/><div className="custom-radio"><p>{a}</p></div></label>
+                                                        //var selVal = props.selProduct.selectedOptions ? props.selProduct.selectedOptions.includes(_item):false;
+                                                        if (isEdit === true) {
+                                                            //var selVal = selOptions ? selOptions.includes(_item) : false;
+
+                                                            var selVal = selOptions ? selOptions.some(a => a === _item) : false;
+                                                            if (selVal === true) {
+                                                                setSelectedOption(_item, attribute, i)
+                                                            }
+                                                            return <label className={_disabled === true ?"btn-disable":""}  disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null}/><div className="custom-radio"><p>{displayOption}</p></div></label>
+
+                                                        }
+                                                        else {
+                                                            var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
+                                                            // var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
+                                                            return <label className={_disabled === true ?"btn-disable":""}  disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null}/><div className="custom-radio"><p>{displayOption}</p></div></label>
+                                                        }
+
+                                                    })
+                                                }
+                                            </div>
+                                        </React.Fragment>
                                     )
                                 })
                                 )
                                 : <div className='noAttribute'></div>}
                         {productModifiers && productModifiers.length > 0 ? <div className="row">
                             <p>Select Modifier</p>
-                        </div> : null} <div onChange={onChangeValue}>
+                        </div> : null} <React.Fragment /*onChange={onChangeValue}*/>
                             {
                                 productModifiers && productModifiers.map(mod => {
                                     var gpid = (mod.Title).replace(/ /g, "_");
@@ -1114,13 +1574,13 @@ const Product = (props) => {
                                             return (
                                                 <React.Fragment>
                                                     <p>{mod.Title}</p>
-                                                    <div className="radio-group">{
+                                                    <div className="radio-group" onChange={onChangeValue}>{
                                                         mod.modifierFields && mod.modifierFields.map(mf => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                                 return (
                                                                     <label>
-                                                                        <input type="checkbox" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                        <input type="radio" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null}/>
                                                                         <div className="custom-radio">
                                                                             <p>{efm.Name}</p>
                                                                         </div>
@@ -1139,23 +1599,26 @@ const Product = (props) => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = ((efm.Name != null && typeof efm.Name != "undefined") ? efm.Name : String(efm.ModifierId)).replace(/ /g, "_");
                                                                 return (<React.Fragment>
-                                                                    <p className="label">{efm.Name}</p>
-                                                                    <div className="row">
-                                                                        <div className="increment-input">
-                                                                            <div className="decrement" onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <svg width={16} height={2} viewBox="0 0 16 2">
-                                                                                    <rect width={16} height={2} fill="var(--primary)" />
-                                                                                </svg>
+                                                                    <div className="main-row" onChange={onChangeValue}>
+                                                                        <div className="input-col1" >
+                                                                            <label htmlFor={id + "-txt"}>{efm.Name}</label>
+
+
+
+                                                                            {/* <div className="text-group">
+                                                                            <p className="label">{efm.Name}</p>
+                                                                        </div> */}
+                                                                            <div className="increment-input">
+                                                                                <button onClick={qunatityChange} data-parent-id={id} data-btn-type="minus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <img src={Checkout_Minus} alt="" />
+                                                                                </button>
+                                                                                <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+                                                                                <button id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
+                                                                                    <img src={Checkout_Plus} alt="" />
+                                                                                </button>
                                                                             </div>
-                                                                            <input id={id + "-quantityUpdater"} type="number" name={id} data-max-number={efm.Maxnumber} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
-                                                                            <div className="increment" id="btn_dv_plus_popup" onClick={qunatityChange} data-parent-id={id} data-btn-type="plus" data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract}>
-                                                                                <svg className='checkout-increament-mr' width={16} height={16} viewBox="0 0 16 16" id="btn_svg_plus_popup" >
-                                                                                    <path d="M16 7H9V0H7V7H0V9H7V16H9V9H16V7Z" fill="var(--primary)" />
-                                                                                </svg>
-                                                                            </div>
-                                                                        </div>
-                                                                        <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div>
+
+                                                                        </div><div> <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
                                                                 </React.Fragment>)
                                                             }))
                                                         })
@@ -1166,13 +1629,13 @@ const Product = (props) => {
                                             return (
                                                 <React.Fragment>
                                                     <p >{mod.Title}</p>
-                                                    <div className="radio-group">{
+                                                    <div className="radio-group" onChange={onChangeValue}>{
                                                         mod.modifierFields && mod.modifierFields.map(mf => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                                 return (
                                                                     <label htmlFor={id}>
-                                                                        <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} />
+                                                                        <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null}/>
                                                                         <div className="custom-radio">
                                                                             <p>{efm.Name}</p>
                                                                         </div>
@@ -1191,11 +1654,13 @@ const Product = (props) => {
                                                             return (mf.ExtendFormData && mf.ExtendFormData.map(efm => {
                                                                 var id = (efm.Name).replace(/ /g, "_");
                                                                 return (<React.Fragment>
-                                                                    <p className="label">{efm.Name}</p>
-                                                                    <div className="row">
-                                                                        <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} className="mod-textInput" />
-                                                                        <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' />
-                                                                    </div>
+                                                                    <div className="main-row" onChange={onChangeValue}>
+                                                                        <div className="input-col" >
+                                                                            <label htmlFor={id + "-txt"}>{efm.Name}</label>
+                                                                            <input id={id + "-txt"} type="text" name={id + "-txt"} defaultValue={efm.Startingnumber} data-amount={efm.Amount} data-amount-type={efm.Type} data-gparent-name={gpname} data-gpid={gpid} data-add-sub={efm.AddnSubtract} />
+
+                                                                        </div>
+                                                                        <div className="input-col0" > <input id={id + "-amount"} type="text" defaultValue={efm.Type + " " + efm.Amount} data-amount-type={efm.Type} readOnly className='modiferAmount' /></div></div>
                                                                 </React.Fragment>)
                                                             }))
                                                         })
@@ -1206,7 +1671,7 @@ const Product = (props) => {
                                             break;
                                     }
                                 })
-                            }</div>
+                            }</React.Fragment>
                     </div>
                     <div className="detailed-product">
                         <div className="row">
@@ -1222,14 +1687,19 @@ const Product = (props) => {
                                 <div className="group">
                                     <div className="text-row">
                                         {/* <p className="mobile-only">Currently in stock:</p> */}
+
                                         <p className="mobile-only">Currently {stockStatusInOut}:</p>
-                                        <p className="quantity">{variationStockQunatity}</p>
+                                        {isRefereshIconInventory === true ?
+                                            <p className="text-center"><img src={RefreshGrey} alt=""></img></p>
+                                            :
+                                            stockStatusInOut != LocalizedLanguage.outOfStock ? stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? <p className="quantity">{variationStockQunatity}</p> : null : <p className="quantity">0</p>}
                                     </div>
 
                                     {isOutOfStock == false && <p className="desktop-only">{stockStatusInOut}</p>}
-                                    {variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&  //no need update stock when unlimited
-                                        <button onClick={() => toggleAdjustInventory()}>Adjust Stock</button>
+                                    {/*variationStockQunatity.toString().toLocaleLowerCase() !== 'unlimited' &&*/ _product.ManagingStock === true &&   //no need update stock when unlimited
+                                        <button onClick={() => toggleAdjustInventory()} disabled={stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? false : true} style={{ opacity: stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited' ? 1 : 0.5 }}>Adjust Stock</button>
                                     }
+                                    {/* {stockStatusInOut.toString().toLocaleLowerCase() !== 'unlimited'} */}
                                 </div>
 
                                 <button id="addProductDiscountMobile" onClick={() => toggleProductDiscount()}>
@@ -1280,38 +1750,6 @@ const Product = (props) => {
                                     </div>
                                 </button>
                             })}
-                            {/* <button>
-                                <div className="img-container">
-                                    <img src={Shoes} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Funky Shoes</p>
-                                </div>
-                            </button>
-                            <button>
-                                <div className="img-container">
-                                    <img src={Face_Mask} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Face Mask</p>
-                                </div>
-                            </button>
-                            <button>
-                                <div className="img-container">
-                                    <img src={CoffeeCup} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Reusable Coffee Cup</p>
-                                </div>
-                            </button>
-                            <button>
-                                <div className="img-container">
-                                    <img src={SnapbackHat} alt="" />
-                                </div>
-                                <div className="prod-name">
-                                    <p>Snapback Ballcap with Logo</p>
-                                </div>
-                            </button> */}
                         </div>
                     </div>
                     <div className="product-footer">
@@ -1351,7 +1789,7 @@ const Product = (props) => {
                 ></AdjustInventory>
                 <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
-                <MsgPopup_OutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock} toggleAdjustInventory={toggleAdjustInventory}></MsgPopup_OutOfStock>
+                <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock} toggleAdjustInventory={toggleAdjustInventory}></MsgPopupOutOfStock>
             </React.Fragment>)
 }
 export default Product 

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from 'react-redux';
 import { get_locName, get_regName, getShopName } from '../common/localSettings'
-import imgOpenReg from '../../assets/images/svg/OpenSign.svg'
+import imgOpenReg from '../../assets/images/svg/OpenSign.svg';
+import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg';
+
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useDispatch, useSelector } from 'react-redux';
 // import imgBackSpace from '../../assets/images/svg/Backspace-BaseBlue.svg'
-import { GetOpenRegister } from '../cashmanagement/CashmanagementSlice'
+import { GetOpenRegister, closeRegister } from '../cashmanagement/CashmanagementSlice'
 // import {createPin, validatePin} from "./pinSlice"
 // import { useNavigate } from "react-router-dom";
 // import { get_UDid } from "../common/localSettings"; 
@@ -14,26 +16,41 @@ import STATUSES from "../../constants/apiStatus";
 import { useNavigate } from 'react-router-dom';
 import PinPad from "./PinPad";
 import { get_UDid } from "../common/localSettings";
+import LogoutConfirm from "../common/commonComponents/LogoutConfirm";
+import { getPostMeta } from "../common/commonAPIs/postMetaSlice";
+import { productCount } from "../loadProduct/productCountSlice";
 //import $ from "jquery";
 const Pin = () => {
     const dispatch = useDispatch();
     const UID = get_UDid('UDID');
     const navigate = useNavigate();
-    const [onClick, setOnClick] = useState(false)
+    const [onClick, setOnClick] = useState(false);
+    const [isShowLogoutConfirm, setisShowLogoutConfirm] = useState(false)
     const register_Id = localStorage.getItem('register');
-
+    var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
+    var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
+    const toggleLogoutConfirm = () => {
+        setisShowLogoutConfirm(!isShowLogoutConfirm)
+    }
 
     let useCancelled = false;
     useEffect(() => {
-        if (useCancelled == false) {
-            localStorage.setItem("recent_apps", [])
-            fetchData()
-        }
-        return () => {
-            useCancelled = true;
-        }
-    }, []);
+        //if (useCancelled == false) {
 
+        fetchData();
+        dispatch(productCount(get_UDid));
+        dispatch(getPostMeta("recent_apps"));
+        // }
+        // return () => {
+        //     useCancelled = true;
+        // }
+    }, []);
+    const resGetPostMeta = useSelector((state) => state.getPostMeta)
+    if (resGetPostMeta && resGetPostMeta.is_success == true) {
+        if (resGetPostMeta.data && resGetPostMeta.data.content && resGetPostMeta.data.content.Slug == "recent_apps") {
+            localStorage.setItem("recent_apps", resGetPostMeta.data.content.Value)
+        }
+    }
     // if ($('#whichkey')) {
     //     //inputElement && inputElement !== null && inputElement.current.focus();
     //     $('#whichkey').focus();
@@ -42,8 +59,7 @@ const Pin = () => {
     const fetchData = () => {
         if (UID && register_Id) {
             // this.props.dispatch(favouriteListActions.getAll(UID, register_Id));
-            var client = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")) : '';
-            var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem("selectedRegister")) : '';
+           
             if (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true) {
                 dispatch(GetOpenRegister(register_Id));
             }
@@ -258,20 +274,53 @@ const Pin = () => {
         console.log("outer click")
         setOnClick(true)
     }
+    const goToCloseRegister = () => {
+        dispatch(closeRegister(null));
+        setTimeout(() => {
+            navigate("/closeregister")
+        }, 100);
 
-    return <div className="idle-register-wrapper" onClick={hundleTrue}>
-        <header>
-            <img src={imgOpenReg} alt="" />
-            <div className="col">
-                <p className="style1">{getShopName()}</p>
-                <div className="divider divider-pin"></div>
-                <p className="style2">{get_regName()}</p>
-                <p className="style3">{get_locName()}</p>
-                <button id="closeRegister1" onClick={() => navigate("/closeregister")}  >{LocalizedLanguage.closeRegister}</button>
+    }
+    return <React.Fragment>
+        <div className="idle-register-wrapper" onClick={hundleTrue}>
+            <button id="logoutRegisterButton" onClick={() => toggleLogoutConfirm()}>
+                <img src={LogOut_Icon_White} alt="" />
+                {LocalizedLanguage.logout}
+            </button>
+            <header>
+                <img src={imgOpenReg} alt="" />
+                <div className="col text-center">
+                    <p className="style1">{getShopName()}</p>
+                    <div className="divider divider-pin"></div>
+                    <p className="style2">{get_regName()}</p>
+                    <p className="style3">{get_locName()}</p>
+
+                    <button id="closeRegister1" disabled={client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement !== true  ? true : false} style={{ opacity: client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement !== true  ? 0.5 : 1 }}  onClick={goToCloseRegister}  >{LocalizedLanguage.closeRegister}</button>
+                </div>
+            </header>
+            <main>{<PinPad autoFocus={true} onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>
+        </div>
+        {/* <div class={isShowLogoutConfirm===true?"subwindow-wrapper":"subwindow-wrapper hidden"}>
+            <div class={isShowLogoutConfirm===true?"subwindow logout-confirm current":"subwindow logout-confirm"}>
+                <div className="subwindow-body">
+                    <div className="auto-margin-top"></div>
+                    <p className="style1">Account Logout Confirmation</p>
+                    <p className="style2">
+                        Are you sure you want to logout <br />
+                        of the Oliver POS app?
+                    </p>
+                    <p className="style2">
+                        You will need the account username and <br />
+                        password to log back in.
+                    </p>
+                    <button id="registerLogout" onClick={()=> navigate('/login')}>Logout</button>
+                    <button id="cancelRegisterLogout" onClick={()=>toggleLogoutConfirm()}>Cancel</button>
+                    <div className="auto-margin-bottom"></div>
+                </div>
             </div>
-        </header>
-        <main>{<PinPad autoFocus={true} onClick={onClick}></PinPad>} <button id="closeRegister2" onClick={() => navigate("/closeregister")}>{LocalizedLanguage.closeRegister}</button></main>
-    </div>
+        </div> */}
+        {isShowLogoutConfirm === true ? <LogoutConfirm isShow={isShowLogoutConfirm} toggleLogoutConfirm={toggleLogoutConfirm}></LogoutConfirm> : null}
+    </React.Fragment>
 }
 
 export default Pin

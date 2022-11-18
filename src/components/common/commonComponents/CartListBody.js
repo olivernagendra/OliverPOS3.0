@@ -4,6 +4,7 @@ import { RoundAmount } from "../TaxSetting";
 import STATUSES from "../../../constants/apiStatus";
 import { useSelector } from 'react-redux';
 import { NumericFormat } from 'react-number-format';
+import { get_customerName } from "../localSettings";
 const CartListBody = (props) => {
     const [taxRate, setTaxRate] = useState(0.00);
     const [listItem, setListItem] = useState([]);
@@ -73,50 +74,56 @@ const CartListBody = (props) => {
             _taxAmount = parseFloat(_exclTax) + parseFloat(_inclTax);
         }
         _total = parseFloat(_seprateDiscountAmount) + parseFloat(_exclTax);
-        var _dis=_cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
-        
-        props.setValues && props.setValues(_subtotal,RoundAmount(_taxAmount) ,_dis,_total);
+        var _dis = _cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
+
+        props.setValues && props.setValues(_subtotal, RoundAmount(_taxAmount), _dis, _total);
     }
     return (
         <div className="body">
             <img src={EmptyCart} alt="" />
+            {get_customerName() != null ? <div className="cart-item">
+                <div className="main-row aligned">
+                    <div className="tag customer">Customer</div>
+                    <div className="content-style">{get_customerName().Name}</div>
+                </div>
+            </div> : null}
             {listItem && listItem.length > 0 && listItem.map(a => {
-                var notes =  listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
+                var notes = listItem.find(b => b.hasOwnProperty('pid') && a.hasOwnProperty('product_id') && (b.pid === a.product_id /*&& b.vid === a.variation_id*/));
                 var item_type = "";
                 if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')) {
                     item_type = "no_note";
                 }
                 else if (a.hasOwnProperty('product_id')) { item_type = "product"; }
                 else if (a.hasOwnProperty('Price') && !a.hasOwnProperty('product_id')) { item_type = "custom_fee"; }
-                if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id')&& !a.hasOwnProperty('pid')) { item_type = "note"; }
+                if ((!a.hasOwnProperty('Price') || a.Price == null) && !a.hasOwnProperty('product_id') && !a.hasOwnProperty('pid')) { item_type = "note"; }
                 switch (item_type) {
                     case "product":
                         return <div className="cart-item" key={a.Title}>
-                        <div className="main-row" >
-                            <p className="quantity">{a.quantity && a.quantity}</p>
-                            <p className="content-style">{a.Title && a.Title}</p>
-                            <p className="price">
-                                <NumericFormat className={a.product_discount_amount !=0?"strike-through":""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-                            </p>
-                            {a.product_discount_amount !=0 &&
-                            <p className="price" >
-                                <NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount):a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-                            </p>
-                            }
+                            <div className="main-row" >
+                                <p className="quantity">{a.quantity && a.quantity}</p>
+                                <p className="content-style">{a.Title && a.Title}</p>
+                                <p className="price">
+                                    $<NumericFormat className={a.product_discount_amount != 0 ? "strike-through" : ""} value={a.Price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                </p>
+                                {a.product_discount_amount != 0 &&
+                                    <p className="price" >
+                                        $<NumericFormat value={a.discount_type == "Number" ? a.Price - (a.product_discount_amount) : a.Price - (a.product_discount_amount * a.quantity)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                    </p>
+                                }
+                            </div>
+                            <div className="secondary-col">
+                                {typeof notes != "undefined" && notes != "" && <p>**Note: {notes.Title}</p>}
+                            </div>
                         </div>
-                        <div className="secondary-col">
-                        {typeof notes!="undefined" &&  notes!="" && <p>**Note: {notes.Title}</p>}
-                        </div>
-                    </div>
                     case "note":
                         return <div className="cart-item" key={a.Title}>
-                        <div className="main-row aligned">
-                            <div className="tag cart-note">Note</div>
-                            <p className="content-style line-capped">
-                            {a.Title && a.Title}
-                            </p>
+                            <div className="main-row aligned">
+                                <div className="tag cart-note">Note</div>
+                                <p className="content-style line-capped">
+                                    {a.Title && a.Title}
+                                </p>
+                            </div>
                         </div>
-                    </div>
                     case "custom_fee":
                         return <div className="cart-item" key={a.Title}>
                             <div className="main-row aligned">
@@ -126,12 +133,12 @@ const CartListBody = (props) => {
                             </div>
                         </div>
                     case "group":
-                        return   <div className="cart-item" key={a.Title}>
-                        <div className="main-row aligned">
-                            <div className="tag group">Group</div>
-                            <p className="content-style">{a.Title && a.Title}</p>
+                        return <div className="cart-item" key={a.Title}>
+                            <div className="main-row aligned">
+                                <div className="tag group">Group</div>
+                                <p className="content-style">{a.Title && a.Title}</p>
+                            </div>
                         </div>
-                    </div>
                     default:
                         return null;
                 }

@@ -1,10 +1,12 @@
 import React, { useState,useEffect, useLayoutEffect } from "react";
 import avatar from '../../../assets/images/svg/avatar.svg';
+import Avatar_Blue_Background from '../../../assets/images/svg/Avatar-Blue_Background.svg';
+import avatar_2 from '../../../assets/images/svg/avatar-2.svg';
 import knowledgeBase_Icon from '../../../assets/images/svg/knowledgeBase-Icon.svg';
 import SwitchUser_Icon from '../../../assets/images/svg/SwitchUser-Icon.svg';
 import star from '../../../assets/images/svg/star.svg';
 import LogOut_Icon from '../../../assets/images/svg/LogOut-Icon.svg';
-
+// import { changeLanguage } from "../../../settings/LocalizedLanguage";
 import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
 // import DownArrowGrey from '../../../assets/images/Temp/DownArrowGrey.png';
 import { get_regName, get_userName } from "../../common/localSettings";
@@ -15,6 +17,22 @@ const UserInfo = (props) => {
         setisSelectLangugage(!isSelectLangugage)
     }
     const SetLangugage = (lang) => {
+        // switch (lang) {
+        //     case "French":
+        //         changeLanguage("fr");
+        //         break;
+        //     case "English":
+        //         changeLanguage("en");
+        //         break;
+        //     case "Spanish":
+        //         changeLanguage("hi");
+        //         break;
+        
+        //     default:
+        //         break;
+        // }
+       
+
         setSelLangugage(lang)
         setisSelectLangugage(false);
     }
@@ -28,7 +46,9 @@ const UserInfo = (props) => {
             <div className="user-info">
                 <div className="header">
                     <div className="avatar">
-                        <img src={avatar} alt="" />
+                        {/* <img src={avatar} alt="" /> */}
+                        <img src={Avatar_Blue_Background} alt="" className="default" />
+						<img src={avatar_2} alt="" />
                     </div>
                     <div className="col">
                         <p className="style1">{get_userName()}</p>

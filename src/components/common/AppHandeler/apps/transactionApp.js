@@ -1,6 +1,7 @@
 import { postmessage } from "../commonAppHandler";
 import { get_UDid } from "../../localSettings";
 import { store } from "../../../../app/store";
+import { getDetail } from "../../../activity/ActivitySlice";
 //app 2.0 implementation------
 // *** Payment Detail ***************
 export const transactionApp = (RequestData, isbackgroudApp) => {
@@ -182,6 +183,49 @@ export const transactionStatus = (RequestData, whereToview, isbackgroudApp) => {
 
     }
 }
+// *** Payment Detail ***************
+export const payfromApp = (RequestData, isbackgroudApp) => {
+    var clientJSON = ""
+
+    var validationResponse = validateRequest(RequestData)
+
+    if (validationResponse.isValidationSuccess == false) {
+        clientJSON = validationResponse.clientJSON;
+        postmessage(clientJSON)
+    }
+    else {
+        if (RequestData.method == 'post')  //for payment through APP
+        {
+            return 'app_do_payment'   //on checkout we check this value and process according
+        }
+        else if (RequestData.method == 'get') {
+            var UID = get_UDid('UDID');
+            store.dispatch(getDetail(RequestData.order_id, UID));
+            //store.dispatch(activityActions.getDetail(RequestData.order_id, UID));
+            setTimeout(() => {
+                const state = store.getState();
+                console.log("state", state)
+                if (state.activityGetDetail && state.activityGetDetail.data && state.activityGetDetail.data.content) {
+                    var _order = state.activityGetDetail && state.activityGetDetail.data.content;
+                    clientJSON = {
+                        command: RequestData.command,
+                        version: "1.0",
+                        method: RequestData.method,
+                        status: 200,
+                        error: null,
+                        total_amount: _order.total_amount,
+                        //data: JSON.stringify(order_payments)
+                        payments: _order.order_payments ? _order.order_payments : []
+                    }
+
+                    postmessage(clientJSON);
+                }
+            }, 2000);
+
+        }
+
+    }
+}
 const validateRequest = (RequestData) => {
 
     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -220,6 +264,35 @@ const validateRequest = (RequestData) => {
             }
         }
     }
+    else if (RequestData.command.toLowerCase() == ('Payment').toLowerCase()) {
+        if (RequestData && !RequestData.method) { //missing attribut/invalid attribute name
+          isValidationSuccess = false;
+          clientJSON['error'] = "Invalid Attribute"
+        }
+        if (RequestData.method == 'post') {
+          if (RequestData && (RequestData.method &&
+            (!RequestData.data || !RequestData.data.payment_type || !RequestData.data.payment_type.name))) { //missing attribut/invalid attribute name
+            isValidationSuccess = false;
+            clientJSON['error'] = "Invalid Attribute"
+          }
+          else if (RequestData && RequestData.data && !RequestData.data.payment_type.data) {
+            isValidationSuccess = false;
+            clientJSON['error'] = "Invalid Attribute"
+          }
+          else if (RequestData && !RequestData.data.payment_type.data.amt) {
+            isValidationSuccess = false;
+            clientJSON['error'] = "Invalid Attribute"
+          }
+        } else if (RequestData.method == 'get') {
+          if (!RequestData.order_id) {
+            isValidationSuccess = false;
+            clientJSON['error'] = "Missing Attribute(s)" //GR[2]
+          }
+        } else {
+          isValidationSuccess = false;
+          clientJSON['error'] = "Invalid Attribute"
+        }
+      }
     else {// no command found
         isValidationSuccess = false;
         clientJSON['error'] = "Invalid Value" //GR[5]          

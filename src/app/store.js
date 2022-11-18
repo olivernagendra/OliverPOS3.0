@@ -9,27 +9,31 @@ import { receiptSettingSlice } from '../components/serverSetting/receiptSettingS
 import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 
 import { tileSlice, addTileSlice, deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
-import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice  , GetOpenRegisterSlice ,addRemoveCashSlice } from '../components/cashmanagement/CashmanagementSlice';
+import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice, GetOpenRegisterSlice, addRemoveCashSlice } from '../components/cashmanagement/CashmanagementSlice';
 import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
-import { CustomergetPageSlice ,CustomerGetDetailsSlice ,getAllEventsSlice,saveCustomerToTempOrderSlice} from '../components/customer/CustomerSlice'
+import { CustomergetPageSlice, CustomerGetDetailsSlice, getAllEventsSlice, saveCustomerToTempOrderSlice, getCountrySlice, getStateSlice } from '../components/customer/CustomerSlice'
 import { customerSlice } from '../components/common/commonAPIs/customerSlice';
 import { groupSlice } from '../components/common/commonAPIs/groupSlice';
 import { productSlice } from '../components/dashboard/product/productSlice';
-import { CustomerSaveSlice } from '../components/customer/CustomerSlice'
-import { checkStockSlice,getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice ,paymentAmountSlice, changeReturnAmountSlice,checkTempOrderSyncSlice,checkTempOrderStatusSlice} from '../components/checkout/checkoutSlice';
+import { CustomerSaveSlice ,CustomerUpdateSlice } from '../components/customer/CustomerSlice'
+import { checkStockSlice, getPaymentTypeNameSlice, getExtensionsSlice, getMakePaymentSlice, makeOnlinePaymentsSlice, saveSlice, paymentAmountSlice, changeReturnAmountSlice, checkTempOrderSyncSlice, checkTempOrderStatusSlice } from '../components/checkout/checkoutSlice';
 import { userSlice } from '../components/common/commonAPIs/userSlice';
 import { getRatesSlice, isMultipleTaxSupportSlice, getTaxRateListSlice, selectedTaxListSlice, updateTaxRateListSlice } from '../components/common/commonAPIs/taxSlice';
 import { discountSlice } from '../components/common/commonAPIs/discountSlice';
 import { popupMessageSlice } from '../components/common/commonAPIs/messageSlice';
-import { make_payconiq_paymentSlice,check_payconiq_pay_statusSlice,cancel_payconiq_paymentSlice } from '../components/common/commonComponents/paymentComponents/paymentSlice';
+import { make_payconiq_paymentSlice, check_payconiq_pay_statusSlice, cancel_payconiq_paymentSlice } from '../components/common/commonComponents/paymentComponents/paymentSlice';
 //import { productQuantityInWarehouseSlice } from '../components/dashboard/slices/inventorySlice'
 import inventoryReducer from '../components/dashboard/slices/inventorySlice'
 import { getAllActivityListSlice, getDetailSlice, getFilteredActivitiesSlice } from '../components/activity/ActivitySlice';
+import { refundOrderSlice } from '../components/refund/refundOrderSlice';
+import { postMetaSlice, getPostMetaSlice } from '../components/common/commonAPIs/postMetaSlice';
+import { sendMailSlice, sendExternalMailSlice } from '../components/common/commonAPIs/sendMailSlice';
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
+import cashRoundingSlice from '../components/common/commonAPIs/cashRoundingSlice';
 export const store = configureStore({
   reducer: {
     login: loginSlice.reducer,
@@ -59,7 +63,7 @@ export const store = configureStore({
     customer: customerSlice.reducer,
     customergetPage: CustomergetPageSlice.reducer,
     product: productSlice.reducer,
-
+    customerupdate:CustomerUpdateSlice.reducer,
     customersave: CustomerSaveSlice.reducer,
     checkStock: checkStockSlice.reducer,
     userList: userSlice.reducer,
@@ -90,7 +94,15 @@ export const store = configureStore({
     getFilteredActivities:getFilteredActivitiesSlice.reducer,
     make_payconiq_payment:make_payconiq_paymentSlice.reducer,
     check_payconiq_pay_status:check_payconiq_pay_statusSlice.reducer,
-    cancel_payconiq_payment:cancel_payconiq_paymentSlice.reducer
+    cancel_payconiq_payment:cancel_payconiq_paymentSlice.reducer,
+    refundOrder:refundOrderSlice.reducer,
+    postMeta: postMetaSlice.reducer,
+    getPostMeta: getPostMetaSlice.reducer,
+    sendMail:sendMailSlice.reducer,
+    sendExternalMail:sendExternalMailSlice.reducer,
+    CountryList:getCountrySlice.reducer,
+    StateList:getStateSlice.reducer,
+    cashRounding:cashRoundingSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

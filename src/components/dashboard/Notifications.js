@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import X_Icon_DarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg';
-
-import NotificationsSounds from '../../assets/images/svg/NotificationsSounds.svg';
+import ErrorIconRed from '../../assets/images/svg/ErrorIconRed.svg';
+import StorefrontIconGreen from '../../assets/images/svg/StorefrontIconGreen.svg';
+import SettingsCog from '../../assets/images/svg/SettingsCog.svg';
 import Approval_Icon from '../../assets/images/svg/Approval-Icon.svg';
 import VolumeIcon from '../../assets/images/svg/VolumeIcon.svg';
 import Changelog_Icon from '../../assets/images/svg/Changelog-Icon.svg';
@@ -9,11 +11,16 @@ import Info_Icon from '../../assets/images/svg/Info-Icon.svg';
 import Error_Icon from '../../assets/images/svg/Error-Icon.svg';
 import ActiveUser from '../../settings/ActiveUser';
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
-
+import Config from '../../Config';
 import { v4 as uniqueKey } from 'uuid';
+import { checkTempOrderSync } from "../checkout/checkoutSlice";
+import moment from "moment";
+import FormateDateAndTime from "../../settings/FormateDateAndTime";
 const Notifications = (props) => {
     const [isSoundNotification, setisSoundNotification] = useState(false);
     const [notificationList, setNotificationList] = useState([]);
+    const [notiDate, setNotiDate] = useState([])
+    const dispatch = useDispatch();
     const toggleiSoundNotification = () => {
         setisSoundNotification(!isSoundNotification)
     }
@@ -22,27 +29,13 @@ const Notifications = (props) => {
             props.toggleNotifications();
         }
     }
+    var current_date = moment().format(Config.key.NOTIFICATION_FORMAT);
+    if (current_date.includes(',')) {
+        current_date = current_date.split(',')[0];
+    }
 
-    // reSyncOrder(tempOrderId) {
-    //     //console.log("ResyncStart", tempOrderId);
-    //     const { Email } = ActiveUser.key;
-    //     var TempOrders = localStorage.getItem(`TempOrders_${Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${Email}`)) : []; if (TempOrders && TempOrders.length > 0) {
-    //         TempOrders = TempOrders.filter(item => item.TempOrderID == tempOrderId);
-    //         if (TempOrders && TempOrders.length > 0) {
-    //             var syncOrderID = TempOrders[0].TempOrderID;
-    //             var udid = get_UDid('UDID');
-    //             if (syncOrderID && syncOrderID !== '') {
-    //                 //add customer to order and sending email to customer
-    //                 if (TempOrders[0].Sync_Count <= 1 && TempOrders[0].new_customer_email !== "" && TempOrders[0].isCustomerEmail_send == false) {
-    //                     this.props.dispatch(saveCustomerInOrderAction.saveCustomerToTempOrder(udid, syncOrderID, TempOrders[0].new_customer_email))
-    //                 }
-    //                 // console.log("syncOrderID",syncOrderID);
-    //                 this.props.dispatch(checkoutActions.recheckTempOrderSync(udid, syncOrderID));
-    //             }
-    //         }
-    //     }
-    // }
-
+    //var notiDate = new Array();
+    //var notifications = [];
     // ActivityPage(id) {
     //     localStorage.removeItem("CUSTOMER_TO_ACTVITY")
     //     localStorage.setItem("selected_row", 'customerview');
@@ -56,13 +49,26 @@ const Notifications = (props) => {
     //     }
     // }
 
-
+    const reSyncOrder = (orderId) => {
+        var TempOrders = localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`)) : [];
+        TempOrders.map(ele => {
+            if (ele.TempOrderID == orderId) {
+                if (ele.Sync_Count >= Config.key.SYNC_COUNT_LIMIT) {
+                    ele.Sync_Count = ele.Sync_Count - 2;
+                }
+            }
+        });
+        localStorage.setItem(`TempOrders_${ActiveUser.key.Email}`, JSON.stringify(TempOrders));
+        dispatch(checkTempOrderSync(orderId));
+        // setTimeout(() => {
+        //     prepareNotificationList();
+        // }, 2000);
+    }
     const prepareNotificationList = async () => {
-        //const { NotificationFilters } = this.props;
         var temp_Order = 'TempOrders_' + (ActiveUser.key.Email);
         var TempOrders = localStorage.getItem(temp_Order) ? JSON.parse(localStorage.getItem(temp_Order)) : [];  //JSON.stringify
         var notificationlist = [];
-
+        TempOrders = TempOrders.reverse();
         TempOrders && TempOrders.map(list => {
             if (list.new_customer_email !== "") {
                 var tempVar = TempOrders.find(l => l.TempOrderID == list.TempOrderID && l.new_customer_email == "")
@@ -74,79 +80,129 @@ const Notifications = (props) => {
         })
         TempOrders && TempOrders.map(list => {
             var description = "";
-            //order completed
 
-            if(list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true )
-            {
-                description = ((<div className="notification approval" key={uniqueKey()}>
-                    <div className="side-color"></div>
+            var time = list.date.includes(',') ? list.date.split(',')[1] : "";
+            if (typeof time != "undefined" && time != null) {
+                time = time.toUpperCase();
+            }
+            //order completed
+            // const d = new Date(list.date);
+
+            const _openDateTime = list.date && list.date !== "" ? list.date.split(',')[1] : "";
+            console.log("_openDateTime", _openDateTime)
+            if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true) {
+                description = ((
+                    <div className="notification-card" key={uniqueKey()}>
+                        {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
-                        {/* <p>Order# {list.TempOrderID}</p> */}
-                        <p>Email sent succeessfully to customer for order# {list.TempOrderID}</p>
+                        <p>Email sent succeessfully to customer for <br />order# {list.TempOrderID}</p>
+                    </div> */}
+                        <div className="icon-wrapper green">
+                            <img src={StorefrontIconGreen} alt="" />
+                        </div>
+                        <div className="col">
+                            <p className="style1">Email sent succeessfully</p>
+                            <p className="style2">Order #{list.TempOrderID}</p>
+                        </div>
+                        {/* <p>1hr ago</p> */}
+                        <p>{time}</p>
                     </div>
-                </div>))
+
+                ))
                 //"Email sent succeessfully to customer for order#" + list.TempOrderID + ""
             }
-            else if(list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false )
-            {
-                description = ((<div className="notification approval" key={uniqueKey()}>
+            else if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
+                description = ((<div className="notification-card" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
                         {/* <p>Order# {list.TempOrderID}</p> */}
-                        <p>Sending email to customer for order# {list.TempOrderID}</p>
+                        <p>Sending email to customer for <br />order# {list.TempOrderID}</p>
                     </div>
                 </div>))
                 //"Sending email to customer for order#" + list.TempOrderID + ""
-            }  
-            
+            }
             else if (list.Status == "true" && list.order_status == "completed") {
-                description = ((<div className="notification approval" key={uniqueKey()}>
-                    <div className="side-color"></div>
+                description = ((<div className="notification-card" key={uniqueKey()}>
+                    {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
                         <p>Order# {list.TempOrderID}</p>
+                    </div> */}
+                    <div className="icon-wrapper green">
+                        <img src={StorefrontIconGreen} alt="" />
                     </div>
+                    <div className="col">
+                        <p className="style1">Order Created</p>
+                        <p className="style2">Order #{list.TempOrderID}</p>
+                    </div>
+                    {/* <p>1hr ago</p> */}
+                    <p>{time}</p>
                 </div>))
             }
-            else //order refunded successfully
-                if (list.Status == "true" && list.order_status === "refunded") {
-                    description = ((<div className="notification info" key={uniqueKey()}>
-                        <div className="side-color"></div>
-                        <div className="main-row">
-                            <img src={Info_Icon} alt="" />
-                            {/* <p>Order# {list.TempOrderID}</p> */}
-                            <p>order  Refunded  successfully.</p>
+            //order refunded successfully
+            else if (list.Status == "true" && list.order_status === "refunded") {
+                description = ((<div className="notification-card" key={uniqueKey()}>
+                    {/* <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Info_Icon} alt="" />
+                        <p>Order  refunded  successfully.<br />Order# {list.TempOrderID}</p>
+                    </div> */}
+                    <div className="icon-wrapper green">
+                        <img src={StorefrontIconGreen} alt="" />
+                    </div>
+                    <div class="col">
+                        <p className="style1">Order  refunded  successfully</p>
+                        <p className="style2">
+                            Order# {list.TempOrderID}
+                        </p>
+                    </div>
+                    {/* <p>1hr ago</p> */}
+                    <p>{time}</p>
+                </div>))
+            }//sync issue
+            else if (list.Status == "failed" && list.new_customer_email == "") {
+                description = ((
+
+                    <div className="notification-card" key={uniqueKey()}>
+                        <div className="icon-wrapper red">
+                            <img src={ErrorIconRed} alt="" />
                         </div>
-                    </div>))
-                }
-            else //sync issue
-                if (list.Status == "failed" && list.order_status == "completed") {
-                    description = ((<div className="notification error" key={uniqueKey()}>
-                        <div className="side-color"></div>
-                        <div className="main-row">
-                            <img src={Approval_Icon} alt="" />
-                            <p>Order# {list.TempOrderID}</p>
+                        <div className="col">
+                            <p className="style1">Order Not Synced</p>
+                            <p className="style2">Order #{list.TempOrderID}</p>
+                            <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a>
                         </div>
-                    </div>))
-                }
-            else
-                if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                    description = ((<div className="notification approval" key={uniqueKey()}>
-                        <div className="side-color"></div>
-                        <div className="main-row">
-                            <img src={Approval_Icon} alt="" />
-                            {/* <p>Order# {list.TempOrderID} </p> */}
-                            <p>There was an issue to send email to customer for order# {list.TempOrderID}</p>
-                        </div>
-                    </div>))
-                }
-            else {
-                description = ((<div className="notification approval" key={uniqueKey()}>
+                        {/* <p>3:23PM</p> */}
+                        <p>{time}</p>
+                        {/* <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Error_Icon} alt="" />
+                        <p>Order# {list.TempOrderID}</p>
+                    </div>
+                    <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a> */}
+                    </div>
+
+
+
+                ))
+            }
+            else if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
+                description = ((<div className="notification-card" key={uniqueKey()}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
+                        {/* <p>Order# {list.TempOrderID} </p> */}
+                        <p>There was an issue to send email to customer for<br /> order# {list.TempOrderID}</p>
+                    </div>
+                </div>))
+            }
+            else {
+                description = ((<div className="notification-card" key={uniqueKey()}>
+                    <div className="side-color"></div>
+                    <div className="main-row">
+                        <img src={Info_Icon} alt="" />
                         <p>Order# {list.TempOrderID}</p>
                     </div>
                 </div>))
@@ -201,7 +257,48 @@ const Notifications = (props) => {
         })
         // console.log("notifyList", notificationlist);
         localStorage.setItem('notifyList', JSON.stringify(notificationlist))
-        setNotificationList(notificationlist)
+        //setNotificationList(notificationlist)
+
+        var _newnotificationlist = {};
+        var _notifications = notificationlist;
+        _notifications && _notifications.map(item => {
+            var dateKey = item.time;
+            if (dateKey.includes(',')) {
+                dateKey = dateKey.split(',')[0];
+            }
+
+            // console.log("--dateKey1---" + dateKey+"--current_date---" + current_date)
+            // console.log("--current_date---" + current_date)
+            if (!_newnotificationlist.hasOwnProperty(dateKey)) {
+                _newnotificationlist[dateKey] = new Array(item);
+            } else {
+                if (typeof _newnotificationlist[dateKey] !== 'undefined' && _newnotificationlist[dateKey].length > 0) {
+                    _newnotificationlist[dateKey].push(item)
+                }
+            }
+        })
+        setNotificationList(_newnotificationlist)
+
+        var _notiDate = new Array();
+        if (typeof _newnotificationlist !== 'undefined') {
+            for (const key in _newnotificationlist) {
+                if (_newnotificationlist.hasOwnProperty(key)) {
+                    _notiDate.push(key)
+                }
+            }
+            if (_notiDate.length > 0) {
+                _notiDate.sort(function (a, b) {
+                    var keyA = new Date(a),
+                        keyB = new Date(b);
+                    // Compare the 2 dates
+                    if (keyA < keyB) return -1;
+                    if (keyA > keyB) return 1;
+                    return 0;
+                });
+                //_notiDate.reverse();
+            }
+        }
+        setNotiDate(_notiDate);
         //this.setState({ notifyList: localStorage.getItem('notifyList') ? JSON.parse(localStorage.getItem('notifyList')) : [] })
         //NotificationFilters && NotificationFilters(this.state.notifyList)
     }
@@ -211,8 +308,8 @@ const Notifications = (props) => {
     }, []);
     return (
         <div id="notificationsWrapper" className={props.isShow === true ? "notifications-wrapper" : "notifications-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div id="notificationsContent" className="notifications">
-                <div id="soundNotificationsWrapper" className={isSoundNotification === true ? "sound-notifications-wrapper" : "sound-notifications-wrapper hidden"}>
+            <div id="notificationsContent" className={isSoundNotification === true ? "notifications settings" : "notifications"}>
+                {/* <div id="soundNotificationsWrapper" className={isSoundNotification === true ? "sound-notifications-wrapper" : "sound-notifications-wrapper hidden"}>
                     <div className="sound-notifications">
                         <div className="header">
                             <img src={VolumeIcon} alt="" />
@@ -240,23 +337,34 @@ const Notifications = (props) => {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="header">
+                </div> */}
+                <div className="noti-header">
                     <p>{LocalizedLanguage.notification}</p>
-                    <div className="dropdown-options"></div>
-                    <button id="notiSoundOptions" onClick={() => toggleiSoundNotification()}>
-                        <img src={NotificationsSounds} alt="" />
+                    {/* <div className="dropdown-options"></div> */}
+                    <button id="notiSettingButton" onClick={() => toggleiSoundNotification()}>
+                        <img src={SettingsCog} alt="" />
                     </button>
                     <button id="mobileNotiExit" onClick={() => props.toggleNotifications()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>
                 </div>
-                <div className="body">
-                    <p>Today</p>
+                <div className="noti-body">
+                    {/* <p>Today</p> */}
                     {
-                        notificationList && notificationList.map(a => {
-                            return a.description
+                        notificationList && notiDate && notiDate.map((getDate, index) => {
+                            console.log(current_date + "----" + getDate)
+                            return (<>
+                                <div key={"date" + index} className="date"> <p>{current_date === getDate ? 'Today' : getDate}</p></div>
+                                {
+                                    getDate && notificationList && notificationList[getDate] && notificationList[getDate].map((order, index) => {
+                                        return (order.description)
+                                    })
+                                }</>
+                            )
                         })
+                        // notificationList && notificationList.map(a => {
+                        //     return a.description
+                        // })
                     }
                     {/* <div className="notification approval">
                         <div className="side-color"></div>
@@ -314,6 +422,34 @@ const Notifications = (props) => {
                             <li>sadjklas</li>
                         </ul>
                     </div> */}
+                </div>
+                <div className="noti-settings-background" id="notiSettingsBackground"></div>
+                <div className="noti-settings-wrapper">
+                    <div class="noti-settings">
+                        <div class="header">
+                            <p>Settings</p>
+                        </div>
+                        <div class="settings-list">
+                            <div class="setting-row">
+                                <img src={VolumeIcon} alt="" />
+                                <p>Sound Notifications</p>
+                            </div>
+                            <div class="setting-row">
+                                <label>
+                                    POS Orders
+                                    <input type="checkbox" />
+                                    <div class="toggle"></div>
+                                </label>
+                            </div>
+                            <div class="setting-row">
+                                <label>
+                                    Web Order
+                                    <input type="checkbox" />
+                                    <div class="toggle"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>)

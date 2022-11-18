@@ -1,5 +1,5 @@
 import React from "react";
-// import NoVariationsSelected from '../../../assets/images/svg/NoVariationsSelected.svg';
+import NoVariationsSelected from '../../../assets/images/svg/NoVariationsSelected.svg';
 const NoVariationSelected = (props) => {
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
@@ -12,7 +12,7 @@ const NoVariationSelected = (props) => {
                 <div className="subwindow-body">
                     <div className="auto-margin-top"></div>
                     <p className="style1">No Variation Selected</p>
-                    {/* <img src={NoVariationsSelected} alt="" /> */}
+                    <img src={NoVariationsSelected} alt="" />
                     <p className="style2">
                         Please select all variations and attributes <br />
                         before adding this product to the cart.

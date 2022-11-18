@@ -1,27 +1,27 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { cashRecordsAPI ,getDetailsAPI ,openRegisterAPI ,closeRegisterAPI,SaveClosingNoteAPI ,GetOpenRegisterAPI,addRemoveCashAPI } from './CashManagementAPI'
+import { cashRecordsAPI, getDetailsAPI, openRegisterAPI, closeRegisterAPI, SaveClosingNoteAPI, GetOpenRegisterAPI, addRemoveCashAPI, addPaymentListLogAPI } from './CashManagementAPI'
 import STATUSES from '../../constants/apiStatus';
 
 
 const initialState = {
   "status": STATUSES.IDLE,
-  "data": "", 
-  "error":'',
-  "is_success":false
+  "data": "",
+  "error": '',
+  "is_success": false
 };
 
 
 export const addRemoveCash = createAsyncThunk(
   'addRemoveCashmanagement/addRemoveCashAPI',
-  async (parameter,{rejectWithValue}) => {  
-   
-   try {
-     const response = await addRemoveCashAPI(parameter);
-          return response;
-   } catch (err) {
-    return rejectWithValue(err.response.data)
-  }
-         
+  async (parameter, { rejectWithValue }) => {
+
+    try {
+      const response = await addRemoveCashAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+
   }
 );
 
@@ -31,15 +31,15 @@ export const addRemoveCash = createAsyncThunk(
 
 export const GetOpenRegister = createAsyncThunk(
   'GetOpenRegister/GetOpenRegisterAPI',
-  async (parameter,{rejectWithValue}) => {  
-   
-   try {
-     const response = await GetOpenRegisterAPI(parameter);
-          return response;
-   } catch (err) {
-    return rejectWithValue(err.response.data)
-  }
-         
+  async (parameter, { rejectWithValue }) => {
+
+    try {
+      const response = await GetOpenRegisterAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+
   }
 );
 
@@ -49,96 +49,96 @@ export const GetOpenRegister = createAsyncThunk(
 
 export const openRegister = createAsyncThunk(
   'openRegister/openRegisterAPI',
-  async (parameter,{rejectWithValue}) => {  
-   
-   try {
-     const response = await openRegisterAPI(parameter);
-          return response;
-   } catch (err) {
-    return rejectWithValue(err.response.data)
-  }
-         
+  async (parameter, { rejectWithValue }) => {
+
+    try {
+      const response = await openRegisterAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+
   }
 );
 
 export const getDetails = createAsyncThunk(
-    'cashmanagementgetdetail/getDetailsAPI',
-    async (parameter,{rejectWithValue}) => {   
-      // const response =  getDetailsAPI(parameter);
-      // // The value we return becomes the `fulfilled` action payload
-      // console.log("test",response.json())
-      // return response.json();
-  
-     try {
-       const response = await getDetailsAPI(parameter);
-            // The value we return becomes the `fulfilled` action payload
-            return response;
-     } catch (err) {
-      // Use `err.response.data` as `action.payload` for a `rejected` action,
-      // by explicitly returning it using the `rejectWithValue()` utility
-      return rejectWithValue(err.response.data)
-    }
-           
-    }
-  );
+  'cashmanagementgetdetail/getDetailsAPI',
+  async (parameter, { rejectWithValue }) => {
+    // const response =  getDetailsAPI(parameter);
+    // // The value we return becomes the `fulfilled` action payload
+    // console.log("test",response.json())
+    // return response.json();
 
-  export const cashRecords = createAsyncThunk(
-    'cashmanagement/cashRecordsAPI',
-    async (parameter,{rejectWithValue}) => {   
-      // const response =  cashRecordsAPI(parameter);
-      // // The value we return becomes the `fulfilled` action payload
-      // console.log("test",response.json())
-      // return response.json();
-  
-     try {
-       const response = await cashRecordsAPI(parameter);
-            // The value we return becomes the `fulfilled` action payload
-            return response;
-     } catch (err) {
+    try {
+      const response = await getDetailsAPI(parameter);
+      // The value we return becomes the `fulfilled` action payload
+      return response;
+    } catch (err) {
       // Use `err.response.data` as `action.payload` for a `rejected` action,
       // by explicitly returning it using the `rejectWithValue()` utility
       return rejectWithValue(err.response.data)
     }
-           
-    }
-  );
 
-  export const closeRegister = createAsyncThunk(
-    'cashmanagementCloseRegister/closeRegisterAPI',
-    async (parameter,{rejectWithValue}) => {   
-      // const response =  closeRegisterAPI(parameter);
-      // // The value we return becomes the `fulfilled` action payload
-      // console.log("test",response.json())
-      // return response.json();
-  
-     try {
-       const response = await closeRegisterAPI(parameter);
-            // The value we return becomes the `fulfilled` action payload
-            return response;
-     } catch (err) {
-      // Use `err.response.data` as `action.payload` for a `rejected` action,
-      // by explicitly returning it using the `rejectWithValue()` utility
-      return rejectWithValue(err.response.data)
-    }
-           
-    }
-  );
+  }
+);
 
-  export const SaveClosingNote = createAsyncThunk(
-    'cashmanagementCloseRegister/SaveClosingNoteAPI',
-    async (parameter,{rejectWithValue}) => {
-     try {
-       const response = await SaveClosingNoteAPI(parameter);
-            // The value we return becomes the `fulfilled` action payload
-            return response;
-     } catch (err) {
+export const cashRecords = createAsyncThunk(
+  'cashmanagement/cashRecordsAPI',
+  async (parameter, { rejectWithValue }) => {
+    // const response =  cashRecordsAPI(parameter);
+    // // The value we return becomes the `fulfilled` action payload
+    // console.log("test",response.json())
+    // return response.json();
+
+    try {
+      const response = await cashRecordsAPI(parameter);
+      // The value we return becomes the `fulfilled` action payload
+      return response;
+    } catch (err) {
       // Use `err.response.data` as `action.payload` for a `rejected` action,
       // by explicitly returning it using the `rejectWithValue()` utility
       return rejectWithValue(err.response.data)
     }
-           
+
+  }
+);
+
+export const closeRegister = createAsyncThunk(
+  'cashmanagementCloseRegister/closeRegisterAPI',
+  async (parameter, { rejectWithValue }) => {
+    // const response =  closeRegisterAPI(parameter);
+    // // The value we return becomes the `fulfilled` action payload
+    // console.log("test",response.json())
+    // return response.json();
+
+    try {
+      const response = await closeRegisterAPI(parameter);
+      // The value we return becomes the `fulfilled` action payload
+      return response;
+    } catch (err) {
+      // Use `err.response.data` as `action.payload` for a `rejected` action,
+      // by explicitly returning it using the `rejectWithValue()` utility
+      return rejectWithValue(err.response.data)
     }
-  );
+
+  }
+);
+
+export const SaveClosingNote = createAsyncThunk(
+  'cashmanagementCloseRegister/SaveClosingNoteAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await SaveClosingNoteAPI(parameter);
+      // The value we return becomes the `fulfilled` action payload
+      return response;
+    } catch (err) {
+      // Use `err.response.data` as `action.payload` for a `rejected` action,
+      // by explicitly returning it using the `rejectWithValue()` utility
+      return rejectWithValue(err.response.data)
+    }
+
+  }
+);
 
 
 
@@ -147,235 +147,235 @@ export const getDetails = createAsyncThunk(
 
 
 export const CashmanagementSlice = createSlice({
-    name: 'cashmanagement',
-    initialState,
-    // The `reducers` field lets us define reducers and generate associated actions
-    reducers: { 
-      // loginPanding:(state)=>{
-      //   state.status=STATUSES.LOADING;
-      //   state.data=""
-      // },
-      // loginSuccess:(state,action)=>{
-      //   state.status=STATUSES.IDLE;
-      //   state.error='';
-      //   state.data=action.payload
-      // },
-      // loginFail:(state,action)=>{
-      //   state.status=STATUSES.ERROR;    
-      //   state.data="";
-      //   state.error=action.payload;
-      // }
-    },
-    // The `extraReducers` field lets the slice handle actions defined elsewhere,
-    // including actions generated by createAsyncThunk or in other slices.
-   // extraReducers: () => {}
-    extraReducers: (builder) => {    
-      builder     
-        .addCase(cashRecords.pending, (state) => {
-          state.status = STATUSES.LOADING;
-          state.data="";
-          state.error="";
-          state.is_success=false;
-        })
-        .addCase(cashRecords.fulfilled, (state, action) => {       
-            state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-            state.data=(action.payload && action.payload.is_success==true ?action.payload:"");  
-            state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-            state.is_success=action.payload && action.payload.is_success==true? true: false;      
-        })
-        .addCase(cashRecords.rejected, (state,action) => {
-          state.status = STATUSES.IDLE;
-          state.data="";
-          state.error = action.error;
-          state.is_success=false;
-        })
-    },
-  });
-  
-   export const { loginPanding, loginSuccess, loginFail } = CashmanagementSlice.actions;
+  name: 'cashmanagement',
+  initialState,
+  // The `reducers` field lets us define reducers and generate associated actions
+  reducers: {
+    // loginPanding:(state)=>{
+    //   state.status=STATUSES.LOADING;
+    //   state.data=""
+    // },
+    // loginSuccess:(state,action)=>{
+    //   state.status=STATUSES.IDLE;
+    //   state.error='';
+    //   state.data=action.payload
+    // },
+    // loginFail:(state,action)=>{
+    //   state.status=STATUSES.ERROR;    
+    //   state.data="";
+    //   state.error=action.payload;
+    // }
+  },
+  // The `extraReducers` field lets the slice handle actions defined elsewhere,
+  // including actions generated by createAsyncThunk or in other slices.
+  // extraReducers: () => {}
+  extraReducers: (builder) => {
+    builder
+      .addCase(cashRecords.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(cashRecords.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.error = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_success = action.payload && action.payload.is_success == true ? true : false;
+      })
+      .addCase(cashRecords.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      })
+  },
+});
 
-   
+export const { loginPanding, loginSuccess, loginFail } = CashmanagementSlice.actions;
+
+
 
 export const CashmanagementSecondSlice = createSlice({
   name: 'cashmanagementgetdetail',
   initialState,
-  reducers: { 
-   
+  reducers: {
+
   },
-  extraReducers: (builder) => {    
-    builder   
+  extraReducers: (builder) => {
+    builder
       .addCase(getDetails.pending, (state) => {
         state.statusgetdetail = STATUSES.LOADING;
-        state.getdetail="";
-        state.errorgetdetail="";
-        state.is_successgetdetail=false;
+        state.getdetail = "";
+        state.errorgetdetail = "";
+        state.is_successgetdetail = false;
       })
-      .addCase(getDetails.fulfilled, (state, action) => {       
-          state.statusgetdetail = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.errorgetdetail;
-          state.getdetail=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.errorgetdetail=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_successgetdetail=action.payload && action.payload.is_success==true? true: false;      
+      .addCase(getDetails.fulfilled, (state, action) => {
+        state.statusgetdetail = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.errorgetdetail;
+        state.getdetail = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.errorgetdetail = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_successgetdetail = action.payload && action.payload.is_success == true ? true : false;
       })
-      .addCase(getDetails.rejected, (state,action) => {
+      .addCase(getDetails.rejected, (state, action) => {
         state.statusgetdetail = STATUSES.IDLE;
-        state.getdetail="";
+        state.getdetail = "";
         state.errorgetdetail = action.error;
-        state.is_successgetdetail=false;
+        state.is_successgetdetail = false;
       })
   },
 });
 
 
 //  export const {  } = CashmanagementSecondSlice.actions;
-  
 
- export const CashmanagementThirdSlice = createSlice({
+
+export const CashmanagementThirdSlice = createSlice({
   name: 'openRegister',
   initialState,
-  reducers: { 
-   
+  reducers: {
+
   },
-  extraReducers: (builder) => {    
-    builder   
+  extraReducers: (builder) => {
+    builder
       .addCase(openRegister.pending, (state) => {
         state.statusopenRegister = STATUSES.LOADING;
-        state.dataopenRegister="";
-        state.erroropenRegister="";
-        state.is_successopenRegister=false;
+        state.dataopenRegister = "";
+        state.erroropenRegister = "";
+        state.is_successopenRegister = false;
       })
-      .addCase(openRegister.fulfilled, (state, action) => {       
-          state.statusopenRegister = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-          state.dataopenRegister=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.erroropenRegister=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_successopenRegister=action.payload && action.payload.is_success==true? true: false;      
+      .addCase(openRegister.fulfilled, (state, action) => {
+        state.statusopenRegister = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.dataopenRegister = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.erroropenRegister = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_successopenRegister = action.payload && action.payload.is_success == true ? true : false;
       })
-      .addCase(openRegister.rejected, (state,action) => {
+      .addCase(openRegister.rejected, (state, action) => {
         state.statusopenRegister = STATUSES.IDLE;
-        state.dataopenRegister="";
+        state.dataopenRegister = "";
         state.erroropenRegister = action.error;
-        state.is_successopenRegister=false;
+        state.is_successopenRegister = false;
       })
   },
 });
 
 
- export const {  } = CashmanagementThirdSlice.actions;
+export const { } = CashmanagementThirdSlice.actions;
 
 
- export const CashmanagementFourthSlice = createSlice({
+export const CashmanagementFourthSlice = createSlice({
   name: 'cashmanagementCloseRegister',
   initialState,
-  reducers: { 
-   
+  reducers: {
+
   },
-  extraReducers: (builder) => {    
-    builder   
+  extraReducers: (builder) => {
+    builder
       .addCase(closeRegister.pending, (state) => {
         state.statuscloseRegister = STATUSES.LOADING;
-        state.closeRegisterdetail="";
-        state.errorcloseRegister="";
-        state.is_successcloseRegister=false;
+        state.closeRegisterdetail = "";
+        state.errorcloseRegister = "";
+        state.is_successcloseRegister = false;
       })
-      .addCase(closeRegister.fulfilled, (state, action) => {       
-          state.statuscloseRegister = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-          state.closeRegisterdetail=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.errorcloseRegister=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_successcloseRegister=action.payload && action.payload.is_success==true? true: false;      
+      .addCase(closeRegister.fulfilled, (state, action) => {
+        state.statuscloseRegister = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.closeRegisterdetail = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.errorcloseRegister = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_successcloseRegister = action.payload && action.payload.is_success == true ? true : false;
       })
-      .addCase(closeRegister.rejected, (state,action) => {
+      .addCase(closeRegister.rejected, (state, action) => {
         state.statuscloseRegister = STATUSES.IDLE;
-        state.closeRegisterdetail="";
+        state.closeRegisterdetail = "";
         state.errorcloseRegister = action.error;
-        state.is_successcloseRegister=false;
+        state.is_successcloseRegister = false;
       })
   },
 });
 
 
- export const {  } = CashmanagementFourthSlice.actions;
-  
- export const CashmanagementFifthSlice = createSlice({
+export const { } = CashmanagementFourthSlice.actions;
+
+export const CashmanagementFifthSlice = createSlice({
   name: 'cashmanagementSaveClosingNote',
   initialState,
-  reducers: { 
-   
+  reducers: {
+
   },
-  extraReducers: (builder) => {    
-    builder   
+  extraReducers: (builder) => {
+    builder
       .addCase(SaveClosingNote.pending, (state) => {
         state.statusSaveClosingNote = STATUSES.LOADING;
-        state.SaveClosingNotedetail="";
-        state.errorSaveClosingNote="";
-        state.is_successSaveClosingNote=false;
+        state.SaveClosingNotedetail = "";
+        state.errorSaveClosingNote = "";
+        state.is_successSaveClosingNote = false;
       })
-      .addCase(SaveClosingNote.fulfilled, (state, action) => {       
-          state.statusSaveClosingNote = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-          state.SaveClosingNotedetail=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.errorSaveClosingNote=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_successSaveClosingNote=action.payload && action.payload.is_success==true? true: false;      
+      .addCase(SaveClosingNote.fulfilled, (state, action) => {
+        state.statusSaveClosingNote = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.SaveClosingNotedetail = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.errorSaveClosingNote = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_successSaveClosingNote = action.payload && action.payload.is_success == true ? true : false;
       })
-      .addCase(SaveClosingNote.rejected, (state,action) => {
+      .addCase(SaveClosingNote.rejected, (state, action) => {
         state.statusSaveClosingNote = STATUSES.IDLE;
-        state.SaveClosingNotedetail="";
+        state.SaveClosingNotedetail = "";
         state.errorSaveClosingNote = action.error;
-        state.is_successSaveClosingNote=false;
+        state.is_successSaveClosingNote = false;
       })
   },
 });
 
 
- export const {  } = CashmanagementFifthSlice.actions;
-  
-  
-  // // The function below is called a selector and allows us to select a value from
-  // // the state. Selectors can also be defined inline where they're used instead of
-  // // in the slice file. For example: `useSelector((state: RootState) => state.login.value)`
-  // export const selectCount = (state) => state.login.value;
-  
-  // // We can also write thunks by hand, which may contain both sync and async logic.
-  // // Here's an example of conditionally dispatching actions based on current state.
-  // export const incrementIfOdd = (amount) => (dispatch, getState) => {
-  //   const currentValue = selectCount(getState());
-  //   if (currentValue % 2 === 1) {
-  //     dispatch(incrementByAmount(amount));
-  //   }
-  // };
-  
+export const { } = CashmanagementFifthSlice.actions;
+
+
+// // The function below is called a selector and allows us to select a value from
+// // the state. Selectors can also be defined inline where they're used instead of
+// // in the slice file. For example: `useSelector((state: RootState) => state.login.value)`
+// export const selectCount = (state) => state.login.value;
+
+// // We can also write thunks by hand, which may contain both sync and async logic.
+// // Here's an example of conditionally dispatching actions based on current state.
+// export const incrementIfOdd = (amount) => (dispatch, getState) => {
+//   const currentValue = selectCount(getState());
+//   if (currentValue % 2 === 1) {
+//     dispatch(incrementByAmount(amount));
+//   }
+// };
 
 
 
 
-  
 
- export const GetOpenRegisterSlice = createSlice({
+
+
+export const GetOpenRegisterSlice = createSlice({
   name: 'GetOpenRegister',
   initialState,
-  reducers: { 
-   
+  reducers: {
+
   },
-  extraReducers: (builder) => {    
-    builder   
+  extraReducers: (builder) => {
+    builder
       .addCase(GetOpenRegister.pending, (state) => {
         state.status = STATUSES.LOADING;
-        state.dataone="";
-        state.error="";
-        state.is_success=false;
+        state.dataone = "";
+        state.error = "";
+        state.is_success = false;
       })
-      .addCase(GetOpenRegister.fulfilled, (state, action) => {       
-          state.status = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-          state.dataone=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.error=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_success=action.payload && action.payload.is_success==true? true: false;      
+      .addCase(GetOpenRegister.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.dataone = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.error = action.payload && action.payload.is_success == false ? "Fail to fetch" : "";
+        state.is_success = action.payload && action.payload.is_success == true ? true : false;
       })
-      .addCase(GetOpenRegister.rejected, (state,action) => {
+      .addCase(GetOpenRegister.rejected, (state, action) => {
         state.status = STATUSES.IDLE;
-        state.dataone="";
+        state.dataone = "";
         state.error = action.error;
-        state.is_success=false;
+        state.is_success = false;
       })
   },
 });
- export const {  } = GetOpenRegisterSlice.actions;
+export const { } = GetOpenRegisterSlice.actions;
 
 
 
@@ -383,39 +383,85 @@ export const CashmanagementSecondSlice = createSlice({
 
 
 
- 
 
- export const addRemoveCashSlice = createSlice({
+
+export const addRemoveCashSlice = createSlice({
   name: 'addRemoveCashmanagement',
   initialState,
-  reducers: { 
-   
+  reducers: {
+
   },
-  extraReducers: (builder) => {    
-    builder   
+  extraReducers: (builder) => {
+    builder
       .addCase(addRemoveCash.pending, (state) => {
         state.statuscashpopup = STATUSES.LOADING;
-        state.datacashpopup="";
-        state.errorcashpopup="";
-        state.is_successcashpopup=false;
+        state.datacashpopup = "";
+        state.errorcashpopup = "";
+        state.is_successcashpopup = false;
       })
-      .addCase(addRemoveCash.fulfilled, (state, action) => {       
-          state.statuscashpopup = action.payload && action.payload.is_success==true? STATUSES.IDLE: STATUSES.ERROR;
-          state.datacashpopup=(action.payload && action.payload.is_success==true ?action.payload:"");  
-          state.errorcashpopup=action.payload && action.payload.is_success==false? action.payload.exceptions[0]: action.payload?"Fail to fetch":"";;
-          state.is_successcashpopup=action.payload && action.payload.is_success==true? true: false;      
+      .addCase(addRemoveCash.fulfilled, (state, action) => {
+        state.statuscashpopup = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.datacashpopup = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.errorcashpopup = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_successcashpopup = action.payload && action.payload.is_success == true ? true : false;
       })
-      .addCase(addRemoveCash.rejected, (state,action) => {
+      .addCase(addRemoveCash.rejected, (state, action) => {
         state.statuscashpopup = STATUSES.IDLE;
-        state.datacashpopup="";
+        state.datacashpopup = "";
         state.errorcashpopup = action.error;
-        state.is_successcashpopup=false;
+        state.is_successcashpopup = false;
       })
   },
 });
- export const {  } = addRemoveCashSlice.actions;
+export const { } = addRemoveCashSlice.actions;
+
+//---
+
+export const addPaymentListLog = createAsyncThunk(
+  'cashmanagementCloseRegister/addPaymentListLogAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await addPaymentListLogAPI(parameter);
+      // The value we return becomes the `fulfilled` action payload
+      return response;
+    } catch (err) {
+      // Use `err.response.data` as `action.payload` for a `rejected` action,
+      // by explicitly returning it using the `rejectWithValue()` utility
+      return rejectWithValue(err.response.data)
+    }
+
+  }
+);
+export const addPaymentListLogSlice = createSlice({
+  name: 'addPaymentListLog',
+  initialState,
+  reducers: {
+
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(addPaymentListLog.pending, (state) => {
+        state.statuscashpopup = STATUSES.LOADING;
+        state.datacashpopup = "";
+        state.errorcashpopup = "";
+        state.is_successcashpopup = false;
+      })
+      .addCase(addPaymentListLog.fulfilled, (state, action) => {
+        state.statuscashpopup = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+        state.datacashpopup = (action.payload && action.payload.is_success == true ? action.payload : "");
+        state.errorcashpopup = action.payload && action.payload.is_success == false ? action.payload.exceptions[0] : action.payload ? "Fail to fetch" : "";;
+        state.is_successcashpopup = action.payload && action.payload.is_success == true ? true : false;
+      })
+      .addCase(addPaymentListLog.rejected, (state, action) => {
+        state.statuscashpopup = STATUSES.IDLE;
+        state.datacashpopup = "";
+        state.errorcashpopup = action.error;
+        state.is_successcashpopup = false;
+      })
+  },
+});
+export const { } = addPaymentListLogSlice.actions;
 
 
 
-
-  export default {CashmanagementSlice,CashmanagementSecondSlice,CashmanagementThirdSlice ,CashmanagementFourthSlice ,CashmanagementFifthSlice ,GetOpenRegisterSlice,addRemoveCashSlice};
+export default { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice, GetOpenRegisterSlice, addRemoveCashSlice, addPaymentListLogSlice };

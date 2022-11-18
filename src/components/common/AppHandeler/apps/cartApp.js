@@ -10,8 +10,11 @@ import { get_UDid } from "../../localSettings";
 import moment from "moment";
 import Config from '../../../../Config'
 import { useIndexedDB } from "react-indexed-db";
+import { getDetail } from "../../../activity/ActivitySlice";
+import {product} from "../../../dashboard/product/productSlice";
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
+var clientJSON
 export const textToBase64Barcode = (text) => {
     var canvas = document.createElement("canvas");
     JsBarcode(canvas, text, {
@@ -418,8 +421,8 @@ export const cartTaxes = (RequestData, isbackgroudApp) => {
     }
 }
 
-export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
-
+export function AddProductToCart(RequestData, isbackgroudApp, whereToview) {
+    const { getByID: getProductByID, getAll: getAllProducts } = useIndexedDB("products");
     if (whereToview !== 'CheckoutView') {
         return;
     }
@@ -433,7 +436,7 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
 
 
     //check the requested product exist into the index DB 
-    var item;
+    //var item;
 
     // var idbKeyval = FetchIndexDB.fetchIndexDb();
 
@@ -452,6 +455,10 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
     //     }
     //   }
     // });
+    var item = getProductByID(RequestData.product_id).then((row) => {
+        return row;
+    });
+
     setTimeout(() => {
 
         if (item) {
@@ -463,7 +470,7 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
             cartproductlist.push(item)
 
             //store.dispatch(cartProductActions.addtoCartProduct(cartproductlist));
-
+            addCartProductAction(cartproductlist)
 
 
             setTimeout(() => {
@@ -526,7 +533,7 @@ export const addProductToCart = (RequestData, isbackgroudApp, whereToview) => {
     }, 100);
 
 
-    return "app-modificaiton-external"
+    //return "app-modificaiton-external"
 }
 export const Notes = (RequestData, isbackgroudApp, whereToview) => {
     var clientJSON = ""
@@ -628,9 +635,10 @@ export const Notes = (RequestData, isbackgroudApp, whereToview) => {
             } else {
                 list = cartlist
             }
+            addCartProductAction(list);
             setTimeout(() => {
                 // store.dispatch(checkoutActions.getAll(list));
-                addCartProductAction(list)
+                store.dispatch(product());
             }, 200)
         }
     }
@@ -641,7 +649,7 @@ export const Notes = (RequestData, isbackgroudApp, whereToview) => {
         return "app-modificaiton-external"
 }
 
-export function DoParkSale(RequestData) {
+export function DoParkSale(RequestData,navigate) {
     const { getByID: getProductByID, getAll: getAllProducts } = useIndexedDB("products");
     var clientJSON = {};
     var validationResponse = validateRequest(RequestData)
@@ -660,12 +668,12 @@ export function DoParkSale(RequestData) {
         // });
         //var wc_order_no= RequestData.wc_order_no;
         var UID = get_UDid('UDID');
-        //store.dispatch(activityActions.getDetail(RequestData.wc_order_no, UID));
+        store.dispatch(getDetail(RequestData.wc_order_no, UID));
         var single_Order_list = {};
         setTimeout(() => {
             const state = store.getState();
-            if (state.single_Order_list && state.single_Order_list.items && state.single_Order_list.items.content) {
-                single_Order_list = state.single_Order_list && state.single_Order_list.items.content;
+            if (state.activityGetDetail && state.activityGetDetail.data && state.activityGetDetail.data.content) {
+                single_Order_list = state.activityGetDetail && state.activityGetDetail.data.content;
 
                 localStorage.removeItem("oliver_order_payments"); //remove existing payments   
                 // sessionStorage.getItem("OrderDetail") for mobile view.............
@@ -902,7 +910,10 @@ export function DoParkSale(RequestData) {
                 })
                 localStorage.setItem("PRODUCTX_DATA", JSON.stringify(addonsItem))
                 localStorage.setItem("BACK_CHECKOUT", true)
-                window.location = '/checkout';
+                //window.location = '/checkout';
+                //return "goto_checkout";
+                store.dispatch(product());
+                navigate && navigate('/checkout')
 
             }
             clientJSON =
@@ -951,8 +962,11 @@ export function DoParkSale(RequestData) {
                         }
                     };
                     postmessage(clientJSON);
+                   
                     clearInterval(myInterval);
+                     return "do_app_orderPark";
                     setTimeout(() => {
+                        //navigate('home');
                         //history.push('/shopview');
                     }, 3000);
                 }
@@ -1127,7 +1141,8 @@ export const doCustomFee = (RequestData) => {
                         _wc_points_logged_redemption: list._wc_points_logged_redemption,
 
                     }
-                    localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList))
+                    localStorage.setItem('CHECKLIST', JSON.stringify(CheckoutList));
+                    store.dispatch(product());
                     // store.dispatch(checkoutActions.getAll(CheckoutList));
 
 
@@ -1135,7 +1150,7 @@ export const doCustomFee = (RequestData) => {
             }, 300);
 
         }
-
+       
         if (RequestData.method == "put") {
             clientJSON["data"] = {
                 name: add_title,
@@ -1238,6 +1253,7 @@ export const doCustomFee = (RequestData) => {
         localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(cartlist));
         //store.dispatch(cartProductActions.addtoCartProduct(cartlist));
         addCartProductAction(cartlist)
+        store.dispatch(product());
         clientJSON =
         {
             command: RequestData.command,
@@ -1271,6 +1287,16 @@ export const doCustomFee = (RequestData) => {
 
 export const getReceiptData = (RequestData, whereToview) => {
     var validationResponse = validateRequest(RequestData)
+    if (whereToview == 'home') {
+        clientJSON = {
+            command: RequestData.command,
+            version: "2.0",
+            method: RequestData.method,
+            status: 403,
+            'error': "Invalid request component."
+        }
+        postmessage(clientJSON)
+    }
     // if (validationResponse.isValidationSuccess == false) {
     //     clientJSON = validationResponse.clientJSON;
     //     return postmessage(clientJSON)
@@ -1376,9 +1402,19 @@ export const getReceiptData = (RequestData, whereToview) => {
 
 }
 export const getOrderStatus = (RequestData, whereToview) => {
+    var clientJSON = ""
     var validationResponse = validateRequest(RequestData)
     if (validationResponse.isValidationSuccess == false) {
         clientJSON = validationResponse.clientJSON;
+        postmessage(clientJSON)
+    } else if (whereToview == 'home') {
+        clientJSON = {
+            command: RequestData.command,
+            version: "2.0",
+            method: RequestData.method,
+            status: 403,
+            'error': "Invalid request component."
+        }
         postmessage(clientJSON)
     }
     else {

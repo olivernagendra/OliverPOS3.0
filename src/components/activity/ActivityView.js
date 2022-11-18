@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import LeftNavBar from "../common/commonComponents/LeftNavBar";
 import ClearCart from '../../assets/images/svg/ClearCart-Icon.svg'
 import OliverIconBaseBlue from '../../assets/images/svg/Oliver-Icon-BaseBlue.svg'
-import DropdownArrow from '../../assets/images/svg/DropdownArrow.svg'
+// import DropdownArrow from '../../assets/images/svg/DropdownArrow.svg'
+import down_angled_bracket from '../../assets/images/svg/down-angled-bracket.svg';
 import calendar from '../../assets/images/svg/calendar.svg'
 //import Select from 'react-select'
 import SearchBaseBlue from '../../assets/images/svg/SearchBaseBlue.svg'
 import FilterArrowDown from '../../assets/images/svg/FilterArrowDown.svg'
 import FilterArrowUp from '../../assets/images/svg/FilterArrowUp.svg'
-import FilterCollapseIcon from '../../assets/images/svg/FilterCollapseIcon.svg'
+import DownArrowBlue from '../../assets/images/svg/DownArrowBlue.svg'
 import AngledBracketBlueleft from '../../assets/images/svg/AngledBracket-Left-Blue.svg'
 import AvatarIcon from '../../assets/images/svg/AvatarIcon.svg'
 import PlusSign from '../../assets/images/svg/PlusSign.svg'
@@ -20,29 +21,32 @@ import STATUSES from "../../constants/apiStatus";
 import { LoadingSmallModal } from '../common/commonComponents/LoadingSmallModal'
 import AppLauncher from "../common/commonComponents/AppLauncher";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { activityRecords, getDetail, getFilteredActivities } from './ActivitySlice'
 import Config from '../../Config'
 import ActivityList from "./ActivityList";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import ActivityOrderDetail from "./ActivityOrderDetail";
 import ActivityOrderList from "./ActivityOrderList";
-
+import { ActivityFooter } from "./ActivityFooter";
+import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 
 const ActivityView = () => {
-
+    const [defauldnumber, setDefauldNumber] = useState(2);
     const [AllActivityList, setAllActivityList] = useState([])
     const [updateActivityId, setupdateActivityId] = useState('')
     const [SelectedTypes, setSelectedTypes] = useState('')
     const [FilteredActivityList, setFilteredActivityList] = useState('')
     const [selectedOption, setSelectedOption] = useState('')
-    const [sortbyvaluename, SetSortByValueName] = useState('Date')
-    const [emailnamephone, setEmailNamePhone] = useState('')
+    const [sortbyvaluename, SetSortByValueName] = useState('Date (Newest)')
+    const [emailnamephone, setEmailNamePhone] = useState(sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '')
+    const [orderidsearch, setorderId] = useState('')
     const [pricefrom, setPriceFrom] = useState('')
     const [priceto, setPriceTo] = useState('')
     const [filterByPlatform, setFilterByPlatform] = useState('')
     const [filterByStatus, setFilterByStatus] = useState('')
     const [isloader, setSmallLoader] = useState(true)
-
+    const [getPdfdateTime, setGetPdfdateTime] = useState('')
     const [filterByUser, setfilterByUser] = useState('')
     const [selectuserfilter, setSelectuserFilter] = useState('')
     // Toggle State------------
@@ -56,7 +60,10 @@ const ActivityView = () => {
     const [isShowMobLeftNav, setisShowMobLeftNav] = useState(false);
     const [isMobileNav, setisMobileNav] = useState(false);
     const [isSortWrapper, setSortWrapper] = useState(false)
-
+    const [responsiveCusList, setResponsiveCusList] = useState(false)
+    const [activityListcount, setactivityListcount] = useState([])
+    const [activeDetailApi, setactiveDetailApi] = useState(true)
+    const [ActivityOrderDetails, setActivityOrderDetails] = useState([])
     // All TOGGLE 
     const toggleAppLauncher = () => {
         setisShowAppLauncher(!isShowAppLauncher)
@@ -90,6 +97,9 @@ const ActivityView = () => {
     const toggleEmployee = () => {
         setEmployeeToggle(!isEmployeeWrapper)
     }
+    const toggleResponsiveList = () => {
+        setResponsiveCusList(!responsiveCusList)
+    }
 
 
     // -------------------------------------------------------
@@ -105,7 +115,13 @@ const ActivityView = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-            reload()
+            var transactionredirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '';
+            if (transactionredirect !== '') {
+                applyServerFilter()
+            } else {
+                reload(1)
+                dispatch(cashRecords(null));
+            }
         }
         return () => {
             useCancelled = true;
@@ -113,16 +129,30 @@ const ActivityView = () => {
     }, []);
 
     const reload = (pagno) => {
+        // console.log("Reload function call")
         var UID = get_UDid('UDID')
         var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
-        dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": 1 }));
+        dispatch(activityRecords({ "UID": UID, "pageSize": pageSize, "pageNumber": pagno }));
     }
+
+
+    // Getting Response  From Order Details
+    const [respActivitygetdetails] = useSelector((state) => [state.activityGetDetail])
+    useEffect(() => {
+        if (respActivitygetdetails && respActivitygetdetails.status == STATUSES.IDLE && respActivitygetdetails.is_success && respActivitygetdetails.data) {
+            setActivityOrderDetails(respActivitygetdetails && respActivitygetdetails.data && respActivitygetdetails.data.content);
+
+        }
+    }, [respActivitygetdetails]);
+    //  console.log("ActivityOrderDetails", ActivityOrderDetails)
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
     useEffect(() => {
-        if (activityAllDetails && activityAllDetails.data.length > 0) {
-            setAllActivityList(activityAllDetails.data);
+        if (activityAllDetails && activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records.length > 0) {
+            var temState = [...AllActivityList, ...activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records]
+            setAllActivityList(temState);
+            setactivityListcount(activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.TotalRecords)
         }
     }, [activityAllDetails]);
 
@@ -133,6 +163,9 @@ const ActivityView = () => {
         //  console.log("activityfilter", activityfilter)
         if (activityfilter && activityfilter.data.length > 0) {
             setAllActivityList(activityfilter.data);
+            setSmallLoader(false)
+        } else {
+            setAllActivityList([]);
             setSmallLoader(false)
         }
     }, [activityfilter]);
@@ -170,22 +203,25 @@ const ActivityView = () => {
                 return new Date(a.date) - new Date(b.date);
             });
         }
+        // console.log("_filteredActivity",_filteredActivity)
         setFilteredActivityList(_filteredActivity);
         scount += _filteredActivity.length;
-        // console.log("_filteredActivity", _filteredActivity)
         // console.log("customer count", scount)
     }
 
 
 
 
+    //console.log("FilteredActivityList", FilteredActivityList)
 
 
     // Filter activity list Accourding To Date
     var getDistinctActivity = {};
     var _activity = FilteredActivityList;
     _activity && _activity.map(item => {
+        //console.log("item", item)
         var dateKey = FormateDateAndTime.formatDateAndTime(item.date_time && item.date_time !== undefined ? item.date_time : item.CreatedDate, item.time_zone);
+      //  console.log("dateKey", dateKey)
         if (!getDistinctActivity.hasOwnProperty(dateKey)) {
             getDistinctActivity[dateKey] = new Array(item);
         } else {
@@ -193,8 +229,10 @@ const ActivityView = () => {
                 getDistinctActivity[dateKey].push(item)
             }
         }
+
+        // console.log("filterbydates", filterbydate)
+
     })
-    //  console.log("getDistinctActivity", getDistinctActivity)
     //---------------------------------------------------
 
 
@@ -213,6 +251,7 @@ const ActivityView = () => {
             var getPdfdate = (mydate.getMonth() + 1) + '/' + mydate.getDate() + '/' + mydate.getFullYear() + ' ' + item.time;
             var itemCreatedDate = FormateDateAndTime.formatDateAndTime(item.date_time, item.time_zone)
             setupdateActivityId(item.order_id)
+            setGetPdfdateTime(getPdfdate)
             // this.setState({
             //     active: index,
             //     CreatedDate: itemCreatedDate,
@@ -223,7 +262,7 @@ const ActivityView = () => {
             if (item.order_id) {
                 dispatch(getDetail(item.order_id, UID));
             }
-
+            setResponsiveCusList(!responsiveCusList)
             //this.props.dispatch(checkoutActions.getOrderReceipt());
             // $(".button_with_checkbox input").prop("checked", false);
         }
@@ -234,10 +273,15 @@ const ActivityView = () => {
     let useCancelled1 = false;
     useEffect(() => {
         var UID = get_UDid('UDID');
+
+        // if(transactionsRedirect &&transactionsRedirect.length > 0) {
+        //     var customer_to_activity_id = sessionStorage.getItem("transredirection") ?sessionStorage.getItem("transredirection"):'';
+        //   }
         var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
+
+        // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
-        // console.log("customer_to_activity_id",customer_to_activity_id)
-        if (useCancelled1 == false) {
+        if (useCancelled1 == false && activeDetailApi !== false) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
             }
@@ -248,11 +292,143 @@ const ActivityView = () => {
     }, [AllActivityList]);
 
 
+    useEffect(() => {
+        document.querySelectorAll(".date-selector-wrapper left > button").forEach((button) => {
+            console.log("button",button)
+            button.addEventListener("click", (e) => {
+                let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
+                let openDateSelector = document.querySelector(".date-selector.open");
+                if (openDateSelector) {
+                    openDateSelector.classList.remove("open");
+                }
+                if (currentDateSelector != openDateSelector) {
+                    initCalendarDate(new Date(), currentDateSelector);
+                    currentDateSelector.classList.add("open");
+                }
+            });
+        });
 
+        let monthTranslate = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        function initCalendarDate(date, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button class="raise-level">${monthTranslate[date.getMonth()]
+                } ${date.getFullYear()}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="day-row"><div class="day">Su</div><div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                let monthYear = e.currentTarget.nextElementSibling.innerHTML.split(" ");
+                let monthIndex = monthTranslate.indexOf(monthYear[0]) - 1;
+                if (monthIndex == -1) {
+                    monthIndex = 11;
+                    monthYear[1]--;
+                }
+                initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
+                initCalendarMonths(parseInt(e.currentTarget.innerHTML.split(" ")[1]), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                let monthYear = e.currentTarget.previousElementSibling.innerHTML.split(" ");
+                let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
+                if (monthIndex == 12) {
+                    monthIndex = 0;
+                    monthYear[1]++;
+                }
+                initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
+            });
+            let daysInCurrentMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+            let dayIndex = 1;
+            let nextMonthIndex = 1;
+            let daysInLastMonth = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+            let firstWeekday = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
+            let dateArray = [];
+            for (let i = 0; i < 42; i++) {
+                if (firstWeekday > -1) {
+                    dateArray.push(daysInLastMonth - firstWeekday);
+                    firstWeekday--;
+                } else if (dayIndex <= daysInCurrentMonth) {
+                    dateArray.push(dayIndex);
+                    dayIndex++;
+                } else {
+                    dateArray.push(nextMonthIndex);
+                    nextMonthIndex++;
+                }
+            }
+            let isDisabled = true;
+            for (let i = 0; i < 6; i++) {
+                let dateRow = document.createElement("div");
+                dateRow.classList.add("date-row");
+                for (let j = 0; j < 7; j++) {
+                    let cell = document.createElement("button");
+                    cell.classList.add("cell");
+                    let dateContent = dateArray[i * 7 + j];
+                    if (dateContent == 1) {
+                        isDisabled = !isDisabled;
+                    }
+                    // console.log(dateContent)
+                    cell.textContent = dateContent;
+                    cell.disabled = isDisabled;
+                    cell.addEventListener("click", (e) => {
+                        let currentSelector = e.currentTarget.parentNode.parentNode;
+                        let monthYear = currentSelector.firstElementChild.children[1].innerHTML.split(" ");
+                        let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
+                        currentSelector.parentNode.querySelector("input").value = `${e.currentTarget.innerHTML.length == 2 ? e.currentTarget.innerHTML : "0" + e.currentTarget.innerHTML
+                            }/${monthIndex.toString().length == 2 ? monthIndex : "0" + monthIndex}/${monthYear[1]}`;
+                        currentSelector.classList.remove("open");
+                    });
+                    dateRow.appendChild(cell);
+                }
+                dateSelector.appendChild(dateRow);
+            }
+        }
+
+        function initCalendarMonths(year, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button>${year}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="month-row"><button class="cell">January</button><button class="cell">February</button><button class="cell">March</button></div><div class="month-row"><button class="cell">April</button><button class="cell">May</button><button class="cell">June</button></div><div class="month-row"><button class="cell">July</button><button class="cell">August</button><button class="cell">September</button></div><div class="month-row"><button class="cell">October</button><button class="cell">Novemeber</button><button class="cell">December</button></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                e.currentTarget.nextElementSibling.innerHTML = parseInt(e.currentTarget.nextElementSibling.innerHTML) - 1;
+            });
+            dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                e.currentTarget.previousElementSibling.innerHTML = parseInt(e.currentTarget.previousElementSibling.innerHTML) + 1;
+            });
+            dateSelector.querySelectorAll(".month-row > button.cell").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    let dateSelector = e.currentTarget.parentNode.parentNode;
+                    initCalendarDate(
+                        new Date(parseInt(dateSelector.firstElementChild.children[1].innerHTML), monthTranslate.indexOf(e.currentTarget.innerHTML), 1),
+                        dateSelector
+                    );
+                });
+            });
+        }
+
+        function initCalendarYears(startYear, dateSelector) {
+            dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><div>${startYear} - ${startYear + 11
+                }</div><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="year-row"><button class="cell">${startYear}</button><button class="cell">${startYear + 1
+                }</button><button class="cell">${startYear + 2}</button></div><div class="year-row"><button class="cell">${startYear + 3
+                }</button><button class="cell">${startYear + 4}</button><button class="cell">${startYear + 5
+                }</button></div><div class="year-row"><button class="cell">${startYear + 6}</button><button class="cell">${startYear + 7
+                }</button><button class="cell">${startYear + 8}</button></div><div class="year-row"><button class="cell">${startYear + 9
+                }</button><button class="cell">${startYear + 10}</button><button class="cell">${startYear + 11}</button></div>`;
+            dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.nextElementSibling.innerHTML.split(" - ")[0]) - 12, e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
+                initCalendarYears(parseInt(e.currentTarget.previousElementSibling.innerHTML.split(" - ")[1]) + 1, e.currentTarget.parentNode.parentNode);
+            });
+            dateSelector.querySelectorAll(".year-row > button.cell").forEach((button) => {
+                button.addEventListener("click", (e) => {
+                    initCalendarMonths(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
+                });
+            });
+        }
+
+    }, []);
 
     const sortByList = (filterType, FilterValue) => {
         SetSortByValueName(FilterValue)
         setSelectedTypes(filterType);
+        setupdateActivityId("")
     }
 
     // filter All Function 
@@ -318,40 +494,42 @@ const ActivityView = () => {
             // "EndDay": e_dd,
             // "EndMonth": e_mm,
             // "EndYear": e_yy,
-            "searchVal": emailnamephone,
+            "searchVal": emailnamephone ? emailnamephone : orderidsearch
             //"groupSlug": this.state.filterByGroupList,
 
         };
+        // console.log("_filterParameter",_filterParameter)
         dispatch(getFilteredActivities(_filterParameter));
-        //Display List
-        // var dvFilter = document.getElementById("activityFilter");
-        // if ((dvFilter || (txtSearch && txtSearch !== '')) && isMobileOnly !== true) {
-        //     dvFilter.style.display = "none"
-        //     this.setState({ filterButtonText: LocalizedLanguage.cancel });
-        // }
+
+
     }
 
 
-    const PrintClick = () => {
 
-    }
 
     const clearFilter = () => {
-        setfilterByUser("")
-        setFilterByStatus("")
-        setFilterByPlatform("")
+        if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" || selectuserfilter !== "" || orderidsearch !== '') {
+            setupdateActivityId('')
+            reload(1)
+            setfilterByUser("")
+            setFilterByStatus("")
+            setFilterByPlatform("")
+            setEmailNamePhone("")
+            setSelectuserFilter('')
+            setorderId('')
+            localStorage.removeItem("CUSTOMER_TO_ACTVITY")
+            localStorage.removeItem('CUSTOMER_TO_OrderId')
+            sessionStorage.removeItem('transactionredirect');
+        }
     }
 
-    // console.log("filterByPlatform",filterByPlatform)
-    // console.log("filterByStatus",filterByStatus)
-    // console.log("filterByUser",filterByUser)
 
 
-
-    const handleUserChange = (selectedOption) => {
-        // const { name, value } = e.target;
-        setSelectedOption(selectedOption)
-
+    const hundleChange = (event) => {
+        setEmailNamePhone(event.target.value)
+    }
+    const hundleChangeID = (event) => {
+        setorderId(event.target.value)
     }
 
     const _Useroptions = [];
@@ -366,6 +544,27 @@ const ActivityView = () => {
     }
     var _platform = [{ key: "both", value: "Both" }, { key: "oliver-pos", value: "Oliver POS" }, { key: "web-shop", value: "Webshop" }];
     var _orderstatus = [{ key: "", value: "All" }, { key: "pending", value: "Parked" }, { key: "on-hold", value: "Lay-Away" }, { key: "cancelled", value: "Voided" }, { key: "refunded", value: "Refunded" }, { key: "completed", value: "Closed" }];
+
+    /// Scroll  then api call
+    const updateSomething = () => {
+        var transactionsRedirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transredirection") : '';
+        setactiveDetailApi(false)
+        setDefauldNumber(defauldnumber + 1)
+        if (AllActivityList.length == activityListcount) {
+
+        } else if (defauldnumber != 1 && transactionsRedirect == '') {
+            reload(defauldnumber)
+        }
+    }
+
+    var subtotal = 0.0;
+    if (ActivityOrderDetails) {
+        subtotal = parseFloat(
+            parseFloat(ActivityOrderDetails.total_amount - ActivityOrderDetails.refunded_amount) -
+            parseFloat(ActivityOrderDetails.total_tax - ActivityOrderDetails.tax_refunded)
+        ).toFixed(2);
+
+    }
 
 
     return <>
@@ -388,26 +587,26 @@ const ActivityView = () => {
             <div id="transactionsSearch" className={isCvmobile === true ? "transactions-search open" : "transactions-search"}>
                 <div className="search-header">
                     <p>Transactions</p>
-                    <button id="clearSearchFields" onClick={clearFilter}>Clear</button>
+                    <button id="clearSearchFields" onClick={() => clearFilter()}>Clear</button>
                 </div>
                 <div className="search-header-mobile">
                     <button id="mobileSearchExit" onClick={mobileTransactionsSearch}>
                         <img src={AngledBracketBlueleft} alt="" />
                         Go Back
                     </button>
-                    <button id="mobileSearchFieldClear" onClick={clearFilter} >Clear</button>
+                    <button id="mobileSearchFieldClear" onClick={() => clearFilter()} >Clear</button>
                 </div>
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
-                    <label for="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" onChange={e => setEmailNamePhone(e.target.value)} />
+                    <label htmlFor="orderID">Order ID</label>
+                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChangeID} value={orderidsearch} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
-                    <label for="custInfo">Customer Info</label>
-                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={e => setEmailNamePhone(e.target.value)} />
-                    <label for="orderStatus">Order Status</label>
+                    <label htmlFor="custInfo">Customer Info</label>
+                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange} value={emailnamephone} />
+                    <label htmlFor="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="orderStatus" placeholder={filterByStatus == '' ? "All" : filterByStatus !== "" ? filterByStatus : "Select Status"} />
                         <div className="option-list">
                             {_orderstatus && _orderstatus.length > 0 && _orderstatus.map((item, index) => {
@@ -422,9 +621,9 @@ const ActivityView = () => {
                     </div>
                     <div className="input-row">
                         <div className="input-col">
-                            <label for="dateFrom">Date From</label>
+                            <label htmlFor="dateFrom">Date From</label>
                             <div className="date-selector-wrapper left ">
-                                <input type="text" id="dateFrom" placeholder="Date" />
+                                <input type="text" id="dateFrom" placeholder="dd/mm/yyyy" />
                                 <button className="open-date-selector open">
                                     <img src={calendar} alt="" />
                                 </button>
@@ -432,19 +631,19 @@ const ActivityView = () => {
                             </div>
                         </div>
                         <div className="input-col">
-                            <label for="dateTo">Date To</label>
+                            <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
-                                <input type="text" id="dateTo" placeholder="Date" />
-                                <button className="open-date-selector">
+                                <input type="text" id="dateTo" placeholder="dd/mm/yyyy" />
+                                <button className="open-date-selector open">
                                     <img src={calendar} alt="" />
                                 </button>
                                 <div className="date-selector"></div>
                             </div>
                         </div>
                     </div>
-                    <label for="salesPlatform">Sales Platform</label>
+                    <label htmlFor="salesPlatform">Sales Platform</label>
                     <div className={salepersonWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleSaleperson} >
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="salesPlatform" placeholder={filterByPlatform ? filterByPlatform : "All Platforms"} />
                         <div className="option-list">
                             {_platform && _platform.length > 0 && _platform.map((item, index) => {
@@ -460,9 +659,9 @@ const ActivityView = () => {
                         </div>
                     </div>
 
-                    <label for="employee">Employee</label>
+                    <label htmlFor="employee">Employee</label>
                     <div className={isEmployeeWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleEmployee}>
-                        <img src={DropdownArrow} alt="" />
+                        <img src={down_angled_bracket} alt="" />
                         <input type="text" id="employee" placeholder={selectuserfilter ? selectuserfilter : "Select Employee"} />
                         <div className="option-list">
                             {_Useroptions && _Useroptions.length > 0 && _Useroptions.map((item, index) => {
@@ -480,11 +679,11 @@ const ActivityView = () => {
 
                     <div className="input-row">
                         <div className="input-col">
-                            <label for="priceFrom">Price From</label>
+                            <label htmlFor="priceFrom">Price From</label>
                             <input type="text" id="priceFrom" placeholder="Price" onChange={e => setPriceFrom(e.target.value)} />
                         </div>
                         <div className="input-col">
-                            <label for="priceTo">Price To</label>
+                            <label htmlFor="priceTo">Price To</label>
                             <input type="text" id="priceTo" placeholder="Price" onChange={e => setPriceTo(e.target.value)} />
                         </div>
                     </div>
@@ -492,57 +691,94 @@ const ActivityView = () => {
                 </div>
             </div>
 
-            <div className="transactions-list">
+            <div className="transactions-list" >
                 <div className="header" onClick={toggleSortWrapp}>
                     <p>Sort by:</p>
                     <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
-                        <input type="text" id="filterType" />
-                        <img src="../assets/images/svg/FilterCollapseIcon.svg" alt="" />
+                        {/* <input type="text" id="filterType" /> */}
+                        <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
+                        <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
+                        {/* <p>{sortbyvaluename}</p> */}
+                        {/* <div id="sortCurrent" className="sort-current"  >
+                        <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
 
-                        <div id="sortCurrent" className="sort-current"  >
-                            <img src={FilterArrowUp} alt="" />
+                      
+                            <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />
                             <p>{sortbyvaluename}</p>
+                        </div> */}
+                        <div class="option-container" id="transactionsListSortOptionsContainer">
+                            <div className="option" onClick={(e) => sortByList("dateAsc", "Date (Newest)")}>Date (Newest)</div>
+                            <div className="option" onClick={(e) => sortByList("dateDesc", "Date (Oldest)")}>Date (Oldest)</div>
+                            <div className="option" onClick={(e) => sortByList("amountAsc", "Amount (Highest)")}>Amount (Highest)</div>
+                            <div className="option" onClick={(e) => sortByList("amountDesc", "Amount (Lowest)")}>Amount (Lowest)</div>
                         </div>
 
-                        <div className="sort-option" data-value="dateAsc" onClick={(e) => sortByList("dateAsc", "Date")} >
+
+                        {/* <div className="option" data-value="dateAsc" onClick={(e) => sortByList("dateAsc", "Date")} >
                             <img src={FilterArrowUp} alt="" />
                             <p>Date</p>
                         </div>
-                        <div className="sort-option" data-value="dateDesc" onClick={(e) => sortByList("dateDesc", "Date")}>
+                        <div className="option" data-value="dateDesc" onClick={(e) => sortByList("dateDesc", "Date")}>
                             <img src={FilterArrowDown} alt="" />
                             <p>Date</p>
                         </div>
-                        <div className="sort-option" data-value="amountAsc" onClick={(e) => sortByList("amountAsc", "Amount")}>
+                        <div className="option" data-value="amountAsc" onClick={(e) => sortByList("amountAsc", "Amount")}>
                             <img src={FilterArrowUp} alt="" />
                             <p>Amount</p>
                         </div>
-                        <div className="sort-option" data-value="amountDesc" onClick={(e) => sortByList("amountDesc", "Amount")}>
+                        <div className="option" data-value="amountDesc" onClick={(e) => sortByList("amountDesc", "Amount")}>
                             <img src={FilterArrowDown} alt="" />
                             <p>Amount</p>
-                        </div>
+                        </div> */}
 
                     </div>
                 </div>
-                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} />
+                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} updateSomething={updateSomething} />
             </div>
-            <div id="transactionsDetailed" className="transactions-detailed">
+            {_activity && _activity.length > 0 ? <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">
-                    <button id="mobileDetailedExit">
-                        <img src="../assets/images/svg/AngledBracket-Left-Blue.svg" alt="" />
+                    <button id="mobileDetailedExit" onClick={toggleResponsiveList}>
+                        <img src={AngledBracketBlueleft} alt="" />
                         Go Back
                     </button>
                 </div>
                 <ActivityOrderDetail />
-                <div className="order-details">
-                    <ActivityOrderList />
+
+                <ActivityOrderList
+                    Subtotal={subtotal ? subtotal : 0}
+                    //  Discount={_discount}
+                    TotalTax={ActivityOrderDetails && ActivityOrderDetails.total_tax}
+                    tax_refunded={ActivityOrderDetails && ActivityOrderDetails.tax_refunded}
+                    TotalAmount={ActivityOrderDetails && ActivityOrderDetails.total_amount}
+                    refunded_amount={ActivityOrderDetails && ActivityOrderDetails.refunded_amount}
+                    OrderPayment={ActivityOrderDetails && ActivityOrderDetails.order_payments}
+                    refundPayments={ActivityOrderDetails && ActivityOrderDetails.order_Refund_payments}
+                    cash_round={ActivityOrderDetails && ActivityOrderDetails.cash_rounding_amount}
+                    balence={0}
+                    TimeZone={ActivityOrderDetails && ActivityOrderDetails.time_zone}
+                    refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount}
+                    redeemPointsToPrint={ActivityOrderDetails.meta_datas ? ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
+                    orderMetaData={ActivityOrderDetails && ActivityOrderDetails.meta_datas}
+                // TotalIndividualProductDiscount={
+                //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
+                //       ? _totalProductIndividualDiscount
+                //       : 0
+                //   }
+                />
+
+
+                <ActivityFooter getPdfdateTime={getPdfdateTime} />
+            </div> : <div style={{ textAlign: "center", paddingTop: "50%", color: "gray" }}>
+                <div className="no-results">
+                    <p className="style1">No order to display.</p>
+                    <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
                 </div>
-                <div className="footer">
-                    <button id="refundButton">Refund</button>
-                    <button id="receiptButton" onClick={() => PrintClick()}   >Receipt</button>
-                    <button id="openSaleButton">Open Sale</button>
-                </div>
-            </div>
+            </div>}
+
+
+
+
         </div>
         <div className="subwindow-wrapper hidden"></div>
     </>
