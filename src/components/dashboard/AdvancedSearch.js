@@ -428,6 +428,13 @@ const AdvancedSearch = (props) => {
         sessionStorage.setItem("transactionredirect", email);
         navigate('/transactions')
     }
+    const viewCustomer = (email) => {
+        // console.log("data",data)
+        if (email !== '') {
+            sessionStorage.setItem("customerredirect", email ? email : "");
+            navigate('/customers')
+        }
+    }
     return <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}><div className={props.isShow === true ? "subwindow advanced-search current" : "subwindow advanced-search"}>
         <div className="subwindow-header">
             <p>Advanced Search</p>
@@ -551,7 +558,7 @@ const AdvancedSearch = (props) => {
                                             <p className="style3">{item.Contact}</p>
                                         </div>
                                         <div className="row">
-                                            <button className="search-view">
+                                            <button className="search-view" onClick={() => viewCustomer(item.Email)}>
                                                 <img src={ViewIcon} alt="" />
                                                 View
                                             </button>

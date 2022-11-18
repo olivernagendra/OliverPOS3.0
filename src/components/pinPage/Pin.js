@@ -18,7 +18,7 @@ import PinPad from "./PinPad";
 import { get_UDid } from "../common/localSettings";
 import LogoutConfirm from "../common/commonComponents/LogoutConfirm";
 import { getPostMeta } from "../common/commonAPIs/postMetaSlice";
-
+import { productCount } from "../loadProduct/productCountSlice";
 //import $ from "jquery";
 const Pin = () => {
     const dispatch = useDispatch();
@@ -37,7 +37,8 @@ const Pin = () => {
     useEffect(() => {
         //if (useCancelled == false) {
 
-        fetchData()
+        fetchData();
+        dispatch(productCount(get_UDid));
         dispatch(getPostMeta("recent_apps"));
         // }
         // return () => {

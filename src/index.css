@@ -698,3 +698,6 @@ code {
 .floatAmountfont{
 	font-size: 20px !important;
 }
+.homepage-wrapper > .products > .products-container > button.category::before {
+	content: "" !important;
+}

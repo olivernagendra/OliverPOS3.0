@@ -17,7 +17,7 @@ const CartDiscount = (props) => {
     const [txtValue, setTxtValue] = useState("")
 
     const dispatch = useDispatch();
-   
+
     useEffect(() => {
         if (localStorage.getItem("discountlst")) {
             var discount_list = JSON.parse(localStorage.getItem("discountlst"));
@@ -179,7 +179,7 @@ const CartDiscount = (props) => {
     }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div className={props.isShow === true ? props.isSelectDiscountBtn==false? "subwindow custom-fee current":"subwindow cart-discount current" : "subwindow cart-discount custom-fee"}>
+            <div className={props.isShow === true ? props.isSelectDiscountBtn == false ? "subwindow custom-fee current" : "subwindow cart-discount current" : "subwindow cart-discount custom-fee"}>
                 <div className="subwindow-header">
                     <p>Custom Fees/Discounts</p>
                     <button className="close-subwindow" onClick={() => closePopup()}>
@@ -192,13 +192,13 @@ const CartDiscount = (props) => {
                     <div className="toggle-container">
                         <label >
                             <input type="radio" id="customFeeRadio" name="customFeeDiscount" defaultChecked={props.isSelectDiscountBtn == false ? true : false} />
-                            <div className="custom-radio" onClick={() => props.isSelectDiscountBtn == true ?props.toggleSelectDiscountBtn():null}>
+                            <div className="custom-radio" onClick={() => props.isSelectDiscountBtn == true ? props.toggleSelectDiscountBtn() : null}>
                                 <p>Custom Fee</p>
                             </div>
                         </label>
                         <label >
                             <input type="radio" id="discountRadio" name="customFeeDiscount" defaultChecked={props.isSelectDiscountBtn == true ? true : false} />
-                            <div className="custom-radio" onClick={() => props.isSelectDiscountBtn == false ? props.toggleSelectDiscountBtn():null}>
+                            <div className="custom-radio" onClick={() => props.isSelectDiscountBtn == false ? props.toggleSelectDiscountBtn() : null}>
                                 <p>Discount</p>
                             </div>
                         </label>
@@ -216,7 +216,7 @@ const CartDiscount = (props) => {
                         </div> :
                         <div id="cartDiscountDiv">
                             <div className="main">
-                                <label htmlFor="discountAmount">Discount feeAmount:</label>
+                                <label htmlFor="discountAmount">Discount Fee Amount:</label>
                                 <input style={{ direction: "LTL" }} type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onKeyDown={(e) => discount_Amount(e)} disabled={isDiscountBtnEnable == true ? false : true} />
                                 <p>Select type of discount to be applied to cart:</p>
                                 <div className="button-row">
@@ -228,10 +228,10 @@ const CartDiscount = (props) => {
                                 <p>Pre-set discounts</p>
                                 {allDiscount && allDiscount.map(d => {
                                     return <button key={d.Id} onClick={() => handleListDiscount(d.Type, d.Amount)}>
-                                        <p>{d.Name} ({d.Amount} {d.Type === "Percentage" ? "%" : "$"})</p>
+                                        <p>{d.Name} ({d.Type === "Percentage" ? d.Amount + "%" : "$" + d.Amount})</p>
                                     </button>
                                 })}
-                                <button onClick={() => clearDiscount()} id= {localStorage.getItem("CART")?"clear":"clearCartDiscountDiv"}>
+                                <button onClick={() => clearDiscount()} id={localStorage.getItem("CART") ? "clear" : "clearCartDiscountDiv"}>
                                     <p>{LocalizedLanguage.discountClr}</p>
                                 </button>
                             </div>

@@ -114,7 +114,7 @@ const Checkout = (props) => {
     // change_amount: change_amount,
     // cash_payment: paying_amount,
     // after_payment_is: payment_is
-    var cashRound=0;
+    var cashRound = 0;
     const [resSave] = useSelector((state) => [state.save])
     useEffect(() => {
         if (resSave && resSave.status == STATUSES.IDLE && resSave.is_success && loading === true) {
@@ -414,7 +414,7 @@ const Checkout = (props) => {
 
     //     if (location.pathname === "/checkout") {
     //         window.addEventListener('message', msgEvent);
-            
+
     //         return () => {
     //             window.removeEventListener("message", msgEvent);
     //         }
@@ -971,7 +971,7 @@ const Checkout = (props) => {
         var cash_round_is = parseFloat(getRemainingPriceForCash())
         //this.setState({ cash_round: cash_round_is })
         //setCashRound(cash_round_is);
-        cashRound=cash_round_is;
+        cashRound = cash_round_is;
         if (localStorage.getItem("oliver_order_payments")) {
             var payments = JSON.parse(localStorage.getItem("oliver_order_payments"));
             payments.push({
@@ -1060,8 +1060,8 @@ const Checkout = (props) => {
                     })
                     var ret = payment_is;
                     var total_pay = ret + parseFloat(paying_amount);
-                   // setCashRound(cash_round);
-                    cashRound=cash_round;
+                    // setCashRound(cash_round);
+                    cashRound = cash_round;
                     paying_amount = paying_amount ? String(paying_amount).replace(',', '') : 0;
                     if (total_pay > parseFloat(RoundAmount(_totalPrice + cash_round))) {
                         change_amount = paying_amount - (actual_amount - payment_is + cash_round);
@@ -1111,7 +1111,7 @@ const Checkout = (props) => {
                 else {
                     payments = new Array();
                     //setCashRound(cash_round);
-                    cashRound=cash_round;
+                    cashRound = cash_round;
                     paying_amount = paying_amount ? String(paying_amount).replace(',', '') : 0.00;
                     if (parseFloat(paying_amount) > parseFloat(RoundAmount(actual_amount + cash_round))) {
                         change_amount = paying_amount - (actual_amount + cash_round);
@@ -1563,17 +1563,17 @@ const Checkout = (props) => {
 
 
         // update payments for place order
-        cashRound= getRemainingPriceForCash();
+        cashRound = getRemainingPriceForCash();
         if (cashRound > 0) {
             var length_is = order_payments.length - 1;
             var update_rounding_amount = parseFloat(totalPrice + cashRound) - parseFloat(paidAmount);
-            var new_amount = parseFloat(order_payments[length_is].amount);
-           
-            if(order_payments[length_is].type=="cash" && cashRound<=1)
-            {
-                order_payments[length_is].amount = parseFloat(parseFloat(new_amount) + parseFloat(RoundAmount(update_rounding_amount)))
-                //setCashRound(0);
-                cashRound=0;
+            if (order_payments && typeof order_payments[length_is] != "undefined" && order_payments[length_is].hasOwnProperty("amount")) {
+                var new_amount = parseFloat(order_payments[length_is].amount);
+                if (order_payments[length_is].type == "cash" && cashRound <= 1) {
+                    order_payments[length_is].amount = parseFloat(parseFloat(new_amount) + parseFloat(RoundAmount(update_rounding_amount)))
+                    //setCashRound(0);
+                    cashRound = 0;
+                }
             }
         }
 
@@ -2340,14 +2340,14 @@ const Checkout = (props) => {
                                             </button>
                             })
                         }
-                        {
+                        {/* {
                             extensionPayments && extensionPayments.length > 0 && extensionPayments.map(exPayment => {
                                 return <button style={{ backgroundColor: "var(--oliver-blue)" }} onClick={() => ToggleiFrameWindow(exPayment)} key={exPayment.Id}>
                                     {exPayment.logo != null && <img src={exPayment.logo} alt=""></img>}
                                     {exPayment.logo != null ? "" : exPayment.Name}</button>
 
                             })
-                        }
+                        } */}
                     </div>
                 </div>
             </div>

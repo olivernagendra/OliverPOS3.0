@@ -15,12 +15,166 @@ import { useIndexedDB } from 'react-indexed-db';
 import moment from 'moment';
 import LoaderOnboarding from '../common/commonComponents/LoaderOnboarding';
 //import LoaderOnboarding from '../onboarding/components/LoaderOnboarding'
-const CustomerLoader = () => {
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
+// const CustomerLoader = () => {
+//     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("customers");
 
+//     const UpdateCustomerInIndexDB = (udid, CustomerArray) => {
+//         CustomerArray && CustomerArray.length > 0 && CustomerArray.map((item) => {
+//             add(item).then(
+//                 (key) => {
+//                     // console.log("ID Generated: ", key);
+//                     //   let newState = Object.assign({}, state);
+//                     //   newState.id = key;
+//                     //   setState(newState);
+//                     //   history.goBack();
+//                 },
+//                 (error) => {
+//                     console.log(error);
+//                 }
+//             )
+//         })
+//     }
+//     const getCustomerList = (pn, pl, trc) => {
+//         var udid = get_UDid(localStorage.getItem("UDID"));
+//         var pageNumber = pn;
+//         var PageSize = Config.key.CUSTOMER_PAGE_SIZE;
+//         var CustomerArray = pl;
+//         var TotalRecord = trc;
+//         const requestOptions = {
+//             method: 'GET',
+//             headers: {
+//                 "access-control-allow-origin": "*",
+//                 "access-control-allow-credentials": "true",
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'application/json',
+//                 'Authorization': 'Basic ' + btoa(sessionStorage.getItem("AUTH_KEY")),
+//             }
+//             , mode: 'cors'
+//         };
+//         var isDemoUser = localStorage.getItem('demoUser') == 'true' && localStorage.getItem('DemoGuid');
+//         if (isDemoUser == true) {
+//             requestOptions.headers['demoauth'] = localStorage.getItem('DemoGuid') && localStorage.getItem('DemoGuid')
+//         }
+//         if (TotalRecord == 0) {
+//             UpdateCustomerInIndexDB(udid, CustomerArray);
+//         }
+//         // call firstTime------------------
+//         //  call common service
+//         fetch(`${Config.key.OP_API_URL}/v1/customers/GetPage?pageSize=${PageSize}&pageNumber=${pageNumber}`, requestOptions)
+//             .then(response => {
+//                 if (response.ok) { return response.json(); }
+//                 throw new Error(response.statusText)  // throw an error if there's something wrong with the response
+//             })
+//             .then(function handleData(data) {
+//                 TotalRecord = data.content.Records.length;
+//                 CustomerArray = [...new Set([...CustomerArray, ...data.content.Records])];
+//                 //check dataExist into indexdb-------------------------
+//                 if (isDemoUser == false && (TotalRecord >= PageSize)) {
+//                     pageNumber++;
+//                     getCustomerList(pageNumber, CustomerArray, TotalRecord);
+//                 }
+//                 else {
+//                     console.log("--------------all customer records are done-----------" + CustomerArray.length);
+//                     UpdateCustomerInIndexDB(udid, CustomerArray);
+
+//                 }
+//             })
+//             .catch(function handleError(error) {
+//                 console.error('Console.save: No data ' + error + " " + JSON.stringify(error));
+//             })
+//     }
+//     getCustomerList(1, [], 0);
+// }
+// const ModifierLoader = () => {
+//     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
+//     const UpdateModifierInIndexDB = (udid, ModifierArray) => {
+//         ModifierArray && ModifierArray.length > 0 && ModifierArray.map((item) => {
+//             add(item).then(
+//                 (key) => {
+//                     console.log("ID Generated: ", key);
+//                     //   let newState = Object.assign({}, state);
+//                     //   newState.id = key;
+//                     //   setState(newState);
+//                     //   history.goBack();
+//                 },
+//                 (error) => {
+//                     console.log(error);
+//                 }
+//             )
+//         })
+//     }
+//     const getModiferList = (pn, pl, trc) => {
+//         var time = moment().toDate().getTime();
+//         var offset = moment().toDate().getTimezoneOffset();
+//         var udid = get_UDid(localStorage.getItem("UDID"));
+//         var pageNumber = pn;
+//         var PageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
+//         var ModifierArray = pl;
+//         var TotalRecord = trc;
+//         const requestOptions = {
+//             method: 'GET',
+//             headers: {
+//                 "access-control-allow-origin": "*",
+//                 "access-control-allow-credentials": "true",
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'application/json',
+//                 'Authorization': 'Basic ' + btoa(sessionStorage.getItem("AUTH_KEY")),
+//             }
+//             , mode: 'cors'
+//         };
+//         var isDemoUser = localStorage.getItem('demoUser') == 'true' && localStorage.getItem('DemoGuid');
+//         if (isDemoUser == true) {
+//             requestOptions.headers['demoauth'] = localStorage.getItem('DemoGuid') && localStorage.getItem('DemoGuid')
+//         }
+//         if (TotalRecord == 0) {
+//             UpdateModifierInIndexDB(udid, ModifierArray);
+//         }
+//         // call firstTime------------------
+//         //  call common service
+//         fetch(`${Config.key.OP_API_URL}/v1/ProductModifier/Records?pageSize=${PageSize}&pageNumber=${pageNumber}&time=${time}&offset=${offset}`, requestOptions)
+//             .then(response => {
+//                 if (response.ok) { return response.json(); }
+//                 throw new Error(response.statusText)  // throw an error if there's something wrong with the response
+//             })
+//             .then(function handleData(data) {
+//                 TotalRecord = data.content.Records.length;
+//                 ModifierArray = [...new Set([...ModifierArray, ...data.content.Records])];
+//                 //check dataExist into indexdb-------------------------
+//                 if (isDemoUser == false && (TotalRecord >= PageSize)) {
+//                     pageNumber++;
+//                     getModiferList(pageNumber, ModifierArray, TotalRecord);
+//                 }
+//                 else {
+//                     console.log("--------------all modifiers records are done-----------" + ModifierArray.length);
+//                     UpdateModifierInIndexDB(udid, ModifierArray);
+
+//                 }
+//             })
+//             .catch(function handleError(error) {
+//                 console.error('Console.save: No data ' + error + " " + JSON.stringify(error));
+//             })
+//         ///ProductModifier/Records?pageSize=${pageSize}&pageNumber=${pageNumber}&time=${time}&offset=${offset}`
+//     }
+//     getModiferList(1, [], 0);
+// }
+const ProductLoader = () => {
+
+    const addProducts = useIndexedDB("products").add;
+    const addCustomers = useIndexedDB("customers").add;
+    const addModifiers = useIndexedDB("modifiers").add;
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch()
+    const [loadingProducts, setLoadingProducts] = useState(0)
+    const [loadPerc, setLoadPerc] = useState(0)
+    const [productLoading, setProductLoading] = useState(false)
+    //const [tableCount, setTableCount] = useState(localStorage.getItem("tableCount") ? JSON.parse(localStorage.getItem("tableCount")) : 0)
+
+    //------------Customer records-----
+    var tableCount = 0;
     const UpdateCustomerInIndexDB = (udid, CustomerArray) => {
         CustomerArray && CustomerArray.length > 0 && CustomerArray.map((item) => {
-            add(item).then(
+            addCustomers(item).then(
                 (key) => {
                     // console.log("ID Generated: ", key);
                     //   let newState = Object.assign({}, state);
@@ -66,7 +220,7 @@ const CustomerLoader = () => {
                 throw new Error(response.statusText)  // throw an error if there's something wrong with the response
             })
             .then(function handleData(data) {
-               
+
                 TotalRecord = data.content.Records.length;
                 CustomerArray = [...new Set([...CustomerArray, ...data.content.Records])];
                 //check dataExist into indexdb-------------------------
@@ -77,28 +231,22 @@ const CustomerLoader = () => {
                 else {
                     console.log("--------------all customer records are done-----------" + CustomerArray.length);
                     UpdateCustomerInIndexDB(udid, CustomerArray);
-                    console.log("CustomerArray",CustomerArray)
-                    var customerList = [];
-                    customerList = CustomerArray ? CustomerArray : [];
-                    customerList = customerList.sort(function (a, b) {
-                        return b.WPId - a.WPId;
-                    })
-                    console.log("customerList",customerList)
-
-                    sessionStorage.setItem("CUSTOMER_ID", customerList[0].WPId ? customerList[0].WPId : 0);
+                    sessionStorage.setItem("CUSTOMER_ID", CustomerArray[0].WPId ? CustomerArray[0].WPId : 0);
                 }
             })
             .catch(function handleError(error) {
                 console.error('Console.save: No data ' + error + " " + JSON.stringify(error));
             })
     }
-    getCustomerList(1, [], 0);
-}
-const ModifierLoader = () => {
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
+
+
+    //-------
+
+    //------------Modifier records----
+
     const UpdateModifierInIndexDB = (udid, ModifierArray) => {
         ModifierArray && ModifierArray.length > 0 && ModifierArray.map((item) => {
-            add(item).then(
+            addModifiers(item).then(
                 (key) => {
                     console.log("ID Generated: ", key);
                     //   let newState = Object.assign({}, state);
@@ -164,22 +312,13 @@ const ModifierLoader = () => {
             })
         ///ProductModifier/Records?pageSize=${pageSize}&pageNumber=${pageNumber}&time=${time}&offset=${offset}`
     }
-    getModiferList(1, [], 0);
-}
-const ProductLoader = () => {
 
-    const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
-
-    const navigate = useNavigate();
-    const dispatch = useDispatch()
-    const [loadingProducts, setLoadingProducts] = useState(0)
-    const [loadPerc, setLoadPerc] = useState(0)
-    const [productLoading, setProductLoading] = useState(false)
+    //------
 
     //........Test--------------------------
     const saveDataIntoIndexDB = (ProductArray) => {
         ProductArray && ProductArray.length > 0 && ProductArray.map((item) => {
-            add(item).then(
+            addProducts(item).then(
                 (key) => {
                     // console.log("ID Generated: ", key);
                     //   let newState = Object.assign({}, state);
@@ -213,14 +352,14 @@ const ProductLoader = () => {
         //redirectToURL()
         // navigate('/loginpin');
         //}
-        var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
+        //var RedirectUrl = ActiveUser.key.isSelfcheckout && ActiveUser.key.isSelfcheckout == true ? '/selfcheckout' : '/home';
 
-        var udid = get_UDid(localStorage.getItem("UDID"));
+        //var udid = get_UDid(localStorage.getItem("UDID"));
 
         var WarehouseId = localStorage.getItem("WarehouseId") ? parseInt(localStorage.getItem("WarehouseId")) : 0;
 
         var pageNumber = pn;
-        var pageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
+        //var pageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
         var PageSize = Config.key.FETCH_PRODUCTS_PAGESIZE;
 
         //var ProductArray = pl;       
@@ -278,9 +417,23 @@ const ProductLoader = () => {
                     //console.log("ProductArray2",ProductArray.length)                        
 
                     // UpdateIndexDB(udid, ProductArray, RedirectUrl);
-                    setTimeout(() => {
+
+                    // if (localStorage.getItem("tableCount")) {
+                    //     var tc = JSON.parse(localStorage.getItem("tableCount"));
+                    //     tc = tc + 1;
+                    //     localStorage.setItem("tableCount", JSON.stringify(tc));
+                    // }
+                    // else {
+                    //     localStorage.setItem("tableCount", "1");
+                    // }
+                    //setTableCount(tableCount + 1);
+                    tableCount = tableCount + 1;
+                    if (tableCount >= 2) {
                         navigate('/home');
-                    }, 100);
+                    }
+                    // setTimeout(() => {
+                    //     navigate('/home');
+                    // }, 100);
 
                 }
             })
@@ -467,9 +620,11 @@ const ProductLoader = () => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-            fetchData()
-            CustomerLoader();
-            ModifierLoader();
+            fetchData();
+            getCustomerList(1, [], 0);
+            getModiferList(1, [], 0);
+            // CustomerLoader();
+            // ModifierLoader();
         }
         return () => {
             useCancelled = true;
@@ -488,14 +643,26 @@ const ProductLoader = () => {
 
     const fetchData = async () => { //calling multiple api
 
-        var udid = get_UDid(localStorage.getItem("UDID"));
-        dispatch(productCount(udid));
+        if (!localStorage.getItem("productcount")) {
+            var udid = get_UDid(localStorage.getItem("UDID"));
+            dispatch(productCount(udid));
+        }
         dispatch(receiptSetting());
         dispatch(taxSetting());
 
     }
 
+    // useEffect(() => {
+    //     console.log("------useeffect---"+tableCount);
+    //     if (localStorage.getItem("tableCount")) {
+    //         var tc = JSON.parse(localStorage.getItem("tableCount"));
+    //         if (tc >= 2) {
+    //             localStorage.removeItem("tableCount");
+    //             navigate('/home');
 
+    //         }
+    //     }
+    // }, [tableCount]);
     var isDemoUser = false;
     //  this.getProductList(1, Config.key.FETCH_PRODUCTS_PAGESIZE, [], pcount);
     return <div>

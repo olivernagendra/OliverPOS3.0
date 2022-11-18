@@ -33,6 +33,7 @@ import { postMetaSlice, getPostMetaSlice } from '../components/common/commonAPIs
 import { sendMailSlice, sendExternalMailSlice } from '../components/common/commonAPIs/sendMailSlice';
 // import {postApi} from '../services/post'
 //import {loginApi} from '../components/login/loginService'
+import cashRoundingSlice from '../components/common/commonAPIs/cashRoundingSlice';
 export const store = configureStore({
   reducer: {
     login: loginSlice.reducer,
@@ -101,6 +102,7 @@ export const store = configureStore({
     sendExternalMail:sendExternalMailSlice.reducer,
     CountryList:getCountrySlice.reducer,
     StateList:getStateSlice.reducer,
+    cashRounding:cashRoundingSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

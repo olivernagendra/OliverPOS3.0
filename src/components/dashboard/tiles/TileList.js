@@ -21,7 +21,7 @@ import { product } from "../product/productSlice";
 // var filtered = [];
 
 const TileList = (props) => {
-    const { getAll,getByID } = useIndexedDB("products");
+    const { getAll, getByID } = useIndexedDB("products");
     const dispatch = useDispatch();
     const [AllProduct, setAllProduct] = useState([]);
     const [filtered, setfiltered] = useState([]);
@@ -32,7 +32,7 @@ const TileList = (props) => {
     const [isLoading, setIsLoading] = useState(false)
     const [respAttribute, respCategory] = useSelector((state) => [state.attribute, state.category])
     const { status, data, error, is_success } = useSelector((state) => state.tile)
-    
+
     // const clearRemoveBtn = () => {
     //     const boxes = document.querySelectorAll('.remove-cover');
     //     boxes.forEach(box => {
@@ -423,7 +423,7 @@ const TileList = (props) => {
         //this.setState({ isLoading: false });
 
     }
-    const filterProductByTile = async(type, item, parent) => {
+    const filterProductByTile = async (type, item, parent) => {
         if (doDelete === true)
             return;
         if (type !== "product")
@@ -453,8 +453,8 @@ const TileList = (props) => {
             //     break;
             case "product":
                 //productDataSearch(item.Title, 0, null)
-                
-               
+
+
                 if (item.ManagingStock == true && item.hasOwnProperty("Product_Id") && item.Product_Id != 0) {
                     dispatch(getInventory(item.Product_Id)); //call to get product warehouse quantity
                 }
@@ -466,12 +466,11 @@ const TileList = (props) => {
                 }
                 else if (type === "simple") {
                     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
-                    if(typeof _item!="undefined")
-                    {
+                    if (typeof _item != "undefined") {
                         var _product = getTaxAllProduct([_item])
-                        if(typeof _product!="undefined")
-                        var result = addSimpleProducttoCart(_product[0]);
-                        
+                        if (typeof _product != "undefined")
+                            var result = addSimpleProducttoCart(_product[0]);
+
                         if (result === 'outofstock') {
                             props.toggleOutOfStock && props.toggleOutOfStock();
                         }
@@ -479,7 +478,7 @@ const TileList = (props) => {
                             dispatch(product());
                         }
                     }
-                    
+
                 }
                 else {
                     props.openPopUp(item);

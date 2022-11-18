@@ -46,6 +46,15 @@ function Cashmanagement() {
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
 
   const HundleCashPopup = (status) => {
+    var inputAmt = document.getElementById("addCashAmount");
+    var inputNote = document.getElementById("addCashNote");
+    if (inputAmt) {
+      inputAmt.value = ""
+    }
+    if (inputNote) {
+      inputNote.value = ""
+
+    }
     setcashPopUpOpen(true)
     setpopupstatus(status)
   }
@@ -96,7 +105,7 @@ function Cashmanagement() {
   }, []);
 
   const loadMore = (pageNo) => {
-    console.log("pageNo",pageNo)
+    console.log("pageNo", pageNo)
     dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.ACTIVITY_PAGE_SIZE, "pageNumber": 1 }));
   }
 
@@ -207,7 +216,7 @@ function Cashmanagement() {
     firstRecordId = ""
   }
 
-   const onScroll = (e) => {
+  const onScroll = (e) => {
     // const bottom = Number((e.target.scrollHeight - e.target.scrollTop).toFixed(0)) - e.target.clientHeight < 50;
     // if (_cashmangementlist.length == listrecordscount) {
 
@@ -217,7 +226,7 @@ function Cashmanagement() {
     //     loadMore(defauldnumber)
     //   }
     // }
-   };
+  };
 
   // console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)
 
@@ -262,7 +271,7 @@ function Cashmanagement() {
         </div> */}
           <div className="cm-list">
             <div className="cm-list-header-landscape">
-            <p>Cash Management</p>
+              <p>Cash Management</p>
             </div>
             <div className="cm-list-body" ref={myRef} onScroll={onScroll} >
               {((!allCashRecords) || allCashRecords.length == 0) ? <>
@@ -271,14 +280,14 @@ function Cashmanagement() {
               </> :
                 <>
                   <button className="current-register no-transform selected">
-                    <p className="style1"> {localCashData && localCashData.Status =="Open"  ? "Currently Active" : "Currently  Closed "}  </p>
+                    <p className="style1"> {localCashData && localCashData.Status == "Open" ? "Currently Active" : "Currently  Closed "}  </p>
                     <div className="text-row">
                       <p>{localCashData && localCashData.RegisterName}</p>
-                      <p className="open"> {localCashData && localCashData.Status =="Open"  ? "Open" : "Closed "}  </p>
+                      <p className="open"> {localCashData && localCashData.Status == "Open" ? "Open" : "Closed "}  </p>
                       {/* <p className="smobile-fake-button">Closed</p> */}
                     </div>
                     <p className="style2">User: {localCashData && localCashData.SalePersonName}</p>
-                    <div className="mobile-fake-button">{localCashData && localCashData.Status =="Open"  ? "Open" : "Closed "}</div>
+                    <div className="mobile-fake-button">{localCashData && localCashData.Status == "Open" ? "Open" : "Closed "}</div>
                   </button>
                   {/* <div className="prev-registers"> */}
 
@@ -364,11 +373,11 @@ function Cashmanagement() {
               <div className="row">
                 <div className="row-group">
                   <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-               
+
                   <div className="status open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</div>
                 </div>
-            {console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)}
-                <p className="active"> {CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status == 'Close' ? <>Currenly Close</>:<>Currenly Active</>  } </p>
+                {console.log("CashDrawerPaymentDetail", CashDrawerPaymentDetail)}
+                <p className="active"> {CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status == 'Close' ? <>Currenly Close</> : <>Currenly Active</>} </p>
               </div>
               <div className="row">
                 <div className="col-group">
@@ -382,13 +391,13 @@ function Cashmanagement() {
               </div>
             </div>
             <div className="detailed-body">
-            <CashDrawerPaymentDetailList />
+              <CashDrawerPaymentDetailList />
             </div>
 
             {/* Footer only available if register is active */}
             <div className="detailed-footer">
               <button onClick={() => HundleCashPopup('remove')} id="removeCashSubwindowButton">Remove Cash</button>
-              <button onClick={() => HundleCashPopup('add')}  id="addCashSubwindowButton">Add Cash</button>
+              <button onClick={() => HundleCashPopup('add')} id="addCashSubwindowButton">Add Cash</button>
             </div>
           </div>
 

@@ -88,9 +88,12 @@ const CustomerView = () => {
   const toggleNoteModel = () => {
     setisShowNoteModel(!isShowNoteModel)
   }
-  const toggleCreditModel = () => [
+  const toggleCreditModel = () => {
     setisShowCreditModel(!isShowCreditModel)
-  ]
+    if (isShowCreditModel == true) {
+      document.getElementById("addCreditInput").focus()
+    }
+  }
   const closeNotemodel = () => {
     setisShowNoteModel(false)
     setisShowCreditModel(false)
@@ -357,6 +360,9 @@ const CustomerView = () => {
         (item.Email && item.Email.toLowerCase().includes(Email.toLowerCase()))
       ))
     }
+    if (_filteredCustomer.length == 1) {
+      setupdateCustomerId(_filteredCustomer[0].WPId)
+    }
     setFilteredCustomer(_filteredCustomer);
     scount += _filteredCustomer.length;
     // console.log("_filteredCustomer", _filteredCustomer)
@@ -520,13 +526,13 @@ const CustomerView = () => {
               <button id="customersClearSearch" onClick={clearSearch}>Clear Search</button>
 
             </div>
-            <label for="fName">First Name</label>
+            <label htmlFor="fName">First Name</label>
             <input type="text" id="FirstName" placeholder="Enter First Name" value={FirstName} onChange={e => setFirstName(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
-            <label for="lName">Last Name</label>
+            <label htmlFor="lName">Last Name</label>
             <input type="text" id="LastName" placeholder="Enter Last Name" value={LastName} onChange={e => setLastName(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
-            <label for="email">Email</label>
+            <label htmlFor="email">Email</label>
             <input type="email" id="Email" placeholder="Enter Email" value={Email} onChange={e => setEmail(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
-            <label for="tel">Phone Number</label>
+            <label htmlFor="tel">Phone Number</label>
             <input type="number" id="PhoneNumber" placeholder="Enter Phone Number" value={PhoneNumber} onChange={e => setPhoneNumber(e.target.value)} onKeyUp={(e) => handleKeyUp(e)} />
             <button id="searchCustomersButton" onClick={productDataSearch}>Search</button>
           </div>
@@ -536,7 +542,7 @@ const CustomerView = () => {
             <p>Sort by:</p>
             <div onClick={toggleSortWrapp} id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <img src={DownArrowBlue} alt="" />
-              <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
+              <input type="text" id="filterType" value={sortbyvaluename} readOnly />
               {/* <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />

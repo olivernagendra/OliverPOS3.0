@@ -57,29 +57,32 @@ const Register = () => {
 
     const { status, dataone, error, is_success } = useSelector((state) => state.GetOpenRegister)
     console.log("status", status, "dataone", dataone, "error", error, "is_success", is_success)
-
-    if (status === STATUSES.IDLE && is_success && error == "") {
-        //if (dataone && dataone.content && dataone.content !== undefined) {
-        if (dataone && dataone.message === "Success" && loading === true) {
-            // if (dataone.content && dataone.content !== '' && dataone.content !== 0) {
-            //     localStorage.setItem("IsCashDrawerOpen", "true");
-            //     localStorage.setItem("Cash_Management_ID", dataone.content.Id);
-            // } else {
-            //     localStorage.setItem("IsCashDrawerOpen", "false");
-            //     localStorage.removeItem("Cash_Management_ID");
-            // }
-            setLoading(false)
-            if (openRegister() == true) {
-                navigate('/openregister')
-            }
-            else {
-                navigate('/pin');
+    useEffect(() => {
+        if (status === STATUSES.IDLE && is_success==true /*&& error == ""*/) {
+            //if (dataone && dataone.content && dataone.content !== undefined) {
+            if (dataone && dataone.message === "Success" && loading === true) {
+                // if (dataone.content && dataone.content !== '' && dataone.content !== 0) {
+                //     localStorage.setItem("IsCashDrawerOpen", "true");
+                //     localStorage.setItem("Cash_Management_ID", dataone.content.Id);
+                // } else {
+                //     localStorage.setItem("IsCashDrawerOpen", "false");
+                //     localStorage.removeItem("Cash_Management_ID");
+                // }
+                setLoading(false)
+                if (openRegister() == true) {
+                    navigate('/openregister')
+                }
+                else {
+                    navigate('/pin');
+                }
             }
         }
-    }
-    else if (status === STATUSES.IDLE && error !== "") {
-        setLoading(false)
-    }
+        else if (status === STATUSES.IDLE && error !== "") {
+            if(loading===true)
+           { setLoading(false)}
+        }
+    }, [dataone]);
+    
     useEffect(() => {
         fetchData();
     }, []);
@@ -127,6 +130,7 @@ const Register = () => {
         }
         else {
             localStorage.setItem("IsCashDrawerOpen", "false");
+            navigate('/pin')
         }
     }
 

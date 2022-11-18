@@ -76,7 +76,7 @@ function LeftNavBar(props) {
                             var _data = data && JSON.parse(data);
                             responseData(_data)
                         } catch (e) {
-                            console.log(e);
+                           // console.log(e);
                         }
 
                     }

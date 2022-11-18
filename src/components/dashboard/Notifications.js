@@ -80,8 +80,16 @@ const Notifications = (props) => {
         })
         TempOrders && TempOrders.map(list => {
             var description = "";
-            //order completed
 
+            var time = list.date.includes(',') ? list.date.split(',')[1] : "";
+            if (typeof time != "undefined" && time != null) {
+                time = time.toUpperCase();
+            }
+            //order completed
+            // const d = new Date(list.date);
+
+            const _openDateTime = list.date && list.date !== "" ? list.date.split(',')[1] : "";
+            console.log("_openDateTime", _openDateTime)
             if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true) {
                 description = ((
                     <div className="notification-card" key={uniqueKey()}>
@@ -94,10 +102,11 @@ const Notifications = (props) => {
                             <img src={StorefrontIconGreen} alt="" />
                         </div>
                         <div className="col">
-                            <p className="style1">Order Created</p>
+                            <p className="style1">Email sent succeessfully</p>
                             <p className="style2">Order #{list.TempOrderID}</p>
                         </div>
-                        <p>1hr ago</p>
+                        {/* <p>1hr ago</p> */}
+                        <p>{time}</p>
                     </div>
 
                 ))
@@ -128,7 +137,8 @@ const Notifications = (props) => {
                         <p className="style1">Order Created</p>
                         <p className="style2">Order #{list.TempOrderID}</p>
                     </div>
-                    <p>1hr ago</p>
+                    {/* <p>1hr ago</p> */}
+                    <p>{time}</p>
                 </div>))
             }
             //order refunded successfully
@@ -148,14 +158,15 @@ const Notifications = (props) => {
                             Order# {list.TempOrderID}
                         </p>
                     </div>
-                    <p>1hr ago</p>
+                    {/* <p>1hr ago</p> */}
+                    <p>{time}</p>
                 </div>))
             }//sync issue
             else if (list.Status == "failed" && list.new_customer_email == "") {
                 description = ((
 
                     <div className="notification-card" key={uniqueKey()}>
-                        <div classNae="side-color">
+                        <div className="icon-wrapper red">
                             <img src={ErrorIconRed} alt="" />
                         </div>
                         <div className="col">
@@ -163,7 +174,8 @@ const Notifications = (props) => {
                             <p className="style2">Order #{list.TempOrderID}</p>
                             <a href="#" onClick={() => reSyncOrder(list.TempOrderID)}>Retry</a>
                         </div>
-                        <p>3:23PM</p>
+                        {/* <p>3:23PM</p> */}
+                        <p>{time}</p>
                         {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Error_Icon} alt="" />
@@ -296,7 +308,7 @@ const Notifications = (props) => {
     }, []);
     return (
         <div id="notificationsWrapper" className={props.isShow === true ? "notifications-wrapper" : "notifications-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div id="notificationsContent" className={isSoundNotification === true ?"notifications settings":"notifications"}>
+            <div id="notificationsContent" className={isSoundNotification === true ? "notifications settings" : "notifications"}>
                 {/* <div id="soundNotificationsWrapper" className={isSoundNotification === true ? "sound-notifications-wrapper" : "sound-notifications-wrapper hidden"}>
                     <div className="sound-notifications">
                         <div className="header">
@@ -412,33 +424,33 @@ const Notifications = (props) => {
                     </div> */}
                 </div>
                 <div className="noti-settings-background" id="notiSettingsBackground"></div>
-					<div className="noti-settings-wrapper">
-						<div class="noti-settings">
-							<div class="header">
-								<p>Settings</p>
-							</div>
-							<div class="settings-list">
-								<div class="setting-row">
-									<img src={VolumeIcon} alt="" />
-									<p>Sound Notifications</p>
-								</div>
-								<div class="setting-row">
-									<label>
-										POS Orders
-										<input type="checkbox"/>
-										<div class="toggle"></div>
-									</label>
-								</div>
-								<div class="setting-row">
-									<label>
-										Web Order
-										<input type="checkbox"/>
-										<div class="toggle"></div>
-									</label>
-								</div>
-							</div>
-						</div>
-					</div>
+                <div className="noti-settings-wrapper">
+                    <div class="noti-settings">
+                        <div class="header">
+                            <p>Settings</p>
+                        </div>
+                        <div class="settings-list">
+                            <div class="setting-row">
+                                <img src={VolumeIcon} alt="" />
+                                <p>Sound Notifications</p>
+                            </div>
+                            <div class="setting-row">
+                                <label>
+                                    POS Orders
+                                    <input type="checkbox" />
+                                    <div class="toggle"></div>
+                                </label>
+                            </div>
+                            <div class="setting-row">
+                                <label>
+                                    Web Order
+                                    <input type="checkbox" />
+                                    <div class="toggle"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>)
 }
