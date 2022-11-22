@@ -374,8 +374,10 @@ const CustomerView = () => {
     var UID = get_UDid('UDID');
     setTimeout(() => {
       dispatch(customergetDetail(customer_Id, UID));
+    }, 100);
+    setTimeout(() => {
       dispatch(getAllEvents(customer_Id, UID));
-    }, 300);
+    }, 150);
 
   }
 
