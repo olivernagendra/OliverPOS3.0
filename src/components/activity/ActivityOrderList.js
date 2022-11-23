@@ -273,6 +273,12 @@ const ActivityOrderList = (props) => {
         isTotalRefund = true
     }
 
+    // var DateTime = props.Details && props.Details;
+    var gmtDateTime = "";
+    if (activityOrderDetails && activityOrderDetails.OrderDateTime && activityOrderDetails.time_zone) {
+        gmtDateTime = FormateDateAndTime.formatDateAndTime(activityOrderDetails.OrderDateTime, activityOrderDetails.time_zone)
+    }
+    var CreateDate = activityOrderDetails.CreatedDate && activityOrderDetails.CreatedDate !== 'Invalid date' ? activityOrderDetails.CreatedDate : gmtDateTime == "" ? "" : gmtDateTime;
 
     return (
         <>
@@ -286,7 +292,7 @@ const ActivityOrderList = (props) => {
                 </div>
                 <div className="row">
                     <p className="style2">Served by: {activityOrderDetails.ServedBy}</p>
-                    <p className="style2">July 19, 2022 &nbsp; 12:35PM</p>
+                    <p className="style2">{CreateDate}</p>
                 </div>
                 <div className="row">
                     <p className="style3">
