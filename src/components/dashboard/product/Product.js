@@ -181,8 +181,7 @@ const Product = (props) => {
                     (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
                 // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
                 //-- maxQty update after inventory check
-                if(typeof _currentStock!="undefined" && _currentStock!=null)
-                {
+                if (typeof _currentStock != "undefined" && _currentStock != null) {
                     maxQty = _currentStock;
                 }
                 //---
@@ -888,7 +887,7 @@ const Product = (props) => {
                         //         }
                         //     })
                         // }
-                        
+
                         //var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")))
                         var result = selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
                         // if (result === true) {
@@ -907,8 +906,8 @@ const Product = (props) => {
             });
         }
     }
-  
-    
+
+
     const showAvailabe = (selVari) => {
         var _all = [];
         // console.log("--selVari-----"+JSON.stringify(attributeall.length));
@@ -921,18 +920,18 @@ const Product = (props) => {
                     //         {
                     //console.log(allVariations.length+"--matched-----"+c);
                     // if (_all && _all.length > 0) {
-                        var found = selVari.find(a => cmb.includes(a.Slug)|| cmb.includes("**"));
-                        // var _found = selVari.filter(a => cmb.includes(a.Slug));
-                        if (typeof found != "undefined" && found != null) {
-                            var _f = cmb.find(a => a === found.Slug);
-                            if (typeof _f != "undefined" && _f != null) { _all.push(cmb); }
-                        }
-                        //   else{
-                        //     // var _f=cmb.find(a=>a===found.Slug);
-                        //     // if(typeof _f!="undefined" && _f!=null)
-                        //     // {_all.push(cmb);}
-                        //     _all.push({var:cmb,isfound:false});
-                        //     }
+                    var found = selVari.find(a => cmb.includes(a.Slug) || cmb.includes("**"));
+                    // var _found = selVari.filter(a => cmb.includes(a.Slug));
+                    if (typeof found != "undefined" && found != null) {
+                        var _f = cmb.find(a => a === found.Slug);
+                        if (typeof _f != "undefined" && _f != null) { _all.push(cmb); }
+                    }
+                    //   else{
+                    //     // var _f=cmb.find(a=>a===found.Slug);
+                    //     // if(typeof _f!="undefined" && _f!=null)
+                    //     // {_all.push(cmb);}
+                    //     _all.push({var:cmb,isfound:false});
+                    //     }
                     // }
                     // else { _all.push({var:cmb,isfound:false}); }
 
@@ -947,11 +946,9 @@ const Product = (props) => {
             _all && _all.map(d => {
                 d && d.map(e => {
                     var _f = _temp.find(a => a === e);
-                    if (typeof _f != "undefined" && _f != null)
-                     { }
-                     else
-                     {_temp.push(e);}
-                    
+                    if (typeof _f != "undefined" && _f != null) { }
+                    else { _temp.push(e); }
+
                 })
             })
             console.log("--_all-----" + JSON.stringify(_all));
@@ -967,17 +964,16 @@ const Product = (props) => {
             //          { }
             //          else
             //          {_temp.push(e);}
-                    
+
             //     })
             // })
-            
+
             var array3 = allVariations.filter(function (obj) { return _temp.indexOf(obj) == -1; });
 
-           // console.log(allVariations.length + "---" + "--not _all-----" + JSON.stringify(array3));
+            // console.log(allVariations.length + "---" + "--not _all-----" + JSON.stringify(array3));
 
             console.log("---array3 filtered---" + JSON.stringify(array3));
-            if(selVari.length>1)
-            {
+            if (selVari.length > 1) {
                 setDisableAttribute(array3);
             }
 
@@ -988,7 +984,7 @@ const Product = (props) => {
     var _disableAttribute = [];
     var isAllOption = false;
     const optionClick = (option, attribute, AttrIndex) => {
-       // console.log("arrayindes-" + AttrIndex);
+        // console.log("arrayindes-" + AttrIndex);
         setIsEdit(false);
 
         //    if(selOptions && selOptions.length>0)
@@ -999,17 +995,17 @@ const Product = (props) => {
         //----------
         var _slug = null;
         let _OptionAll = attribute.OptionAll;// && JSON.parse(attribute.OptionAll);
-        
+
         if (Array.isArray(_OptionAll) == true || _OptionAll.length >= 1) {
             isAllOption = true;
         }
         else {
             _OptionAll = attribute.options ? attribute.options.split(',') : [];
         }
-        var result =isAllOption===true? _OptionAll.filter(b => (b.hasOwnProperty("slug")? b.slug:b) === option):_OptionAll.filter(b => b === option);
+        var result = isAllOption === true ? _OptionAll.filter(b => (b.hasOwnProperty("slug") ? b.slug : b) === option) : _OptionAll.filter(b => b === option);
         if (result && typeof result != "undefined" && result.length > 0) {
 
-            _slug= isAllOption ==true &&  result[0].hasOwnProperty("slug") ?result[0].slug:result[0];
+            _slug = isAllOption == true && result[0].hasOwnProperty("slug") ? result[0].slug : result[0];
             //selVariations.find(ele => ele.OptionTitle===result[0].name);
         }
         //------
@@ -1023,7 +1019,7 @@ const Product = (props) => {
         }
         _selVariations = _selVariations.map(obj => {
             if (obj.Name === attribute.Name) {
-                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug: "" };
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug : "" };
             }
             return obj;
         });
@@ -1091,7 +1087,7 @@ const Product = (props) => {
                         //-------
 
 
-                            return _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) && _attribute.length === selVariations.length)
+                        return _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")) && _attribute.length === selVariations.length)
                     })
                     if (filteredAttribute && filteredAttribute.length == 1) {
                         props.updateVariationProduct && props.updateVariationProduct(filteredAttribute[0]);
@@ -1103,7 +1099,7 @@ const Product = (props) => {
                         props.updateVariationProduct && props.updateVariationProduct(null);
                         // dispatch(getInventory(null)); //call to get product warehouse quantity
                     }
-                   // showAvailabe(option, _selVariations);
+                    // showAvailabe(option, _selVariations);
                     // if (allCombinations && allCombinations.length > 0) {
                     //     allCombinations.map(cmb => {
                     //         if(cmb && cmb.length>0)
@@ -1117,7 +1113,7 @@ const Product = (props) => {
                     //console.log("--att p count--- ", JSON.stringify(filteredAttribute.length));
 
                     //var filteredAttribute1 = allProdcuts.filter(item => {
-                        allProdcuts.map(item => {
+                    allProdcuts.map(item => {
                         // var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         // var aa = _selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")))
 
@@ -1148,7 +1144,7 @@ const Product = (props) => {
                         //var result = selVariations.every(ele => (allCombi.includes(ele.OptionTitle) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
                         //var result = selVariations.every(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
                         // var _result = selVariations.filter(ele => (allCombi.includes(ele.Slug) || allCombi.includes("**")) /*&& _attribute.length===selVariations.length*/)
-                       
+
                         // if(_result )
                         // {
                         //     console.log("-_result--->> ", JSON.stringify(_result));
@@ -1164,13 +1160,12 @@ const Product = (props) => {
                     //console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
                     //console.log("--allVariations--- ", JSON.stringify(allVariations));
                     //console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
-                     var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
+                    var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
                     // //_disableAttribute=array3;
-                    if(_selVariations && _selVariations.length==1 && array3 && _attribute && _attribute.length>1)
-                    {
+                    if (_selVariations && _selVariations.length == 1 && array3 && _attribute && _attribute.length > 1) {
                         setDisableAttribute(array3);
                     }
-                     console.log("--array3--- ", JSON.stringify(array3));
+                    console.log("--array3--- ", JSON.stringify(array3));
                 }
 
             });
@@ -1415,6 +1410,8 @@ const Product = (props) => {
 
     if (warehouseDetail && warehouseDetail.length > 0) {
         currentWareHouseDetail = warehouseDetail.find(item => item.warehouseId == CurrentWarehouseId)
+    } else {
+        currentWareHouseDetail = null;
     }
 
     var _currentStock = currentWareHouseDetail && currentWareHouseDetail !== "" ? currentWareHouseDetail.Quantity : variationStockQunatity;
@@ -1505,9 +1502,9 @@ const Product = (props) => {
                                                 {
                                                     attribute.OptionAll && attribute.OptionAll.map((opt, i) => {
 
-                                                        var option =  opt.hasOwnProperty("slug") ?opt.slug:opt;
-                                                        var displayOption= opt.hasOwnProperty("name") ?opt.name:opt;
-                                                        
+                                                        var option = opt.hasOwnProperty("slug") ? opt.slug : opt;
+                                                        var displayOption = opt.hasOwnProperty("name") ? opt.name : opt;
+
                                                         //var newOption = isAllOption ==true && opt.slug ? opt.slug:opt;
 
                                                         let _item = option;//opt.slug;
@@ -1517,20 +1514,17 @@ const Product = (props) => {
                                                             _disabled = disableAttribute && disableAttribute.some(a => a.toLowerCase() === option.toLowerCase());
                                                         }
                                                         if (_disabled === false) {
-                                                            if(availableAttribute && availableAttribute.length>0)
-                                                            {
-                                                                var _vari = availableAttribute.find(a => a.toLowerCase() === option.toLowerCase()|| a==="**");
+                                                            if (availableAttribute && availableAttribute.length > 0) {
+                                                                var _vari = availableAttribute.find(a => a.toLowerCase() === option.toLowerCase() || a === "**");
                                                                 _disabled = typeof _vari != "undefined" && _vari != null ? false : true;
                                                             }
 
                                                         }
-                                                        if (_disabled === false) 
-                                                        {
-                                                            console.log("----" +displayOption +"---"+_disabled)
+                                                        if (_disabled === false) {
+                                                            console.log("----" + displayOption + "---" + _disabled)
                                                         }
-                                                        else if (_disabled === true) 
-                                                        {
-                                                            console.log("----" + displayOption+"---"+_disabled)
+                                                        else if (_disabled === true) {
+                                                            console.log("----" + displayOption + "---" + _disabled)
                                                         }
 
 
@@ -1545,13 +1539,13 @@ const Product = (props) => {
                                                             if (selVal === true) {
                                                                 setSelectedOption(_item, attribute, i)
                                                             }
-                                                            return <label className={_disabled === true ?"btn-disable":""}  disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null}/><div className="custom-radio"><p>{displayOption}</p></div></label>
+                                                            return <label className={_disabled === true ? "btn-disable" : ""} disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null} /><div className="custom-radio"><p>{displayOption}</p></div></label>
 
                                                         }
                                                         else {
                                                             var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
                                                             // var selVal = selVariations ? selVariations.some(a => a.Slug.toLowerCase() === _item.toLowerCase()) : false;
-                                                            return <label className={_disabled === true ?"btn-disable":""}  disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null}/><div className="custom-radio"><p>{displayOption}</p></div></label>
+                                                            return <label className={_disabled === true ? "btn-disable" : ""} disabled={_disabled} key={"l_" + option} onClick={() => _disabled === false ? optionClick(option, attribute, i) : null}><input type="radio" id={attribute.Name + "" + option} name={attribute.Name} checked={selVal} onChange={null} /><div className="custom-radio"><p>{displayOption}</p></div></label>
                                                         }
 
                                                     })
@@ -1580,7 +1574,7 @@ const Product = (props) => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                                 return (
                                                                     <label>
-                                                                        <input type="radio" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null}/>
+                                                                        <input type="radio" id={id} name={efm.Name} value={id} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null} />
                                                                         <div className="custom-radio">
                                                                             <p>{efm.Name}</p>
                                                                         </div>
@@ -1635,7 +1629,7 @@ const Product = (props) => {
                                                                 var id = (efm.Name != null && typeof efm.Name != "undefined") && (efm.Name).replace(/ /g, "_");
                                                                 return (
                                                                     <label htmlFor={id}>
-                                                                        <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null}/>
+                                                                        <input type="radio" id={id} name={mod.Title} value={efm.Name} data-checked-value={efm.Default} data-gparent-name={gpname} data-gpid={gpid} data-amount={efm.Amount} data-add-sub={efm.AddnSubtract} data-amount-type={efm.Type} onChange={null} />
                                                                         <div className="custom-radio">
                                                                             <p>{efm.Name}</p>
                                                                         </div>
@@ -1781,12 +1775,13 @@ const Product = (props) => {
                     <div id="navCover" className="nav-cover"></div>
                 </div>
                 <ProductDiscount isShow={isProductDiscount} toggleProductDiscount={toggleProductDiscount} selecteditem={props.selProduct}></ProductDiscount>
-                <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
+                {isAdjustInventory == true && <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
                     productStockQuantity={_currentStock}
                     product={_product}
                     fatchUpdateInventory={fatchUpdateInventory}
                     isAdjustInventory={isAdjustInventory}
                 ></AdjustInventory>
+                }
                 <NoVariationSelected isShow={isNoVariationSelected} toggleNoVariationSelected={toggleNoVariationSelected}></NoVariationSelected>
                 <ProductNote isShow={isProductNote} toggleProductNote={toggleProductNote} addNote={addNote}></ProductNote>
                 <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock} toggleAdjustInventory={toggleAdjustInventory}></MsgPopupOutOfStock>
