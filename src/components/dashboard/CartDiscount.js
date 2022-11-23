@@ -42,6 +42,8 @@ const CartDiscount = (props) => {
         setDiscountAmount((parseFloat(str) / 100).toFixed(2));
     }
     const closePopup = () => {
+        setAdd_title("");
+        setFeeAmount(0)
         setDiscountAmount("");
         setTxtValue("");
         props.toggleCartDiscount();
