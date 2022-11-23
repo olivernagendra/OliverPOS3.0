@@ -753,12 +753,11 @@ const CustomerView = () => {
             <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
             <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
           </div>
-        </div> : <div style={{ textAlign: "center", paddingTop: "50%", color: "gray" }}>
-          <div className="no-results">
-            <p className="style1">No order to display.</p>
-            <p className="style2">Try searching for an order of select  <br /> from recent order to view.</p>
-          </div>
-        </div>}
+        </div> : <><div id="CVDetailed" className="cv-detailed">
+				<div className="no-search-results-detailed">
+					<p className="style1">No customer to display.</p>
+					<p className="style2">Try searching for an customer or <br /> select from list to view.</p>
+				</div></div></>   }
       </div>
     </React.Fragment>
   )

@@ -24,7 +24,8 @@ function Cashmanagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   var registerId = localStorage.getItem('register');
-  var pageSize = Config.key.CUSTOMER_PAGE_SIZE;
+
+  // const [PageSize, setpageSize] = useState(Config.key.CUSTOMER_PAGE_SIZE)
   var current_date = moment().format(Config.key.DATE_FORMAT);
   const myRef = useRef();
   const [defauldnumber, setDefauldNumber] = useState(2);
@@ -41,6 +42,8 @@ function Cashmanagement() {
   const [activateSelect, setActivateSelect] = useState()
   const [_cashmangementlist, setCashmanagementList] = useState([])
   const [listrecordscount, setlistrecordscount] = useState([])
+  // const [TotalRecords, setTotalRecords] = useState(0)
+  // const [PageNumber, setPageNumber] = useState(0)
   //var callSecondApi = true;
   var firstRecordId = "";
   const [callDetailApiOnLoad, setCallDetailApiOnLoad] = useState(true);
@@ -93,6 +96,8 @@ function Cashmanagement() {
     setActivateSelect(OrderId)
   }
 
+ 
+
   let useCancelled = false;
   useEffect(() => {
     if (useCancelled == false) {
@@ -104,9 +109,17 @@ function Cashmanagement() {
     }
   }, []);
 
-  const loadMore = (pageNo) => {
-    console.log("pageNo", pageNo)
-    dispatch(cashRecords({ "registerId": registerId, "pageSize": Config.key.ACTIVITY_PAGE_SIZE, "pageNumber": 1 }));
+  const loadMore = (number) => {
+    var PageSize = Config.key.CUSTOMER_PAGE_SIZE;
+    var TotalRecords = 0;
+    var PageNumber = 0;
+
+    if (TotalRecords == 0 || (TotalRecords / PageSize) >= (PageNumber)
+      || ((PageSize * (PageNumber + number)) > 0)) {
+      PageNumber = PageNumber + number;
+      dispatch(cashRecords({ "registerId": registerId, "pageSize": 1000, "pageNumber": number }));
+    }
+
   }
 
   const [cashdrawer] = useSelector((state) => [state.cashmanagement])
@@ -130,14 +143,15 @@ function Cashmanagement() {
 
       if (_RecordArray.length > 0) {
         array = _RecordArray.slice().sort((a, b) => b.LogDate - a.LogDate)
-        array = [...new Set([...array, ...data.content.Records])];
+        // TempOrders = TempOrders.filter(item => item.TempOrderID == tempOrderId);
+        // array = [...new Set([...array, ...data.content.Records])];
         array.reverse();
         var openingCashDrawerRecord = array ? array.find(Items => Items.ClosedTimeUtc == null) : null;
         if (openingCashDrawerRecord && openingCashDrawerRecord.Id) {
-          // console.log("cashmangement  openingCashDrawerRecord.Id", openingCashDrawerRecord.Id)
           localStorage.setItem("Cash_Management_ID", openingCashDrawerRecord.Id)
           localStorage.setItem("IsCashDrawerOpen", "true");
         }
+
         firstRecordId = array && array.length > 0 ? array[0].Id : '';
       }
 
@@ -152,9 +166,9 @@ function Cashmanagement() {
 
 
   //======Cash ReCords API Data Store 
-  var allCashRecords = _cashmangementlist
+  var allCashRecords = []
+  var allCashRecords = _cashmangementlist ? _cashmangementlist && _cashmangementlist.filter(Items => Items.ClosedTimeUtc !== null) : null;
   var current_date = moment().format(Config.key.DATE_FORMAT);
-  var _newActivities = allCashRecords;
   /// Find Dates and And filter list with dates----------------------
   var getDistinctActivity = {};
   var _activity = allCashRecords
@@ -228,8 +242,6 @@ function Cashmanagement() {
     // }
   };
 
-  // console.log("CashDrawerPaymentDetail",CashDrawerPaymentDetail)
-
 
   var _balance = 0;
   if (CashDrawerPaymentDetail) {
@@ -243,7 +255,7 @@ function Cashmanagement() {
   var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
   var _openDateTime = moment.utc(openDateTime).local().format(Config.key.MONTH_DAY_FORMAT);
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
-  var localCashData = localStorage.getItem("Cash_Management_Data") ? JSON.parse(localStorage.getItem("Cash_Management_Data")) : '';
+  var localCashData = ''
 
   return (
     <>
@@ -279,15 +291,15 @@ function Cashmanagement() {
                 <LoadingSmallModal></LoadingSmallModal>
               </> :
                 <>
-                  <button className="current-register no-transform selected">
-                    <p className="style1"> {localCashData && localCashData.Status == "Open" ? "Currently Active" : "Currently  Closed "}  </p>
+                  <button className="current-register no-transform selected" onClick={()=>getCashDrawerPaymentDetail(openingCashDrawerRecord.Id)}>
+                    <p className="style1"> {openingCashDrawerRecord && openingCashDrawerRecord.ClosedTimeUtc == null ? "Currently Active" : "Currently  Closed "}  </p>
                     <div className="text-row">
-                      <p>{localCashData && localCashData.RegisterName}</p>
-                      <p className="open"> {localCashData && localCashData.Status == "Open" ? "Open" : "Closed "}  </p>
+                      <p>{openingCashDrawerRecord && openingCashDrawerRecord.RegisterName}</p>
+                      <p className="open"> {openingCashDrawerRecord && openingCashDrawerRecord.ClosedTimeUtc == null ? "Open" : "Closed "}  </p>
                       {/* <p className="smobile-fake-button">Closed</p> */}
                     </div>
-                    <p className="style2">User: {localCashData && localCashData.SalePersonName}</p>
-                    <div className="mobile-fake-button">{localCashData && localCashData.Status == "Open" ? "Open" : "Closed "}</div>
+                    <p className="style2">User: {openingCashDrawerRecord && openingCashDrawerRecord.SalePersonName}</p>
+                    <div className="mobile-fake-button">{openingCashDrawerRecord && openingCashDrawerRecord.ClosedTimeUtc == null ? "Open" : "Closed "}</div>
                   </button>
                   {/* <div className="prev-registers"> */}
 
@@ -376,7 +388,7 @@ function Cashmanagement() {
 
                   <div className="status open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</div>
                 </div>
-                {console.log("CashDrawerPaymentDetail", CashDrawerPaymentDetail)}
+              
                 <p className="active"> {CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status == 'Close' ? <>Currenly Close</> : <>Currenly Active</>} </p>
               </div>
               <div className="row">
@@ -396,8 +408,8 @@ function Cashmanagement() {
 
             {/* Footer only available if register is active */}
             <div className="detailed-footer">
-              <button onClick={() => HundleCashPopup('remove')} id="removeCashSubwindowButton">Remove Cash</button>
-              <button onClick={() => HundleCashPopup('add')} id="addCashSubwindowButton">Add Cash</button>
+              <button style={{ opacity: CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? 0.5 : 1 }} disabled={ CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? true : false} onClick={() => HundleCashPopup('remove')} id="removeCashSubwindowButton">Remove Cash</button>
+              <button style={{ opacity: CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? 0.5 : 1 }} disabled={ CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? true : false}  onClick={() => HundleCashPopup('add')} id="addCashSubwindowButton">Add Cash</button>
             </div>
           </div>
 
