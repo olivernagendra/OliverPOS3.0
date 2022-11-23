@@ -137,14 +137,7 @@ const Home = () => {
             dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
         }
     }
-    // Set First time CashManagment Datain localStore
-
-    const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
-    useEffect(() => {
-        if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail) {
-            localStorage.setItem("Cash_Management_Data", JSON.stringify(cashDrawerAllDetails.getdetail && cashDrawerAllDetails.getdetail.content));
-        }
-    }, [cashDrawerAllDetails]);
+   
 
     // useEffect(() => {
     //     initFn();
