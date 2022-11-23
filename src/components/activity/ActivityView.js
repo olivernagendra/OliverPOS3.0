@@ -221,7 +221,7 @@ const ActivityView = () => {
     _activity && _activity.map(item => {
         //console.log("item", item)
         var dateKey = FormateDateAndTime.formatDateAndTime(item.date_time && item.date_time !== undefined ? item.date_time : item.CreatedDate, item.time_zone);
-      //  console.log("dateKey", dateKey)
+        //  console.log("dateKey", dateKey)
         if (!getDistinctActivity.hasOwnProperty(dateKey)) {
             getDistinctActivity[dateKey] = new Array(item);
         } else {
@@ -294,7 +294,7 @@ const ActivityView = () => {
 
     useEffect(() => {
         document.querySelectorAll(".date-selector-wrapper left > button").forEach((button) => {
-            console.log("button",button)
+            console.log("button", button)
             button.addEventListener("click", (e) => {
                 let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
                 let openDateSelector = document.querySelector(".date-selector.open");
@@ -698,7 +698,7 @@ const ActivityView = () => {
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         {/* <input type="text" id="filterType" /> */}
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
-                        <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
+                        <input type="text" id="filterType" value={sortbyvaluename} readOnly />
                         {/* <p>{sortbyvaluename}</p> */}
                         {/* <div id="sortCurrent" className="sort-current"  >
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
@@ -707,7 +707,7 @@ const ActivityView = () => {
                             <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />
                             <p>{sortbyvaluename}</p>
                         </div> */}
-                        <div class="option-container" id="transactionsListSortOptionsContainer">
+                        <div className="option-container" id="transactionsListSortOptionsContainer">
                             <div className="option" onClick={(e) => sortByList("dateAsc", "Date (Newest)")}>Date (Newest)</div>
                             <div className="option" onClick={(e) => sortByList("dateDesc", "Date (Oldest)")}>Date (Oldest)</div>
                             <div className="option" onClick={(e) => sortByList("amountAsc", "Amount (Highest)")}>Amount (Highest)</div>
@@ -758,7 +758,7 @@ const ActivityView = () => {
                     balence={0}
                     TimeZone={ActivityOrderDetails && ActivityOrderDetails.time_zone}
                     refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount}
-                    redeemPointsToPrint={ActivityOrderDetails.meta_datas ? ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
+                    redeemPointsToPrint={ActivityOrderDetails && ActivityOrderDetails.meta_datas ? ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
                     orderMetaData={ActivityOrderDetails && ActivityOrderDetails.meta_datas}
                 // TotalIndividualProductDiscount={
                 //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
