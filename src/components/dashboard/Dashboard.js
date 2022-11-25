@@ -671,7 +671,13 @@ const Home = () => {
     const [resCountryList] = useSelector((state) => [state.CountryList])
     useEffect(() => {
         if (resCountryList && resCountryList.status == STATUSES.IDLE && resCountryList.is_success && resCountryList.data) {
-            localStorage.setItem('countrylist', JSON.stringify(resCountryList.data.content))
+            
+            const result = resCountryList.data.content.map(datum => Object.assign(...Object
+                .keys(datum)
+                .map(key => ({ [key.replace(/[.|&;$%@%"<>+]/g, '')]: datum[key] }))
+            ));
+            
+            localStorage.setItem('countrylist', JSON.stringify(result))
         }
     }, [resCountryList]);
 

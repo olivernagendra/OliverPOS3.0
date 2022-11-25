@@ -419,20 +419,18 @@ alert('canceled')
 
 
 
-    // console.log("activityOrderDetails", activityOrderDetails)
-
     return (
         <React.Fragment>
             <div className="footer">
                 <button id="refundButton" disabled={activityOrderDetails&&activityOrderDetails.order_status == "refunded" ||  activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
-                        || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
+                        || activityOrderDetails.order_status == "park_sale"|| activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
                         || activityOrderDetails.order_status == ""    ? true : false} style={{ opacity: activityOrderDetails&&activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
                         || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
-                        || activityOrderDetails.order_status == ""  ? 0.5 : 1 }} onClick={() =>
+                        || activityOrderDetails.order_status == "" || activityOrderDetails.order_status == "cancelled" ? 0.5 : 1 }} onClick={() =>
                     activityOrderDetails.order_status == 'completed' ? onClick1()
                         : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold" || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing") ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '')
                             : activityOrderDetails.order_status == "refunded" ? RefundPOP
-                                : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP
+                                : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails&&activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP
                                     : null
                 }  > {activityOrderDetails.order_status == 'completed' ? LocalizedLanguage.refundSale
                     : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"

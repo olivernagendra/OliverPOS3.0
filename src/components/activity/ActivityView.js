@@ -221,7 +221,7 @@ const ActivityView = () => {
     _activity && _activity.map(item => {
         //console.log("item", item)
         var dateKey = FormateDateAndTime.formatDateAndTime(item.date_time && item.date_time !== undefined ? item.date_time : item.CreatedDate, item.time_zone);
-      //  console.log("dateKey", dateKey)
+        //  console.log("dateKey", dateKey)
         if (!getDistinctActivity.hasOwnProperty(dateKey)) {
             getDistinctActivity[dateKey] = new Array(item);
         } else {
@@ -291,11 +291,13 @@ const ActivityView = () => {
         }
     }, [AllActivityList]);
 
+  
 
     useEffect(() => {
-        document.querySelectorAll(".date-selector-wrapper left > button").forEach((button) => {
-            console.log("button",button)
+        document.querySelectorAll(".date-selector-wrapper right > button").forEach((button) => {
+            console.log("button", button)
             button.addEventListener("click", (e) => {
+                console.log("e", e)
                 let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
                 let openDateSelector = document.querySelector(".date-selector.open");
                 if (openDateSelector) {
@@ -308,6 +310,7 @@ const ActivityView = () => {
             });
         });
 
+      
         let monthTranslate = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
         function initCalendarDate(date, dateSelector) {
@@ -494,8 +497,10 @@ const ActivityView = () => {
             // "EndDay": e_dd,
             // "EndMonth": e_mm,
             // "EndYear": e_yy,
-            "searchVal": emailnamephone ? emailnamephone : orderidsearch
+            "searchVal": emailnamephone ? emailnamephone : orderidsearch,
             //"groupSlug": this.state.filterByGroupList,
+            "MinAmount" : pricefrom,
+            "MaxAmount" : priceto,
 
         };
         // console.log("_filterParameter",_filterParameter)
@@ -508,7 +513,8 @@ const ActivityView = () => {
 
 
     const clearFilter = () => {
-        if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" || selectuserfilter !== "" || orderidsearch !== '') {
+        if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" ||
+         selectuserfilter !== "" || orderidsearch !== "" || pricefrom !=="" || priceto !=="" ) {
             setupdateActivityId('')
             reload(1)
             setfilterByUser("")
@@ -517,6 +523,8 @@ const ActivityView = () => {
             setEmailNamePhone("")
             setSelectuserFilter('')
             setorderId('')
+            setPriceFrom("")
+            setPriceTo("")
             localStorage.removeItem("CUSTOMER_TO_ACTVITY")
             localStorage.removeItem('CUSTOMER_TO_OrderId')
             sessionStorage.removeItem('transactionredirect');
@@ -530,6 +538,12 @@ const ActivityView = () => {
     }
     const hundleChangeID = (event) => {
         setorderId(event.target.value)
+    }
+    const hundleChangePriceFrom=(e)=>{
+      setPriceFrom(e.target.value)
+    }
+    const hundleChangePriceTo=(e)=>{
+       setPriceTo(e.target.value)
     }
 
     const _Useroptions = [];
@@ -623,7 +637,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateFrom">Date From</label>
                             <div className="date-selector-wrapper left ">
-                                <input type="text" id="dateFrom" placeholder="dd/mm/yyyy" />
+                                <input type="text" id="dateFrom" placeholder="Date" />
                                 <button className="open-date-selector open">
                                     <img src={calendar} alt="" />
                                 </button>
@@ -633,8 +647,8 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
-                                <input type="text" id="dateTo" placeholder="dd/mm/yyyy" />
-                                <button className="open-date-selector open">
+                                <input type="text" id="dateTo" placeholder="Date" />
+                                <button className="open-date-selector">
                                     <img src={calendar} alt="" />
                                 </button>
                                 <div className="date-selector"></div>
@@ -680,11 +694,11 @@ const ActivityView = () => {
                     <div className="input-row">
                         <div className="input-col">
                             <label htmlFor="priceFrom">Price From</label>
-                            <input type="text" id="priceFrom" placeholder="Price" onChange={e => setPriceFrom(e.target.value)} />
+                            <input type="text" id="priceFrom" placeholder="Price" onChange={hundleChangePriceFrom} value={pricefrom} />
                         </div>
                         <div className="input-col">
                             <label htmlFor="priceTo">Price To</label>
-                            <input type="text" id="priceTo" placeholder="Price" onChange={e => setPriceTo(e.target.value)} />
+                            <input type="text" id="priceTo" placeholder="Price"  onChange={hundleChangePriceTo} value={priceto} />
                         </div>
                     </div>
                     <button id="searchTransactionButton" onClick={applyServerFilter}>Search</button>
@@ -698,7 +712,7 @@ const ActivityView = () => {
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         {/* <input type="text" id="filterType" /> */}
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
-                        <input type="text" id="filterType" value={sortbyvaluename}  readOnly/>
+                        <input type="text" id="filterType" value={sortbyvaluename} readOnly />
                         {/* <p>{sortbyvaluename}</p> */}
                         {/* <div id="sortCurrent" className="sort-current"  >
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />

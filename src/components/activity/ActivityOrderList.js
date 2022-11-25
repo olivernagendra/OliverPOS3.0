@@ -64,7 +64,7 @@ const ActivityOrderList = (props) => {
                     }
                     if (count == lineitems.length) {
                         setpImages(images);
-                        console.log("-------images------" + JSON.stringify(images));
+                       // console.log("-------images------" + JSON.stringify(images));
                     }
                 });
             })

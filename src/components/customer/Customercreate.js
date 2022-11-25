@@ -34,8 +34,9 @@ const Customercreate = (props) => {
     const [state_name, setstate_name] = useState('')
     const [Cust_ID, setCust_ID] = useState('')
     const [isCusToSaveCart, setisCusToSaveCart] = useState(false)
-    const [getCountryList, setgetCountryList] = useState(localStorage.getItem('countrylist') !== null ? typeof (localStorage.getItem('countrylist')) !== undefined ? localStorage.getItem('countrylist') !== 'undefined' ?
+    const [CountryList, setCountryList] = useState(localStorage.getItem('countrylist') !== null ? typeof (localStorage.getItem('countrylist')) !== undefined ? localStorage.getItem('countrylist') !== 'undefined' ?
         Array.isArray(JSON.parse(localStorage.getItem('countrylist'))) === true ? JSON.parse(localStorage.getItem('countrylist')) : '' : '' : '' : '')
+
     const [getStateList, setgetStateList] = useState(localStorage.getItem('statelist') && localStorage.getItem('statelist') !== null ? typeof (localStorage.getItem('statelist')) !== undefined ? localStorage.getItem('statelist') !== 'undefined' ?
         Array.isArray(JSON.parse(localStorage.getItem('statelist'))) === true ? JSON.parse(localStorage.getItem('statelist')) : '' : '' : '' : '')
 
@@ -43,6 +44,16 @@ const Customercreate = (props) => {
     const [billingStateCode, setbillingStateCode] = useState('')
     const [shippingCountryCode, setshippingCountryCode] = useState('')
     const [shippingStateCode, setshippingStateCode] = useState('')
+    const [BillingSerachString, setBillingSerachString] = useState('');
+    const [ShippingSearchCountry, setShippingSearchCountry] = useState('')
+    const [RenderBillingCountry, setRenderBillingCountry] = useState('')
+    const [RenderShippingCountry, setRenderShippingCountry] = useState('')
+    const [RenderBillingState, setRenderBillingState] = useState("")
+    const [RenderShippingState, setRenderShippingState] = useState('')
+    const [HundleStateBilling, setHundleStateBilling] = useState('')
+    const [HundleStateShipping, setHundleStateShipping] = useState('')
+
+    
 
 
     // Toggle dropDown country and state
@@ -430,18 +441,77 @@ const Customercreate = (props) => {
     }
 
 
+
+
+    const billingHandleSearch = (event) => {
+        let value = event.target.value;
+        setBillingSerachString(value)
+    }
+
+    const shippingHandleSearch = (event) => {
+        let value = event.target.value;
+        setShippingSearchCountry(value)
+    }
+
+
+    useEffect(() => {
+        BillingCountrySearch();
+        ShillingCountrySearch();
+        BillingStateSearch();
+        ShippingStateSearch();
+        
+
+    }, [BillingSerachString, ShippingSearchCountry, HundleStateBilling,viewStateList ,ShippingViewStateList,HundleStateShipping]);
+
+
+    const BillingCountrySearch = () => {
+        var _filteredCountry = [];
+        _filteredCountry = CountryList.filter((item) => (
+            (item.Name.toString().toLowerCase().includes(BillingSerachString.toLowerCase()))
+        ))
+        setRenderBillingCountry(_filteredCountry)
+    }
+
+    const ShillingCountrySearch = () => {
+        var _filteredCountry = [];
+        _filteredCountry = CountryList.filter((item) => (
+            (item.Name.toString().toLowerCase().includes(ShippingSearchCountry.toLowerCase()))
+        ))
+        setRenderShippingCountry(_filteredCountry)
+    }
+    const BillingStateSearch = () => {
+        var _filterBillingState = []
+        _filterBillingState = viewStateList && viewStateList.filter((item) => (
+            (item.Name.toString().toLowerCase().includes(HundleStateBilling.toLowerCase()))
+        ))
+        setRenderBillingState(_filterBillingState)
+    }
+
+    const ShippingStateSearch=()=>{
+        var _filterBillingState = []
+        _filterBillingState = ShippingViewStateList && ShippingViewStateList.filter((item) => (
+            (item.Name.toString().toLowerCase().includes(HundleStateShipping.toLowerCase()))
+        ))
+        setRenderShippingState(_filterBillingState)
+    }
+
+
+
+
     // Billing DropDown Click  
-    const onChangeList = (code, name) => {
+    const onChangeBillingStateList = (code, name) => {
         var finalStatelist = [];
         getStateList && getStateList.find(function (element) {
             if (element.Country == code) {
                 finalStatelist.push(element)
             }
         })
+
         setbillingCountryCode(code)
         setviewStateList(finalStatelist)
         setcountry_name(name)
         setstate_name('')
+        BillingStateSearch()
     }
     // Billing DropDown Click  
 
@@ -463,6 +533,7 @@ const Customercreate = (props) => {
         setShippingViewStateList(finalStatelist)
         setShippingCountryName(name)
         setshippingstate_name('')
+        ShippingStateSearch()
 
     }
 
@@ -474,7 +545,7 @@ const Customercreate = (props) => {
     }
 
 
-      
+
 
 
 
@@ -536,8 +607,6 @@ const Customercreate = (props) => {
 
     }
 
-    // console.log("values",values)
-    //  console.log(" props.searchSringCreate", props.searchSringCreate)
 
 
 
@@ -570,7 +639,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustEmail">Email*</label>
                                     <input type="email" placeholder="Enter Email" name='email'
-                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput}  />
+                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput} />
                                     {/* <p>{errors.email}</p> */}
                                     <div className="error-wrapper">{errors.email}</div>
                                 </div>
@@ -636,15 +705,16 @@ const Customercreate = (props) => {
                             <div className="input-row">
                                 <div className="input-col">
                                     <label for="newCustStateProvBilling">Country</label>
+                                    {/*   {console.log("toggleDrowpdown",toggleDrowpdown)} */}
                                     <div onClick={hundledropdown} className={toggleDrowpdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"} >
-                                        <input type="text" id="newCustStateProvBilling" placeholder="Select Country" value={country_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustStateProvBilling" placeholder="Select Country" value={country_name ? country_name : BillingSerachString} onChange={e => billingHandleSearch(e)} />
                                         <div className="error-wrapper" ></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container"   >
-                                            {getCountryList && getCountryList.map((item, index) => {
+                                            {RenderBillingCountry && RenderBillingCountry.map((item, index) => {
                                                 return (
-                                                    <div className="option" onClick={() => onChangeList(item.Code, item.Name)} >
-                                                        <p key={index}  value={item.Code}>{item.Name.replace(/[^a-zA-Z]/g, ' ')}</p>
+                                                    <div className="option" onClick={() => onChangeBillingStateList(item.Code, item.Name)} >
+                                                        <p key={index} value={item.Code}>{item.Name.replace(/[^a-zA-Z]/g, ' ')}</p>
                                                     </div>)
                                             })}
 
@@ -654,11 +724,11 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustCountryBilling">    State/Province</label>
                                     <div onClick={hundleseconddropdown} className={togglesecondDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustCountryBilling" placeholder="   Select State/Province" value={state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustCountryBilling" placeholder="   Select State/Province" value={state_name ? state_name : HundleStateBilling} onChange={e => setHundleStateBilling(e.target.value)} />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container" >
-                                            {viewStateList && viewStateList.map((item, index) => {
+                                            {RenderBillingState && RenderBillingState.map((item, index) => {
                                                 return (
                                                     <div className="option" onClick={() => onChangeStateList(item.Code, item.Name)}>
                                                         <p key={index} value={item.Code} > {props.country_name !== '' ? item.Name.replace(/[^a-zA-Z]/g, ' ') : ''}</p>
@@ -705,11 +775,11 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustStateProvShipping">Country</label>
                                     <div onClick={hundleThirdDropdown} className={togglethirdDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustStateProvShipping" placeholder="Select Country" value={Shippingcountry_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustStateProvShipping" placeholder="Select Country" value={Shippingcountry_name.replace(/[^a-zA-Z]/g, ' ') ? Shippingcountry_name.replace(/[^a-zA-Z]/g, ' ') : ShippingSearchCountry} onChange={e => shippingHandleSearch(e)} />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container">
-                                            {getCountryList && getCountryList.map((item, index) => {
+                                            {RenderShippingCountry && RenderShippingCountry.map((item, index) => {
                                                 return (
                                                     <div className="option" onClick={() => shippCountryClick(item.Code, item.Name)}>
                                                         <p key={index} value={item.Code}  >{item.Name.replace(/[^a-zA-Z]/g, ' ')}</p>
@@ -721,11 +791,11 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustCountryShipping">  State/Province</label>
                                     <div onClick={hundleFourDropdown} className={toggleFourDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustCountryShipping" placeholder="   Select State/Province" value={shipping_state_name.replace(/[^a-zA-Z]/g, ' ')} readOnly />
+                                        <input type="text" id="newCustCountryShipping" placeholder="   Select State/Province" value={shipping_state_name ? shipping_state_name:HundleStateShipping } onChange={e => setHundleStateShipping(e.target.value)} />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container">
-                                            {ShippingViewStateList && ShippingViewStateList.map((item, index) => {
+                                            {RenderShippingState && RenderShippingState.map((item, index) => {
                                                 return (
                                                     <div className="option" onClick={() => onChangeShipStateList(item.Code, item.Name)}>
                                                         <p key={index} value={item.Code} > {props.country_name !== '' ? item.Name.replace(/[^a-zA-Z]/g, ' ') : ''}</p>
