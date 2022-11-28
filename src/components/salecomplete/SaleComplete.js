@@ -27,7 +27,8 @@ import { checkTempOrderSync } from "../checkout/checkoutSlice";
 import { CheckAppDisplayInView } from '../common/commonFunctions/AppDisplayFunction';
 import NoImageAvailable from '../../assets/images/svg/NoImageAvailable.svg';
 import IframeWindow from "../dashboard/IframeWindow";
-
+import UpdateOrderStatus from "../common/commonComponents/UpdateOrderStatus";
+import { updateOrderStatus } from "../common/commonAPIs/updateOrderStatusSlice";
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 const SaleComplete = () => {
@@ -41,6 +42,7 @@ const SaleComplete = () => {
     const [paymentAmount, setPaymentAmount] = useState(0);
     const [custEmail, setCustEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isShowUpdateOrderStatus, setIsShowUpdateOrderStatus] = useState(false);
     const [tempOrder_Id, setTempOrder_Id] = useState(localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '')
 
     var isCalled = false;
@@ -73,7 +75,9 @@ const SaleComplete = () => {
         // }
         setisShowiFrameWindow(!isShowiFrameWindow)
     }
-
+    const toggleUpdateOrderStatus = () => {
+        setIsShowUpdateOrderStatus(!isShowUpdateOrderStatus);
+    }
     const newSale = () => {
         localStorage.removeItem('CARD_PRODUCT_LIST');
         localStorage.removeItem('GTM_ORDER');
@@ -115,6 +119,18 @@ const SaleComplete = () => {
             print_bar_code = canvas.toDataURL("image/png");
         }
         return print_bar_code;
+    }
+    const updateStatus = (_orderStatus) => {
+        var TempOrders = localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`)) : [];
+        if (TempOrders && TempOrders.length > 0) {
+            var tempOrderId = localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '';
+            TempOrders.map(ele => {
+                if (ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID')) {
+                    var option = { "udid": get_UDid(), "orderId": ele.OrderID, "status": _orderStatus }
+                    dispatch(updateOrderStatus(option));
+                }
+            })
+        }
     }
     const printdetails = () => {
         var ListItem = new Array();
@@ -457,10 +473,10 @@ const SaleComplete = () => {
                     <img src={Sale_Complete} alt="" />
 
                     <p>Sale Status:</p>
-				<button id="openUpdateTransactionStatus">
-					Completed
-					<img src={AngledBracket_Left_White} alt=""/>
-				</button>
+                    <button id="openUpdateTransactionStatus" onClick={() => toggleUpdateOrderStatus()}>
+                        Completed
+                        <img src={AngledBracket_Left_White} alt="" />
+                    </button>
 
                     {changeAmount != 0 ? <div className="change-container">
                         <p className="style1">Change: ${parseFloat(changeAmount).toFixed(2)}</p>
@@ -517,6 +533,7 @@ const SaleComplete = () => {
             </div>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
             {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
+            {isShowUpdateOrderStatus ? <UpdateOrderStatus isShow={isShowUpdateOrderStatus} toggleUpdateOrderStatus={toggleUpdateOrderStatus} updateStatus={updateStatus}></UpdateOrderStatus> : null}
         </React.Fragment>)
     // }
 
