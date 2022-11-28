@@ -218,7 +218,7 @@ const CartDiscount = (props) => {
                         </div> :
                         <div id="cartDiscountDiv">
                             <div className="main">
-                                <label htmlFor="discountAmount">Discount Fee Amount:</label>
+                                <label htmlFor="discountAmount">Discount amount:</label>
                                 <input style={{ direction: "LTL" }} type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onKeyDown={(e) => discount_Amount(e)} disabled={isDiscountBtnEnable == true ? false : true} />
                                 <p>Select type of discount to be applied to cart:</p>
                                 <div className="button-row">
