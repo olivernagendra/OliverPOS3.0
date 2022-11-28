@@ -969,6 +969,9 @@ const Checkout = (props) => {
         var totalPrice = checkList && checkList.totalPrice;
         var order_id = (typeof checkList.order_id !== "undefined") ? checkList.order_id : 0;
         var cash_round_is = parseFloat(getRemainingPriceForCash())
+        if (cash_round_is == (totalPrice-after_payment_is) || totalPrice==0) {
+            cash_round_is=0;
+        }
         //this.setState({ cash_round: cash_round_is })
         //setCashRound(cash_round_is);
         cashRound = cash_round_is;
@@ -1028,6 +1031,9 @@ const Checkout = (props) => {
         }
         var actual_amount = totalPrice == 0 ? checkList && checkList.totalPrice : totalPrice;
         var cash_round = parseFloat(getRemainingPriceForCash())
+        if (cash_round == actual_amount || paying_amount == 0) {
+            cash_round=0;
+        }
         var check_required_field = false;
         var paymentTypeName = localStorage.getItem("PAYMENT_TYPE_NAME") && JSON.parse(localStorage.getItem("PAYMENT_TYPE_NAME"))
         var isGlobalPay = false;

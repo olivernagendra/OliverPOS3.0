@@ -15,6 +15,7 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useIndexedDB } from 'react-indexed-db';
 import { GetOpenRegister, closeRegister } from '../cashmanagement/CashmanagementSlice'
+import { tile } from "../dashboard/tiles/tileSlice";
 // import $ from 'jquery'
 function Login() {
     var auth2 = ''
@@ -100,6 +101,7 @@ function Login() {
     if (status == STATUSES.IDLE && is_success) {
 
         dispatch(GetOpenRegister(0));
+        dispatch(tile("clear"));
         navigate('/site')
     }
 

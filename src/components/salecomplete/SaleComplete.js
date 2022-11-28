@@ -3,7 +3,7 @@ import React, { useEffect, useState, useLayoutEffect } from "react";
 import Sale_Complete from '../../assets/images/svg/SaleComplete.svg';
 import Checkmark from '../../assets/images/svg/Checkmark.svg';
 import LogOut_Icon_White from '../../assets/images/svg/LogOut-Icon-White.svg';
-import spongebob_squarepants_2 from '../../assets/images/svg/spongebob-squarepants-2.svg';
+import AngledBracket_Left_White from '../../assets/images/svg/AngledBracket-Left-White.svg';
 import Google_Calendar_Icon from '../../assets/images/Temp/Google-Calendar-Icon.png';
 import DYMO_Icon from '../../assets/images/Temp/DYMO-Icon.png';
 import QuoteApp_Icon from '../../assets/images/Temp/QuoteApp_Icon.png';
@@ -64,7 +64,7 @@ const SaleComplete = () => {
         // if ((!ActiveUser.key.isSelfcheckout || ActiveUser.key.isSelfcheckout === false) && checkPrintreciept && checkPrintreciept == true) {
         //     printReceipt();
         // }
-    }, [changeAmount, paymentAmount]);
+    }, [isCalled]);
 
     function ToggleiFrameWindow(_exApp = null) {
         if (_exApp != null) { setExtApp(_exApp); }
@@ -455,6 +455,13 @@ const SaleComplete = () => {
                         <img src={textToBase64Barcode(tempOrder_Id)} />
                     </div>
                     <img src={Sale_Complete} alt="" />
+
+                    <p>Sale Status:</p>
+				<button id="openUpdateTransactionStatus">
+					Completed
+					<img src={AngledBracket_Left_White} alt=""/>
+				</button>
+
                     {changeAmount != 0 ? <div className="change-container">
                         <p className="style1">Change: ${parseFloat(changeAmount).toFixed(2)}</p>
                         <p className="style2">Out of ${parseFloat(paymentAmount).toFixed(2)}</p>

@@ -21,6 +21,8 @@ export const tile = createAsyncThunk(
     // return response.json();
 
     try {
+      if(parameter=="clear")
+      return initialState;
       const response = await tileAPI(parameter);
       // The value we return becomes the `fulfilled` action payload
       return response;
