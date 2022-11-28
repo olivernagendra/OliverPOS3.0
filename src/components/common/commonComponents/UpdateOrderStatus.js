@@ -26,8 +26,8 @@ const UpdateOrderStatus = (props) => {
                     {
                         Object.keys(_orderkyes).filter(item => item.toLowerCase() !== "refunded").map((item, index) => {
                             var _disabled = (item == 'void_sale' || item == 'refunded') ? 'disabled' : '';
-                            return (<label>
-                                <input disabled={_disabled} type="radio" id="transactionStatusCompleted" name="transaction_status" checked />
+                            return (<label key={item}>
+                                <input disabled={_disabled} type="radio" id="transactionStatusCompleted" name="transaction_status" checked onChange={()=>null}/>
                                 <div onClick={()=>statusUpdate(item)} className="custom-radio">{_orderkyes[item]}</div>
                             </label>)
                         })

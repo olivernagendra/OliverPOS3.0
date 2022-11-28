@@ -17,6 +17,7 @@ import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { useIndexedDB } from 'react-indexed-db';
 import { NumericFormat } from 'react-number-format';
 import { paymentAmount } from "../../checkout/checkoutSlice";
+import { v4 as uniqueKey } from 'uuid';
 const CartList = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -662,7 +663,7 @@ const CartList = (props) => {
                                     </div>
                                 </div>
                             case "note":
-                                return <div className="cart-item">
+                                return <div className="cart-item" key={uniqueKey()}>
                                     <div className="main-row aligned">
                                         <div className="tag cart-note">Note</div>
                                         <p className="content-style line-capped">
@@ -677,7 +678,7 @@ const CartList = (props) => {
                                     </div>
                                 </div>
                             case "custom_fee":
-                                return <div className="cart-item">
+                                return <div className="cart-item" key={uniqueKey()}>
                                     <div className="main-row aligned">
                                         <div className="tag custom-fee">Custom Fee</div>
                                         <div className="content-style">{a.Title && a.Title}</div>
@@ -698,7 +699,7 @@ const CartList = (props) => {
                             //         </div>
                             //     </div>
                             case "group":
-                                return <div className="cart-item">
+                                return <div className="cart-item" key={uniqueKey()}>
                                     <div className="main-row aligned">
                                         <div className="tag group">Group</div>
                                         <p className="content-style">Table 1</p>
@@ -820,7 +821,7 @@ const CartList = (props) => {
                 <div className="footer">
                     <div className="totals">
                         <div className="row">
-                            <p>{LocalizedLanguage.printSubtotal}</p>
+                            <p>Subtotal</p>
                             <p><b>${<NumericFormat value={subTotal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</b></p>
                         </div>
                         {discountType != "" ?
@@ -837,7 +838,7 @@ const CartList = (props) => {
                         </div>
                     </div>
                     <div className="checkout-container">
-                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  ${<NumericFormat value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  (${<NumericFormat value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />})</button>
                     </div>
                 </div>
             </div>

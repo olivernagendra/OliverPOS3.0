@@ -208,8 +208,8 @@ var RoundAmount = (val) => {
 var currentWidth = window.width; //screen.width;
 function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, redeemPointsToPrint, appResponse, doPrint = true) {
   console.log("------------------data------------", data)
-  var Android=null;
-  var Tizen=null;
+  var Android=window.Android;
+  var Tizen=window.Tizen;
   var displayExtensionAppData;
   if (appResponse) {
     // var appdata= JSON.parse(appResponse);

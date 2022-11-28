@@ -100,7 +100,7 @@ const HeadereBar = (props) => {
                     {/* <img src={avatar} alt="" /> */}
                     {/* Will use by default if no other img is given  */}
                     {/* <img src={Avatar_Blue_Background} alt="" className="default" /> */}
-                    {get_userName_Initial()!=""?<div class="avatar">{get_userName_Initial()}</div>: <img src={avatar_2} alt="" />}
+                    {get_userName_Initial()!=""?<div className="avatar">{get_userName_Initial()}</div>: <img src={avatar_2} alt="" />}
                     {/* <img src={avatar_2} alt="" /> */}
                 </button>
                 <button id="mobileOptionsButton" onClick={() => props.toggleOptionPage()} className={props.isShow == true ? "filter" : ""}>
@@ -117,6 +117,9 @@ const HeadereBar = (props) => {
                 <button id="notificationsButton" onClick={() => props.toggleNotifications()}>
                     <div className="img-container">
                         <img src={Notifications_Icon} alt="" />
+                        <div className="badge green"></div>
+                        {/* <div class="badge red"></div>
+                        <div class="badge gray"></div> */}
                     </div>
                     <p>Notifications</p>
                 </button>
