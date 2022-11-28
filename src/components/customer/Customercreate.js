@@ -52,8 +52,8 @@ const Customercreate = (props) => {
     const [RenderShippingState, setRenderShippingState] = useState('')
     const [HundleStateBilling, setHundleStateBilling] = useState('')
     const [HundleStateShipping, setHundleStateShipping] = useState('')
+    const [AllreadyEmail, setAllreadyEmail] = useState(false)
 
-    
 
 
     // Toggle dropDown country and state
@@ -244,7 +244,8 @@ const Customercreate = (props) => {
             var userExist = false;
             userExist = getExistingCustomerEmail(values.email);
             if (userExist == true) {
-                alert("Given email already exist! Please try another")
+                // alert("Given email already exist! Please try another")
+                setAllreadyEmail(true)
 
                 // Create New Customer
             } else if (props.editcustomerparam !== "editcustomer" && Cust_ID == "" && addtocart !== "addtocart") {
@@ -379,6 +380,17 @@ const Customercreate = (props) => {
         setbillingStateCode("")
         setshippingCountryCode("")
         setshippingStateCode("")
+        setAllreadyEmail(false)
+
+        
+        setBillingSerachString("")
+        setShippingSearchCountry("")
+       // setRenderBillingCountry
+       // setRenderShippingCountry
+      //  setRenderBillingState
+       // setRenderShippingState
+        setHundleStateBilling("")
+        setHundleStateShipping("")
 
 
     }
@@ -459,9 +471,9 @@ const Customercreate = (props) => {
         ShillingCountrySearch();
         BillingStateSearch();
         ShippingStateSearch();
-        
 
-    }, [BillingSerachString, ShippingSearchCountry, HundleStateBilling,viewStateList ,ShippingViewStateList,HundleStateShipping]);
+
+    }, [BillingSerachString, ShippingSearchCountry, HundleStateBilling, viewStateList, ShippingViewStateList, HundleStateShipping]);
 
 
     const BillingCountrySearch = () => {
@@ -487,7 +499,7 @@ const Customercreate = (props) => {
         setRenderBillingState(_filterBillingState)
     }
 
-    const ShippingStateSearch=()=>{
+    const ShippingStateSearch = () => {
         var _filterBillingState = []
         _filterBillingState = ShippingViewStateList && ShippingViewStateList.filter((item) => (
             (item.Name.toString().toLowerCase().includes(HundleStateShipping.toLowerCase()))
@@ -509,14 +521,16 @@ const Customercreate = (props) => {
 
         setbillingCountryCode(code)
         setviewStateList(finalStatelist)
-        setcountry_name(name)
+        // setcountry_name(name)
+        setBillingSerachString(name)
         setstate_name('')
         BillingStateSearch()
     }
     // Billing DropDown Click  
 
     const onChangeStateList = (code, name) => {
-        setstate_name(name.replace(/[^a-zA-Z]/g, ' '))
+        // setstate_name(name.replace(/[^a-zA-Z]/g, ' '))
+        setHundleStateBilling(name)
         setbillingStateCode(code)
     }
 
@@ -531,7 +545,8 @@ const Customercreate = (props) => {
         })
         setshippingCountryCode(code)
         setShippingViewStateList(finalStatelist)
-        setShippingCountryName(name)
+        //  setShippingCountryName(name)
+        setShippingSearchCountry(name)
         setshippingstate_name('')
         ShippingStateSearch()
 
@@ -540,8 +555,9 @@ const Customercreate = (props) => {
     // shipping DropDown Click  
 
     const onChangeShipStateList = (code, name) => {
-        setshippingstate_name(name.replace(/[^a-zA-Z]/g, ' '))
+        //  setshippingstate_name(name.replace(/[^a-zA-Z]/g, ' '))
         setshippingStateCode(code)
+        setHundleStateShipping(name)
     }
 
 
@@ -613,7 +629,7 @@ const Customercreate = (props) => {
     return (
         <>
             {customerres.status == STATUSES.LOADING ? <LoadingModal /> : null}
-
+            {console.log("props.isShow",props.isShow)}
             <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
                 <div className={props.isShow === true ? "subwindow create-customer current" : "subwindow create-customer"}>
                     <div className="subwindow-header">
@@ -639,9 +655,8 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustEmail">Email*</label>
                                     <input type="email" placeholder="Enter Email" name='email'
-                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput} />
-                                    {/* <p>{errors.email}</p> */}
-                                    <div className="error-wrapper">{errors.email}</div>
+                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput}  />
+                                    <div className="error required" style={{color:"red"}} >{errors.email}</div>
                                 </div>
 
                                 <div className="input-col">
@@ -705,9 +720,8 @@ const Customercreate = (props) => {
                             <div className="input-row">
                                 <div className="input-col">
                                     <label for="newCustStateProvBilling">Country</label>
-                                    {/*   {console.log("toggleDrowpdown",toggleDrowpdown)} */}
                                     <div onClick={hundledropdown} className={toggleDrowpdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"} >
-                                        <input type="text" id="newCustStateProvBilling" placeholder="Select Country" value={country_name ? country_name : BillingSerachString} onChange={e => billingHandleSearch(e)} />
+                                        <input type="text" id="newCustStateProvBilling" placeholder="Select Country" value={BillingSerachString} onChange={e => billingHandleSearch(e)} />
                                         <div className="error-wrapper" ></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container"   >
@@ -724,7 +738,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustCountryBilling">    State/Province</label>
                                     <div onClick={hundleseconddropdown} className={togglesecondDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustCountryBilling" placeholder="   Select State/Province" value={state_name ? state_name : HundleStateBilling} onChange={e => setHundleStateBilling(e.target.value)} />
+                                        <input type="text" id="newCustCountryBilling" placeholder="   Select State/Province" value={HundleStateBilling} onChange={e => setHundleStateBilling(e.target.value)} />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container" >
@@ -775,7 +789,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustStateProvShipping">Country</label>
                                     <div onClick={hundleThirdDropdown} className={togglethirdDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustStateProvShipping" placeholder="Select Country" value={Shippingcountry_name.replace(/[^a-zA-Z]/g, ' ') ? Shippingcountry_name.replace(/[^a-zA-Z]/g, ' ') : ShippingSearchCountry} onChange={e => shippingHandleSearch(e)} />
+                                        <input type="text" id="newCustStateProvShipping" placeholder="Select Country" value={ShippingSearchCountry} onChange={e => shippingHandleSearch(e)} />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container">
@@ -791,7 +805,7 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustCountryShipping">  State/Province</label>
                                     <div onClick={hundleFourDropdown} className={toggleFourDropdown === true ? "dropdown-wrapper open " : "dropdown-wrapper"}>
-                                        <input type="text" id="newCustCountryShipping" placeholder="   Select State/Province" value={shipping_state_name ? shipping_state_name:HundleStateShipping } onChange={e => setHundleStateShipping(e.target.value)} />
+                                        <input type="text" id="newCustCountryShipping" placeholder="   Select State/Province" value={HundleStateShipping} onChange={e => setHundleStateShipping(e.target.value)} />
                                         <div className="error-wrapper"></div>
                                         <img src={down_angled_bracket} alt="" />
                                         <div className="option-container">
@@ -807,6 +821,9 @@ const Customercreate = (props) => {
                                 </div>
                             </div>
                         </div>
+                        <br></br>
+                        {AllreadyEmail === true ? <p style={{ color: "red" }}>Given email already exist! Please try another</p> : ""}
+
                         {props.editcustomerparam == 'editcustomer' ? <div className="button-row">
                             <button onClick={updateHandleSubmit}>Save and Update</button>
                         </div> : <div className="button-row">
