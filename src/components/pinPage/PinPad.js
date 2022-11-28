@@ -127,7 +127,7 @@ const PinPad = React.memo(props => {
                             className={nm === 'c' ? "backspace" : ""}>
                             {nm === 'c' ? (location.pathname === "/home" ? <img src={imgBackSpace} /> : <img src={Backspace_White} />) :
 
-                                location.pathname === "/openregister" ||location.pathname === "/pin"  ? <React.Fragment><p>{nm}</p>
+                                location.pathname === "/openregister" ||location.pathname === "/pin"  ||location.pathname === "/closeregister"? <React.Fragment><p>{nm}</p>
                                     <div className="text-row">{(nm != " " && nm != "1" && nm != "c") ? pinAlphabetList[parseInt(nm) - 1] : ""}</div></React.Fragment> : nm
                             }
                         </button>

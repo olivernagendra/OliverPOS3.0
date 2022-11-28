@@ -18,7 +18,7 @@ import AppLauncher from "../common/commonComponents/AppLauncher";
 import IframeWindow from "../dashboard/IframeWindow";
 // import ParkSale from "./ParkSale";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
-import { get_UDid } from "../common/localSettings";
+import { get_UDid, get_userName_Initial } from "../common/localSettings";
 import { checkTempOrderSync } from "./checkoutSlice";
 import ActiveUser from '../../settings/ActiveUser';
 import Config from '../../Config';
@@ -128,6 +128,7 @@ const Header = (props) => {
             <p>{props.title ? props.title : LocalizedLanguage.checkout}</p>
             <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                 <img src={avatar_2} alt="" />
+                {/* {get_userName_Initial()!=""?<div class="avatar">{get_userName_Initial()}</div>: <img src={avatar_2} alt="" />} */}
             </button>
             <button id="mobileOptionsButton" onClick={() => toggleOptionPage()} className={isShowOptionPage ? "filter" : ""}>
                 <img src={Ellipsis_Icon_DarkBlue} alt="" />

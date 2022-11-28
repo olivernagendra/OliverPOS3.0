@@ -21,7 +21,7 @@ import Config from '../../Config';
 import { checkTempOrderSync } from "../checkout/checkoutSlice";
 import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import { checkTempOrderStatus } from "../checkout/checkoutSlice";
-import { get_UDid } from "../common/localSettings";
+import { get_UDid, get_userName_Initial } from "../common/localSettings";
 import ActiveUser from "../../settings/ActiveUser";
 const HeadereBar = (props) => {
     const dispatch = useDispatch();
@@ -99,8 +99,9 @@ const HeadereBar = (props) => {
                 <button id="userInfoButton" onClick={() => toggleUserProfile()}>
                     {/* <img src={avatar} alt="" /> */}
                     {/* Will use by default if no other img is given  */}
-                    <img src={Avatar_Blue_Background} alt="" className="default" />
-                    <img src={avatar_2} alt="" />
+                    {/* <img src={Avatar_Blue_Background} alt="" className="default" /> */}
+                    {get_userName_Initial()!=""?<div class="avatar">{get_userName_Initial()}</div>: <img src={avatar_2} alt="" />}
+                    {/* <img src={avatar_2} alt="" /> */}
                 </button>
                 <button id="mobileOptionsButton" onClick={() => props.toggleOptionPage()} className={props.isShow == true ? "filter" : ""}>
                     <img src={Ellipsis_Icon_DarkBlue} alt="" />

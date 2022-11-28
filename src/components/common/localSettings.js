@@ -32,6 +32,24 @@ export const get_userName = () => {
   return user != "" ? user.display_name : '';
   //return localStorage.getItem('user_full_name') ? localStorage.getItem('user_full_name') : ''
 }
+export const get_userName_Initial = () => {
+  var user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : '';
+  if (user != "" && typeof user != "undefined") {
+    var initial = user.display_name;
+    initial = initial.split(' ');
+    if (initial && initial.length > 1) {
+      return initial[0].charAt(0).toUpperCase() + initial[1].charAt(0).toUpperCase()
+    }
+    else if (initial && initial.length == 1) {
+      return initial[0].charAt(0).toUpperCase()
+    }
+    else {
+      return '';
+    }
+
+  }
+
+}
 export const get_userId = () => {
   return localStorage.getItem('userId') ? localStorage.getItem('userId') : ''
 }
