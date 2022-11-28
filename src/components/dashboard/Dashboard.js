@@ -137,7 +137,7 @@ const Home = () => {
             dispatch(group({ "locationId": locationId, "group_sales": user_.group_sales_by }));
         }
     }
-   
+
 
     // useEffect(() => {
     //     initFn();
@@ -671,12 +671,12 @@ const Home = () => {
     const [resCountryList] = useSelector((state) => [state.CountryList])
     useEffect(() => {
         if (resCountryList && resCountryList.status == STATUSES.IDLE && resCountryList.is_success && resCountryList.data) {
-            
+
             const result = resCountryList.data.content.map(datum => Object.assign(...Object
                 .keys(datum)
                 .map(key => ({ [key.replace(/[.|&;$%@%"<>+]/g, '')]: datum[key] }))
             ));
-            
+
             localStorage.setItem('countrylist', JSON.stringify(result))
         }
     }, [resCountryList]);
