@@ -19797,7 +19797,7 @@ input[type="number"] {
 
 	.choose-wrapper > .choose-body-default button:disabled::after {
 		content: "";
-		background-image: url(assets/images/svg/LockIcon.svg);
+		background-image: url("assets/images/svg/LockIcon.svg");
 		background-size: 24px 24px;
 		width: 24px;
 		height: 24px;

@@ -942,6 +942,11 @@ const Refund = (props) => {
         const _getRemainingPrice = getRemainingPrice() ? getRemainingPrice() : 0;
         const _getRemainingPriceForCash = getRemainingPriceForCash();
 
+        if (payment_amount > _getRemainingPrice || payment_amount > _getRemainingPriceForCash) {
+            setmsgBody(LocalizedLanguage.greaterThanAmountMsg)
+            toggleMsgPopup()
+            return;
+        }
         if (paymentType == paymentsType.typeName.cashPayment) {
             // var amount = paidAmount;// amount entered manually$('#calc_output_cash').val();
             var amount = partialAmount != null ? partialAmount : paidAmount ? paidAmount : 0;;
@@ -1223,7 +1228,7 @@ const Refund = (props) => {
     }
     const [respmakeOnlinePayments] = useSelector((state) => [state.makeOnlinePayments])
     useEffect(() => {
-        if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data && loading==true)) {
+        if ((respmakeOnlinePayments && respmakeOnlinePayments.status == STATUSES.IDLE && respmakeOnlinePayments.is_success && respmakeOnlinePayments.data && loading == true)) {
             console.log("---online paymet response--" + JSON.stringify(respmakeOnlinePayments))
             if (respmakeOnlinePayments.data.content.RefranseCode && respmakeOnlinePayments.data.content.IsSuccess == true)
             // if(nextProp.online_payment.content.transactionResponse && nextProp.online_payment.content.transactionResponse.transId != 0)
@@ -1242,8 +1247,7 @@ const Refund = (props) => {
             dispatch(makeOnlinePayments(null));
             setLoading(false);
         }
-        else if(respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR )&& respmakeOnlinePayments.is_success==false && loading==true)
-        {
+        else if (respmakeOnlinePayments && (respmakeOnlinePayments.status == STATUSES.IDLE || respmakeOnlinePayments.status == STATUSES.ERROR) && respmakeOnlinePayments.is_success == false && loading == true) {
             setmsgBody(respmakeOnlinePayments.error);
             toggleMsgPopup();
             setLoading(false);
@@ -1466,7 +1470,7 @@ const Refund = (props) => {
                     <button onClick={() => showPartial(4)}>1/4</button>
                 </div>
                 <div className="button-row">
-                {/* <button id="splitByProductButton" onClick={() => toggleSplitByProduct()}>By Product</button> */}
+                    {/* <button id="splitByProductButton" onClick={() => toggleSplitByProduct()}>By Product</button> */}
                     <button id="splitByProductButton">By Product</button>
                     <button id="splitByPeopleButton" disabled>By Group (Coming Soon)</button>
                 </div>
@@ -1582,7 +1586,7 @@ const Refund = (props) => {
         {isShowNumberPad ? <NumberPad isShow={isShowNumberPad} toggleNumberPad={toggleNumberPad} pay_by_cash={pay_by_cash} amount={(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)} getRemainingPriceForCash={getRemainingPriceForCash} ></NumberPad> : null}
         {isShowPartialPayment ? <PartialPayment isShow={isShowPartialPayment} toggleShowPartialPayment={toggleShowPartialPayment} amount={paidAmount} pay_partial={pay_partial} getRemainingPrice={getRemainingPrice} partialType={partialType}></PartialPayment> : null}
         {isShowParkSale ? <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} placeParkLayAwayOrder={placeParkLayAwayOrder} isLayAwayOrPark={isLayAwayOrPark}></ParkSale> : null}
-        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct}  pay_by_product={pay_by_product}></SplitByProduct> : null}
+        {isShowSplitByProduct ? <SplitByProduct isShow={isShowSplitByProduct} toggleSplitByProduct={toggleSplitByProduct} pay_by_product={pay_by_product}></SplitByProduct> : null}
         <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
     </React.Fragment>)
 }
