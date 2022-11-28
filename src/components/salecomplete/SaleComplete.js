@@ -29,6 +29,7 @@ import NoImageAvailable from '../../assets/images/svg/NoImageAvailable.svg';
 import IframeWindow from "../dashboard/IframeWindow";
 import UpdateOrderStatus from "../common/commonComponents/UpdateOrderStatus";
 import { updateOrderStatus } from "../common/commonAPIs/updateOrderStatusSlice";
+import { LoadingModal } from "../common/commonComponents/LoadingModal";
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 const SaleComplete = () => {
@@ -127,11 +128,23 @@ const SaleComplete = () => {
             TempOrders.map(ele => {
                 if (ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID')) {
                     var option = { "udid": get_UDid(), "orderId": ele.OrderID, "status": _orderStatus }
+                    setIsLoading(true);
                     dispatch(updateOrderStatus(option));
                 }
             })
         }
     }
+    const [respupdateOrderStatus] = useSelector((state) => [state.updateOrderStatus])
+    useEffect(() => {
+        if ((respupdateOrderStatus && respupdateOrderStatus.status == STATUSES.IDLE && respupdateOrderStatus.is_success && isLoading==true)) {
+            console.log("--respupdateOrderStatus--" + JSON.stringify(respupdateOrderStatus));
+            toggleUpdateOrderStatus();
+            setIsLoading(false);
+        }
+        else  if ((respupdateOrderStatus && respupdateOrderStatus.status == STATUSES.IDLE && respupdateOrderStatus.is_success && isLoading==true)) {
+            setIsLoading(false);
+        }
+    }, [respupdateOrderStatus]);
     const printdetails = () => {
         var ListItem = new Array();
         var _typeOfTax = typeOfTax()
@@ -465,6 +478,7 @@ const SaleComplete = () => {
     var appcount = 0;
     return (
         <React.Fragment>
+            {isLoading===true?<LoadingModal></LoadingModal>:null}
             <div className="sale-complete-wrapper">
                 <div className="main">
                     <div style={{ display: 'none' }} >
