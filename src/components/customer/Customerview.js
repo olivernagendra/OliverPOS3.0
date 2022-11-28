@@ -624,7 +624,7 @@ const CustomerView = () => {
           </div>
 
           <div className="mobile-footer">
-            <button id="mobileAddCustomerButton">Create New</button>
+            <button id="mobileAddCustomerButton" onClick={() => toggleCreateCustomer()} >Create New</button>
           </div>
         </div>
         {filteredCustomer && filteredCustomer.length > 0 ? <div id="CVDetailed" className={toggleList === true ? "cv-detailed open " : "cv-detailed"}>
@@ -738,17 +738,7 @@ const CustomerView = () => {
 
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
-          <Customercreate
-            isShow={isShowcreatecustomerToggle}
-            toggleCreateCustomer={toggleCreateCustomer}
-            toggleEditcustomer={toggleEditcustomer}
-            editcustomerparam={editcustomerparam}
-            customerDetailData={customerDetailData ? customerDetailData : ""}
-            CustomerAddress={CustomerAddress}
-            getCustomerFromIDB={getCustomerFromIDB}
-            updateSomething={updateSomething}
-
-          />
+         
           <div className="footer">
             <button id="customerToTransactions" onClick={() => OpenTransactions(customerDetailData)}>View Transactions</button>
             <button id="addCustToSaleButton" onClick={() => addCustomerToSale(customerDetailData)}>Add To Sale</button>
@@ -759,6 +749,16 @@ const CustomerView = () => {
 					<p className="style2">Try searching for an customer or <br /> select from list to view.</p>
 				</div></div></>   }
       </div>
+      <Customercreate
+            isShow={isShowcreatecustomerToggle}
+            toggleCreateCustomer={toggleCreateCustomer}
+            toggleEditcustomer={toggleEditcustomer}
+            editcustomerparam={editcustomerparam}
+            customerDetailData={customerDetailData ? customerDetailData : ""}
+            CustomerAddress={CustomerAddress}
+            getCustomerFromIDB={getCustomerFromIDB}
+            updateSomething={updateSomething}
+          />
     </React.Fragment>
   )
 }
