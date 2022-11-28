@@ -361,7 +361,16 @@ export function checkTempOrderSyncAPI(tempOrderId) {
                             // }, 1000)
                             // }
                             ele.Status = "true";
-                            ele.OrderID = order_status.content.OrderNumber;
+                            if(order_status.content && order_status.content.hasOwnProperty('OrderNumber'))
+                            {
+                                ele.OrderID = order_status.content.OrderNumber;
+                            }
+                            else if(order_status.content)
+                            {
+                                ele.OrderID = order_status.content;
+                            }
+
+                           
                             //console.log("OrderStatusSuccess", ele);
                             ele.Sync_Count = ele.Sync_Count + 1
                         }

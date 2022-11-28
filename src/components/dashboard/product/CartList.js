@@ -589,7 +589,7 @@ const CartList = (props) => {
         })
     }
 
-    console.log("taxRates", taxRates)
+    //console.log("taxRates", taxRates)
     return (
         <React.Fragment>
             {isLoading ? <LoadingModal></LoadingModal> : null}
