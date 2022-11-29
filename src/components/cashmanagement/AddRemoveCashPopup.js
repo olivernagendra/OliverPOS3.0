@@ -6,6 +6,7 @@ import STATUSES from "../../constants/apiStatus";
 import IconDarkBlue from '../../assets/images/svg/X-Icon-DarkBlue.svg'
 import Cashmanagement from "./Cashmanagement";
 import { NumericFormat } from "react-number-format";
+import { openCashBox } from "../../settings/AndroidIOSConnect";
 function AddRemoveCashPopup(props) {
     const dispatch = useDispatch();
     const [Amount, setAmount] = useState(0.00)
@@ -27,7 +28,7 @@ function AddRemoveCashPopup(props) {
             }
         }
     }
-
+ 
     const handleSubmit = () => {
         if (props.drawerBalance < removeAmount) {
             alert('cashAmountExceed')
@@ -55,6 +56,7 @@ function AddRemoveCashPopup(props) {
             }
             //  console.log("addRemoveParm", addRemoveParm)
             dispatch(addRemoveCash(addRemoveParm));
+            openCashBox(); //cash drawer opening while add/remove cash
             setTimeout(() => {
                 callApi()
             }, 100);

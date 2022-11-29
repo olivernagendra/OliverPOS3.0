@@ -1,16 +1,28 @@
-
+import React, {  useState } from "react";
 import X_Icon_DarkBlue from '../../../assets/images/svg/X-Icon-DarkBlue.svg';
 import KeyOrderStatus from '../../../settings/KeysOrderStaus';
 const UpdateOrderStatus = (props) => {
+    const [orderStatus, setOrderStatus] = useState('');
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
             props.toggleUpdateOrderStatus();
         }
     }
     const statusUpdate = (status) => {
-        props.updateStatus && props.updateStatus(status);
+        setOrderStatus(status);
+        
+    }
+    const update=()=>
+    {
+        props.updateStatus && props.updateStatus(orderStatus);
     }
     var _orderkyes = KeyOrderStatus.key;
+    var currentOrderStaus = props.orderstatus;
+    // var PrintDetails = localStorage.getItem('GTM_ORDER') ? JSON.parse(localStorage.getItem('GTM_ORDER')) : null;
+
+    // if (PrintDetails && PrintDetails !== null) {
+    //     currentOrderStaus = PrintDetails.status;
+    // }
     return (
         <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className={props.isShow === true ? "subwindow update-transaction-status current" : "subwindow update-transaction-status"}>
@@ -25,10 +37,13 @@ const UpdateOrderStatus = (props) => {
                     <p>Select a status for this order:</p>
                     {
                         Object.keys(_orderkyes).filter(item => item.toLowerCase() !== "refunded").map((item, index) => {
-                            var _disabled = (item == 'void_sale' || item == 'refunded') ? 'disabled' : '';
+                            ///var _disabled = (item == 'void_sale' || item == 'refunded') ? 'disabled' : '';
+
+                            var _disabled = item == "lay_away" || (currentOrderStaus && _orderkyes[currentOrderStaus] &&_orderkyes[currentOrderStaus].toLowerCase() == _orderkyes[item].toLowerCase())
+                                ? true : false
                             return (<label key={item}>
-                                <input disabled={_disabled} type="radio" id="transactionStatusCompleted" name="transaction_status" checked onChange={()=>null}/>
-                                <div onClick={()=>statusUpdate(item)} className="custom-radio">{_orderkyes[item]}</div>
+                                <input disabled={_disabled} type="radio" id="transactionStatusCompleted" name="transaction_status"  onChange={() => null} checked={item===orderStatus?true:false}/>
+                                <div onClick={() => statusUpdate(item)} className="custom-radio">{_orderkyes[item]}</div>
                             </label>)
                         })
                     }
@@ -56,7 +71,7 @@ const UpdateOrderStatus = (props) => {
                         <input type="radio" id="transactionStatusProcessing" name="transaction_status" />
                         <div className="custom-radio">Processing</div>
                     </label> */}
-                    <button>Update</button>
+                    <button onClick={()=>update()}>Update</button>
                     <div className="auto-margin-bottom"></div>
                 </div>
             </div></div>)

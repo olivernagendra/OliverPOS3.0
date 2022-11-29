@@ -106,7 +106,7 @@ export const redirectToURL = () => {
     var clientDetail = localStorage.getItem('clientDetail')
     if (isDemoUser == 'true' || !clientDetail) {
         //history.push('/login');
-        var Android=null;
+        const Android = window.Android;
         if ((typeof Android !== "undefined" && Android !== null) && (Android.getDatafromDevice("isWrapper")==true))
         {
             Android.wrapperLogout();

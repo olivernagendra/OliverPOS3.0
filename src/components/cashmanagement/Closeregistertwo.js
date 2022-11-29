@@ -6,6 +6,7 @@ import ActiveUser from '../../settings/ActiveUser';
 import moment from 'moment';
 import Config from '../../Config'
 import { createPin, validatePin } from "../pinPage/pinSlice"
+import { setAndroidKeyboard, showAndroidReceipt } from "../../settings/AndroidIOSConnect";
 
 const Closeregistertwo = (props) => {
     const dispatch = useDispatch();
@@ -31,7 +32,7 @@ const Closeregistertwo = (props) => {
         localStorage.removeItem('Cash_Management_ID');
         //Webview Android keyboard setting.................... 
         localStorage.setItem('logoutclick', "true");
-        // setAndroidKeyboard('logout');
+        setAndroidKeyboard('logout');
         //--------------------------------------------------------
         //this.props.dispatch(userActions.logout())
         // redirectToURL()
@@ -759,16 +760,16 @@ ${enterNotes && enterNotes !== "" &&
         html += '</body ></html>'
         console.log(html)
         console.log("----PrintAndroidReceiptData--->" + JSON.stringify(PrintAndroidReceiptData))
-        // if ((typeof Android !== "undefined" && Android !== null) && (Android.getDatafromDevice("isWrapper") == true)) {
-        //     showAndroidReceipt("", PrintAndroidReceiptData)
-        // }
-        // else {
+        if ((typeof window.Android !== "undefined" && window.Android !== null) && (window.Android.getDatafromDevice("isWrapper") == true)) {
+            showAndroidReceipt("", PrintAndroidReceiptData);
+        }
+        else {
         var a = window.open('#', '', 'width=400', 'A2');
         a && a.document && a.document.write(html);
         a && a.print();
         a && a.close();
         return true;
-        // }
+        }
     }
 
 

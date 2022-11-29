@@ -276,7 +276,7 @@ const PinPad = React.memo(props => {
 
 
     if (status === STATUSES.ERROR) {
-        document.getElementById("whichkey").value = '';
+        if(document.getElementById("whichkey")) {document.getElementById("whichkey").value = '';}
         focusInput()
         console.log(status)
         // setTotalSize(0)

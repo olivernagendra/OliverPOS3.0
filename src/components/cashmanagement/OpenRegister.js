@@ -14,6 +14,7 @@ import moment from 'moment';
 import STATUSES from "../../constants/apiStatus";
 import { initOpenRegisterFn } from "../common/commonFunctions/openRegisterFn"
 import LogoutConfirm from "../common/commonComponents/LogoutConfirm";
+import { openCashBox } from "../../settings/AndroidIOSConnect";
 const OpenRegister = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -121,9 +122,6 @@ const OpenRegister = () => {
         settogglePin(false)
     }
 
-
-
-
     useEffect(() => {
         //openRegisterFn();
         // initOpenRegisterFn();      
@@ -180,7 +178,7 @@ const OpenRegister = () => {
                 <input className="floatAmountfont" type="number" id="floatAmount" onChange={(e) => validateEnteredAmount(e)} placeholder='Enter Amount' />
                 {/* placeholder='Enter Amount' */}
 
-                <button id="openCashDrawer" >Open Cash Drawer</button>
+                <button id="openCashDrawer" onClick={()=>openCashBox()}>Open Cash Drawer</button>
                 <label htmlFor="openNote">Optional - add a note:</label>
                 <textarea name="openNote" id="openNote" placeholder="Add your note here" onChange={(e) => enterNote(e)}></textarea>
                 <button id="openFloatButton" onClick={openRegisterhundle} >Open Float</button>
