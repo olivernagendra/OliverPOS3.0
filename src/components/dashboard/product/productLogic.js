@@ -523,6 +523,7 @@ export const addtoCartProduct = (cartproductlist) => {
                 var excl_tax = 0;
                 if (item.discount_type == "Percentage") {
                     excl_tax = getExclusiveTax(item.product_after_discount, item.TaxClass)
+                    excl_tax= excl_tax * item.quantity;
                     //excl_tax = getExclusiveTax(item.after_discount * item.quantity, item.TaxClass)// 
                     if (isProdAddonsType && isProdAddonsType == true) {
                         excl_tax = getExclusiveTax(item.product_after_discount, item.TaxClass)// quantity comment for addons
@@ -530,7 +531,7 @@ export const addtoCartProduct = (cartproductlist) => {
                 } else {
                     excl_tax = getExclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
                 }
-                item["excl_tax"] = excl_tax * item.quantity
+                item["excl_tax"] = excl_tax;
             }
         }
     })

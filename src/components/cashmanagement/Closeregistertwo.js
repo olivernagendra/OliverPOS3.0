@@ -347,7 +347,7 @@ const Closeregistertwo = (props) => {
         var hours = duration.asHours().toFixed(2);
         //var hours=0
         var _tip;
-        if ((typeof Android !== "undefined" && Android !== null) && (Android.getDatafromDevice("isWrapper") == true)) {
+        if ((typeof window.Android !== "undefined" && window.Android !== null) && (window.Android.getDatafromDevice("isWrapper") == true)) {
             PrintAndroidData.push({ "rn": rowNumber++, "cms": 1, "c1": "End of Day / Z report", "c2": "", "c3": "", "bold": "0,0,0", "fs": "24", "alg": "1" });
             PrintAndroidData.push({ "rn": rowNumber++, "cms": 1, "c1": shopaddress, "c2": "", "c3": "", "bold": "0,0,0", "fs": "24", "alg": "0" });
             PrintAndroidData.push({ "rn": rowNumber++, "cms": 2, "c1": "End of Day Z Report #", "c2": _closeRegister && _closeRegister.CashManagementId, "c3": "", "bold": "0,0,0", "fs": "24", "alg": "0,2" });
