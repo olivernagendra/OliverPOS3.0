@@ -152,7 +152,7 @@ const Notifications = (props) => {
                     <div className="icon-wrapper green">
                         <img src={StorefrontIconGreen} alt="" />
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <p className="style1">Order  refunded  successfully</p>
                         <p className="style2">
                             Order# {list.TempOrderID}
@@ -425,27 +425,27 @@ const Notifications = (props) => {
                 </div>
                 <div className="noti-settings-background" id="notiSettingsBackground"></div>
                 <div className="noti-settings-wrapper">
-                    <div class="noti-settings">
-                        <div class="header">
+                    <div className="noti-settings">
+                        <div className="header">
                             <p>Settings</p>
                         </div>
-                        <div class="settings-list">
-                            <div class="setting-row">
+                        <div className="settings-list">
+                            <div className="setting-row">
                                 <img src={VolumeIcon} alt="" />
                                 <p>Sound Notifications</p>
                             </div>
-                            <div class="setting-row">
+                            <div className="setting-row">
                                 <label>
                                     POS Orders
                                     <input type="checkbox" />
-                                    <div class="toggle"></div>
+                                    <div className="toggle"></div>
                                 </label>
                             </div>
-                            <div class="setting-row">
+                            <div className="setting-row">
                                 <label>
                                     Web Order
                                     <input type="checkbox" />
-                                    <div class="toggle"></div>
+                                    <div className="toggle"></div>
                                 </label>
                             </div>
                         </div>

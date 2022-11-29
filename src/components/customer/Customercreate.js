@@ -478,7 +478,7 @@ const Customercreate = (props) => {
 
     const BillingCountrySearch = () => {
         var _filteredCountry = [];
-        _filteredCountry = CountryList.filter((item) => (
+        _filteredCountry =CountryList && CountryList.filter((item) => (
             (item.Name.toString().toLowerCase().includes(BillingSerachString.toLowerCase()))
         ))
         setRenderBillingCountry(_filteredCountry)
@@ -486,7 +486,7 @@ const Customercreate = (props) => {
 
     const ShillingCountrySearch = () => {
         var _filteredCountry = [];
-        _filteredCountry = CountryList.filter((item) => (
+        _filteredCountry = CountryList && CountryList.filter((item) => (
             (item.Name.toString().toLowerCase().includes(ShippingSearchCountry.toLowerCase()))
         ))
         setRenderShippingCountry(_filteredCountry)

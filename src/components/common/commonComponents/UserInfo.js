@@ -8,8 +8,8 @@ import star from '../../../assets/images/svg/star.svg';
 import LogOut_Icon from '../../../assets/images/svg/LogOut-Icon.svg';
 // import { changeLanguage } from "../../../settings/LocalizedLanguage";
 import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
-// import DownArrowGrey from '../../../assets/images/Temp/DownArrowGrey.png';
-import { get_regName, get_userName } from "../../common/localSettings";
+import DownArrowGrey from '../../../assets/images/svg/DownArrowGrey.svg';
+import { get_regName, get_userName, get_userName_Initial } from "../../common/localSettings";
 const UserInfo = (props) => {
     const [isSelectLangugage, setisSelectLangugage] = useState(false);
     const [selLangugage, setSelLangugage] = useState("English");
@@ -45,11 +45,10 @@ const UserInfo = (props) => {
         <div id="userInfoWrapper" className={props.isShow === true ? "user-info-wrapper" : "user-info-wrapper hidden"} onClick={(e) => outerClick(e)}>
             <div className="user-info">
                 <div className="header">
-                    <div className="avatar">
                         {/* <img src={avatar} alt="" /> */}
-                        <img src={Avatar_Blue_Background} alt="" className="default" />
-						<img src={avatar_2} alt="" />
-                    </div>
+                        {/* <img src={Avatar_Blue_Background} alt="" className="default" /> */}
+						{/* <img src={avatar_2} alt="" /> */}
+                        {get_userName_Initial()!=""?<div className="avatar">{get_userName_Initial()}</div>: <img src={avatar_2} alt="" />}
                     <div className="col">
                         <p className="style1">{get_userName()}</p>
                         <p className="style2">{get_regName()}</p>
@@ -59,7 +58,7 @@ const UserInfo = (props) => {
                     <div className="language-select">
                         <p>Language:</p>
                         <div id="languageDropdownWrapper" className={isSelectLangugage===true?"dropdown-input-wrapper open":"dropdown-input-wrapper"}>
-                            {/* <img src={DownArrowGrey} alt="" /> */}
+                            <img src={DownArrowGrey} alt=""  onClick={()=>toggleSelectLangugage()} />
                             <input type="text" id="language" value={selLangugage}  onClick={()=>toggleSelectLangugage()}  readOnly/>
                             <div className="language-option" onClick={()=>SetLangugage("English")}> <p>English</p></div>
                             <div className="language-option" onClick={()=>SetLangugage("French")}><p>French</p></div>

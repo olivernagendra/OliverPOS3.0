@@ -30,6 +30,7 @@ import IframeWindow from "../dashboard/IframeWindow";
 import UpdateOrderStatus from "../common/commonComponents/UpdateOrderStatus";
 import { updateOrderStatus } from "../common/commonAPIs/updateOrderStatusSlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
+import KeyOrderStatus from '../../settings/KeysOrderStaus';
 var JsBarcode = require('jsbarcode');
 var print_bar_code;
 const SaleComplete = () => {
@@ -43,6 +44,8 @@ const SaleComplete = () => {
     const [paymentAmount, setPaymentAmount] = useState(0);
     const [custEmail, setCustEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [orderStatus, setOrderStatus] = useState('completed');
+    const [tempOrderStatus, setTempOrderStatus] = useState('completed');
     const [isShowUpdateOrderStatus, setIsShowUpdateOrderStatus] = useState(false);
     const [tempOrder_Id, setTempOrder_Id] = useState(localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '')
 
@@ -122,6 +125,7 @@ const SaleComplete = () => {
         return print_bar_code;
     }
     const updateStatus = (_orderStatus) => {
+        setTempOrderStatus(_orderStatus);
         var TempOrders = localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`) ? JSON.parse(localStorage.getItem(`TempOrders_${ActiveUser.key.Email}`)) : [];
         if (TempOrders && TempOrders.length > 0) {
             var tempOrderId = localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '';
@@ -138,6 +142,7 @@ const SaleComplete = () => {
     useEffect(() => {
         if ((respupdateOrderStatus && respupdateOrderStatus.status == STATUSES.IDLE && respupdateOrderStatus.is_success && isLoading==true)) {
             console.log("--respupdateOrderStatus--" + JSON.stringify(respupdateOrderStatus));
+            setOrderStatus(tempOrderStatus);
             toggleUpdateOrderStatus();
             setIsLoading(false);
         }
@@ -488,7 +493,8 @@ const SaleComplete = () => {
 
                     <p>Sale Status:</p>
                     <button id="openUpdateTransactionStatus" onClick={() => toggleUpdateOrderStatus()}>
-                        Completed
+                        {/* {orderStatus?KeyOrderStatus[orderStatus]:"--"} */}
+                        {KeyOrderStatus.key[orderStatus]}
                         <img src={AngledBracket_Left_White} alt="" />
                     </button>
 
@@ -547,7 +553,7 @@ const SaleComplete = () => {
             </div>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
             {isShowiFrameWindow == true ? <IframeWindow exApp={extApp} isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
-            {isShowUpdateOrderStatus ? <UpdateOrderStatus isShow={isShowUpdateOrderStatus} toggleUpdateOrderStatus={toggleUpdateOrderStatus} updateStatus={updateStatus}></UpdateOrderStatus> : null}
+            {isShowUpdateOrderStatus ? <UpdateOrderStatus isShow={isShowUpdateOrderStatus} toggleUpdateOrderStatus={toggleUpdateOrderStatus} updateStatus={updateStatus} orderstatus={orderStatus}></UpdateOrderStatus> : null}
         </React.Fragment>)
     // }
 

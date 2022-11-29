@@ -114,7 +114,8 @@ const AddTile = (props) => {
     const filterProduct = (e) => {
 
         // console.log(e.target.value)
-        var value = e.target.value.trim().toLowerCase();
+        //var value = e.target.value.trim().toLowerCase();
+        var value = e.target.value.toLowerCase();
         setSerachString(value);
         var _filteredData = [];
         if (value != "") {

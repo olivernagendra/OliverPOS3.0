@@ -923,8 +923,23 @@ const Product = (props) => {
                     var found = selVari.find(a => cmb.includes(a.Slug) || cmb.includes("**"));
                     // var _found = selVari.filter(a => cmb.includes(a.Slug));
                     if (typeof found != "undefined" && found != null) {
-                        var _f = cmb.find(a => a === found.Slug);
-                        if (typeof _f != "undefined" && _f != null) { _all.push(cmb); }
+                        var _f = cmb.find(a => (a === found.Slug) || a === "**");
+                        if (typeof _f != "undefined" && _f != null) {
+                            _all.push(cmb);
+                            var _index = cmb.indexOf("**");
+                            var _selVar = selVari.find(a => a.Position = _index);
+                            // var _slug = _DistictAttribute.filter(b => b.Slug === _selVar.Slug);
+                            var _slug = _DistictAttribute.filter(b => b.OptionAll.includes(_selVar.Slug));
+                            if(typeof _slug!="undefined" && _slug!=null && _slug.length>0)
+                            {
+                                _slug.map(m=>{
+                                    _all.push(m.OptionAll);
+                                })
+                                
+                            }
+                            console.log("---_slug---" + _slug.OptionAll);
+
+                        }
                     }
                     //   else{
                     //     // var _f=cmb.find(a=>a===found.Slug);
@@ -968,12 +983,12 @@ const Product = (props) => {
             //     })
             // })
 
-            var array3 = allVariations.filter(function (obj) { return _temp.indexOf(obj) == -1; });
+            var array3 = allVariations.filter(function (obj) { return _temp.indexOf(obj.toLowerCase()) == -1; });
 
             // console.log(allVariations.length + "---" + "--not _all-----" + JSON.stringify(array3));
 
             console.log("---array3 filtered---" + JSON.stringify(array3));
-            if (selVari.length > 1) {
+            if (selVari.length > 1 || selVari.includes("**")) {
                 setDisableAttribute(array3);
             }
 
@@ -1015,11 +1030,11 @@ const Product = (props) => {
             return element.Name === attribute.Name;
         })
         if (_item == -1) {
-            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug : "", });
+            _selVariations.push({ "Name": attribute.Name, "Option": option, "Index": AttrIndex, "OptionTitle": option.replace(/\s/g, '-').toLowerCase(), "Slug": _slug ? _slug : "", "Position": attribute.Position });
         }
         _selVariations = _selVariations.map(obj => {
             if (obj.Name === attribute.Name) {
-                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug : "" };
+                return { ...obj, Option: option, OptionTitle: option.replace(/\s/g, '-').toLowerCase(), "OptionAll": attribute.OptionAll, "Slug": _slug ? _slug : "", "Position": attribute.Position };
             }
             return obj;
         });
@@ -1119,7 +1134,7 @@ const Product = (props) => {
 
                         var allCombi = item && item.combination !== null && item.combination !== undefined && item.combination.split("~");
                         allCombi = allCombi.map(a => { return a.replace(/\//g, "-").toLowerCase() });
-                        var aa = _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) || allCombi.includes("**")))
+                        var aa = _selVariations.every(ele => (allCombi.includes(ele.Slug.toLowerCase()) /*|| allCombi.includes("**")*/))
 
                         if (aa == true) {
                             allCombi = allCombi.map(a => {
@@ -1133,7 +1148,7 @@ const Product = (props) => {
                         }
                         if (attribute && attribute.OptionAll) {
                             attribute.OptionAll.map((a, i) => {
-                                var _att = a.slug;// a.replace(/\//g, "-").toLowerCase();
+                                var _att = a.hasOwnProperty('slug') ? a.slug : a;// a.replace(/\//g, "-").toLowerCase();
                                 const index = _disableAttribute.findIndex(item => item === _att)
                                 if (index === -1) {
                                     _disableAttribute.push(_att);
@@ -1160,10 +1175,10 @@ const Product = (props) => {
                     //console.log("--_disableAttribute--- ", JSON.stringify(_disableAttribute));
                     //console.log("--allVariations--- ", JSON.stringify(allVariations));
                     //console.log("--filteredAttribute1--- ", JSON.stringify(filteredAttribute1.length));
-                    var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj) == -1; });
+                    var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj.toLowerCase()) == -1; });
                     // //_disableAttribute=array3;
                     if (_selVariations && _selVariations.length == 1 && array3 && _attribute && _attribute.length > 1) {
-                        setDisableAttribute(array3);
+                       // setDisableAttribute(array3);
                     }
                     console.log("--array3--- ", JSON.stringify(array3));
                 }
@@ -1378,7 +1393,7 @@ const Product = (props) => {
         _attribute = ProductAttribute && ProductAttribute.filter(item => item.Variation == true);
 
         _attribute && _attribute.map((attribute, index) => {
-            var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Variation: attribute.Variation, OptionAll: attribute.OptionAll ? JSON.parse(attribute.OptionAll) : [] };
+            var item = { Name: attribute.Name, Option: attribute.Option, Slug: attribute.Slug, Variation: attribute.Variation, OptionAll: attribute.OptionAll ? JSON.parse(attribute.OptionAll) : [], Position: attribute.Position };
             // var isExist = _DistictAttribute && _DistictAttribute.find(function (element) {
             //     return (element.Slug == item.Slug)
             // });
@@ -1521,10 +1536,10 @@ const Product = (props) => {
 
                                                         }
                                                         if (_disabled === false) {
-                                                            console.log("----" + displayOption + "---" + _disabled)
+                                                            console.log("--_disabled --" + displayOption + "---" + _disabled)
                                                         }
                                                         else if (_disabled === true) {
-                                                            console.log("----" + displayOption + "---" + _disabled)
+                                                            console.log("--_disabled --" + displayOption + "---" + _disabled)
                                                         }
 
 

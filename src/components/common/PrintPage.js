@@ -10,6 +10,7 @@ import { getAddonsField, getBookingField, productRetrunDiv, getInclusiveTaxType,
 
 import CommonJs from '../../settings/CommonJS';
 import { isSafari } from "react-device-detect";
+import { showAndroidReceipt } from '../../settings/AndroidIOSConnect';
 
 const pageSize = ActiveUser.key.pdfFormate;
 
@@ -62,7 +63,7 @@ function showAddonsProductxSubTitle(product_id, addons, pricemeasurmentdata) {
   //var prodXMeta = addons ? JSON.parse(addons) : ''
   _addons['pricing_item_meta_data'] = pricemeasurmentdata;
   // get meta values from meta field for addons and measurment types    
-  console.log("getAddonsField(_addons)", getAddonsField(_addons))
+  // console.log("getAddonsField(_addons)", getAddonsField(_addons))
   var metaValues = getAddonsField(_addons);
 
 
@@ -188,7 +189,7 @@ function reCalculateDiscount(props, x, view) {
 
   });
 
-  console.log("---itemCalculated---" + JSON.stringify(itemCalculated));
+  // console.log("---itemCalculated---" + JSON.stringify(itemCalculated));
   return itemCalculated && itemCalculated.Price ? itemCalculated : null;
   // console.log("---_totalProductIndividualDiscount---"+_totalProductIndividualDiscount );
   // console.log("---_indivisualProductDiscountArray---"+JSON.stringify(_indivisualProductDiscountArray));
@@ -207,16 +208,16 @@ var RoundAmount = (val) => {
 //
 var currentWidth = window.width; //screen.width;
 function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, redeemPointsToPrint, appResponse, doPrint = true) {
-  console.log("------------------data------------", data)
-  var Android=null;
-  var Tizen=null;
+  //console.log("------------------data------------", data)
+  const Android = window.Android;
+  const Tizen = window.Tizen;
   var displayExtensionAppData;
   if (appResponse) {
     // var appdata= JSON.parse(appResponse);
     if (appResponse && appResponse.command && appResponse.command == 'DataToReceipt')
       displayExtensionAppData = appResponse;
 
-    console.log("prinData", displayExtensionAppData)
+    //console.log("prinData", displayExtensionAppData)
   }
   //console.log("Data", data);
 
@@ -640,15 +641,15 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
         try {
           var _desc = JSON.parse(item.description);
           for (var key in _desc) {
-            console.log(key);
-            console.log(_desc[key]);
+            // console.log(key);
+            // console.log(_desc[key]);
             _emvData += `<tr><td>${key}</td><td align="right">${_desc[key]}</td></tr>`
           }
           if (_emvData !== '') {
             _emvData = '<table class="item-details-total" style="margin-top:0"><tbody>' + _emvData + '</tbody></table>'
           }
         } catch (e) {
-          console.log(e)
+          //console.log(e)
         }
 
       }
@@ -1039,13 +1040,13 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
   })
 
   var splitTaxDetail = ''
-  console.log("DisplayTotalSplitTax", DisplayTotalSplitTax)
+  //console.log("DisplayTotalSplitTax", DisplayTotalSplitTax)
   order_reciept.ShowTotalTax == true && DisplayTotalSplitTax.length > 1 && DisplayTotalSplitTax.map(item => {  //display split tax if tax is more then 1
     splitTaxDetail += `<tr><td colspan="2">${item.tax} </td>
     <td align="right"> ${parseFloat(item.value).toFixed(2)}</td>
     </tr>`
   })
-  console.log("splitTaxDetail", splitTaxDetail)
+  //console.log("splitTaxDetail", splitTaxDetail)
 
   var _CustomeFee = '<table class="item-table"><tbody>';
   var _CustomeFeeRow = ""
@@ -1251,7 +1252,7 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
               _emvData.push({ "rn": rowNumber, "cms": 2, "c1": key, "c2": _desc[key], "c3": "", "bold": "0,0,0", "fs": "24", "alg": "0,2" });
             }
           } catch (e) {
-            console.log(e)
+            //console.log(e)
           }
         }
         let localDate = FormateDateAndTime.formatDateAndTime(item.payment_date, data.time_zone)
@@ -1704,9 +1705,12 @@ table {
         Tizen.generateReceipt(JSON.stringify(receipt), JSON.stringify(PrintAndroidReceiptData))
       }
     }
-    else if ((env && env != '' && env != 'ios')) { //typeof Android != "undefined" || Android != null ||
-
-      //showAndroidReceipt(receipt, PrintAndroidReceiptData)
+    // else if ((env && env != '' && env != 'ios')) { typeof Android != "undefined" || Android != null ||
+    // console.log("---android printing---") ; 
+    // showAndroidReceipt(receipt, PrintAndroidReceiptData)
+    // }
+    else if (typeof Android != "undefined" || Android != null ){
+    showAndroidReceipt(receipt, PrintAndroidReceiptData)
     }
     else {
       var mywindow = window.open('#', 'my div', "width='400', 'A2'");

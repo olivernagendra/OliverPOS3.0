@@ -6,12 +6,12 @@ import ActiveUser from '../../settings/ActiveUser';
 import moment from 'moment';
 import Config from '../../Config'
 import { createPin, validatePin } from "../pinPage/pinSlice"
-import { showAndroidReceipt } from "../../settings/AndroidIOSConnect";
+import { setAndroidKeyboard, showAndroidReceipt } from "../../settings/AndroidIOSConnect";
+
 const Closeregistertwo = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [enterNotes, setenterNotes] = useState('')
-    var Android;
     const enterNote = (e) => {
         const { value } = e.target;
         setenterNotes(value)
@@ -31,7 +31,7 @@ const Closeregistertwo = (props) => {
         localStorage.removeItem('Cash_Management_ID');
         //Webview Android keyboard setting.................... 
         localStorage.setItem('logoutclick', "true");
-        // setAndroidKeyboard('logout');
+        setAndroidKeyboard('logout');
         //--------------------------------------------------------
         //this.props.dispatch(userActions.logout())
         // redirectToURL()
@@ -769,8 +769,8 @@ const Closeregistertwo = (props) => {
         html += '</body ></html>'
         console.log(html)
         console.log("----PrintAndroidReceiptData--->" + JSON.stringify(PrintAndroidReceiptData))
-        if ((typeof Android !== "undefined" && Android !== null) && (Android.getDatafromDevice("isWrapper") == true)) {
-            showAndroidReceipt("", PrintAndroidReceiptData)
+        if ((typeof window.Android !== "undefined" && window.Android !== null) && (window.Android.getDatafromDevice("isWrapper") == true)) {
+            showAndroidReceipt("", PrintAndroidReceiptData);
         }
         else {
             var a = window.open('#', '', 'width=400', 'A2');
@@ -779,7 +779,6 @@ const Closeregistertwo = (props) => {
             a && a.close();
             return true;
         }
-
     }
 
 
