@@ -21,8 +21,8 @@ export const tile = createAsyncThunk(
     // return response.json();
 
     try {
-      if(parameter=="clear")
-      return initialState;
+      if (parameter == "clear")
+        return initialState;
       const response = await tileAPI(parameter);
       // The value we return becomes the `fulfilled` action payload
       return response;
@@ -68,7 +68,7 @@ export const tileSlice = createSlice({
       .addCase(tile.fulfilled, (state, action) => {
         state.status = action.payload && action.payload.is_success === true ? STATUSES.IDLE : STATUSES.ERROR;
         state.data = (action.payload && action.payload.is_success === true ? action.payload : "");
-        state.error = action.payload && action.payload.is_success === false ? (action.payload.hasOwnProperty("message")?action.payload.message:action.payload.error) : action.payload ? "Fail to fetch" : "";;
+        state.error = action.payload && action.payload.is_success === false ? (action.payload.hasOwnProperty("message") ? action.payload.message : action.payload.error) : action.payload ? "Fail to fetch" : "";;
         state.is_success = action.payload && action.payload.is_success === true ? true : false;
       })
       .addCase(tile.rejected, (state, action) => {

@@ -178,7 +178,7 @@ const AddTile = (props) => {
         }
         else if (type && type === "category") {
             id = item.id;
-            if (item.hasOwnProperty('parent') && item.parent!=0) {
+            if (item.hasOwnProperty('parent') && item.parent != 0) {
                 type = "sub-category";
             }
             slug = item.Code && item.Code;
@@ -206,7 +206,7 @@ const AddTile = (props) => {
                     isExist = true;
                 }
             })
-        } else if (type == "category" ) {
+        } else if (type == "category") {
             favList && favList.FavCategory && favList.FavCategory.map(cat => {
                 if (cat.category_id == id) {
                     isExist = true;
@@ -227,13 +227,11 @@ const AddTile = (props) => {
         }
 
         if (id && type && isExist == false) {
-            if(type=="sub-attribute")
-            {
-                type="SubAttribute";
+            if (type == "sub-attribute") {
+                type = "SubAttribute";
             }
-            if(type=="sub-category")
-            {
-                type="SubCategory";
+            if (type == "sub-category") {
+                type = "SubCategory";
             }
             setfilterList([]);
             // console.log("-----new favv--" + id, type, slug);
