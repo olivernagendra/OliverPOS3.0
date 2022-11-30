@@ -311,7 +311,7 @@ export const ActivityFooter = (props) => {
                     }
                 }
             }
-            console.log("single_Order_list", single_Order_list)
+            //  console.log("single_Order_list",single_Order_list)
             var orderCustomerInfo = (typeof single_Order_list.orderCustomerInfo !== 'undefined') && single_Order_list.orderCustomerInfo !== null ? single_Order_list.orderCustomerInfo : null;
             if (orderCustomerInfo !== null) {
                 addcust = {

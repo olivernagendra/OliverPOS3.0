@@ -216,15 +216,15 @@ const ActivityView = () => {
 
         // // Date Ascending order
         if (SelectedTypes == 'dateAsc') {
-            _filteredActivity = _filteredActivity.slice().sort(function (a, b) {
-                return new Date(b.date) - new Date(a.date);
-            });
+            // _filteredActivity = _filteredActivity.slice().sort(function (a, b) {
+            //     return new Date(b.date) - new Date(a.date);
+            // });
         }
         // // Date Desending Order
         if (SelectedTypes == 'dateDesc') {
-            _filteredActivity = _filteredActivity.slice().sort(function (a, b) {
-                return new Date(a.date) - new Date(b.date);
-            });
+            // _filteredActivity = _filteredActivity.slice().sort(function (a, b) {
+            //     return new Date(a.date) - new Date(b.date);
+            // });
         }
         // console.log("_filteredActivity",_filteredActivity)
         setFilteredActivityList(_filteredActivity);
@@ -452,6 +452,12 @@ const ActivityView = () => {
         ).toFixed(2);
     }
 
+    const handleKeyUp = (e) => {
+        if (e.keyCode == 13) {
+            applyServerFilter();
+        }
+      }
+
    
     return <>
         <div className="transactions-wrapper">
@@ -485,11 +491,11 @@ const ActivityView = () => {
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
                     <label htmlFor="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" onChange={hundleChangeID} value={orderidsearch} />
+                    <input type="text" id="orderID" placeholder="Order ID" onKeyUp={(e) => handleKeyUp(e)}  onChange={hundleChangeID} value={orderidsearch} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label htmlFor="custInfo">Customer Info</label>
-                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onChange={hundleChange} value={emailnamephone} />
+                    <input type="text" id="custInfo" placeholder="Customer Name / Email / Phone #" onKeyUp={(e) => handleKeyUp(e)} onChange={hundleChange} value={emailnamephone} />
                     <label htmlFor="orderStatus">Order Status</label>
                     <div className={isSelectStatus === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleStatus} >
                         <img src={down_angled_bracket} alt="" />
@@ -497,7 +503,7 @@ const ActivityView = () => {
                         <div className="option-list">
                             {_orderstatus && _orderstatus.length > 0 && _orderstatus.map((item, index) => {
                                 return (
-                                    <div className="option" key={"status" + index} onClick={() => SetFilterStatus("status", item.key)}>
+                                    <div className="option" key={"status" + index}  onClick={() => SetFilterStatus("status", item.key)}>
                                         <p>{item.value}</p>
                                     </div>
                                 )
@@ -560,11 +566,11 @@ const ActivityView = () => {
                     <div className="input-row">
                         <div className="input-col">
                             <label htmlFor="priceFrom">Price From</label>
-                            <input type="text" id="priceFrom" placeholder="Price" onChange={hundleChangePriceFrom} value={pricefrom} />
+                            <input type="text" id="priceFrom" placeholder="Price" onKeyUp={(e) => handleKeyUp(e)} onChange={hundleChangePriceFrom} value={pricefrom} />
                         </div>
                         <div className="input-col">
                             <label htmlFor="priceTo">Price To</label>
-                            <input type="text" id="priceTo" placeholder="Price" onChange={hundleChangePriceTo} value={priceto} />
+                            <input type="text" id="priceTo" placeholder="Price" onKeyUp={(e) => handleKeyUp(e)} onChange={hundleChangePriceTo} value={priceto} />
                         </div>
                     </div>
                     <button id="searchTransactionButton" onClick={applyServerFilter }>Search</button>
@@ -612,7 +618,7 @@ const ActivityView = () => {
 
                     </div>
                 </div>
-                <ActivityList orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} updateSomething={updateSomething} />
+                <ActivityList SelectedTypes={SelectedTypes} orders={getDistinctActivity} click={activeClass} updateActivityId={updateActivityId} isloader={isloader} updateSomething={updateSomething} />
             </div>
             {_activity && _activity.length > 0 ? <div id="transactionsDetailed" className={responsiveCusList === true ? "transactions-detailed open" : " transactions-detailed"} >
                 <div className="detailed-header-mobile">

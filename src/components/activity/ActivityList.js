@@ -11,10 +11,7 @@ import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import { LoadingSmallModal } from "../common/commonComponents/LoadingSmallModal";
 const ActivityList = (props) => {
     const myRef = useRef();
-    const [isSortWrapper, setSortWrapper] = useState(false)
-    const [SelectedTypes, setSelectedTypes] = useState('')
-    const [AllActivityList, setAllActivityList] = useState([])
-
+    
     var current_date = moment().format(Config.key.DATE_FORMAT);
     var customer_to_OrderId = (typeof localStorage.getItem("CUSTOMER_TO_OrderId") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_OrderId") !== null) ? localStorage.getItem("CUSTOMER_TO_OrderId") : '';
     var id = `activity-order-${customer_to_OrderId}`
@@ -40,7 +37,11 @@ const ActivityList = (props) => {
                 if (keyA > keyB) return 1;
                 return 0;
             });
-            ordersDate.reverse();
+            if (props.SelectedTypes == '' || props.SelectedTypes == 'dateAsc' ) {
+                ordersDate.reverse();
+            }else if (props.SelectedTypes == 'dateDesc') {
+                
+            }
         }
     }
 
@@ -65,6 +66,7 @@ const ActivityList = (props) => {
                 </div>
                 :
                 orders && ordersDate && ordersDate.map((getDate, index) => {
+                    
                     return (
                         <>
                             <div className="filter-name" key={"orderDatedv" + index}>
@@ -95,7 +97,7 @@ const ActivityList = (props) => {
                                                         :
                                                         <p className="style3"> {parseFloat(order.total).toFixed(2)}</p>
                                                 }
-                                                <p className="style4">{order.time}</p>
+                                                <p className="style4">{time}</p>
                                             </div>
                                             {props.updateActivityId == order.order_id ? <div className="selected-indicator"></div> : ''}
                                         </button>
