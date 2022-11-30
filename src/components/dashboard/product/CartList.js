@@ -837,7 +837,7 @@ const CartList = (props) => {
                         </div>
                     </div>
                     <div className="checkout-container">
-                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}  ${<NumericFormat value={total} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />}</button>
+                        <button onClick={() => doCheckout()}>{LocalizedLanguage.checkout}   $   {total != 0 ? ("(" + total + ")") : ""}     </button>
                     </div>
                 </div>
             </div>

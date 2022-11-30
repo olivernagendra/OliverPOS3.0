@@ -63,7 +63,10 @@ const CashDrawerPaymentDetailList = () => {
                     <>
                         <div className="action">
                             <div className="header-row">
-                                <p className={item.IsManual == true ? " green" : item.IsManual == false && item.Expected < 0 ? "" : "blue"}> {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash"} </p>
+                                <p className={item.IsManual == true ? "green": item.Expected < 0 ? "orange" :  item.IsManual == false && item.Expected < 0 ? "" : "blue"}> 
+                                
+                                
+                                {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash sale"} </p>
                                 <p className="style2">{moment.utc(item.TransactionDateOffset).local().format(Config.key.ONLY_TIME)}</p>
                             </div>
                            
