@@ -179,7 +179,7 @@ const AddTile = (props) => {
         else if (type && type === "category") {
             id = item.id;
             if (item.hasOwnProperty('parent') && item.parent!=0) {
-                type = "SubCategory";
+                type = "sub-category";
             }
             slug = item.Code && item.Code;
 
@@ -187,7 +187,7 @@ const AddTile = (props) => {
         else if (type && type === "attribute") {
             id = item.Id;
             if (item.hasOwnProperty('term_taxonomy_id')) {
-                type = "SubAttribute";
+                type = "sub-attribute";
             }
             slug = item.Code && item.Code;
         }
@@ -200,13 +200,13 @@ const AddTile = (props) => {
                     isExist = true;
                 }
             })
-        } else if (type == "attribute" || type == "sub-attribute") {
+        } else if (type == "attribute") {
             favList && favList.FavAttribute && favList.FavAttribute.map(attr => {
                 if (attr.attribute_id == id) {
                     isExist = true;
                 }
             })
-        } else if (type == "category" || type == "sub-category") {
+        } else if (type == "category" ) {
             favList && favList.FavCategory && favList.FavCategory.map(cat => {
                 if (cat.category_id == id) {
                     isExist = true;
@@ -227,6 +227,14 @@ const AddTile = (props) => {
         }
 
         if (id && type && isExist == false) {
+            if(type=="sub-attribute")
+            {
+                type="SubAttribute";
+            }
+            if(type=="sub-category")
+            {
+                type="SubCategory";
+            }
             setfilterList([]);
             // console.log("-----new favv--" + id, type, slug);
             setIsLoading(true);

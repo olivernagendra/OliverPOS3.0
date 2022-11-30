@@ -629,7 +629,7 @@ const Customercreate = (props) => {
     return (
         <>
             {customerres.status == STATUSES.LOADING ? <LoadingModal /> : null}
-            {console.log("props.isShow",props.isShow)}
+            {/* {console.log("props.isShow",props.isShow)} */}
             <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
                 <div className={props.isShow === true ? "subwindow create-customer current" : "subwindow create-customer"}>
                     <div className="subwindow-header">

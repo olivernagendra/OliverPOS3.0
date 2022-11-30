@@ -28,6 +28,8 @@ import ActivityView from './components/activity/ActivityView';
 import Refund from './components/refund/Refund';
 import SaleComplete from './components/salecomplete/SaleComplete';
 import RefundComplete from './components/refund/RefundComplete';
+import { checkForEnvirnmentAndDemoUser } from './settings/CommonJS';
+import { getFirebaseNotification } from './components/firebase/FirebaseNotifications';
 initDB(DBConfig);
 function App() {
 
@@ -38,6 +40,14 @@ function App() {
     } else {
       return <Login />
     }
+  }
+  // call firebase notification functionality
+  var isValidENV = checkForEnvirnmentAndDemoUser()
+  if(isValidENV == true){ // call notification functionality only on dev1 and qa1 (development)
+      getFirebaseNotification()
+      setInterval(() => { 
+          getFirebaseNotification()
+      }, 40000);
   }
   return (
     <Router>
