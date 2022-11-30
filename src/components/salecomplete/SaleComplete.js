@@ -62,7 +62,7 @@ const SaleComplete = () => {
             // }
 
             printdetails();
-            dispatch(checkTempOrderSync(tempOrder_Id));
+            //dispatch(checkTempOrderSync(tempOrder_Id));
             isCalled = true;
         }
 

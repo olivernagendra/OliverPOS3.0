@@ -89,7 +89,7 @@ const Notifications = (props) => {
             // const d = new Date(list.date);
 
             const _openDateTime = list.date && list.date !== "" ? list.date.split(',')[1] : "";
-            console.log("_openDateTime", _openDateTime)
+            //console.log("_openDateTime", _openDateTime)
             if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true) {
                 description = ((
                     <div className="notification-card" key={uniqueKey()}>
@@ -352,7 +352,7 @@ const Notifications = (props) => {
                     {/* <p>Today</p> */}
                     {
                         notificationList && notiDate && notiDate.map((getDate, index) => {
-                            console.log(current_date + "----" + getDate)
+                            //console.log(current_date + "----" + getDate)
                             return (<>
                                 <div key={"date" + index} className="date"> <p>{current_date === getDate ? 'Today' : getDate}</p></div>
                                 {

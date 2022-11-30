@@ -35,6 +35,7 @@ import { sendMailSlice, sendExternalMailSlice } from '../components/common/commo
 //import {loginApi} from '../components/login/loginService'
 import cashRoundingSlice from '../components/common/commonAPIs/cashRoundingSlice';
 import updateOrderStatusSlice from '../components/common/commonAPIs/updateOrderStatusSlice';
+import { sendTokenSlice,removeSubscriptionSlice,registerAccessedSlice,pingRegisterSlice } from '../components/firebase/firebaseSlice';
 export const store = configureStore({
   reducer: {
     login: loginSlice.reducer,
@@ -104,7 +105,11 @@ export const store = configureStore({
     CountryList: getCountrySlice.reducer,
     StateList: getStateSlice.reducer,
     cashRounding: cashRoundingSlice.reducer,
-    updateOrderStatus: updateOrderStatusSlice.reducer
+    updateOrderStatus: updateOrderStatusSlice.reducer,
+    sendToken:sendTokenSlice.reducer,
+    removeSubscription:removeSubscriptionSlice.reducer,
+    registerAccessed:registerAccessedSlice.reducer,
+    pingRegister:pingRegisterSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

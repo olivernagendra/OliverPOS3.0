@@ -1471,7 +1471,7 @@ const Refund = (props) => {
                 </div>
                 <div className="button-row">
                     {/* <button id="splitByProductButton" onClick={() => toggleSplitByProduct()}>By Product</button> */}
-                    <button id="splitByProductButton">By Product</button>
+                    <button id="splitByProductButton" disabled>By Product</button>
                     <button id="splitByPeopleButton" disabled>By Group (Coming Soon)</button>
                 </div>
                 <p className="style2">Customer Payment Types</p>
