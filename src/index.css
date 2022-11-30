@@ -543,9 +543,9 @@ code {
 	text-align: center;
 }
 
-.transactions-search {
+/* .transactions-search {
 	z-index: unset;
-}
+} */
 
 .refund-complete-txt {
 	display: flex;
@@ -700,4 +700,9 @@ code {
 }
 .homepage-wrapper > .products > .products-container > button.category::before {
 	content: "" !important;
+}
+
+.close-register-wrapper > header > .col > .divider {
+    width: auto;
+ 
 }

@@ -53,7 +53,11 @@ const Customercreate = (props) => {
     const [HundleStateBilling, setHundleStateBilling] = useState('')
     const [HundleStateShipping, setHundleStateShipping] = useState('')
     const [AllreadyEmail, setAllreadyEmail] = useState(false)
+    const [emailInvalid, setEmailInvalid] = useState(false)
+    const [emailformat, setEmailformat] = useState(false)
 
+
+   
 
 
     // Toggle dropDown country and state
@@ -206,8 +210,10 @@ const Customercreate = (props) => {
         /// Email
         if (!values.email && typeof values.email !== 'undefined') {
             temp.email = " Email is required!";
+            setEmailInvalid(true)
         } else if (!regex.test(values.email) && typeof values.email !== 'undefined') {
             temp.email = "This is not a valid email format!";
+            setEmailformat(true)
         } else {
             temp.email = "";
         }
@@ -381,17 +387,12 @@ const Customercreate = (props) => {
         setshippingCountryCode("")
         setshippingStateCode("")
         setAllreadyEmail(false)
-
-        
         setBillingSerachString("")
         setShippingSearchCountry("")
-       // setRenderBillingCountry
-       // setRenderShippingCountry
-      //  setRenderBillingState
-       // setRenderShippingState
         setHundleStateBilling("")
         setHundleStateShipping("")
-
+        setEmailInvalid(false)
+        setEmailformat(false)
 
     }
 
@@ -625,11 +626,9 @@ const Customercreate = (props) => {
 
 
 
-
     return (
         <>
             {customerres.status == STATUSES.LOADING ? <LoadingModal /> : null}
-            {console.log("props.isShow",props.isShow)}
             <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
                 <div className={props.isShow === true ? "subwindow create-customer current" : "subwindow create-customer"}>
                     <div className="subwindow-header">
@@ -647,16 +646,14 @@ const Customercreate = (props) => {
 
                     </div>
                     <div className="subwindow-body">
-                        {/* <form id="myform" autoComplete="off"> */}
-                        {/* <section id="contactInfoSection"> */}
                         <div id="custInfoSection">
                             <p>Contact Information</p>
                             <div className="input-row">
                                 <div className="input-col">
                                     <label for="newCustEmail">Email*</label>
                                     <input type="email" placeholder="Enter Email" name='email'
-                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput}  />
-                                    <div className="error required" style={{color:"red"}} >{errors.email}</div>
+                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput}  className={emailInvalid==true ? "error required": emailformat == true ? "error invalid-input":'' }  />
+                                   	<div class="error-wrapper"></div>
                                 </div>
 
                                 <div className="input-col">

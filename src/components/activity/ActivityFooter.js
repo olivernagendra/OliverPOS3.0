@@ -11,15 +11,22 @@ import CommonModuleJS from "../../settings/CommonModuleJS";
 import Config from '../../Config'
 import { useIndexedDB } from 'react-indexed-db';
 import ViewReceipt from "../common/commonComponents/ViewReceipt";
+import MsgPopup from "../common/commonComponents/MsgPopup";
+
 export const ActivityFooter = (props) => {
     const navigate = useNavigate()
     const { getAll } = useIndexedDB("products");
     const [activityOrderDetails, setActivityOrderDetails] = useState([])
     const [productList, setProductList] = useState([])
     const [isShowViewReceipt, setisShowViewReceipt] = useState(false)
-
+    const [isShowMsg, setisShowMsg] = useState(false);
+    const [msgTitle, setmsgTitle] = useState('');
+    const [msgBody, setmsgBody] = useState('');
     const toggleViewReceipt = () => {
         setisShowViewReceipt(!isShowViewReceipt)
+    }
+    const toggleMsgPopup = () => {
+        setisShowMsg(!isShowMsg)
     }
 
     let useCancelled = false;
@@ -100,8 +107,12 @@ export const ActivityFooter = (props) => {
     }
 
 
-    const VoidPOP = () => {
-        alert('canceled')
+    const VoidPOP = (type) => {
+        //   if (type == 'voidsale') {
+        //     toggleMsgPopup(true);
+        //     setmsgTitle("Message")
+        //     setmsgBody("Selected order has been Cancelled.")
+        //   }
     }
 
 
@@ -117,14 +128,13 @@ export const ActivityFooter = (props) => {
 
 
     const onClick2 = (type, id, productList = []) => {
-        // console.log("type")
         if (type == 'statuscompleted' && id) {
             if (CommonModuleJS.permissionsForRefund() == false) {
                 //  this.setState({ common_Msg: '' })
                 // $('#common_msg_popup').modal('show');
                 //  showModal('common_msg_popup');
             } else {
-                var single_Order_list = activityOrderDetails;
+                var single_Order_list = activityOrderDetails && activityOrderDetails;
                 single_Order_list.order_custom_fee && single_Order_list.order_custom_fee.length > 0 &&
                     single_Order_list.order_custom_fee.map(item => {
                         item = getCustomFeeDetails(item);
@@ -301,25 +311,26 @@ export const ActivityFooter = (props) => {
                     }
                 }
             }
+            console.log("single_Order_list", single_Order_list)
             var orderCustomerInfo = (typeof single_Order_list.orderCustomerInfo !== 'undefined') && single_Order_list.orderCustomerInfo !== null ? single_Order_list.orderCustomerInfo : null;
             if (orderCustomerInfo !== null) {
                 addcust = {
-                    content: {
-                        AccountBalance: 0,
-                        City: orderCustomerInfo.customer_city ? orderCustomerInfo.customer_city : '',
-                        Email: orderCustomerInfo.customer_email ? orderCustomerInfo.customer_email : '',
-                        FirstName: orderCustomerInfo.customer_first_name ? orderCustomerInfo.customer_first_name : '',
-                        Id: orderCustomerInfo.customer_id ? orderCustomerInfo.customer_id : single_Order_list.customer_id,
-                        LastName: orderCustomerInfo.customer_last_name ? orderCustomerInfo.customer_last_name : '',
-                        Notes: orderCustomerInfo.customer_note ? orderCustomerInfo.customer_note : '',
-                        Phone: orderCustomerInfo.customer_phone ? orderCustomerInfo.customer_phone : '',
-                        Pin: 0,
-                        Pincode: orderCustomerInfo.customer_post_code ? orderCustomerInfo.customer_post_code : '',
-                        StoreCredit: orderCustomerInfo.store_credit ? orderCustomerInfo.store_credit : '',
-                        StreetAddress: orderCustomerInfo.customer_address ? orderCustomerInfo.customer_address : '',
-                        UID: 0,
-                        WPId: orderCustomerInfo.customer_id ? orderCustomerInfo.customer_id : single_Order_list.customer_id,
-                    }
+
+                    AccountBalance: 0,
+                    City: orderCustomerInfo.customer_city ? orderCustomerInfo.customer_city : '',
+                    Email: orderCustomerInfo.customer_email ? orderCustomerInfo.customer_email : '',
+                    FirstName: orderCustomerInfo.customer_first_name ? orderCustomerInfo.customer_first_name : '',
+                    Id: orderCustomerInfo.customer_id ? orderCustomerInfo.customer_id : single_Order_list.customer_id,
+                    LastName: orderCustomerInfo.customer_last_name ? orderCustomerInfo.customer_last_name : '',
+                    Notes: orderCustomerInfo.customer_note ? orderCustomerInfo.customer_note : '',
+                    Phone: orderCustomerInfo.customer_phone ? orderCustomerInfo.customer_phone : '',
+                    Pin: 0,
+                    Pincode: orderCustomerInfo.customer_post_code ? orderCustomerInfo.customer_post_code : '',
+                    StoreCredit: orderCustomerInfo.store_credit ? orderCustomerInfo.store_credit : '',
+                    StreetAddress: orderCustomerInfo.customer_address ? orderCustomerInfo.customer_address : '',
+                    UID: 0,
+                    WPId: orderCustomerInfo.customer_id ? orderCustomerInfo.customer_id : single_Order_list.customer_id,
+
                 }
                 localStorage.setItem('AdCusDetail', JSON.stringify(addcust));
                 sessionStorage.setItem("CUSTOMER_ID", orderCustomerInfo.customer_id ? orderCustomerInfo.customer_id : single_Order_list.customer_id)
@@ -432,7 +443,7 @@ export const ActivityFooter = (props) => {
                         activityOrderDetails.order_status == 'completed' ? onClick1()
                             : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold" || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing") ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '')
                                 : activityOrderDetails.order_status == "refunded" ? RefundPOP
-                                    : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails && activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP
+                                    : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails && activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP('voidsale')
                                         : null
                     }  > {activityOrderDetails.order_status == 'completed' ? LocalizedLanguage.refundSale
                         : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
@@ -444,9 +455,17 @@ export const ActivityFooter = (props) => {
                     }</button>
 
                 <button id="receiptButton" onClick={() => toggleViewReceipt()}>Receipt</button>
-                <button disabled={activityOrderDetails && activityOrderDetails.order_status == 'completed' || activityOrderDetails && activityOrderDetails.order_status == 'refunded' || (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? true : false} style={{ opacity: activityOrderDetails && activityOrderDetails.order_status == 'completed' || activityOrderDetails && activityOrderDetails.order_status == 'refunded' || (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? 0.5 : 1 }} id="openSaleButton">Open Sale</button>
+                <button disabled={activityOrderDetails && activityOrderDetails !== null && (activityOrderDetails.order_status == 'completed' || activityOrderDetails && activityOrderDetails.order_status == 'refunded' || (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale")) ? true : false} style={{ opacity: activityOrderDetails && activityOrderDetails.order_status == 'completed' || activityOrderDetails && activityOrderDetails.order_status == 'refunded' || (activityOrderDetails.order_status == "void_sale" || activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? 0.5 : 1 }} onClick={() =>
+                    activityOrderDetails && activityOrderDetails !== null && (activityOrderDetails.order_status == "pending" ||
+                        activityOrderDetails.order_status == "lay_away" ||
+                        activityOrderDetails.order_status == "on-hold" ||
+                        activityOrderDetails.order_status == "park_sale" ||
+                        activityOrderDetails.order_status == "init sale" ||
+                        activityOrderDetails.order_status == "processing")
+                        ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '') : null} id="openSaleButton"   >Open Sale</button>
             </div>
             {isShowViewReceipt ? <ViewReceipt isShow={isShowViewReceipt} toggleViewReceipt={toggleViewReceipt} PrintClick={PrintClick}></ViewReceipt> : null}
+            <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
         </React.Fragment>
     )
 }

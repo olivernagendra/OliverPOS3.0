@@ -27,7 +27,6 @@ import Config from '../../Config'
 import ActivityList from "./ActivityList";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import ActivityOrderDetail from "./ActivityOrderDetail";
-import ActivityOrderList from "./ActivityOrderList";
 import { ActivityFooter } from "./ActivityFooter";
 import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 import { calenderInit } from "../common/commonFunctions/homeFn";
@@ -66,7 +65,7 @@ const ActivityView = () => {
     const [ActivityOrderDetails, setActivityOrderDetails] = useState([])
     const [isDateFrom, setIsDateFrom] = useState(false)
     const [isDateTo, setIsDateTo] = useState(false)
-
+    const [filterSearchActive, setFilterSearchActive] = useState(false)
     // All TOGGLE 
     const toggleAppLauncher = () => {
         setisShowAppLauncher(!isShowAppLauncher)
@@ -103,15 +102,34 @@ const ActivityView = () => {
     const toggleResponsiveList = () => {
         setResponsiveCusList(!responsiveCusList)
     }
-
-
+    const handleCalenderFrom = () => {
+        setIsDateFrom(!isDateFrom)
+        //setIsDateTo(false)
+    }
+    const handleCalenderTo = () => {
+        setIsDateTo(!isDateTo)
+        //setIsDateFrom(false)
+    }
     // -------------------------------------------------------
     const dispatch = useDispatch();
-
 
     setTimeout(() => {
         calenderInit();
     }, 1000);
+
+    const hundleChange = (event) => {
+        setEmailNamePhone(event.target.value)
+    }
+    const hundleChangeID = (event) => {
+        setorderId(event.target.value)
+    }
+    const hundleChangePriceFrom = (e) => {
+
+        setPriceFrom(e.target.value)
+    }
+    const hundleChangePriceTo = (e) => {
+        setPriceTo(e.target.value)
+    }
 
 
 
@@ -127,6 +145,7 @@ const ActivityView = () => {
                 reload(1)
                 dispatch(cashRecords(null));
             }
+
         }
         return () => {
             useCancelled = true;
@@ -149,7 +168,6 @@ const ActivityView = () => {
 
         }
     }, [respActivitygetdetails]);
-    //  console.log("ActivityOrderDetails", ActivityOrderDetails)
 
     // set all Activity List response from record Api
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
@@ -217,8 +235,6 @@ const ActivityView = () => {
 
 
 
-    //console.log("FilteredActivityList", FilteredActivityList)
-
 
     // Filter activity list Accourding To Date
     var getDistinctActivity = {};
@@ -234,9 +250,6 @@ const ActivityView = () => {
                 getDistinctActivity[dateKey].push(item)
             }
         }
-
-        // console.log("filterbydates", filterbydate)
-
     })
     //---------------------------------------------------
 
@@ -248,28 +261,17 @@ const ActivityView = () => {
 
         } else {
             localStorage.removeItem("CUSTOMER_TO_ACTVITY")
-            //  this.setState({ custActive: false, common_Msg: '' })
             localStorage.removeItem("CUSTOMER_TO_OrderId");
-            //   $(".activity-order").removeClass("table-primary-label");
-            //  $(`#activity-order-${index}`).addClass("table-primary-label");
             var mydate = new Date(item.date);
             var getPdfdate = (mydate.getMonth() + 1) + '/' + mydate.getDate() + '/' + mydate.getFullYear() + ' ' + item.time;
             var itemCreatedDate = FormateDateAndTime.formatDateAndTime(item.date_time, item.time_zone)
             setupdateActivityId(item.order_id)
             setGetPdfdateTime(getPdfdate)
-            // this.setState({
-            //     active: index,
-            //     CreatedDate: itemCreatedDate,
-            //     getPdfdateTime: getPdfdate,
-            //     pushInactivityBuffer: false
-            // })
             var UID = get_UDid('UDID');
             if (item.order_id) {
                 dispatch(getDetail(item.order_id, UID));
             }
             setResponsiveCusList(!responsiveCusList)
-            //this.props.dispatch(checkoutActions.getOrderReceipt());
-            // $(".button_with_checkbox input").prop("checked", false);
         }
     }
 
@@ -278,160 +280,24 @@ const ActivityView = () => {
     let useCancelled1 = false;
     useEffect(() => {
         var UID = get_UDid('UDID');
-
-        // if(transactionsRedirect &&transactionsRedirect.length > 0) {
-        //     var customer_to_activity_id = sessionStorage.getItem("transredirection") ?sessionStorage.getItem("transredirection"):'';
-        //   }
         var customer_to_activity_id = (typeof localStorage.getItem("CUSTOMER_TO_ACTVITY") !== 'undefined' && localStorage.getItem("CUSTOMER_TO_ACTVITY") !== null) ? localStorage.getItem("CUSTOMER_TO_ACTVITY") : null;
-
-        // console.log("transactionsRedirect",transactionsRedirect)
         setupdateActivityId(customer_to_activity_id)
         if (useCancelled1 == false && activeDetailApi !== false) {
             if (customer_to_activity_id) {
                 dispatch(getDetail(customer_to_activity_id, UID));
             }
         }
+        if (isCvmobile === true) {
+           // clearFilter();
+        }
         return () => {
             useCancelled1 = true;
         }
-    }, [AllActivityList]);
 
 
-
-    // useEffect(() => {
-    //     document.querySelectorAll(".date-selector-wrapper right > button").forEach((button) => {
-    //         console.log("button", button)
-    //         button.addEventListener("click", (e) => {
-    //             console.log("e", e)
-    //             let currentDateSelector = e.currentTarget.parentNode.querySelector(".date-selector");
-    //             let openDateSelector = document.querySelector(".date-selector.open");
-    //             if (openDateSelector) {
-    //                 openDateSelector.classList.remove("open");
-    //             }
-    //             if (currentDateSelector != openDateSelector) {
-    //                 initCalendarDate(new Date(), currentDateSelector);
-    //                 currentDateSelector.classList.add("open");
-    //             }
-    //         });
-    //     });
+    }, [AllActivityList, isCvmobile]);
 
 
-    //     let monthTranslate = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-    //     function initCalendarDate(date, dateSelector) {
-    //         dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button class="raise-level">${monthTranslate[date.getMonth()]
-    //             } ${date.getFullYear()}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="day-row"><div class="day">Su</div><div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div></div>`;
-    //         dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
-    //             let monthYear = e.currentTarget.nextElementSibling.innerHTML.split(" ");
-    //             let monthIndex = monthTranslate.indexOf(monthYear[0]) - 1;
-    //             if (monthIndex == -1) {
-    //                 monthIndex = 11;
-    //                 monthYear[1]--;
-    //             }
-    //             initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
-    //         });
-    //         dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
-    //             initCalendarMonths(parseInt(e.currentTarget.innerHTML.split(" ")[1]), e.currentTarget.parentNode.parentNode);
-    //         });
-    //         dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
-    //             let monthYear = e.currentTarget.previousElementSibling.innerHTML.split(" ");
-    //             let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
-    //             if (monthIndex == 12) {
-    //                 monthIndex = 0;
-    //                 monthYear[1]++;
-    //             }
-    //             initCalendarDate(new Date(monthYear[1], monthIndex, 1), e.currentTarget.parentNode.parentNode);
-    //         });
-    //         let daysInCurrentMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-    //         let dayIndex = 1;
-    //         let nextMonthIndex = 1;
-    //         let daysInLastMonth = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
-    //         let firstWeekday = new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
-    //         let dateArray = [];
-    //         for (let i = 0; i < 42; i++) {
-    //             if (firstWeekday > -1) {
-    //                 dateArray.push(daysInLastMonth - firstWeekday);
-    //                 firstWeekday--;
-    //             } else if (dayIndex <= daysInCurrentMonth) {
-    //                 dateArray.push(dayIndex);
-    //                 dayIndex++;
-    //             } else {
-    //                 dateArray.push(nextMonthIndex);
-    //                 nextMonthIndex++;
-    //             }
-    //         }
-    //         let isDisabled = true;
-    //         for (let i = 0; i < 6; i++) {
-    //             let dateRow = document.createElement("div");
-    //             dateRow.classList.add("date-row");
-    //             for (let j = 0; j < 7; j++) {
-    //                 let cell = document.createElement("button");
-    //                 cell.classList.add("cell");
-    //                 let dateContent = dateArray[i * 7 + j];
-    //                 if (dateContent == 1) {
-    //                     isDisabled = !isDisabled;
-    //                 }
-    //                 // console.log(dateContent)
-    //                 cell.textContent = dateContent;
-    //                 cell.disabled = isDisabled;
-    //                 cell.addEventListener("click", (e) => {
-    //                     let currentSelector = e.currentTarget.parentNode.parentNode;
-    //                     let monthYear = currentSelector.firstElementChild.children[1].innerHTML.split(" ");
-    //                     let monthIndex = monthTranslate.indexOf(monthYear[0]) + 1;
-    //                     currentSelector.parentNode.querySelector("input").value = `${e.currentTarget.innerHTML.length == 2 ? e.currentTarget.innerHTML : "0" + e.currentTarget.innerHTML
-    //                         }/${monthIndex.toString().length == 2 ? monthIndex : "0" + monthIndex}/${monthYear[1]}`;
-    //                     currentSelector.classList.remove("open");
-    //                 });
-    //                 dateRow.appendChild(cell);
-    //             }
-    //             dateSelector.appendChild(dateRow);
-    //         }
-    //     }
-
-    //     function initCalendarMonths(year, dateSelector) {
-    //         dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><button>${year}</button><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="month-row"><button class="cell">January</button><button class="cell">February</button><button class="cell">March</button></div><div class="month-row"><button class="cell">April</button><button class="cell">May</button><button class="cell">June</button></div><div class="month-row"><button class="cell">July</button><button class="cell">August</button><button class="cell">September</button></div><div class="month-row"><button class="cell">October</button><button class="cell">Novemeber</button><button class="cell">December</button></div>`;
-    //         dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
-    //             e.currentTarget.nextElementSibling.innerHTML = parseInt(e.currentTarget.nextElementSibling.innerHTML) - 1;
-    //         });
-    //         dateSelector.firstElementChild.children[1].addEventListener("click", (e) => {
-    //             initCalendarYears(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
-    //         });
-    //         dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
-    //             e.currentTarget.previousElementSibling.innerHTML = parseInt(e.currentTarget.previousElementSibling.innerHTML) + 1;
-    //         });
-    //         dateSelector.querySelectorAll(".month-row > button.cell").forEach((button) => {
-    //             button.addEventListener("click", (e) => {
-    //                 let dateSelector = e.currentTarget.parentNode.parentNode;
-    //                 initCalendarDate(
-    //                     new Date(parseInt(dateSelector.firstElementChild.children[1].innerHTML), monthTranslate.indexOf(e.currentTarget.innerHTML), 1),
-    //                     dateSelector
-    //                 );
-    //             });
-    //         });
-    //     }
-
-    //     function initCalendarYears(startYear, dateSelector) {
-    //         dateSelector.innerHTML = `<div class="header-row"><button class="calendar-left"><img src="../Assets/Images/SVG/CalendarArrowLeft.svg" alt=""></button><div>${startYear} - ${startYear + 11
-    //             }</div><button class="calendar-right"><img src="../Assets/Images/SVG/CalendarArrowRight.svg" alt=""></button></div><div class="year-row"><button class="cell">${startYear}</button><button class="cell">${startYear + 1
-    //             }</button><button class="cell">${startYear + 2}</button></div><div class="year-row"><button class="cell">${startYear + 3
-    //             }</button><button class="cell">${startYear + 4}</button><button class="cell">${startYear + 5
-    //             }</button></div><div class="year-row"><button class="cell">${startYear + 6}</button><button class="cell">${startYear + 7
-    //             }</button><button class="cell">${startYear + 8}</button></div><div class="year-row"><button class="cell">${startYear + 9
-    //             }</button><button class="cell">${startYear + 10}</button><button class="cell">${startYear + 11}</button></div>`;
-    //         dateSelector.firstElementChild.children[0].addEventListener("click", (e) => {
-    //             initCalendarYears(parseInt(e.currentTarget.nextElementSibling.innerHTML.split(" - ")[0]) - 12, e.currentTarget.parentNode.parentNode);
-    //         });
-    //         dateSelector.firstElementChild.children[2].addEventListener("click", (e) => {
-    //             initCalendarYears(parseInt(e.currentTarget.previousElementSibling.innerHTML.split(" - ")[1]) + 1, e.currentTarget.parentNode.parentNode);
-    //         });
-    //         dateSelector.querySelectorAll(".year-row > button.cell").forEach((button) => {
-    //             button.addEventListener("click", (e) => {
-    //                 initCalendarMonths(parseInt(e.currentTarget.innerHTML), e.currentTarget.parentNode.parentNode);
-    //             });
-    //         });
-    //     }
-
-    // }, []);
 
     const sortByList = (filterType, FilterValue) => {
         SetSortByValueName(FilterValue)
@@ -464,62 +330,72 @@ const ActivityView = () => {
 
     // Filter Submit Btn
     const applyServerFilter = () => {
+
         var UID = get_UDid('UDID');
         var pagesize = Config.key.ACTIVITY_PAGE_SIZE
-        // var fromdate = document.getElementById("txtfromdate");
-        // var txttodate = document.getElementById("txttodate");
-        //  var txtSearch = $("#search-orders").val();
-        // var _startdate = fromdate && fromdate.value !== "" ? new Date(fromdate.value) : "";
-        // var _enddate = txttodate && txttodate.value !== "" ? new Date(txttodate.value) : "";
+        var fromdate = document.getElementById("dateFrom").value;
+        var txttodate = document.getElementById("dateTo").value;
+        var _startdate = fromdate && fromdate !== "" ? new Date(fromdate) : "";
+        var _enddate = txttodate && txttodate !== "" ? new Date(txttodate) : "";
         var s_dd = 0;
         var s_mm = 0;
         var s_yy = 0;
         var e_dd = 0;
         var e_mm = 0;
         var e_yy = 0;
-        // if (_startdate && _startdate !== "") {
-        //     s_dd = _startdate.getDate();
-        //     s_mm = _startdate.getMonth() + 1;
-        //     s_yy = _startdate.getFullYear();
-        // }
-        // if (_enddate && _enddate !== "") {
-        //     e_dd = _enddate.getDate();
-        //     e_mm = _enddate.getMonth() + 1;
-        //     e_yy = _enddate.getFullYear();
-        // }
+        if (_startdate && _startdate !== "") {
+            s_dd = _startdate.getMonth() + 1;
+            s_mm = _startdate.getDate();
+            s_yy = _startdate.getFullYear();
+        }
+        if (_enddate && _enddate !== "") {
+            e_dd = _enddate.getMonth() + 1;
+            e_mm = _enddate.getDate();
+            e_yy = _enddate.getFullYear();
+        }
+        if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" ||
+        selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '') {
+            
+            var _filterParameter = {
+                "PageSize": pagesize,
+                "PageNumber": 0,
+                "isSearch": "true",
+                "udid": UID,
+                "plateform": filterByPlatform,
+                "status": filterByStatus,
+                "userId": filterByUser,
+                "SatrtDay": s_dd,
+                "SatrtMonth": s_mm,
+                "SatrtYear": s_yy,
+                "EndDay": e_dd,
+                "EndMonth": e_mm,
+                "EndYear": e_yy,
+                "searchVal": emailnamephone ? emailnamephone : orderidsearch,
+                //"groupSlug": this.state.filterByGroupList,
+                "MinAmount": pricefrom,
+                "MaxAmount": priceto,
+    
+            };
+            //console.log("_filterParameter",_filterParameter)
+            dispatch(getFilteredActivities(_filterParameter));
+           // mobileTransactionsSearch()
+            setFilterSearchActive(true)
 
-        var _filterParameter = {
-            "PageSize": pagesize,
-            "PageNumber": 0,
-            "isSearch": "true",
-            "udid": UID,
-            "plateform": filterByPlatform,
-            "status": filterByStatus,
-            "userId": filterByUser,
-            // "SatrtDay": s_dd,
-            // "SatrtMonth": s_mm,
-            // "SatrtYear": s_yy,
-            // "EndDay": e_dd,
-            // "EndMonth": e_mm,
-            // "EndYear": e_yy,
-            "searchVal": emailnamephone ? emailnamephone : orderidsearch,
-            //"groupSlug": this.state.filterByGroupList,
-            "MinAmount": pricefrom,
-            "MaxAmount": priceto,
+        }
 
-        };
-        // console.log("_filterParameter",_filterParameter)
-        dispatch(getFilteredActivities(_filterParameter));
 
+     
 
     }
 
-
+   
 
 
     const clearFilter = () => {
+        var fromdate = document.getElementById("dateFrom").value;
+        var txttodate = document.getElementById("dateTo").value;
         if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" ||
-            selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "") {
+            selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '' || AllActivityList !=='') {
             setupdateActivityId('')
             reload(1)
             setfilterByUser("")
@@ -530,26 +406,18 @@ const ActivityView = () => {
             setorderId('')
             setPriceFrom("")
             setPriceTo("")
-            localStorage.removeItem("CUSTOMER_TO_ACTVITY")
-            localStorage.removeItem('CUSTOMER_TO_OrderId')
+            localStorage.removeItem("CUSTOMER_TO_ACTVITY");
+            localStorage.removeItem('CUSTOMER_TO_OrderId');
             sessionStorage.removeItem('transactionredirect');
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            setAllActivityList("")
         }
     }
 
 
 
-    const hundleChange = (event) => {
-        setEmailNamePhone(event.target.value)
-    }
-    const hundleChangeID = (event) => {
-        setorderId(event.target.value)
-    }
-    const hundleChangePriceFrom = (e) => {
-        setPriceFrom(e.target.value)
-    }
-    const hundleChangePriceTo = (e) => {
-        setPriceTo(e.target.value)
-    }
+
 
     const _Useroptions = [];
     _Useroptions.push({ value: "", label: "All" });
@@ -571,7 +439,7 @@ const ActivityView = () => {
         setDefauldNumber(defauldnumber + 1)
         if (AllActivityList.length == activityListcount) {
 
-        } else if (defauldnumber != 1 && transactionsRedirect == '') {
+        } else if (defauldnumber != 1 && transactionsRedirect == '' &&filterSearchActive !==true ) {
             reload(defauldnumber)
         }
     }
@@ -582,16 +450,9 @@ const ActivityView = () => {
             parseFloat(ActivityOrderDetails.total_amount - ActivityOrderDetails.refunded_amount) -
             parseFloat(ActivityOrderDetails.total_tax - ActivityOrderDetails.tax_refunded)
         ).toFixed(2);
+    }
 
-    }
-    const handleCalenderFrom = () => {
-        setIsDateFrom(!isDateFrom)
-        //setIsDateTo(false)
-    }
-    const handleCalenderTo = () => {
-        setIsDateTo(!isDateTo)
-        //setIsDateFrom(false)
-    }
+   
     return <>
         <div className="transactions-wrapper">
             <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
@@ -648,7 +509,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateFrom">Date From</label>
                             <div className="date-selector-wrapper left ">
-                                <input type="text" id="dateFrom" placeholder="Date" onChange={() => { handleCalenderFrom() }} />
+                                <input type="text" id="dateFrom" placeholder="Date" onChange={() => {handleCalenderFrom()}} />
                                 <button className="open-date-selector open" onClick={() => handleCalenderFrom()}>
                                     <img src={calendar} alt="" />
                                 </button>
@@ -658,7 +519,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
-                                <input type="text" id="dateTo" placeholder="Date" onChange={() => { handleCalenderTo() }} />
+                                <input type="text" id="dateTo" placeholder="Date" onChange={() => {handleCalenderTo()}} />
                                 <button className="open-date-selector" onClick={() => handleCalenderTo()}>
                                     <img src={calendar} alt="" />
                                 </button>
@@ -679,11 +540,8 @@ const ActivityView = () => {
                                 )
                             })
                             }
-
-
                         </div>
                     </div>
-
                     <label htmlFor="employee">Employee</label>
                     <div className={isEmployeeWrapper === true ? "dropdown-wrapper open " : "dropdown-wrapper"} onClick={toggleEmployee}>
                         <img src={down_angled_bracket} alt="" />
@@ -697,11 +555,8 @@ const ActivityView = () => {
                                 )
                             })
                             }
-
                         </div>
                     </div>
-
-
                     <div className="input-row">
                         <div className="input-col">
                             <label htmlFor="priceFrom">Price From</label>
@@ -712,7 +567,7 @@ const ActivityView = () => {
                             <input type="text" id="priceTo" placeholder="Price" onChange={hundleChangePriceTo} value={priceto} />
                         </div>
                     </div>
-                    <button id="searchTransactionButton" onClick={applyServerFilter}>Search</button>
+                    <button id="searchTransactionButton" onClick={applyServerFilter }>Search</button>
                 </div>
             </div>
 
@@ -727,8 +582,6 @@ const ActivityView = () => {
                         {/* <p>{sortbyvaluename}</p> */}
                         {/* <div id="sortCurrent" className="sort-current"  >
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
-
-                      
                             <img src={SelectedTypes != "" && SelectedTypes.includes("Asc") ? FilterArrowUp : FilterArrowDown} alt="" />
                             <p>{sortbyvaluename}</p>
                         </div> */}
@@ -768,9 +621,7 @@ const ActivityView = () => {
                         Go Back
                     </button>
                 </div>
-                <ActivityOrderDetail />
-
-                <ActivityOrderList
+                <ActivityOrderDetail
                     Subtotal={subtotal ? subtotal : 0}
                     //  Discount={_discount}
                     TotalTax={ActivityOrderDetails && ActivityOrderDetails.total_tax}
@@ -785,24 +636,13 @@ const ActivityView = () => {
                     refundCashRounding={ActivityOrderDetails && ActivityOrderDetails.refund_cash_rounding_amount}
                     redeemPointsToPrint={ActivityOrderDetails && ActivityOrderDetails.meta_datas ? ActivityOrderDetails && ActivityOrderDetails.meta_datas && ActivityOrderDetails && ActivityOrderDetails.meta_datas[1] ? ActivityOrderDetails && ActivityOrderDetails.meta_datas[1].ItemValue : 0 : 0}
                     orderMetaData={ActivityOrderDetails && ActivityOrderDetails.meta_datas}
-                // TotalIndividualProductDiscount={
-                //     _discount == ActivityOrderDetails && ActivityOrderDetails.discount
-                //       ? _totalProductIndividualDiscount
-                //       : 0
-                //   }
                 />
-
-
                 <ActivityFooter getPdfdateTime={getPdfdateTime} />
             </div> : <><div id="CVDetailed" className="cv-detailed">
                 <div className="no-search-results-detailed">
                     <p className="style1">No transactions to display.</p>
                     <p className="style2">Try searching for an transactions or <br /> select from list to view.</p>
                 </div></div></>}
-
-
-
-
         </div>
         <div className="subwindow-wrapper hidden"></div>
     </>
