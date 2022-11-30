@@ -422,10 +422,10 @@ export const ActivityFooter = (props) => {
     return (
         <React.Fragment>
             <div className="footer">
-                <button id="refundButton" disabled={activityOrderDetails && (activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
+                <button id="refundButton" disabled={activityOrderDetails && activityOrderDetails !== null && (activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
                     || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
                     || activityOrderDetails.order_status == "") ? true : false} style={{
-                        opacity: activityOrderDetails && (activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
+                        opacity: activityOrderDetails && activityOrderDetails !== null && (activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
                             || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
                             || activityOrderDetails.order_status == "" || activityOrderDetails.order_status == "cancelled") ? 0.5 : 1
                     }} onClick={() =>
