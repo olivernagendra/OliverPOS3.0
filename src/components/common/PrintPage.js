@@ -4,7 +4,7 @@ import { get_UDid } from './localSettings';
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
 import ActiveUser from '../../settings/ActiveUser';
 import LocalizedLanguage from '../../settings/LocalizedLanguage';
-import { getAddonsField, getBookingField, productRetrunDiv, getInclusiveTaxType,productxArray , showSubTitle, showTitle} from '../../settings/CommonModuleJS';
+import { getAddonsField, getBookingField, productRetrunDiv, getInclusiveTaxType, productxArray, showSubTitle, showTitle } from '../../settings/CommonModuleJS';
 // import { productxArray, showSubTitle, showTitle } from '../_components';
 //import { showAndroidToast, showAndroidReceipt } from '/..../settings/AndroidIOSConnect';
 
@@ -463,11 +463,11 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
     //  time=FormateDateAndTime.formatDateWithTime(data.order_date);//date_time
 
     if (data.time_zone)
-      time = FormateDateAndTime.formatDateWithTime(data.date_time, data.time_zone);
+      time = FormateDateAndTime.formatDateWithTime(data.date_time, data.time_zone, order_reciept.TimeFormat.replace('tt', 'A'));  //tt not suported in moment
     else if (data.order_date && data.order_date != "Invalid date")
-      time = FormateDateAndTime.formatDateWithTime(data.order_date);//date_time
+      time = FormateDateAndTime.formatDateWithTime(data.order_date, null, order_reciept.TimeFormat.replace('tt', 'A'));//date_time
     else
-      time = FormateDateAndTime.formatDateWithTime(isSafari ? data._currentTime.replace(/-/g, "/") : data._currentTime);
+      time = FormateDateAndTime.formatDateWithTime(isSafari ? data._currentTime.replace(/-/g, "/") : data._currentTime, null, order_reciept.TimeFormat.replace('tt', 'A'));
 
     if (time == "Invalid date") {
       time = new Date().toLocaleString([], { hour: 'numeric', minute: 'numeric' });
@@ -478,7 +478,7 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
     PrintAndroidData.push({ "rn": rowNumber, "cms": 1, "c1": "Time: " + time, "c2": "", "c3": "", "bold": "0,0,0", "fs": "24", "alg": "0" });
   }
   if (order_reciept.ShowSale == true) {
-    receiptId = data.OliverReciptId ? data.OliverReciptId : tempOrderId ? tempOrderId : "";
+    receiptId = data.OliverReciptId ? data.OliverReciptId : data.order_id ? data.order_id : tempOrderId ? tempOrderId : "";
     receipt += (labelSale ? labelSale : "").trim() + ": #" + receiptId + "\n";
     rowNumber += 1;
     PrintAndroidData.push({ "rn": rowNumber, "cms": 1, "c1": (labelSale ? labelSale : "").trim() + ": #" + receiptId, "c2": "", "c3": "", "bold": "0,0,0", "fs": "24", "alg": "0" });
@@ -828,7 +828,7 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
       order_totalTaxPercent = TotalTax !== 0 ? "(" + TotalTax.toFixed(0) + "%)" : ""
       var lineItem_DiscountDetail = getDiscountPerItem(data, type, item.product_id)
       var lineitem_AcutalPrice = parseFloat(item.subtotal ? item.subtotal : item.subtotalPrice ? item.subtotalPrice : item.Price ? item.Price : 0) +
-        (taxInclusiveName !== '' ? type == 'activity' ? item.total_tax : (item.totaltax ? item.totaltax : 0) : 0)
+        (taxInclusiveName !== '' ? type == 'activity' ? item.total_tax : (item.subtotaltax ? item.subtotaltax : 0) : 0)
       //-(taxInclusiveName ==''? type=='activity'?item.total_tax: (item.totaltax?item.totaltax:0):0); //in case of exclusive tax,remove tax from sub total to display actual price
 
       var lineitem_Title = (type !== 'activity') ? itemName : showTitle(item) !== "" ? itemName : ''
@@ -836,15 +836,17 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
       var lineitem_refundedQty = item.quantity_refunded ? item.quantity_refunded : null
 
       //----- refunded qty tax amount--------------
+      var _lineItemRefundAmount = parseFloat(item.price) * (item.quantity_refunded * -1)  //we are not using the field item.amount_refunded  due to .01 difference
       var refundedTax = item.amount_refunded > 0 ? ((item.subtotal_tax / item.quantity) * item.quantity_refunded) * -1 : 0;
-      var lineitem_refundAmount = (parseFloat(item.amount_refunded)
+      var lineitem_refundAmount = (_lineItemRefundAmount //(parseFloat(item.amount_refunded)
         + (type == 'activity' ? parseFloat((isTotalRefund == true ? item.total_tax : refundedTax))
           : (item.totaltax ? parseFloat(item.totaltax) : 0)
         ))
       //removed tax if product is not taxable 01/08/2022
       if (type == "activity" && item.hasOwnProperty('isTaxable') && item.isTaxable == false) {
         refundedTax = 0;
-        lineitem_refundAmount = parseFloat(item.amount_refunded);
+        lineitem_refundAmount = _lineItemRefundAmount
+        //parseFloat(item.amount_refunded); 
       }
       refunded_TotalTax += refundedTax;
       // var lineitem_refundAmount=  (parseFloat(item.amount_refunded) + (taxInclusiveName !==''? type=='activity'?parseFloat((isTotalRefund == true?item.total_tax:refundedTax)): (item.totaltax?parseFloat(item.totaltax):0):0))
@@ -868,30 +870,33 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
       var lineitem_Dis_Percent = lineItem_DiscountDetail && lineItem_DiscountDetail.discountApply && "(" + lineItem_DiscountDetail.discountApply + "%)";
       //order_reciept.PercentageDiscountPerItem==true ? "(" +Math.round(((item.discount_amount *100)/lineitem_AcutalPrice)).toFixed(0)+"%)":"";
       var lineItemTax = "";
-      lineItemTax= (order_reciept.IndividualizedTaxAmountPerItem == true || order_reciept.PercentageTaxPerItem == true) && lineitem_taxType && lineitem_taxType.length > 0 ? lineitem_taxType.map(txtitem => {
+      lineItemTax += (order_reciept.IndividualizedTaxAmountPerItem == true || order_reciept.PercentageTaxPerItem == true) && lineitem_taxType && lineitem_taxType.length > 0 ? lineitem_taxType.map(txtitem => {
         return `<tr><td>${txtitem.tax}</td><td align="right">${parseFloat(txtitem.value).toFixed(2)}</td></tr>`;
       }) : ""
-      var _lineitemTax = (taxInclusiveName !== '' || order_reciept.IndividualizedTaxAmountPerItem == true ? item.total_tax ? item.total_tax : item.totaltax ? item.totaltax : 0 : 0)
+      var _lineitemTax = (taxInclusiveName !== '' || order_reciept.IndividualizedTaxAmountPerItem == true ? item.total_tax ? item.total_tax : item.subtotaltax ? item.subtotaltax : 0 : 0)
 
-      var _activitylineItemTotal = (item.amount_refunded > 0 && item.quantity + item.quantity_refunded == 0) ? parseFloat(item.total - item.amount_refunded) //-lineitem_Discount
+      var _activitylineItemTotal = (item.amount_refunded > 0 && item.quantity + item.quantity_refunded == 0) ? parseFloat(item.total - _lineItemRefundAmount) //  item.amount_refunded //-lineitem_Discount
         :
-        (data.discount != 0 && item.total !== 0 && item.subtotal != item.total) ? parseFloat(item.subtotal + (taxInclusiveName !== '' ? (isTotalRefund == true ? refundedTax : item.total_tax) : 0) - lineitem_Discount).toFixed(2)
-          : parseFloat(item.total + (item.total_tax ? parseFloat(_lineitemTax) : 0) - lineitem_Discount - item.amount_refunded - (taxInclusiveName !== '' ? refundedTax : 0))
+        //(data.discount != 0 && item.total !== 0 && item.subtotal != item.total) ?
+        parseFloat(item.subtotal + (taxInclusiveName !== '' ? item.total_tax : 0) - lineitem_Discount - _lineItemRefundAmount - (taxInclusiveName !== '' ? refundedTax : 0)).toFixed(2)
+      // : parseFloat(item.total + (item.total_tax  ? parseFloat(_lineitemTax) : 0) - lineitem_Discount - _lineItemRefundAmount - refundedTax)
+      //item.amount_refunded 
       var lineitem_Total = type == 'activity' ? _activitylineItemTotal
-
-        // parseFloat(item.subtotal+ (taxInclusiveName !=='' ?item.total_tax :0)-lineitem_Discount).toFixed(2) : parseFloat(item.subtotal+ (taxInclusiveName !=='' ?item.total_tax :0)-lineitem_Discount)         
         :
         (item.product_id ? parseFloat(parseFloat(item.subtotalPrice ? item.subtotalPrice : 0) - parseFloat(lineitem_Discount) + (taxInclusiveName !== '' ? (item.totaltax ? parseFloat((_lineitemTax)) : 0) : 0))//(taxInclusiveName !==''? (item.totaltax?item.totaltax:0):0) ))
           : item.Price ? parseFloat(parseFloat(item.Price) - parseFloat(lineitem_Discount) + (taxInclusiveName !== '' ? (item.totaltax ? parseFloat((_lineitemTax)) : 0) : 0))//(taxInclusiveName !==''? (item.totaltax?item.totaltax:0):0) ))
             : 0
-          // item.product_id ? data.discountCalculated == 0 || data.redeemedAmountToPrint == data.discountCalculated ?parseFloat(RoundAmount(parseFloat(item.totalPrice)+(taxInclusiveName ==''?item.totaltax:0) )).toFixed(2) :
-
-          //: item.Price ? parseFloat(RoundAmount(parseFloat(item.Price)+(taxInclusiveName ==''?item.totaltax:0))).toFixed(2) : ''
         )
-      // lineitem_Total=  _itemData && _itemData.newPrice ?_itemData.newPrice +(taxInclusiveName==''? item.total_tax:0) :lineitem_Total ;
-      lineitem_Total = lineitem_Total;
-      // lineitem_Total += (taxInclusiveName==''? item.totaltax? item.totaltax: item.total_tax:0)
-      Order_subTotal += parseFloat(lineitem_Total);
+
+      Order_subTotal += (parseFloat(lineitem_Total).toFixed(2) == "0.01" ? 0.00 : parseFloat(lineitem_Total)); // to remove diffrence of .01
+
+      // only for exclusive tax------------
+      lineitem_Total = parseFloat(lineitem_Total) + (taxInclusiveName == '' ?
+        (order_reciept.IndividualizedTaxAmountPerItem == true || order_reciept.PercentageTaxPerItem == true) ? // added line item tax into product total only when setting is enable
+          ((item.totaltax || item.total_tax) ? parseFloat(_lineitemTax - refundedTax) : 0) : 0
+        : 0)
+
+      lineitem_Total = parseFloat(lineitem_Total).toFixed(2) == "0.01" ? 0.00 : lineitem_Total // to remove diffrence of .01
 
       //======For Android print===============================       
       var lineitem_shortDesc = getProductShortDesc(data, type, item.product_id)
@@ -1003,7 +1008,7 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
                            <div class="item-total-tax">
                                 <table>
                                
-                                ${lineItemTax.join('')}
+                                ${lineItemTax}
                               
                                 </table>
                            </div>
@@ -1190,6 +1195,11 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
       `<b>${shopName}</b>`
     }
      `
+  // commented By: Nagendra
+  // Desc: Creating issue for Inclusive Tax Shop.
+  // if (type == 'activity' && taxInclusiveName !== "") {//fixing the issue for garmany client
+  //   Order_subTotal += parseFloat(total_Tax);
+  // }
   // Android ..................................
   receipt += labelsubTotal + " " + Order_subTotal.toFixed(2) + "\n";
   rowNumber += 1;
@@ -1315,7 +1325,7 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
       </tr>`
     }
   })
-
+  //${order_reciept.PercentageTaxOfEntireOrder == true ? order_totalTaxPercent : ''}
   var _total_mm = `<table class="item-total">
               <tbody>                 
                     ${subtotal ?
@@ -1336,10 +1346,11 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
       ${order_reciept.ShowTotalTax == true && splitTaxDetail} 
     ${order_reciept.ShowTotalTax == true && total_Tax > 0 ?
       `<tr>
-      <td colspan="2">${labelTax} ${order_reciept.PercentageTaxOfEntireOrder == true ? order_totalTaxPercent : ''}</td>
+      <td colspan="2">${labelTax} </td>
+      
       <td align="right"> ${total_Tax}</td>
       </tr>` : ''}
-
+      
       ${(total_RedeemPoint != 0) ?
       `<tr>
       <td colspan="2">Redeemed Point</td>
@@ -1383,10 +1394,10 @@ function PrintElem(data, getPdfdateTime, isTotalRefund, cash_rounding_amount, pr
        </tr> `
       : ''}
   ${order_reciept.ShowOrderTotal == true ?
-      `<tfoot><tr class="border-bottom">
+      `<tr class="border-bottom">
         <td colspan="2">${labelTotalOrder}</td>
-      <td align="right"> ${(data.refunded_amount > 0) ? (total_amount - data.refunded_amount).toFixed(2) : total_amount.toFixed(2)}</td>      
-       </tr></tfoot>`
+      <td align="right"> ${(data.refunded_amount > 0) ? (total_amount - data.refunded_amount).toFixed(2) == "0.01" ? "0.00" : (total_amount - data.refunded_amount).toFixed(2) : total_amount.toFixed(2)}</td>      
+       </tr>`
       : ''}   
  </tbody>
          </table>
@@ -1686,7 +1697,7 @@ table {
     }
   }
 
-  if (type != "activity" && (typeof Android !== "undefined" && Android !== null) && (Android.getDatafromDevice("isWrapper") == true)) {
+  if (type != "activity" && (typeof window.Android !== "undefined" && Android !== null) && (Android.getDatafromDevice("isWrapper") == true)) {
     var whenToOpenDrawer = localStorage.getItem('selected_drawer');
     if ((isPaymentCash == true && (typeof whenToOpenDrawer != "undefined" && whenToOpenDrawer != "" && whenToOpenDrawer == "cash-only")) || (typeof whenToOpenDrawer != "undefined" && whenToOpenDrawer != "" && whenToOpenDrawer == "every-sale")) {
       Android.openCahsDrawer();
@@ -1705,12 +1716,9 @@ table {
         Tizen.generateReceipt(JSON.stringify(receipt), JSON.stringify(PrintAndroidReceiptData))
       }
     }
-    // else if ((env && env != '' && env != 'ios')) { typeof Android != "undefined" || Android != null ||
-    // console.log("---android printing---") ; 
-    // showAndroidReceipt(receipt, PrintAndroidReceiptData)
-    // }
-    else if (typeof Android != "undefined" || Android != null ){
-    showAndroidReceipt(receipt, PrintAndroidReceiptData)
+    else if ((env && env != '' && env != 'ios')) { //typeof Android != "undefined" || Android != null ||
+
+      showAndroidReceipt(receipt, PrintAndroidReceiptData)
     }
     else {
       var mywindow = window.open('#', 'my div', "width='400', 'A2'");
