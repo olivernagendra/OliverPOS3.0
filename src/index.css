@@ -543,9 +543,9 @@ code {
 	text-align: center;
 }
 
-.transactions-search {
+/* .transactions-search {
 	z-index: unset;
-}
+} */
 
 .refund-complete-txt {
 	display: flex;
@@ -702,3 +702,7 @@ code {
 	content: "" !important;
 }
 .notification-card{cursor:pointer;}
+
+.close-register-wrapper > header > .col > .divider {
+    width: auto;
+}

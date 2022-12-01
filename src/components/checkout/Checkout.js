@@ -2324,7 +2324,7 @@ const Checkout = (props) => {
                 <p className="style3">Please add a customer to make customer payment types available</p>
                 <div className="button-row">
                     <button disabled={get_customerName() == null ? true : false} onClick={() => toggleParkSale('lay_away')}>Layaway</button>
-                    <button disabled={storeCredit == 0 || get_customerName() == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit (${parseFloat(storeCredit).toFixed(2)})</button>
+                    <button disabled={storeCredit == 0 || get_customerName() == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit  {storeCredit == 0 || get_customerName() == null ?<> (${parseFloat(storeCredit).toFixed(2)})</> :null}   </button>
                 </div>
 
                 <div className="payment-types">

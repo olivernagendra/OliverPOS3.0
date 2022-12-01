@@ -1,9 +1,9 @@
 /**
- * Created By   : Shakuntala Jatav
+ * Created By   : 
  * Created Date : on March
  * Description  : calculate which type of tax apply in product and cart and checkout section include exclusive and inclusive.
  * 
- * Updated By   : Shakuntala Jatav
+ * Updated By   : 
  * Updated Date : 06-06-2019,13-06-2019,19-06-2019
  * Description : 1. when update tax rate(changeTaxRate). 
                  2. when tax satus is none so no one tax aaply. 
@@ -84,7 +84,7 @@ export const getExclusiveTax = (price, taxclass) => {
 }
 
 /**
- * Created By   : Shakuntala Jatav
+ * Created By   : 
  * Created Date : 17-06-2019
  * Description  : provide array of tax prodcut wise in inclusive case .
  * 
@@ -154,7 +154,7 @@ export const getInclusiveTaxForTotal = (price, taxclass) => {
     return inclusiveTax
 }
 /**
- * Created By   : Shakuntala Jatav
+ * Created By   : 
  * Created Date : 17-06-2019
  * Description  : provide array of tax prodcut wise in Exclusive case .
  * 
@@ -266,7 +266,7 @@ export const getExtensionCheckoutList = (products) => {
     })
 }
 /**
- * Created By   : Shakuntala Jatav
+ * Created By   : 
  * Created Date : 17-06-2019
  * Description  : update checkout list for call function and update tax list use before call api.
  * 
@@ -906,7 +906,7 @@ export const RoundAmount = (val) => {
 }
 
 /**
- * Created BY : Shakuntala Jatav
+ * Created BY : 
  * Created Date : 28-Feb-2020
  * @param {*} productx get product-x data
  * @param {*} product_list get product list array
@@ -927,7 +927,7 @@ export const getProductxChlidProductTax = (productx, product_list) => {
 }
 
 /**
- * Created BY : Shakuntala Jatav
+ * Created BY : 
  * Created Date : 02-03-2020
  * @param {*} productx 
  * @param {*} product_list 
@@ -958,7 +958,7 @@ export const setProductxTax = (productx, product_list) => {
     return productx;
 }
 /**
- * Created By : Shakuntala Jatav
+ * Created By : 
  * Creatted Date : 13-03-2020
  * @param {*} type 
  * Description : Showing Tax Rate with name
@@ -1032,7 +1032,7 @@ function percentWiseDiscount(price, discount) {
     return discountAmount;
 }
 /**
- * Created By : Shakuntala jatav
+ * Created By : 
  * Created Date : 06-04-2020
  * @param {*} item 
  * @param {*} qty 

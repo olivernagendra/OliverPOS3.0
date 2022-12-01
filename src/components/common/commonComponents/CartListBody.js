@@ -6,17 +6,24 @@ import { useSelector } from 'react-redux';
 import { NumericFormat } from 'react-number-format';
 import { get_customerName } from "../localSettings";
 const CartListBody = (props) => {
+    
+    const [openSaleList, setopenSaleList] = useState(localStorage.getItem('CHECKLIST') ? JSON.parse(localStorage.getItem('CHECKLIST')) : null)
     const [taxRate, setTaxRate] = useState(0.00);
-    const [listItem, setListItem] = useState([]);
+    const [listItem, setListItem] = useState([ ]);
     useEffect(() => {
         calculateCart();
-    }, [listItem]);
+        setListItem(openSaleList.ListItem);
+    }, [listItem,openSaleList ]);
     const [resProduct] = useSelector((state) => [state.product])
     useEffect(() => {
         if (resProduct && resProduct.status == STATUSES.IDLE && resProduct.is_success) {
             setListItem(resProduct.data);
         }
     }, [resProduct]);
+
+  console.log("openSaleList",openSaleList.ListItem)
+
+    
     const calculateCart = () => {
         var _subtotal = 0.0;
         var _total = 0.0;

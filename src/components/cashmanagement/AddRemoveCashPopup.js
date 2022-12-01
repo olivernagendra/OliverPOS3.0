@@ -112,7 +112,7 @@ function AddRemoveCashPopup(props) {
                     </div>
                     <label htmlFor="addCashNote">Add a note:</label>
                     <textarea id="addCashNote" placeholder="Please add a note here." onChange={(e) => addNote(e)} defaultValue={""} />
-                    <button onClick={() => handleSubmit()}>{props.popupstatus == 'add' ? "Add" : "Remove"} Cash</button>
+                    <button onClick={() => handleSubmit()}>{props.popupstatus == 'add' ? "Update" : "Update"} Balance</button>
                     <div className="auto-margin-bottom" />
                 </div>
             </div>
