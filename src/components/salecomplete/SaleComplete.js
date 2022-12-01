@@ -140,13 +140,13 @@ const SaleComplete = () => {
     }
     const [respupdateOrderStatus] = useSelector((state) => [state.updateOrderStatus])
     useEffect(() => {
-        if ((respupdateOrderStatus && respupdateOrderStatus.status == STATUSES.IDLE && respupdateOrderStatus.is_success && isLoading==true)) {
+        if ((respupdateOrderStatus && respupdateOrderStatus.status == STATUSES.IDLE && respupdateOrderStatus.is_success && isLoading == true)) {
             console.log("--respupdateOrderStatus--" + JSON.stringify(respupdateOrderStatus));
             setOrderStatus(tempOrderStatus);
             toggleUpdateOrderStatus();
             setIsLoading(false);
         }
-        else  if ((respupdateOrderStatus && respupdateOrderStatus.status == STATUSES.IDLE && respupdateOrderStatus.is_success && isLoading==true)) {
+        else if ((respupdateOrderStatus && respupdateOrderStatus.status == STATUSES.IDLE && respupdateOrderStatus.is_success && isLoading == true)) {
             setIsLoading(false);
         }
     }, [respupdateOrderStatus]);
@@ -483,7 +483,7 @@ const SaleComplete = () => {
     var appcount = 0;
     return (
         <React.Fragment>
-            {isLoading===true?<LoadingModal></LoadingModal>:null}
+            {isLoading === true ? <LoadingModal></LoadingModal> : null}
             <div className="sale-complete-wrapper">
                 <div className="main">
                     <div style={{ display: 'none' }} >
