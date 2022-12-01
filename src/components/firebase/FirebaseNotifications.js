@@ -94,6 +94,16 @@ export const getFirebaseNotification = () => {
 
                 if (_data && _data.token && selectedRegister.id == _data.registerId) {
                     if (token !== _data.token) {
+                        // var parent_element =  document.getElementById("register-taken-parent");
+                        // if(typeof parent_element!="undefined" && parent_element!=null)
+                        // {
+                        //     parent_element.classList.remove("hidden");
+                        // }
+                        // var _element =  document.getElementById("register-taken");
+                        // if(typeof _element!="undefined" && _element!=null)
+                        // {
+                        //     _element.classList.add("current");
+                        // }
                         //etTimeout(() => {
                             console.log('-firebaseRegisterAlreadyusedPopup-')
                            // showModal('firebaseRegisterAlreadyusedPopup')
@@ -259,7 +269,7 @@ export const log_out = () => {
     setTimeout(function () {
         var url = _env && (_env == 'ios' || _env == 'android' || _env == 'Android') ? "/login" : "/login";
         if (_env && (_env == 'ios' || _env == 'android' || _env == 'Android')) {
-            url = url + "?goto=logout";
+            // url = url + "?goto=logout";
             window.location = url;
         }
         else{}

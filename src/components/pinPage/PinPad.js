@@ -14,6 +14,7 @@ import STATUSES from "../../constants/apiStatus";
 import moment from 'moment';
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import $ from "jquery";
+import { SendRegisterAccessed } from "../firebase/FirebaseNotifications";
 
 const PinPad = React.memo(props => {
     // console.log("props",props)
@@ -94,6 +95,7 @@ const PinPad = React.memo(props => {
             if (props.doAction) {
                 props.doAction()
             } else if (isDrawerOpen == "false" && (client && client.subscription_permission && client.subscription_permission.AllowCashManagement == true && selectedRegister && selectedRegister.EnableCashManagement == true)) {
+                SendRegisterAccessed(dispatch);
                 navigate('/openregister')
             } else {
 
@@ -101,6 +103,7 @@ const PinPad = React.memo(props => {
                     props.toggleSwitchUser();
                 }
                 else {
+                    SendRegisterAccessed(dispatch);
                     navigate('/productloader')
                 }
 

@@ -89,9 +89,11 @@ const RefundCartListBody = (props) => {
         var _dis = _cartDiscountAmount > 0 ? RoundAmount(_cartDiscountAmount) : 0;
         var refundlistItem = listItem && listItem.filter(a => a.hasOwnProperty("quantity_to_refund") && a.quantity_to_refund > 0);
 
-        
-        props.setValues && props.setValues(refund_subtotal, RoundAmount(refund_tax), _dis, refund_total,refundlistItem);
+
+        props.setValues && props.setValues(refund_subtotal, RoundAmount(refund_tax), _dis, refund_total, refundlistItem);
     }
+    var _taxInclusiveName = getorder ? getInclusiveTaxType(getorder.meta_datas) : "";
+    var isIncl = _taxInclusiveName !== "" ? _taxInclusiveName.toLocaleLowerCase().includes("incl") : false;
     return (
         <div className="body">
             <img src={EmptyCart} alt="" />
@@ -100,7 +102,7 @@ const RefundCartListBody = (props) => {
                     <div className="main-row">
                         <p className="quantity">{item.quantity - Math.abs(item.quantity_refunded)}</p>
                         <p className="content-style">{item.name}</p>
-                        <p className="price">${parseFloat(item.price * (item.quantity - Math.abs(item.quantity_refunded))).toFixed(2)}</p>
+                        <p className="price">${parseFloat((item.price * (item.quantity - Math.abs(item.quantity_refunded))) + (isIncl==true? (parseFloat(item.total_tax / item.quantity))*(item.quantity - Math.abs(item.quantity_refunded)) : 0)).toFixed(2)}</p>
                     </div>
                     <div className="increment-input">
                         <button onClick={() => updateQuantity(item.line_item_id, 'dec')}>

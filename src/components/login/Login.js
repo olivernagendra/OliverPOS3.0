@@ -225,7 +225,7 @@ function Login() {
             localStorage.setItem("clientDetail", JSON.stringify(userSubscription));
             localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
 
-            //dispatch(userLogin(null));
+            dispatch(userLogin("clear"));
             var isValidENV = checkForEnvirnmentAndDemoUser()
             if (isValidENV == true) { // call notification functionality only on dev1 and qa1 (development)
                 sendFireBaseTokenToAdmin(dispatch)

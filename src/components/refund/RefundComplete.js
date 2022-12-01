@@ -151,13 +151,15 @@ const RefundComplete = () => {
         // });
 
         var _data = { ...data };
-        // _data && _data.line_items && _data.line_items.map(ele => {
-        //     printData && printData.line_items && printData.line_items.map(pd => {
-        //         if ((pd.hasOwnProperty("product_id") && ele.product_id == pd.product_id) || (pd.hasOwnProperty("variation_id") && ele.product_id == pd.variation_id)) {
-        //             ele["isTaxable"] = pd.isTaxable;
-        //         }
-        //     });
-        // });
+        _data.line_items =   _data && _data.line_items && _data.line_items.map(ele => {
+            var _item={...ele};
+            printData && printData.line_items && printData.line_items.map(pd => {
+                if ((pd.hasOwnProperty("product_id") && ele.product_id == pd.product_id) || (pd.hasOwnProperty("variation_id") && ele.product_id == pd.variation_id)) {
+                    _item["isTaxable"] = pd.isTaxable;
+                }
+            });
+            return _item;
+        });
         // {(!_env || _env=="ios") && <input type="radio" id="test3" name="radio-group" onClick={props.Details != "" ? () => PrintPage.PrintElem(props.Details, props.getPdfdateTime, isTotalRefund, props.cash_rounding_amount, print_bar_code, orderList, type, productxList, AllProductList, TotalTaxByName, props.redeemPointsToPrint) : props.printPOP} />}
         if (_data) {
             setTimeout(() => {

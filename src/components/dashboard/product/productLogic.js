@@ -2,6 +2,8 @@ import { get_UDid } from "../../common/localSettings";
 import moment from 'moment';
 import { getTaxCartProduct, getInclusiveTax, getExclusiveTax, typeOfTax } from "../../common/TaxSetting";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
+import { orderToCancelSale } from "../../checkout/checkoutSlice";
+import { store } from "../../../app/store";
 function percentWiseDiscount(price, discount) {
     var discountAmount = (price * discount) / 100.00;
     return discountAmount;
@@ -324,13 +326,10 @@ export const removeCheckOutList = () => {
 
     var checklist = localStorage.getItem('CHECKLIST') && JSON.parse(localStorage.getItem('CHECKLIST'))
     if (checklist && (checklist.status == "pending" || checklist.status == "park_sale" || checklist.status == "lay_away" || checklist.status == "on-hold")) {
-        this.setState({ isLoading: true })
-        var udid = get_UDid('UDID');
-        //this.props.dispatch(checkoutActions.orderToCancelledSale(checklist.order_id, udid));
+        store.dispatch(orderToCancelSale(checklist.order_id,get_UDid()))
         localStorage.removeItem('PENDING_PAYMENTS');
     }
-    var status = 'null'
-    var item = []
+   
     localStorage.removeItem('CHECKLIST');
     localStorage.removeItem('oliver_order_payments');
     localStorage.removeItem('AdCusDetail');

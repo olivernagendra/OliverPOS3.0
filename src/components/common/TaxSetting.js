@@ -35,13 +35,13 @@ export const getInclusiveTax = (price, taxclass) => {
                 }
             }
         })
-    }   
+    }
     //check the product having diffrent tax class which is not match with standered class  
-    if(tax_rate==0 && apply_defult_tax=="true"){
-        selected_tax  && Array.isArray(selected_tax)==true && selected_tax.map(addTax => {
-                if (taxclass == addTax.TaxClass ) {
-                    tax_rate += parseFloat(addTax.TaxRate);
-                }               
+    if (tax_rate == 0 && apply_defult_tax == "true") {
+        selected_tax && Array.isArray(selected_tax) == true && selected_tax.map(addTax => {
+            if (taxclass == addTax.TaxClass) {
+                tax_rate += parseFloat(addTax.TaxRate);
+            }
         })
     }
     var actual_price = 0;
@@ -70,12 +70,12 @@ export const getExclusiveTax = (price, taxclass) => {
             }
         })
     }
-      //check the product having diffrent tax class which is not match with standered class  
-      if(tax_rate==0 && apply_defult_tax=="true"){
-        selected_tax  && Array.isArray(selected_tax)==true && selected_tax.map(addTax => {
-                if (taxclass == addTax.TaxClass ) {
-                    tax_rate += parseFloat(addTax.TaxRate);
-                }               
+    //check the product having diffrent tax class which is not match with standered class  
+    if (tax_rate == 0 && apply_defult_tax == "true") {
+        selected_tax && Array.isArray(selected_tax) == true && selected_tax.map(addTax => {
+            if (taxclass == addTax.TaxClass) {
+                tax_rate += parseFloat(addTax.TaxRate);
+            }
         })
     }
     var exclusiveTax = 0;
@@ -99,7 +99,7 @@ export const getInclusiveTaxForTotal = (price, taxclass) => {
     var apply_defult_tax = localStorage.getItem('DEFAULT_TAX_STATUS') ? localStorage.getItem('DEFAULT_TAX_STATUS').toString() : null;
     var TaxRate = apply_defult_tax == "true" ? deafult_tax : selected_tax;
     var tax_rate = 0;
-    var tax_rate_count=0;;
+    var tax_rate_count = 0;;
     var actual_price = 0;
     var inclusiveTax = [];
     var TaxId = 0;
@@ -115,8 +115,14 @@ export const getInclusiveTaxForTotal = (price, taxclass) => {
                     // console.log("actual_price", actual_price, tax_rate)
                     // actual_price = Price / ((tax_rate / 100) + 1);
                     // price_is = Price - actual_price;
-                     price_is= (Price * tax_rate)/100;
-                     inclusiveTax.push({ id: TaxId, price: price_is })
+
+                    //23-09-2022 calculating inclusive tax here because the price is coming with inclusive tax.
+                    actual_price = Price / ((tax_rate / 100) + 1);
+                    price_is = Price - actual_price;
+                    inclusiveTax.push({ id: TaxId, price: price_is })
+
+                    //  price_is= (Price * tax_rate)/100;
+                    //  inclusiveTax.push({ id: TaxId, price: price_is })
                 }
 
                 if (apply_defult_tax == "false") {
@@ -125,23 +131,23 @@ export const getInclusiveTaxForTotal = (price, taxclass) => {
                     TaxId = addTax.TaxId;
                     //  actual_price = Price / ((tax_rate / 100) + 1);
                     //  price_is = Price - actual_price;
-                    price_is= (Price * tax_rate)/100;
+                    price_is = (Price * tax_rate) / 100;
                     inclusiveTax.push({ id: TaxId, price: price_is })
                 }
             }
         })
 
-        if(tax_rate_count ==0 && tax_rate==0 && apply_defult_tax=="true"){
-            selected_tax  && Array.isArray(selected_tax)==true && selected_tax.map(addTax => {
-                    if (taxclass == addTax.TaxClass ) {
-                        tax_rate = parseFloat(addTax.TaxRate);
-                        TaxId = addTax.TaxId;
-                        actual_price = Price / ((tax_rate / 100) + 1);
-                        price_is = Price - actual_price;
-                        // price_is= (Price * tax_rate)/100;
-                        inclusiveTax.push({ id: TaxId, price: price_is })
-                            // tax_rate = parseFloat(addTax.TaxRate);
-                    }               
+        if (tax_rate_count == 0 && tax_rate == 0 && apply_defult_tax == "true") {
+            selected_tax && Array.isArray(selected_tax) == true && selected_tax.map(addTax => {
+                if (taxclass == addTax.TaxClass) {
+                    tax_rate = parseFloat(addTax.TaxRate);
+                    TaxId = addTax.TaxId;
+                    actual_price = Price / ((tax_rate / 100) + 1);
+                    price_is = Price - actual_price;
+                    // price_is= (Price * tax_rate)/100;
+                    inclusiveTax.push({ id: TaxId, price: price_is })
+                    // tax_rate = parseFloat(addTax.TaxRate);
+                }
             })
         }
     }
@@ -185,18 +191,18 @@ export const getExclusiveTaxForTotal = (price, taxclass) => {
             }
         })
     }
-        ///--- for default tax and have other then standerd class
-        if(tax_rate==0 && apply_defult_tax == "true"){
-            if (selected_tax && Array.isArray(selected_tax)==true && selected_tax.length > 0) {
-                selected_tax.map(addTax => {                 
-                        if (taxclass == addTax.TaxClass) {
-                            tax_rate = parseFloat(addTax.TaxRate);
-                            TaxId = addTax.TaxId;    
-                            price_is = parseFloat((Price * tax_rate) / 100);
-                            exclusiveTax.push({ id: TaxId, price: price_is }) 
-                    }
-                })
-               
+    ///--- for default tax and have other then standerd class
+    if (tax_rate == 0 && apply_defult_tax == "true") {
+        if (selected_tax && Array.isArray(selected_tax) == true && selected_tax.length > 0) {
+            selected_tax.map(addTax => {
+                if (taxclass == addTax.TaxClass) {
+                    tax_rate = parseFloat(addTax.TaxRate);
+                    TaxId = addTax.TaxId;
+                    price_is = parseFloat((Price * tax_rate) / 100);
+                    exclusiveTax.push({ id: TaxId, price: price_is })
+                }
+            })
+
         }
     }
     //--------------------------------------------------------
@@ -207,14 +213,15 @@ export const setListActivityToCheckout = (products) => {
     products.map(item => {
         var totalTaxArray = item.Taxes && JSON.parse(item.Taxes) && JSON.parse(item.Taxes).total;
         var subtotalTaxArray = item.Taxes && JSON.parse(item.Taxes) && JSON.parse(item.Taxes).subtotal;
-        if(  item && (!item.subtotal)){
-            var pArr=[];
+        if (item && (!item.subtotal)) {
+            var pArr = [];
             pArr.push(item);
-            getCheckoutList(pArr);        }
+            getCheckoutList(pArr);
+        }
         item['subtotal'] = item.subtotal
-        item['total'] = item.total ? item.total: item.totalPrice ?item.totalPrice: 0;
-        item['total_tax'] = item.total_tax?item.total_tax: totalTaxArray ? Object.entries(totalTaxArray).map(item => ({ [item[0]]: item[1] })) : item.totaltax
-        item['subtotal_tax'] = item.subtotal_tax?item.subtotal_tax:subtotalTaxArray ? Object.entries(subtotalTaxArray).map(item => ({ [item[0]]: item[1] })) : item.subtotaltax
+        item['total'] = item.total ? item.total : item.totalPrice ? item.totalPrice : 0;
+        item['total_tax'] = item.total_tax ? item.total_tax : totalTaxArray ? Object.entries(totalTaxArray).map(item => ({ [item[0]]: item[1] })) : item.totaltax
+        item['subtotal_tax'] = item.subtotal_tax ? item.subtotal_tax : subtotalTaxArray ? Object.entries(subtotalTaxArray).map(item => ({ [item[0]]: item[1] })) : item.subtotaltax
     })
 }
 
@@ -269,8 +276,8 @@ export const getExtensionCheckoutList = (products) => {
 */
 export const getCheckoutList = (products) => {
     var TAX_CASE = getSettingCase();
-//     console.log("TAX_CASE", TAX_CASE)
-//    console.log("products", products)
+    //     console.log("TAX_CASE", TAX_CASE)
+    //    console.log("products", products)
     var all_products = [];
     var price = 0;
     var tax = 0;
@@ -278,55 +285,64 @@ export const getCheckoutList = (products) => {
         //  case 1  
         case 1:
             products.map(item => {
-               // price = (item.discount_amount !== 0) ? (item.after_discount * item.quantity) - getInclusiveTax(item.after_discount, item.TaxClass) : (item.old_price - getInclusiveTax(item.old_price)) * item.quantity;
-             
-               var includesiveTax= item.incl_tax;//item.isTaxable==false?0: getInclusiveTax(item.old_price, item.TaxClass);
-               // price = price-incl_tax;
-                var afterDiscount=item.after_discount !==0?item.after_discount: item.product_after_discount* item.quantity;
-               if (item.discount_type == 'Percentage') {
-               //var productDiscount=percentWiseDiscount(item.old_price-includesiveTax, item.new_product_discount_amount);
-                price =afterDiscount;
-                     //price =  (item.old_price - includesiveTax) * item.quantity;
-                }else{
-               
-                    price = (item.discount_amount !== 0) ? (afterDiscount)  : ((item.old_price*item.quantity) - includesiveTax) ;
-               }
-               //price = (item.discount_amount !== 0) ? item.after_discount : (item.old_price - getInclusiveTax(item.old_price)) * item.quantity;
+                // price = (item.discount_amount !== 0) ? (item.after_discount * item.quantity) - getInclusiveTax(item.after_discount, item.TaxClass) : (item.old_price - getInclusiveTax(item.old_price)) * item.quantity;
+
+                var includesiveTax = item.incl_tax;//item.isTaxable==false?0: getInclusiveTax(item.old_price, item.TaxClass);
+                // price = price-incl_tax;
+                var afterDiscount = item.after_discount !== 0 ? item.after_discount : item.product_after_discount * item.quantity;
+                if (item.discount_type == 'Percentage') {
+                    //var productDiscount=percentWiseDiscount(item.old_price-includesiveTax, item.new_product_discount_amount);
+                    price = afterDiscount;
+                    //price =  (item.old_price - includesiveTax) * item.quantity;
+                } else {
+
+                    price = (item.discount_amount !== 0) ? (afterDiscount) : ((item.old_price * item.quantity) - includesiveTax);
+                }
+                //price = (item.discount_amount !== 0) ? item.after_discount : (item.old_price - getInclusiveTax(item.old_price)) * item.quantity;
                 var taxes = [];
-                var update_discount_tax = null;
+                //var update_discount_tax = null;
+                var update_in_tax = [];
                 //var priceIs = price / item.quantity;
-                var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : item.old_price*item.quantity);
-                var discountTaxes = [];
-                var singleTaxAmount = item.incl_tax > 0 ? item.incl_tax : 0;
-                if ( item.isTaxable==true && item.TaxStatus !== 'none') {
+                // var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : item.old_price*item.quantity);
+
+                //23-09-2022 after applying discount, after_discount is coming without inclusive tax, so we are adding inclusive tax in after_discount while calculating inclusive tax
+                var priceIs = ((item.discount_amount !== 0) ? item.after_discount + includesiveTax : item.old_price * item.quantity);
+                // var discountTaxes = [];
+                //var singleTaxAmount = item.incl_tax > 0 ? item.incl_tax : 0;
+                if (item.isTaxable == true && item.TaxStatus !== 'none') {
                     if (item.discount_amount !== 0) {
                         //update_discount_tax = singleTaxAmount;
-                        update_discount_tax  = getInclusiveTaxForTotal(priceIs, item.TaxClass); //test
+                        update_in_tax = getInclusiveTaxForTotal(priceIs, item.TaxClass); //test
                         //getInclusiveTaxForTotal(priceIs-singleTaxAmount, item.TaxClass);
                     }
-                    var update_Ex_tax = getInclusiveTaxForTotal((item.old_price*item.quantity)-includesiveTax, item.TaxClass);
-                    update_Ex_tax.map(taxIs => {
+                    else {
+                        //23-09-2002 Just remove the (-includesiveTax) from the here
+                        // because we are again calculating the inclusive tax in this code
+                        update_in_tax = getInclusiveTaxForTotal((item.old_price * item.quantity), item.TaxClass);
+                        //var update_Ex_tax = getInclusiveTaxForTotal((item.old_price*item.quantity)-includesiveTax, item.TaxClass);
+                    }
+                    update_in_tax.map(taxIs => {
                         taxes.push({ [taxIs.id]: taxIs.price }) //* item.quantity
-                    })                   
-                    update_discount_tax && update_discount_tax.length > 0 && update_discount_tax.map(taxDis => {
-                        discountTaxes.push({ [taxDis.id]: taxDis.price })
-                    })                   
+                    })
+                    // update_discount_tax && update_discount_tax.length > 0 && update_discount_tax.map(taxDis => {
+                    //     discountTaxes.push({ [taxDis.id]: taxDis.price })
+                    // })                   
                 }
-                tax = (item.discount_amount !== 0) ? discountTaxes : taxes;
-               // tax =  taxes;
+                // tax = (item.discount_amount !== 0) ? discountTaxes : taxes;
+                tax = taxes;
                 //console.log("singleTaxAmount", singleTaxAmount)
-                 var _total=0;    
-                 //_total=price-incl_tax - productDiscount;          
+                var _total = 0;
+                //_total=price-incl_tax - productDiscount;          
                 // if( item.discount_amount !== 0)   
                 //     {_total=item.after_discount ;      
                 //     //_total=(( item.old_price - includesiveTax) * item.quantity)-item.discount_amount;
                 //     }
                 //  else
-                    _total=( (item.old_price* item.quantity) - includesiveTax  ) ;
-               
-               //var _total=(calculatedPrice - getInclusiveTax( calculatedPrice, item.TaxClass)) * item.quantity
-                item['subtotal'] =_total;
-                item['total'] =price  ; 
+                _total = ((item.old_price * item.quantity) - includesiveTax);
+
+                //var _total=(calculatedPrice - getInclusiveTax( calculatedPrice, item.TaxClass)) * item.quantity
+                item['subtotal'] = _total;
+                item['total'] = price;
                 item['total_tax'] = tax;
                 item['subtotal_tax'] = tax;
             })
@@ -335,11 +351,11 @@ export const getCheckoutList = (products) => {
         // case 2
         case 2:
             products.map(item => {
-                var includesiveTax= item.incl_tax;
+                var includesiveTax = item.incl_tax;
                 price = (item.discount_amount !== 0) ? item.after_discount : (item.old_price - getInclusiveTax(item.old_price, item.TaxClass)) * item.quantity;
                 var taxes = [];
                 var update_discount_tax = null;
-                var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : (item.old_price*item.quantity)- includesiveTax);              
+                var priceIs = ((item.discount_amount !== 0) ? item.after_discount : (item.old_price * item.quantity) - includesiveTax);
                 var discountTaxes = [];
                 var singleTaxAmount = item.excl_tax > 0 ? item.excl_tax : 0;
                 if (item.TaxStatus !== 'none') {
@@ -352,19 +368,19 @@ export const getCheckoutList = (products) => {
                     // })
 
                     // var update_Ex_tax = getInclusiveTaxForTotal((item.old_price*item.quantity)-includesiveTax, item.TaxClass);
-                    var update_Ex_tax = getInclusiveTaxForTotal((price)-includesiveTax, item.TaxClass); // TAX CASE-2 18/08/2022
+                    var update_Ex_tax = getInclusiveTaxForTotal((price) - includesiveTax, item.TaxClass); // TAX CASE-2 18/08/2022
                     update_Ex_tax.map(taxIs => {
                         taxes.push({ [taxIs.id]: taxIs.price }) //* item.quantity
-                    })   
+                    })
 
                     update_discount_tax && update_discount_tax.length > 0 && update_discount_tax.map(taxDis => {
-                        discountTaxes.push({ [taxDis.id]: taxDis.price})
+                        discountTaxes.push({ [taxDis.id]: taxDis.price })
                     })
                 }
                 tax = (item.discount_amount !== 0) ? discountTaxes : taxes;
                 //console.log("tax", tax)
 
-               // var _total=( (item.old_price* item.quantity) - includesiveTax  ) ;
+                // var _total=( (item.old_price* item.quantity) - includesiveTax  ) ;
 
                 item['subtotal'] = (item.old_price - getInclusiveTax(item.old_price, item.TaxClass)) * item.quantity
                 // item['subtotal'] = _total;
@@ -382,7 +398,7 @@ export const getCheckoutList = (products) => {
                 price = (item.discount_amount !== 0) ? (item.after_discount * item.quantity) - getInclusiveTax(item.after_discount, item.TaxClass) : (item.old_price - getInclusiveTax(item.old_price, item.TaxClass)) * item.quantity;
                 var taxes = [];
                 var update_discount_tax = null;
-                var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : item.old_price*item.quantity);
+                var priceIs = ((item.discount_amount !== 0) ? item.after_discount : item.old_price * item.quantity);
                 var discountTaxes = [];
                 var singleTaxAmount = item.incl_tax > 0 ? item.incl_tax : 0;
                 if (item.TaxStatus !== 'none') {
@@ -394,7 +410,7 @@ export const getCheckoutList = (products) => {
                         taxes.push({ [taxIs.id]: taxIs.price * item.quantity })
                     })
                     update_discount_tax && update_discount_tax.length > 0 && update_discount_tax.map(taxDis => {
-                        discountTaxes.push({ [taxDis.id]: taxDis.price})
+                        discountTaxes.push({ [taxDis.id]: taxDis.price })
                     })
                 }
                 tax = (item.discount_amount !== 0) ? discountTaxes : taxes
@@ -411,7 +427,7 @@ export const getCheckoutList = (products) => {
                 price = (item.discount_amount !== 0) ? item.after_discount : (item.old_price - getInclusiveTax(item.old_price, item.TaxClass)) * item.quantity;
                 var taxes = [];
                 var update_discount_tax = null;
-                var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : item.old_price*item.quantity);
+                var priceIs = ((item.discount_amount !== 0) ? item.after_discount : item.old_price * item.quantity);
                 var discountTaxes = [];
                 var singleTaxAmount = item.excl_tax > 0 ? item.excl_tax : 0;
                 //console.log("price", price)
@@ -440,7 +456,7 @@ export const getCheckoutList = (products) => {
                 price = (item.discount_amount !== 0) ? (item.old_price * item.quantity) - item.discount_amount : item.old_price * item.quantity;
                 var taxes = [];
                 var update_discount_tax = null;
-                var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : item.old_price*item.quantity);
+                var priceIs = ((item.discount_amount !== 0) ? item.after_discount : item.old_price * item.quantity);
                 var discountTaxes = [];
                 if (item.TaxStatus !== 'none') {
                     if (item.discount_amount !== 0 && item.incl_tax == 0) {
@@ -466,7 +482,7 @@ export const getCheckoutList = (products) => {
                 price = (item.discount_amount !== 0) ? (item.old_price * item.quantity) - exclusiveDiscount(item.after_discount, item.discount_amount, (item.old_price * item.quantity)) : item.old_price * item.quantity;
                 var taxes = [];
                 var update_discount_tax = null;
-                var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : item.old_price)*item.quantity;
+                var priceIs = ((item.discount_amount !== 0) ? item.after_discount : item.old_price) * item.quantity;
                 var discountTaxes = [];
                 if (item.TaxStatus !== 'none') {
                     if (item.discount_amount !== 0 && item.incl_tax !== 0) {
@@ -488,7 +504,7 @@ export const getCheckoutList = (products) => {
             })
             all_products = products;
             break;
-    }    
+    }
     return all_products
 }
 
@@ -539,7 +555,7 @@ export const getTaxAllProduct = (products) => {
     switch (TAX_CASE) {
         //  case 1  
         case 1: case 2: case 7: case 8:
-            if(products && products !== null && products !== undefined){
+            if (products && products !== null && products !== undefined) {
                 products.map(item => {
                     item['old_price'] = item.Price
                 })
@@ -547,7 +563,7 @@ export const getTaxAllProduct = (products) => {
             all_products = products;
             break;
         case 3: case 4: case 5: case 6:
-            products &&  products.map(item => {
+            products && products.map(item => {
                 item['old_price'] = item.Price;
                 if (item.TaxStatus !== "none") {
                     price = productPriceWithTax(item.Price, TAX_CASE, item.TaxClass)
@@ -587,15 +603,15 @@ export const cartPriceWithTax = (price, condition, taxclass) => {
             }
         })
     }
-     ///--- for default tax and have other then standerd class
-     if(tax_rate==0 && apply_defult_tax == "true"){
-        if (selected_tax && Array.isArray(selected_tax)==true && selected_tax.length > 0) {
-            selected_tax.map(addTax => {                 
-                    if (taxclass == addTax.TaxClass) {
-                        tax_rate = parseFloat(addTax.TaxRate);
+    ///--- for default tax and have other then standerd class
+    if (tax_rate == 0 && apply_defult_tax == "true") {
+        if (selected_tax && Array.isArray(selected_tax) == true && selected_tax.length > 0) {
+            selected_tax.map(addTax => {
+                if (taxclass == addTax.TaxClass) {
+                    tax_rate = parseFloat(addTax.TaxRate);
                 }
             })
-        }  
+        }
     }
 
     if (condition == '7')
@@ -622,10 +638,10 @@ export const getTaxCartProduct = (products) => {
         case 1:
             products.map(item => {
                 incl_tax = 0;
-                if ( item.TaxStatus !== "none" ) {//item.product_id &&
-                    if( item.isTaxable ==true){
-                         incl_tax = getInclusiveTax(item.after_discount && item.after_discount>0?item.after_discount : item.old_price, item.TaxClass)
-                    }                   
+                if (item.TaxStatus !== "none") {//item.product_id &&
+                    if (item.isTaxable == true) {
+                        incl_tax = getInclusiveTax(item.after_discount && item.after_discount > 0 ? item.after_discount : item.old_price, item.TaxClass)
+                    }
                     item['incl_tax'] = incl_tax //* item.quantity
                 }
             })
@@ -637,10 +653,10 @@ export const getTaxCartProduct = (products) => {
                 excl_tax = 0;
                 price = 0;
                 if (item.TaxStatus !== "none") {//item.product_id && 
-                    price=item.old_price;
-                    if( item.isTaxable ==true){
-                    excl_tax = getInclusiveTax(item.old_price, item.TaxClass)
-                    price = cartPriceWithTax(item.old_price, 2, item.TaxClass)
+                    price = item.old_price;
+                    if (item.isTaxable == true) {
+                        excl_tax = getInclusiveTax(item.old_price, item.TaxClass)
+                        price = cartPriceWithTax(item.old_price, 2, item.TaxClass)
                     }
                     item['Price'] = price * item.quantity
                     item['excl_tax'] = excl_tax * item.quantity
@@ -654,10 +670,10 @@ export const getTaxCartProduct = (products) => {
                 incl_tax = 0;
                 price = 0;
                 if (item.TaxStatus !== "none") { //item.product_id &&
-                    price=item.old_price;
-                    if( item.isTaxable ==true){
-                    incl_tax = getInclusiveTax(item.old_price, item.TaxClass)
-                    item['Price'] = item.old_price * item.quantity
+                    price = item.old_price;
+                    if (item.isTaxable == true) {
+                        incl_tax = getInclusiveTax(item.old_price, item.TaxClass)
+                        item['Price'] = item.old_price * item.quantity
                     }
                     item['incl_tax'] = incl_tax * item.quantity
                 }
@@ -670,10 +686,10 @@ export const getTaxCartProduct = (products) => {
                 excl_tax = 0;
                 price = 0;
                 if (item.TaxStatus !== "none") { //item.product_id && 
-                    price=item.old_price;
-                    if( item.isTaxable ==true){
-                    excl_tax = getInclusiveTax(item.old_price, item.TaxClass)
-                    price = cartPriceWithTax(item.old_price, 4, item.TaxClass);
+                    price = item.old_price;
+                    if (item.isTaxable == true) {
+                        excl_tax = getInclusiveTax(item.old_price, item.TaxClass)
+                        price = cartPriceWithTax(item.old_price, 4, item.TaxClass);
                     }
                     item['Price'] = price * item.quantity
                     item['excl_tax'] = excl_tax * item.quantity
@@ -686,9 +702,9 @@ export const getTaxCartProduct = (products) => {
             products.map(item => {
                 incl_tax = 0;
                 price = 0;
-                if ( item.TaxStatus !== "none") { //item.product_id &&
-                    if( item.isTaxable ==true){
-                    incl_tax = getExclusiveTax(item.old_price, item.TaxClass)
+                if (item.TaxStatus !== "none") { //item.product_id &&
+                    if (item.isTaxable == true) {
+                        incl_tax = getExclusiveTax(item.old_price, item.TaxClass)
                     }
                     item['Price'] = item.Price
                     item['incl_tax'] = incl_tax * item.quantity
@@ -702,8 +718,8 @@ export const getTaxCartProduct = (products) => {
                 excl_tax = 0;
                 price = 0;
                 if (item.TaxStatus !== "none") { //item.product_id && 
-                    if( item.isTaxable ==true){
-                    excl_tax = getExclusiveTax(item.old_price, item.TaxClass)
+                    if (item.isTaxable == true) {
+                        excl_tax = getExclusiveTax(item.old_price, item.TaxClass)
                     }
                     item['Price'] = item.old_price * item.quantity
                     item['excl_tax'] = excl_tax * item.quantity
@@ -716,11 +732,11 @@ export const getTaxCartProduct = (products) => {
             products && products.map(item => {
                 incl_tax = 0;
                 price = 0;
-                if ( item.TaxStatus !== "none") {//item.product_id &&
+                if (item.TaxStatus !== "none") {//item.product_id &&
                     price = item.old_price;
-                    if( item.isTaxable ==true){
-                    price = cartPriceWithTax(item.old_price, 7, item.TaxClass)
-                    incl_tax = getExclusiveTax(item.old_price, item.TaxClass)
+                    if (item.isTaxable == true) {
+                        price = cartPriceWithTax(item.old_price, 7, item.TaxClass)
+                        incl_tax = getExclusiveTax(item.old_price, item.TaxClass)
                     }
                     item['Price'] = price * item.quantity
                     item['incl_tax'] = incl_tax * item.quantity
@@ -730,12 +746,12 @@ export const getTaxCartProduct = (products) => {
             break;
         // case 8
         default:
-            products && products.map(item => {  
-                excl_tax = 0;              
+            products && products.map(item => {
+                excl_tax = 0;
                 //item.product_id &&
-                if ( item.TaxStatus !== "none") {
-                    if( item.isTaxable ==true){
-                    excl_tax = getExclusiveTax(item.old_price, item.TaxClass)
+                if (item.TaxStatus !== "none") {
+                    if (item.isTaxable == true) {
+                        excl_tax = getExclusiveTax(item.old_price, item.TaxClass)
                     }
                     item['excl_tax'] = excl_tax * item.quantity;
                 }
@@ -746,8 +762,8 @@ export const getTaxCartProduct = (products) => {
     return all_products
 }
 
-export const inclusiveDiscount = (after_discount, discount_amount, old_price,TaxClass) => {
-    var subtotal = old_price - getInclusiveTax(old_price,TaxClass);
+export const inclusiveDiscount = (after_discount, discount_amount, old_price, TaxClass) => {
+    var subtotal = old_price - getInclusiveTax(old_price, TaxClass);
     var price = after_discount + discount_amount;
     var discount = (discount_amount * 100.00) / price;
     var get_discount = (subtotal * discount) / 100.00;
@@ -768,30 +784,30 @@ export const getDiscountAmount = (products) => {
     var after_discount = 0;
     var discount_amount = 0;
     var old_price = 0;
-    var TaxClass="";
+    var TaxClass = "";
     switch (TAX_CASE) {
         //  case 1  
         case 1: case 2: case 3: case 4:
             products.map(item => {
-                if (item.discount_amount !== 0){
-                   var afterDiscount=item.after_discount !==0?item.after_discount: item.product_after_discount* item.quantity;
+                if (item.discount_amount !== 0) {
+                    var afterDiscount = item.after_discount !== 0 ? item.after_discount : item.product_after_discount * item.quantity;
                     after_discount += afterDiscount;
                 }
                 else {
                     after_discount += item.Price;
                 }
-                if(item.discount_type=='Percentage'){
-                        var inclTax=getInclusiveTax(item.old_price,item.TaxClass);
-                        discount_amount +=percentWiseDiscount(item.old_price-inclTax, item.new_product_discount_amount) * item.quantity;
-                        discountIs =discount_amount;
-                    }else if(item.discount_type=='Number'){
-                        discount_amount += item.discount_amount;
-                        discountIs = inclusiveDiscount(after_discount, discount_amount, old_price, TaxClass);
+                if (item.discount_type == 'Percentage') {
+                    var inclTax = getInclusiveTax(item.old_price, item.TaxClass);
+                    discount_amount += percentWiseDiscount(item.old_price - inclTax, item.new_product_discount_amount) * item.quantity;
+                    discountIs = discount_amount;
+                } else if (item.discount_type == 'Number') {
+                    discount_amount += item.discount_amount;
+                    discountIs = inclusiveDiscount(after_discount, discount_amount, old_price, TaxClass);
                 }
                 old_price += item.old_price * item.quantity;
-                TaxClass=item.TaxClass;
+                TaxClass = item.TaxClass;
             })
-           
+
             break;
         // case 5
         case 6: case 8:
@@ -996,12 +1012,12 @@ export const getTotalTaxByName = (type, productx_line_items) => {
                         total_taxrate_name.map(item => {
                             if (item.tax_id == tax_id) {
                                 item['tax_amount'] += tax_amount;
-                                
+
                             }
                         })
                     }
                     if (!filterValue) {
-                        total_taxrate_name.push({ 'tax_id': tax_id, 'tax_name': tax_name, 'tax_amount': tax_amount,'TaxRate':tax_TaxRate })
+                        total_taxrate_name.push({ 'tax_id': tax_id, 'tax_name': tax_name, 'tax_amount': tax_amount, 'TaxRate': tax_TaxRate })
                     }
                 }
             }
@@ -1027,7 +1043,7 @@ function percentWiseDiscount(price, discount) {
 export const getVariatioModalProduct = (item, qty) => {
     //console.log("getVariatioModalProduct", item, qty)
 
-    if (item.isTaxable==false){
+    if (item.isTaxable == false) {
         return item;
     }
     var TAX_CASE = getSettingCase();
@@ -1043,17 +1059,17 @@ export const getVariatioModalProduct = (item, qty) => {
         case 1:
             if (item.WPID && item.TaxStatus !== "none") {
                 //after_discount_price = item.old_price - discount_amount;
-                incl_tax = getInclusiveTax(item.old_price, item.TaxClass)               
-                if(item.discount_type == "Percentage") {
-                  var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                  after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                }  else{
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - discount_amount;
+                incl_tax = getInclusiveTax(item.old_price, item.TaxClass)
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - discount_amount;
                 }
-                if(item.discount_type == "Percentage" ){
-                    incl_tax = getInclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                }else{
-                    incl_tax = getInclusiveTax((item.old_price * qty )-discount_amount, item.TaxClass)
+                if (item.discount_type == "Percentage") {
+                    incl_tax = getInclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
+                    incl_tax = getInclusiveTax((item.old_price * qty) - discount_amount, item.TaxClass)
                 }
 
                 //incl_tax = getInclusiveTax(after_discount_price, item.TaxClass)
@@ -1071,19 +1087,19 @@ export const getVariatioModalProduct = (item, qty) => {
         case 2:
             if (item.WPID && item.TaxStatus !== "none") {
                 //after_discount_price = item.old_price - discount_amount;               
-                if(item.discount_type == "Percentage") {
-                    var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                  }  else{
-                      after_discount_price =  ((item.old_price-incl_tax) * qty) - discount_amount;
-                  }
-                  if(item.discount_type == "Percentage" ){
-                    excl_tax = getInclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                    }else{
-                        excl_tax = getInclusiveTax((item.old_price * qty )-discount_amount, item.TaxClass)
-                    }
-                
-                  price = cartPriceWithTax(after_discount_price, 2, item.TaxClass)
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - discount_amount;
+                }
+                if (item.discount_type == "Percentage") {
+                    excl_tax = getInclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
+                    excl_tax = getInclusiveTax((item.old_price * qty) - discount_amount, item.TaxClass)
+                }
+
+                price = cartPriceWithTax(after_discount_price, 2, item.TaxClass)
                 //item['Price'] = price * qty
                 item['excl_tax'] = item.discount_type == "Percentage" ? excl_tax * qty : excl_tax;
                 item['after_discount'] = after_discount_price;
@@ -1094,18 +1110,18 @@ export const getVariatioModalProduct = (item, qty) => {
         case 3:
             if (item.WPID && item.TaxStatus !== "none") {
                 //after_discount_price = item.old_price - discount_amount;
-                if(item.discount_type == "Percentage") {
-                    var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                  }  else{
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
                     after_discount_price = item.discount_type == "Percentage" ? item.old_price - discount_amount : (item.old_price * qty) - discount_amount;
-                  }
-                  if(item.discount_type == "Percentage" ){
-                    incl_tax = getInclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                    }else{
-                        incl_tax = getInclusiveTax((item.old_price * qty )-discount_amount, item.TaxClass)
-                    }  
-                 
+                }
+                if (item.discount_type == "Percentage") {
+                    incl_tax = getInclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
+                    incl_tax = getInclusiveTax((item.old_price * qty) - discount_amount, item.TaxClass)
+                }
+
                 //item['Price'] = after_discount_price * qty
                 item['incl_tax'] = item.discount_type == "Percentage" ? incl_tax * qty : incl_tax;
                 item['after_discount'] = after_discount_price;
@@ -1116,17 +1132,17 @@ export const getVariatioModalProduct = (item, qty) => {
         case 4:
             if (item.WPID && item.TaxStatus !== "none") {
                 //after_discount_price = item.old_price - discount_amount;
-                if(item.discount_type == "Percentage") {
-                    var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                  }  else{
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
                     after_discount_price = item.discount_type == "Percentage" ? item.old_price - discount_amount : (item.old_price * qty) - discount_amount;
-                  }
-                  if(item.discount_type == "Percentage" ){
-                    excl_tax = getInclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                    }else{
-                        excl_tax = getInclusiveTax((item.old_price * qty )-discount_amount, item.TaxClass)
-                    }
+                }
+                if (item.discount_type == "Percentage") {
+                    excl_tax = getInclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
+                    excl_tax = getInclusiveTax((item.old_price * qty) - discount_amount, item.TaxClass)
+                }
                 price = cartPriceWithTax(after_discount_price, 4, item.TaxClass);
                 //item['Price'] = price * qty
                 item['excl_tax'] = item.discount_type == "Percentage" ? excl_tax * qty : excl_tax;;
@@ -1138,18 +1154,18 @@ export const getVariatioModalProduct = (item, qty) => {
         case 5:
             if (item.WPID && item.TaxStatus !== "none") {
                 //after_discount_price = item.old_price - discount_amount;
-                if(item.discount_type == "Percentage") {
-                    var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                  }  else{
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
                     after_discount_price = item.discount_type == "Percentage" ? item.old_price - discount_amount : (item.old_price * qty) - discount_amount;
-                  }
-                  if(item.discount_type == "Percentage" ){
-                    incl_tax = getExclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                    }else{
-                        incl_tax = getExclusiveTax((item.old_price * qty )-discount_amount, item.TaxClass)
-                    }
-                 
+                }
+                if (item.discount_type == "Percentage") {
+                    incl_tax = getExclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
+                    incl_tax = getExclusiveTax((item.old_price * qty) - discount_amount, item.TaxClass)
+                }
+
                 //item['Price'] = item.Price * qty
                 item['incl_tax'] = item.discount_type == "Percentage" ? incl_tax * qty : incl_tax;
                 item['after_discount'] = after_discount_price;
@@ -1160,17 +1176,17 @@ export const getVariatioModalProduct = (item, qty) => {
         case 6:
             if (item.WPID && item.TaxStatus !== "none") {
                 //after_discount_price = item.old_price - discount_amount;
-                if(item.discount_type == "Percentage") {
-                    var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                  }  else{
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
                     after_discount_price = item.discount_type == "Percentage" ? item.old_price - discount_amount : (item.old_price * qty) - discount_amount;
-                  }
+                }
 
-                  if(item.discount_type == "Percentage" ){
-                    excl_tax = getExclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                }else{
-                  excl_tax = getExclusiveTax(after_discount_price, item.TaxClass)
+                if (item.discount_type == "Percentage") {
+                    excl_tax = getExclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
+                    excl_tax = getExclusiveTax(after_discount_price, item.TaxClass)
                 }
                 //item['Price'] = after_discount_price * old_price
                 item['excl_tax'] = item.discount_type == "Percentage" ? excl_tax * qty : excl_tax;;
@@ -1182,16 +1198,16 @@ export const getVariatioModalProduct = (item, qty) => {
         case 7:
             if (item.WPID && item.TaxStatus !== "none") {
                 //after_discount_price = item.old_price - discount_amount;
-                if(item.discount_type == "Percentage") {
-                    var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                  }  else{
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
                     after_discount_price = item.discount_type == "Percentage" ? item.old_price - discount_amount : (item.old_price * qty) - discount_amount;
-                  }
+                }
                 price = cartPriceWithTax(after_discount_price, 7, item.TaxClass)
-                if(item.discount_type == "Percentage" ){
-                    incl_tax = getExclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                }else{
+                if (item.discount_type == "Percentage") {
+                    incl_tax = getExclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
                     incl_tax = getExclusiveTax(after_discount_price, item.TaxClass)
                 }
                 //item['Price'] = price * qty
@@ -1203,15 +1219,15 @@ export const getVariatioModalProduct = (item, qty) => {
         // case 8
         default:
             if (item.WPID && item.TaxStatus !== "none") {
-                if(item.discount_type == "Percentage") {
-                    var  productDiscount=percentWiseDiscount(item.old_price-incl_tax, item.new_product_discount_amount)* qty;
-                    after_discount_price =  ((item.old_price-incl_tax) * qty) - productDiscount
-                  }  else{
-                after_discount_price = item.discount_type == "Percentage" ? item.old_price - discount_amount : (item.old_price * qty) - discount_amount;
-                  }
-                  if(item.discount_type == "Percentage" ){
-                    excl_tax = getExclusiveTax(item.old_price-discount_amount, item.TaxClass)
-                }else{
+                if (item.discount_type == "Percentage") {
+                    var productDiscount = percentWiseDiscount(item.old_price - incl_tax, item.new_product_discount_amount) * qty;
+                    after_discount_price = ((item.old_price - incl_tax) * qty) - productDiscount
+                } else {
+                    after_discount_price = item.discount_type == "Percentage" ? item.old_price - discount_amount : (item.old_price * qty) - discount_amount;
+                }
+                if (item.discount_type == "Percentage") {
+                    excl_tax = getExclusiveTax(item.old_price - discount_amount, item.TaxClass)
+                } else {
                     excl_tax = getExclusiveTax(after_discount_price, item.TaxClass)
                 }
                 //item['Price'] = after_discount_price * qty

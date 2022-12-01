@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 //import { useLoginMutation,useGetAllRegisterQuery } from '../../../components/login/loginService';changeReturnAmount
-import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI, getMakePaymentAPI,makeOnlinePaymentsAPI,saveAPI,paymentAmountAPI, changeReturnAmountAPI,checkTempOrderSyncAPI,checkTempOrderStatusAPI} from './checkoutApi';
+import { checkStockAPI, getPaymentTypeNameAPI ,getExtensionsAPI, getMakePaymentAPI,makeOnlinePaymentsAPI,saveAPI,paymentAmountAPI, changeReturnAmountAPI,checkTempOrderSyncAPI,checkTempOrderStatusAPI,orderToCancelSaleAPI} from './checkoutApi';
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -445,6 +445,46 @@ export const checkTempOrderStatusSlice = createSlice({
 export const { } = checkTempOrderStatusSlice.actions;
 //--
 
+//----
+export const orderToCancelSale = createAsyncThunk(
+  'checkout/orderToCancelSaleAPI',
+  async (parameter, { rejectWithValue }) => {
+    try {
+      const response = await orderToCancelSaleAPI(parameter);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+);
+export const orderToCancelSaleSlice = createSlice({
+  name: 'orderToCancelSale',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(orderToCancelSale.pending, (state) => {
+        state.status = STATUSES.LOADING;
+        state.data = "";
+        state.error = "";
+        state.is_success = false;
+      })
+      .addCase(orderToCancelSale.fulfilled, (state, action) => {
+        state.status = action.payload && action.payload? STATUSES.IDLE : STATUSES.ERROR;
+        state.data = (action.payload && action.payload? action.payload : "");
+        state.error = action.payload && action.payload? '' : "Fail to fetch" ;
+        state.is_success = action.payload && action.payload? true : false;
+      })
+      .addCase(orderToCancelSale.rejected, (state, action) => {
+        state.status = STATUSES.IDLE;
+        state.data = "";
+        state.error = action.error;
+        state.is_success = false;
+      });
+  },
+});
+export const { } = orderToCancelSaleSlice.actions;
+//--
 
 
-export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice,paymentAmountSlice ,changeReturnAmountSlice,checkTempOrderSyncSlice,checkTempOrderStatusSlice};
+export default { checkStockSlice, getPaymentTypeNameSlice,getExtensionsSlice,getMakePaymentSlice,makeOnlinePaymentsSlice,saveSlice,paymentAmountSlice ,changeReturnAmountSlice,checkTempOrderSyncSlice,checkTempOrderStatusSlice,orderToCancelSaleSlice};

@@ -11,6 +11,7 @@ import { LoadingModal } from "../../common/commonComponents/LoadingModal";
 import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import Search_Icon_Blue from '../../../assets/images/svg/Search-Icon-Blue.svg';
 import AdvancedSearchCancelIcon from '../../../assets/images/svg/AdvancedSearchCancelIcon.svg';
+import { v4 as uniqueKey } from 'uuid';
 function encodeHtml(txt) {
     //return $('<textarea />').html(txt).text();
 }
@@ -327,11 +328,11 @@ const AddTile = (props) => {
                                 {filterList && filterList.length > 0 && filterList.map(item => {
                                     switch (item.type) {
                                         case "product":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Title}</p></div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)} key={uniqueKey()}><p>{item.type + " : " + item.Title}</p></div>
                                         case "category":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Code}</p></div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)} key={uniqueKey()}><p>{item.type + " : " + item.Code}</p></div>
                                         case "attribute":
-                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)}><p>{item.type + " : " + item.Description}</p></div>
+                                            return <div className="dropdown-option" onClick={() => AddTile(item, 0)} key={uniqueKey()}><p>{item.type + " : " + item.Description}</p></div>
                                         default:
                                             return ''
                                     }

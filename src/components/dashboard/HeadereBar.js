@@ -23,6 +23,7 @@ import { saveCustomerToTempOrder } from "../customer/CustomerSlice";
 import { checkTempOrderStatus } from "../checkout/checkoutSlice";
 import { get_UDid, get_userName_Initial } from "../common/localSettings";
 import ActiveUser from "../../settings/ActiveUser";
+import RegisterTakeOver from "../common/commonComponents/RegisterTakeOver";
 const HeadereBar = (props) => {
     const dispatch = useDispatch();
     const [isShowUserProfile, setisShowUserProfile] = useState(false);
@@ -146,6 +147,7 @@ const HeadereBar = (props) => {
         <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
         <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
         <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
+    <RegisterTakeOver></RegisterTakeOver>
     </React.Fragment >)
 }
 

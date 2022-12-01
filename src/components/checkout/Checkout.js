@@ -42,6 +42,7 @@ import GlobalPayment from "../common/commonComponents/paymentComponents/GlobalPa
 import MsgPopup from "../common/commonComponents/MsgPopup";
 import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
 import IframeWindow from "../dashboard/IframeWindow";
+import { v4 as uniqueKey } from 'uuid';
 const Checkout = (props) => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -2288,7 +2289,7 @@ const Checkout = (props) => {
                         <p className="style2">${(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)}</p>
                     </div>
                     {paymentsArr && paymentsArr.map(p => {
-                        return <div className="row">
+                        return <div className="row" key={uniqueKey()}>
                             <p className="style3">{p.payment_type}</p>
                             <p className="style3">${(parseFloat(p.payment_amount)).toFixed(2)}</p>
                             {/* -(paymentsArr && paymentsArr.length>0 ?(paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 )):0) */}
@@ -2333,16 +2334,16 @@ const Checkout = (props) => {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
-                                    <button key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                    <button  onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
-                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={CashButtonImage} alt=""></img></button>
                                         :
-                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                             <img src={CardButtonImage} alt=""></img></button>
                                             :
-                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                                 {payment.Name}
                                             </button>
                             })

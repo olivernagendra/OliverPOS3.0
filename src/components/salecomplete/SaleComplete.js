@@ -130,10 +130,14 @@ const SaleComplete = () => {
         if (TempOrders && TempOrders.length > 0) {
             var tempOrderId = localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '';
             TempOrders.map(ele => {
-                if (ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID')) {
+                if (ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID') && ele.OrderID!=0) {
                     var option = { "udid": get_UDid(), "orderId": ele.OrderID, "status": _orderStatus }
                     setIsLoading(true);
                     dispatch(updateOrderStatus(option));
+                }
+                else if(ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID'))
+                {
+                    alert('order is still syncking on the server')
                 }
             })
         }

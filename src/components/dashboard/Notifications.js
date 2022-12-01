@@ -15,12 +15,14 @@ import Config from '../../Config';
 import { v4 as uniqueKey } from 'uuid';
 import { checkTempOrderSync } from "../checkout/checkoutSlice";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 import FormateDateAndTime from "../../settings/FormateDateAndTime";
 const Notifications = (props) => {
     const [isSoundNotification, setisSoundNotification] = useState(false);
     const [notificationList, setNotificationList] = useState([]);
     const [notiDate, setNotiDate] = useState([])
     const dispatch = useDispatch();
+    const navigate = useNavigate()
     const toggleiSoundNotification = () => {
         setisSoundNotification(!isSoundNotification)
     }
@@ -33,7 +35,14 @@ const Notifications = (props) => {
     if (current_date.includes(',')) {
         current_date = current_date.split(',')[0];
     }
-
+    const OpenTransactions = (orderid) => {
+        //console.log("customerDetailData",customerDetailData.Email)
+        if (orderid !== '' && orderid !== 0 && orderid != null) {
+            sessionStorage.removeItem('transactionredirect');
+            sessionStorage.setItem("notificationRedirect", orderid);
+            navigate('/transactions')
+        }
+    }
     //var notiDate = new Array();
     //var notifications = [];
     // ActivityPage(id) {
@@ -92,7 +101,7 @@ const Notifications = (props) => {
             //console.log("_openDateTime", _openDateTime)
             if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == true) {
                 description = ((
-                    <div className="notification-card" key={uniqueKey()}>
+                    <div className="notification-card" key={uniqueKey()} onClick={() => list.OrderID !== 0 ? OpenTransactions(list.OrderID) : null}>
                         {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -113,7 +122,7 @@ const Notifications = (props) => {
                 //"Email sent succeessfully to customer for order#" + list.TempOrderID + ""
             }
             else if (list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                description = ((<div className="notification-card" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()} onClick={() => list.OrderID !== 0 ? OpenTransactions(list.OrderID) : null}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -124,7 +133,7 @@ const Notifications = (props) => {
                 //"Sending email to customer for order#" + list.TempOrderID + ""
             }
             else if (list.Status == "true" && list.order_status == "completed") {
-                description = ((<div className="notification-card" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()} onClick={() => list.OrderID !== 0 ? OpenTransactions(list.OrderID) : null}>
                     {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -143,7 +152,7 @@ const Notifications = (props) => {
             }
             //order refunded successfully
             else if (list.Status == "true" && list.order_status === "refunded") {
-                description = ((<div className="notification-card" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()} onClick={() => list.OrderID !== 0 ? OpenTransactions(list.OrderID) : null}>
                     {/* <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Info_Icon} alt="" />
@@ -165,7 +174,7 @@ const Notifications = (props) => {
             else if (list.Status == "failed" && list.new_customer_email == "") {
                 description = ((
 
-                    <div className="notification-card" key={uniqueKey()}>
+                    <div className="notification-card" key={uniqueKey()} onClick={() => list.OrderID !== 0 ? OpenTransactions(list.OrderID) : null}>
                         <div className="icon-wrapper red">
                             <img src={ErrorIconRed} alt="" />
                         </div>
@@ -189,7 +198,7 @@ const Notifications = (props) => {
                 ))
             }
             else if (list.Sync_Count > 1 && list.order_status == "completed" && list.new_customer_email !== "" && list.isCustomerEmail_send == false) {
-                description = ((<div className="notification-card" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()} onClick={() => list.OrderID !== 0 ? OpenTransactions(list.OrderID) : null}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Approval_Icon} alt="" />
@@ -199,7 +208,7 @@ const Notifications = (props) => {
                 </div>))
             }
             else {
-                description = ((<div className="notification-card" key={uniqueKey()}>
+                description = ((<div className="notification-card" key={uniqueKey()} onClick={() => list.OrderID !== 0 ? OpenTransactions(list.OrderID) : null}>
                     <div className="side-color"></div>
                     <div className="main-row">
                         <img src={Info_Icon} alt="" />
@@ -354,7 +363,7 @@ const Notifications = (props) => {
                         notificationList && notiDate && notiDate.map((getDate, index) => {
                             //console.log(current_date + "----" + getDate)
                             return (<>
-                                <div key={"date" + index} className="date"> <p>{current_date === getDate ? 'Today' : getDate}</p></div>
+                                <div key={uniqueKey()} className="date"> <p>{current_date === getDate ? 'Today' : getDate}</p></div>
                                 {
                                     getDate && notificationList && notificationList[getDate] && notificationList[getDate].map((order, index) => {
                                         return (order.description)

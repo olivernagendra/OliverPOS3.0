@@ -361,16 +361,14 @@ export function checkTempOrderSyncAPI(tempOrderId) {
                             // }, 1000)
                             // }
                             ele.Status = "true";
-                            if(order_status.content && order_status.content.hasOwnProperty('OrderNumber'))
-                            {
+                            if (order_status.content && order_status.content.hasOwnProperty('OrderNumber')) {
                                 ele.OrderID = order_status.content.OrderNumber;
                             }
-                            else if(order_status.content)
-                            {
+                            else if (order_status.content) {
                                 ele.OrderID = order_status.content;
                             }
 
-                           
+
                             //console.log("OrderStatusSuccess", ele);
                             ele.Sync_Count = ele.Sync_Count + 1
                         }
@@ -438,4 +436,10 @@ export function checkTempOrderStatusAPI(tempOrderId) {
             return order_status;
         });
 
+}
+export function orderToCancelSaleAPI(order_id, udid, WarehouseId) {
+    return serverRequest.clientServiceRequest('GET', `/orders/CancelledSale?udid=${udid}&OrderId=${order_id}&WarehouseId=${WarehouseId}`, '')
+        .then(res => {
+            return res
+        })
 }
