@@ -151,10 +151,13 @@ const CustomerView = () => {
       dispatch(cashRecords(null));
       dispatch(activityRecords(null));
     }
+    if(isShowcreatecustomerToggle == true){
+      setSortWrapper(false)
+    }
     return () => {
       useCancelledTwo = true;
     }
-  }, [updateCustomerState]);
+  }, [updateCustomerState,isShowcreatecustomerToggle]);
 
 
 
@@ -482,6 +485,7 @@ const CustomerView = () => {
     }
   }
 
+ 
 
 
 
@@ -542,9 +546,9 @@ const CustomerView = () => {
         <div className="cv-list" >
           <div className="header">
             <p>Sort by:</p>
-            <div onClick={toggleSortWrapp} id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
+            <div  id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
               <img src={DownArrowBlue} alt="" />
-              <input type="text" id="filterType" value={sortbyvaluename} readOnly />
+              <input type="text" id="filterType" value={sortbyvaluename} readOnly onClick={toggleSortWrapp} />
               {/* <img className="dropdown-arrow" src={DownArrowBlue} alt="" />
               <div id="sortCurrent" className="sort-current">
                 <img src={filterType != "" && filterType.includes("forward") ? FilterArrowUp : FilterArrowDown} alt="" />

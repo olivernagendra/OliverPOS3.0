@@ -1,3 +1,4 @@
+import CalendarArrowLeft from '../../../assets/images/svg/CalendarArrowLeft.svg'
 export const initHomeFn = () => {
     // if (document.querySelector(".subwindow-wrapper")) {
     //     document.querySelector(".subwindow-wrapper").addEventListener("click", (e) => {

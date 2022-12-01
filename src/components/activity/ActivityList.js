@@ -53,6 +53,11 @@ const ActivityList = (props) => {
         }
     };
 
+    function Capitalize(val) {
+        var str = val ? val.replace(/_/g, "\u00a0") : "";
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     const [activityAllDetails] = useSelector((state) => [state.activityRecords])
 
 
@@ -85,7 +90,7 @@ const ActivityList = (props) => {
                                                         (order.OliverReciptId !== '') ? <img src={InStoreSale} alt="" /> : <img src={OnlineSale} alt="" />
 
                                                     }
-                                                    <p>{order.order_status}</p>
+                                                    <p>{Capitalize(order.order_status)}</p>
                                                 </div>
                                             </div>
                                             <div className="col">

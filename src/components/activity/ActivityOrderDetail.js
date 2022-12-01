@@ -146,6 +146,11 @@ const ActivityOrderDetail = (props) => {
 
 
     var lineitems = activityOrderDetails && activityOrderDetails.line_items ? activityOrderDetails.line_items : [];
+    var order_custom_fee = activityOrderDetails && activityOrderDetails.order_custom_fee ? activityOrderDetails.order_custom_fee : [];
+    var order_notes = activityOrderDetails && activityOrderDetails.order_notes ? activityOrderDetails.order_notes : [];
+
+    var tipInfo = null;
+    var subtotal = 0.0;
     var getorderlist = activityOrderDetails && activityOrderDetails.meta_datas && activityOrderDetails.meta_datas !== null ? activityOrderDetails.meta_datas.find(data => data.ItemName == '_order_oliverpos_product_discount_amount') : null;
     var notesList = activityOrderDetails && activityOrderDetails.order_notes ? activityOrderDetails.order_notes : []
     var taxInclusiveName = "";
@@ -237,10 +242,7 @@ const ActivityOrderDetail = (props) => {
 
     var TotalIndividualProductDiscount = _discount == data.discount ? _totalProductIndividualDiscount : 0
     var totalDiscount = _discount - TotalIndividualProductDiscount;
-    function Capitalize(str) {
-        var value = str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-        return value;
-    }
+
 
 
     var balance = 0;
@@ -403,7 +405,8 @@ const ActivityOrderDetail = (props) => {
                                                 {showSubTitle(item) !== "" ? <p>{item.name} </p> : null}
                                                 {varDetail ? <p >{varDetail} </p> : null}
                                             </p>
-                                            <p>
+                                            <p>Price: &nbsp; <b>
+
                                                 {
                                                     (item.amount_refunded > 0 || isTotalRefund == true) ?
                                                         (item.quantity_refunded < 0) ?
@@ -417,6 +420,7 @@ const ActivityOrderDetail = (props) => {
                                                                 : <div><del>{parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2)}</del> {(item.total + (taxInclusiveName == "" ? 0 : item.subtotal_tax) + _productCartDiscountAmount).toFixed(2)} </div>
                                                             : Math.round(parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2))
                                                 }
+                                            </b>
                                             </p>
                                         </div>
                                         <div className="item-fields">
@@ -428,6 +432,62 @@ const ActivityOrderDetail = (props) => {
                             )
                         })
                     }
+                    {order_custom_fee ? order_custom_fee && order_custom_fee.map((item, index) => {
+                        var customFee = _objOrderCutomFee
+                            ? _objOrderCutomFee.find(
+                                (ordercustFee) =>
+                                    ordercustFee.note == item.note
+                            )
+                            : null;
+                        if (item.note && item.note.includes("Tip")) {
+                            //remove tip to disply from custom fee
+                            subtotal -= item.amount;
+                            tipInfo = item;
+                            return null;
+                        } else {
+                            var FeeAmount =
+                                item.amount -
+                                (item.amount_refunded +
+                                    parseFloat(
+                                        item.amount_refunded > 0
+                                            ? customFee.incl_tax.toFixed(2)
+                                            : 0
+                                    )); //item dose not contain the refund tax, so getting refund tax from meta data and deduct it
+                            return (
+                                <div className="item" key={index}>
+                                    <div className="col">
+                                        <div className="main-row">
+                                            <p>{item.note ? item.note : ""}</p>
+                                            {item.amount_refunded > 0 ? (<>
+                                                <del><p>{item.amount}</p> </del>
+                                                <p>Price: &nbsp; <b>{FeeAmount}</b></p>
+
+                                            </>) : (
+                                                <p>Price: &nbsp; <b>{item.amount}</b></p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    })
+                        : null}
+                    {order_notes ? order_notes && order_notes.map((item, index) => {
+                        return item.note
+                            .toLowerCase()
+                            .match(/payment done with:/) ? (
+                            ""
+                        ) : (
+                            <div className="item" key={index}>
+                                <div className="col">
+                                    <div className="main-row">
+                                        {item.note ? <p>Notes:{item.note ? item.note : ""}</p> : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })
+                        : null}
 
                     <div className="custom-fields" style={{ display: 'none' }}>
                         <p className="style1">Custom Fields</p>
@@ -542,3 +602,9 @@ const ActivityOrderDetail = (props) => {
 }
 
 export default ActivityOrderDetail
+
+
+
+
+
+

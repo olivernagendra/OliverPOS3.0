@@ -176,6 +176,7 @@ const ActivityView = () => {
             var temState = [...AllActivityList, ...activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.Records]
             setAllActivityList(temState);
             setactivityListcount(activityAllDetails.data && activityAllDetails.data.content && activityAllDetails.data.content.TotalRecords)
+           
         }
     }, [activityAllDetails]);
 
@@ -186,6 +187,7 @@ const ActivityView = () => {
         //  console.log("activityfilter", activityfilter)
         if (activityfilter && activityfilter.data.length > 0) {
             setAllActivityList(activityfilter.data);
+          
             setSmallLoader(false)
         } else {
             setAllActivityList([]);
@@ -394,10 +396,9 @@ const ActivityView = () => {
     const clearFilter = () => {
         var fromdate = document.getElementById("dateFrom").value;
         var txttodate = document.getElementById("dateTo").value;
+      
         if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" ||
-            selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '' || AllActivityList !=='') {
-            setupdateActivityId('')
-            reload(1)
+            selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '' || AllActivityList !==''   ) {
             setfilterByUser("")
             setFilterByStatus("")
             setFilterByPlatform("")
@@ -411,7 +412,11 @@ const ActivityView = () => {
             sessionStorage.removeItem('transactionredirect');
             document.getElementById('dateFrom').value = '';
             document.getElementById('dateTo').value = '';
-            setAllActivityList("")
+            if(filterSearchActive == true){
+                reload(1)
+               // setAllActivityList("")
+                setupdateActivityId('')
+            }
         }
     }
 
@@ -457,6 +462,14 @@ const ActivityView = () => {
             applyServerFilter();
         }
       }
+
+      const outerClick = (e) => {
+        if (e && e.target && e.target.className && e.target.className === "date-selector") {
+            handleCalenderFrom() && handleCalenderFrom();
+        }
+    }
+
+
 
    
     return <>
@@ -519,7 +532,7 @@ const ActivityView = () => {
                                 <button className="open-date-selector open" onClick={() => handleCalenderFrom()}>
                                     <img src={calendar} alt="" />
                                 </button>
-                                <div className={isDateFrom == true ? "date-selector open" : "date-selector"}></div>
+                                <div className={isDateFrom == true ? "date-selector open" : "date-selector"} onClick={(e) => outerClick(e)}></div>
                             </div>
                         </div>
                         <div className="input-col">
@@ -580,7 +593,7 @@ const ActivityView = () => {
             <div className="transactions-list" >
                 <div className="header" onClick={toggleSortWrapp}>
                     <p>Sort by:</p>
-                    <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"}>
+                    <div id="customerListSort" className={isSortWrapper === true ? "sort-wrapper open " : "sort-wrapper"} > 
                         {/* <!-- Hidden Input can be used to know what filter type to use (Other elements are purely visual) --> */}
                         {/* <input type="text" id="filterType" /> */}
                         <img className="dropdown-arrow" src={DownArrowBlue} alt="" />

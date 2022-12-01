@@ -160,7 +160,7 @@ const Closeregistertwo = (props) => {
                     <tbody>
                         <tr>
                         <td>Name</td> 
-                        <td>time</td>  
+                        <td>Time</td>  
                         <td style="text-align: right;">Amount</td>   
                         </tr>                        
                         ${manualTransac}                 
