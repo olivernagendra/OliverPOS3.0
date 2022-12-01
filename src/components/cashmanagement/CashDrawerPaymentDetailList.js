@@ -37,25 +37,23 @@ const CashDrawerPaymentDetailList = () => {
             {statusgetdetail == STATUSES.LOADING ? <LoadingModal></LoadingModal> : null}
             {(iscashDrawerClosed == true) ? <>
                 <div className="action">
-                <div className="header-row">
-                    <p>Closing Float</p>
-                    <p className="style2">{_closeDateTime}</p>
+                    <div className="header-row">
+                        <p>Closing Float</p>
+                        <p className="style2">{_closeDateTime}</p>
+                    </div>
+                    <div className="body-col">
+                        <p>User: {userName}</p>
+                    </div>
+                    <div className="body-col">
+                        <p>Notes: {closingNote}</p>
+                    </div>
+                    <div className="footer-col">
+                        <p><b>Expected Balance: </b> <NumericFormat value={closingExpectedBal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
+                    </div>
+                    <div className="footer-col">
+                        <p><b>Actual Balance: </b> <NumericFormat value={closingActualBal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
+                    </div>
                 </div>
-                <div className="body-col">
-                    <p>User: {userName}</p>
-                </div>
-                <div className="body-col">
-                    <p>Notes: {closingNote}</p>
-                </div>
-                <div className="footer-col">
-                    <p><b>Expected Balance: </b> <NumericFormat value={closingExpectedBal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
-                </div>
-                <div className="footer-col">
-                    <p><b>Actual Balance: </b> <NumericFormat value={closingActualBal} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
-                </div>
-            </div>
-
-                
             </> : null
             }
             <> {paymentList.filter(i => i.Description.toLowerCase() == "cash").map((item, index) => {
@@ -63,15 +61,13 @@ const CashDrawerPaymentDetailList = () => {
                     <>
                         <div className="action">
                             <div className="header-row">
-                                <p className={item.IsManual == true ? "green": item.Expected < 0 ? "orange" :  item.IsManual == false && item.Expected < 0 ? "" : "blue"}> 
-                                
-                                
-                                {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash sale"} </p>
+                                <p className={item.IsManual == true ? "green" : item.Expected < 0 ? "orange" : item.IsManual == false && item.Expected < 0 ? "" : "blue"}>
+                                    {item.IsManual == true ? "Manual Transaction" : item.IsManual == false && item.Expected < 0 ? "Refund" : "Cash sale"} </p>
                                 <p className="style2">{moment.utc(item.TransactionDateOffset).local().format(Config.key.ONLY_TIME)}</p>
                             </div>
-                           
                             <div className="footer-col">
                                 <p>{(item.Expected < 0 ? "" : "+")} <NumericFormat value={item.Expected} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> </p>
+                                {item.Notes !== "" ? <> <p>Notes: {item.IsManual == true ? item.Notes :'' } </p></>:''}
                                 <p><b>Current Balance: </b><NumericFormat value={item.RemainingBalance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
                             </div>
                         </div>
