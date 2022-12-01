@@ -1,14 +1,16 @@
 import React from 'react';
 import GreyAlert from '../../../assets/images/svg/GreyAlert.svg';
-const RegisterTakeOver = () => {
-    const outerClick = (e) => {
-        if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
-            props.toggleRegTakeOver && props.toggleRegTakeOver();
-        }
-    }
+const RegisterTakeOver = (props) => {
+    // const outerClick = (e) => {
+    //     if (e && e.target && e.target.className && e.target.className === "subwindow-wrapper") {
+    //         props.toggleRegTakeOver && props.toggleRegTakeOver();
+    //     }
+    // }
     return (
-        <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
-            <div className={props.isShow === true ? "subwindow register-taken current" : "subwindow register-taken"}>
+        // <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
+        //     <div className={props.isShow === true ? "subwindow register-taken current" : "subwindow register-taken"}>
+            <div className="subwindow-wrapper hidden" id="register-taken-parent">
+            <div className="subwindow register-taken" id="register-taken">
                 <div className="subwindow-header">
                     <p>Register Take Over</p>
                 </div>

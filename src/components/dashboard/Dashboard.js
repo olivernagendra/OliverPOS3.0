@@ -48,6 +48,7 @@ import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 import Customercreate from "../customer/Customercreate";
 import { cashRounding } from "../common/commonAPIs/cashRoundingSlice";
 import { get_UDid } from "../common/localSettings";
+import AdjustInventory from "./product/AdjustInventory";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -80,6 +81,7 @@ const Home = () => {
     const [msgTitle, setmsgTitle] = useState('');
     const [msgBody, setmsgBody] = useState('');
     const [productxItem, setProductxItem] = useState('');
+    const [isAdjustInventory, setisAdjustInventory] = useState(false);
     const navigate = useNavigate()
     var Cash_Management_ID = localStorage.getItem('Cash_Management_ID')
     const dispatch = useDispatch();
@@ -382,7 +384,10 @@ const Home = () => {
     const toggleOptionPage = () => {
         setisShowOptionPage(!isShowOptionPage)
     }
-    const toggleOutOfStock = () => {
+    const toggleOutOfStock = (product) => {
+        if (typeof product != "undefined" && product != null) {
+            setSelProduct(product[0])
+        }
         setisOutOfStock(!isOutOfStock)
     }
     const toggleCreateCustomer = (serachString) => {
@@ -414,6 +419,11 @@ const Home = () => {
         // else {
         //     alert('This "Feature" is not included in your plan! ;In order to upgrade please go to the Oliver HUB')
         // }
+    }
+    const toggleAdjustInventory = (istoggle) => {
+        // console.log("istoggle", istoggle)
+        // console.log("isAdjustInventory", isAdjustInventory)
+        setisAdjustInventory(istoggle == null || istoggle == "undefined" ? !isAdjustInventory : istoggle)
     }
     const clearDeleteTileBtn = (e) => {
         if (!e.target.classList.contains("remove-state") && !e.target.classList.contains("remove-cover")) {
@@ -735,7 +745,14 @@ const Home = () => {
             <Customercreate searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} />
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
-            <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopupOutOfStock>
+            {isAdjustInventory == true && <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
+                productStockQuantity={selProduct ? selProduct.StockQuantity : 0}
+                product={selProduct}
+                fatchUpdateInventory={null}
+                isAdjustInventory={isAdjustInventory}
+            ></AdjustInventory>
+            }
+            <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock} toggleAdjustInventory={toggleAdjustInventory}></MsgPopupOutOfStock>
             <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
             {/* iframe subview */}
             {/* create customer */}

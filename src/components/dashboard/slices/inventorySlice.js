@@ -21,9 +21,11 @@ const initialState = {
 
 
 export const getInventory = createAsyncThunk(
-    'inventory/get',
+    'inventory/getInventory',
     async (parameter, { rejectWithValue }) => {
         try {
+            if(parameter=="clear")
+            {return initialState}
             const response = await productWarehouseQuantityAPI(parameter);
             // The value we return becomes the `fulfilled` action payload
             return response;
@@ -36,9 +38,10 @@ export const getInventory = createAsyncThunk(
 );
 
 export const updateInventory = createAsyncThunk(
-    'inventory/update',
+    'inventory/updateInventory',
     async (parameter, { rejectWithValue }) => {
         try {
+            if (parameter == "clear") { return null; }
             const response = await updateInventoryAPI(parameter);
             // The value we return becomes the `fulfilled` action payload
             return response;

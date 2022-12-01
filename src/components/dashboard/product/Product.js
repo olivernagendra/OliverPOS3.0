@@ -172,43 +172,49 @@ const Product = (props) => {
     }
 
     const quantityUpdate = (type) => {
-        const { selProduct } = props;
-        if (selProduct) {
-            if (type === "plus") {
-                var qty = parseInt(productQty);
-                //if (this.state.variationfound ? selProduct.WPID == this.state.variationfound.WPID : selProduct.WPID == this.props.getVariationProductData.WPID) {
-                var maxQty = (selProduct.ManagingStock == false && selProduct.StockStatus == "outofstock") ? "outofstock" :
-                    (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
-                // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
-                //-- maxQty update after inventory check
-                if (typeof _currentStock != "undefined" && _currentStock != null) {
-                    maxQty = _currentStock;
+
+        if (checkLength() === true) {
+            const { selProduct } = props;
+            if (selProduct) {
+                if (type === "plus") {
+                    var qty = parseInt(productQty);
+                    //if (this.state.variationfound ? selProduct.WPID == this.state.variationfound.WPID : selProduct.WPID == this.props.getVariationProductData.WPID) {
+                    var maxQty = (selProduct.ManagingStock == false && selProduct.StockStatus == "outofstock") ? "outofstock" :
+                        (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
+                    // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
+                    //-- maxQty update after inventory check
+                    if (typeof _currentStock != "undefined" && _currentStock != null) {
+                        maxQty = _currentStock;
+                    }
+                    //---
+                    if (maxQty == 'Unlimited' || qty <= maxQty) {
+                        qty++;
+                    }
+                    setProductQty(qty)
                 }
-                //---
-                if (maxQty == 'Unlimited' || qty <= maxQty) {
-                    qty++;
+                else if (type === "minus") {
+                    var qty = parseInt(productQty);
+                    if (qty > 1) {
+                        qty--;
+                        setProductQty(qty);
+                    };
+
                 }
-                setProductQty(qty)
+
+                //} else {
+                //     var maxQty = $("#txtInScock").text();
+                //     if (maxQty == 'Unlimited' || qty < maxQty) {
+                //         qty++;
+                //     }
+                //     if (qty > this.state.variationStockQunatity)
+                //         qty = this.state.variationStockQunatity;
+
+                //         this.setDefaultQuantity(qty);
+                // }
             }
-            else if (type === "minus") {
-                var qty = parseInt(productQty);
-                if (qty > 1) {
-                    qty--;
-                    setProductQty(qty);
-                };
-
-            }
-
-            //} else {
-            //     var maxQty = $("#txtInScock").text();
-            //     if (maxQty == 'Unlimited' || qty < maxQty) {
-            //         qty++;
-            //     }
-            //     if (qty > this.state.variationStockQunatity)
-            //         qty = this.state.variationStockQunatity;
-
-            //         this.setDefaultQuantity(qty);
-            // }
+        }
+        else {
+            toggleNoVariationSelected();
         }
         // else {
         //     var maxQty = $("#txtInScock").text();
@@ -930,12 +936,11 @@ const Product = (props) => {
                             var _selVar = selVari.find(a => a.Position = _index);
                             // var _slug = _DistictAttribute.filter(b => b.Slug === _selVar.Slug);
                             var _slug = _DistictAttribute.filter(b => b.OptionAll.includes(_selVar.Slug));
-                            if(typeof _slug!="undefined" && _slug!=null && _slug.length>0)
-                            {
-                                _slug.map(m=>{
+                            if (typeof _slug != "undefined" && _slug != null && _slug.length > 0) {
+                                _slug.map(m => {
                                     _all.push(m.OptionAll);
                                 })
-                                
+
                             }
                             console.log("---_slug---" + _slug.OptionAll);
 
@@ -1178,7 +1183,7 @@ const Product = (props) => {
                     var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj.toLowerCase()) == -1; });
                     // //_disableAttribute=array3;
                     if (_selVariations && _selVariations.length == 1 && array3 && _attribute && _attribute.length > 1) {
-                       // setDisableAttribute(array3);
+                        // setDisableAttribute(array3);
                     }
                     console.log("--array3--- ", JSON.stringify(array3));
                 }

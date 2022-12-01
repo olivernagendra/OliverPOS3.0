@@ -37,6 +37,7 @@ import moment from "moment";
 import { getDetail } from "../activity/ActivitySlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
+import { v4 as uniqueKey } from 'uuid';
 const Refund = (props) => {
 
     const [refundSubTotal, setRefundSubTotal] = useState(0.00);
@@ -773,10 +774,17 @@ const Refund = (props) => {
         dispatch(paymentAmount({ "type": "cash", "amount": amount }));
     }
     const pay_partial = (amount, item) => {
-        toggleShowPartialPayment();
-        setPartialAmount(amount);
-        setPaymentTypeItem(item);
-        dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        if (refundItemList.length !== 0) {
+            toggleShowPartialPayment();
+            setPartialAmount(amount);
+            setPaymentTypeItem(item);
+            dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        }
+        else {
+            toggleShowPartialPayment();
+            setmsgBody(LocalizedLanguage.refundZeroPaymentMsg);
+            setisShowMsg(true)
+        }
     }
     const pay_by_product = (amount) => {
         toggleSplitByProduct();
@@ -1308,6 +1316,11 @@ const Refund = (props) => {
         setLoading(false);
     }
     const pay_amount_cash = (item) => {
+        if (refundItemList.length == 0) {
+            setmsgBody(LocalizedLanguage.refundZeroPaymentMsg);
+            setisShowMsg(true)
+            return;
+        }
         setPaymentTypeItem(item);
         //item.Code.toLowerCase() === "cash"
         if (item.Code == paymentsType.typeName.cashPayment) {
@@ -1495,17 +1508,17 @@ const Refund = (props) => {
 
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
-                                    <button onClick={() => pay_amount_cash(payment)}>
+                                    <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
-                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={CashButtonImage} alt=""></img></button>
                                         :
-                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                             <img src={CardButtonImage} alt=""></img></button>
                                             :
                                             //(payment.HasTerminal == true && payment.Support == "Terminal" && payment.Code != paymentsType.typeName.stripePayment)?
-                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={uniqueKey()} onClick={() => pay_amount_cash(payment)}>
                                                 {payment.Name}
                                             </button>
                                 //:null

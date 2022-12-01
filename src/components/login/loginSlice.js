@@ -21,6 +21,9 @@ export const userLogin = createAsyncThunk(
     // return response.json();
 
     try {
+
+      if (parameter == "clear")
+        return initialState;
       const response = await loginAPI(parameter);
       // The value we return becomes the `fulfilled` action payload
       return response;

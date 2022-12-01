@@ -115,8 +115,14 @@ export const getInclusiveTaxForTotal = (price, taxclass) => {
                     // console.log("actual_price", actual_price, tax_rate)
                     // actual_price = Price / ((tax_rate / 100) + 1);
                     // price_is = Price - actual_price;
-                    price_is = (Price * tax_rate) / 100;
+
+                    //23-09-2022 calculating inclusive tax here because the price is coming with inclusive tax.
+                    actual_price = Price / ((tax_rate / 100) + 1);
+                    price_is = Price - actual_price;
                     inclusiveTax.push({ id: TaxId, price: price_is })
+
+                    //  price_is= (Price * tax_rate)/100;
+                    //  inclusiveTax.push({ id: TaxId, price: price_is })
                 }
 
                 if (apply_defult_tax == "false") {
@@ -294,27 +300,36 @@ export const getCheckoutList = (products) => {
                 }
                 //price = (item.discount_amount !== 0) ? item.after_discount : (item.old_price - getInclusiveTax(item.old_price)) * item.quantity;
                 var taxes = [];
-                var update_discount_tax = null;
+                //var update_discount_tax = null;
+                var update_in_tax = [];
                 //var priceIs = price / item.quantity;
-                var priceIs = ((item.discount_amount !== 0) ? item.after_discount : item.old_price * item.quantity);
-                var discountTaxes = [];
-                var singleTaxAmount = item.incl_tax > 0 ? item.incl_tax : 0;
+                // var priceIs =  ((item.discount_amount !== 0) ? item.after_discount : item.old_price*item.quantity);
+
+                //23-09-2022 after applying discount, after_discount is coming without inclusive tax, so we are adding inclusive tax in after_discount while calculating inclusive tax
+                var priceIs = ((item.discount_amount !== 0) ? item.after_discount + includesiveTax : item.old_price * item.quantity);
+                // var discountTaxes = [];
+                //var singleTaxAmount = item.incl_tax > 0 ? item.incl_tax : 0;
                 if (item.isTaxable == true && item.TaxStatus !== 'none') {
                     if (item.discount_amount !== 0) {
                         //update_discount_tax = singleTaxAmount;
-                        update_discount_tax = getInclusiveTaxForTotal(priceIs, item.TaxClass); //test
+                        update_in_tax = getInclusiveTaxForTotal(priceIs, item.TaxClass); //test
                         //getInclusiveTaxForTotal(priceIs-singleTaxAmount, item.TaxClass);
                     }
-                    var update_Ex_tax = getInclusiveTaxForTotal((item.old_price * item.quantity) - includesiveTax, item.TaxClass);
-                    update_Ex_tax.map(taxIs => {
+                    else {
+                        //23-09-2002 Just remove the (-includesiveTax) from the here
+                        // because we are again calculating the inclusive tax in this code
+                        update_in_tax = getInclusiveTaxForTotal((item.old_price * item.quantity), item.TaxClass);
+                        //var update_Ex_tax = getInclusiveTaxForTotal((item.old_price*item.quantity)-includesiveTax, item.TaxClass);
+                    }
+                    update_in_tax.map(taxIs => {
                         taxes.push({ [taxIs.id]: taxIs.price }) //* item.quantity
                     })
-                    update_discount_tax && update_discount_tax.length > 0 && update_discount_tax.map(taxDis => {
-                        discountTaxes.push({ [taxDis.id]: taxDis.price })
-                    })
+                    // update_discount_tax && update_discount_tax.length > 0 && update_discount_tax.map(taxDis => {
+                    //     discountTaxes.push({ [taxDis.id]: taxDis.price })
+                    // })                   
                 }
-                tax = (item.discount_amount !== 0) ? discountTaxes : taxes;
-                // tax =  taxes;
+                // tax = (item.discount_amount !== 0) ? discountTaxes : taxes;
+                tax = taxes;
                 //console.log("singleTaxAmount", singleTaxAmount)
                 var _total = 0;
                 //_total=price-incl_tax - productDiscount;          
