@@ -16,6 +16,8 @@ import LocalizedLanguage from '../../settings/LocalizedLanguage';
 import { useIndexedDB } from 'react-indexed-db';
 import { GetOpenRegister, closeRegister } from '../cashmanagement/CashmanagementSlice'
 import { tile } from "../dashboard/tiles/tileSlice";
+import { checkForEnvirnmentAndDemoUser } from "../../settings/CommonJS";
+import { sendFireBaseTokenToAdmin } from "../firebase/FirebaseNotifications";
 // import $ from 'jquery'
 function Login() {
     var auth2 = ''
@@ -42,7 +44,58 @@ function Login() {
     });
     //-------------------------------------------
 
+    //TIZEN WRAPPER -> USING MESSAGE EVENT SETTING LOCAL STORAGE
+    window.addEventListener('message', function (e) {
+        var data = e && e.data;
+        if (typeof data == 'string' && data !== "" && e.data === "isTizenWrapper") {
+            localStorage.setItem("isTizenWrapper", 'true')
+        }
+        if (typeof data == 'string' && data !== "" && e.data === "disableScanner") {
+            localStorage.setItem("disableScanner", 'true');
+        }
+    });
 
+    useEffect(() => {
+
+        // check the user logged in with mobile send sending data in queary string------------
+        var urlParam = window.location.search;
+        var splParam = urlParam.replace("?", "").split("&");
+        var finalParam = ""
+        splParam.forEach(element => {
+            finalParam += finalParam == "" ? "" : "&";
+            if (element.substring(0, element.indexOf('=')) === "muserdata")
+                finalParam += decodeURI(element.substring(element.indexOf('=') + 1));
+        });
+        if (finalParam !== null && finalParam !== "") {
+            var jsondata = JSON.parse(finalParam);
+            var sitelist = jsondata ? jsondata.content : null;
+            var userSubscription = sitelist ? sitelist.subscriptions && sitelist.subscriptions[0] : null;
+            if (userSubscription) {
+                sessionStorage.setItem("AUTH_KEY", userSubscription.subscription_detail.client_guid + ":" + userSubscription.subscription_detail.server_token);
+            }
+            var lang = userSubscription && userSubscription.subscription_permission.language ? userSubscription.subscription_permission.language : 'en';
+            localStorage.setItem("LANG", lang);
+            if (sitelist) {
+                localStorage.setItem('sitelist', JSON.stringify(sitelist));
+                var userID = '';
+                localStorage.setItem('userId', sitelist.UserId)
+                localStorage.setItem("clientDetail", JSON.stringify(userSubscription));
+                localStorage.setItem("hasPin", sitelist.HasPin && sitelist.HasPin);
+            }
+            // Call API to send fairebase token to Admin----------------------
+            var isValidENV = checkForEnvirnmentAndDemoUser()
+            if (isValidENV == true) { // call notification functionality only on dev1 and qa1 (development)
+                sendFireBaseTokenToAdmin(dispatch);
+            }
+            //----------------------------------------------------------------   
+            setTimeout(() => {
+                //history.push('/site_link');
+                //this.doRemember();
+                //isShowWrapperSetting("LoginView.js->DidMount",'site_link','push');
+                navigate('/site');
+            }, 200);
+        }
+    })
 
     //It will clear all local storage items
     const clearLocalStorages = () => {
@@ -98,7 +151,10 @@ function Login() {
     const { status, data, error, is_success } = useSelector((state) => state.login)
     console.log("status", status, "data", data, "error", error, "is_success", is_success)
     if (status == STATUSES.IDLE && is_success) {
-
+        // var isValidENV = checkForEnvirnmentAndDemoUser()
+        // if (isValidENV == true) { // call notification functionality only on dev1 and qa1 (development)
+        //     sendFireBaseTokenToAdmin(dispatch)
+        // }
         dispatch(GetOpenRegister(0));
         dispatch(tile("clear"));
         navigate('/site')
@@ -169,7 +225,11 @@ function Login() {
             localStorage.setItem("clientDetail", JSON.stringify(userSubscription));
             localStorage.setItem("hasPin", loginRes.HasPin && loginRes.HasPin);
 
-            dispatch(userLogin(null));
+            //dispatch(userLogin(null));
+            var isValidENV = checkForEnvirnmentAndDemoUser()
+            if (isValidENV == true) { // call notification functionality only on dev1 and qa1 (development)
+                sendFireBaseTokenToAdmin(dispatch)
+            }
             navigate('/site')
         }
 

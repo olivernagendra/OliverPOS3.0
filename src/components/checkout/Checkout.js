@@ -427,6 +427,7 @@ const Checkout = (props) => {
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
                 if (typeof data == 'string' && data !== "" && location.pathname == "/checkout") {
+                    if(data.includes("{"))
                     responseData(JSON.parse(data))
                     //compositeSwitchCases(JSON.parse(data))
                     console.log("leftnavigation")

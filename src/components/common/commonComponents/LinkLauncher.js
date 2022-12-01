@@ -14,7 +14,7 @@ const LinkLauncher = (props) => {
         <div id="linkLauncherWrapper" className={props.isShow===true?"link-launcher-wrapper":"link-launcher-wrapper hidden"} onClick={()=>outerClick()}>
                 <div className="link-launcher">
                     <div className="header">
-                        <button id="linkLauncherExit">
+                        <button id="linkLauncherExit" onClick={()=>props.toggleLinkLauncher()}>
                             <img src={AngledBracket_Left_BaseBlue} alt="" />
                         </button>
                         <p>Link Launcher</p>

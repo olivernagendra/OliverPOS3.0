@@ -127,7 +127,7 @@ const PinPad = React.memo(props => {
                             className={nm === 'c' ? "backspace" : ""}>
                             {nm === 'c' ? (location.pathname === "/home" ? <img src={imgBackSpace} /> : <img src={Backspace_White} />) :
 
-                                location.pathname === "/openregister" ? <React.Fragment><p>{nm}</p>
+                                location.pathname === "/openregister" ||location.pathname === "/pin"  ||location.pathname === "/closeregister"? <React.Fragment><p>{nm}</p>
                                     <div className="text-row">{(nm != " " && nm != "1" && nm != "c") ? pinAlphabetList[parseInt(nm) - 1] : ""}</div></React.Fragment> : nm
                             }
                         </button>
@@ -276,7 +276,7 @@ const PinPad = React.memo(props => {
 
 
     if (status === STATUSES.ERROR) {
-        document.getElementById("whichkey").value = '';
+        if(document.getElementById("whichkey")) {document.getElementById("whichkey").value = '';}
         focusInput()
         console.log(status)
         // setTotalSize(0)
@@ -295,7 +295,7 @@ const PinPad = React.memo(props => {
             <div className="pin-entries">
                 <TrashPin />
             </div>
-            <NumInput id="keyss" type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" />
+            <NumInput type="button" numbers={pinNumberList} onClick={addToScreen} readOnly={false} classNameNameName2="fill-dotted-clear" />
 
         </div>
         {/* {(status === STATUSES.ERROR && <p className="error border-0 color-4b text-center w-100 p-0 no-outline enter-order-amount placeholder-color" >{error} </p>)} */}

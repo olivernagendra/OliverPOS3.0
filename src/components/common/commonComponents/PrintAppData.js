@@ -37,7 +37,7 @@ var downloadedImg;
 var currentWidth = 0 //screen.width;
 function Print(data) {
   //console.log("prinData",JSON.stringify(data));
-
+  const Android = window.Android;
   var isTizenWrapper = localStorage.getItem("isTizenWrapper");
   if (isTizenWrapper && isTizenWrapper != null && typeof isTizenWrapper != "undefined" && isTizenWrapper == "true") {
     var PrintAndroidReceiptData = {};
@@ -46,22 +46,23 @@ function Print(data) {
       PrintAndroidData.push({ "rn": 1, "cms": 1, "c1": "d_img", "c2": data.url, "c3": "", "bold": "0,0,0", "fs": "24", "alg": "1" });
     }
     PrintAndroidReceiptData["data"] = PrintAndroidData;
-    // if (Tizen && Tizen != null && typeof Tizen != "undefined") {
-    //   Tizen.generateReceipt("", JSON.stringify(PrintAndroidReceiptData))
-    // }
+    const Tizen = window.Tizen;
+    if (Tizen && Tizen != null && typeof Tizen != "undefined") {
+      Tizen.generateReceipt("", JSON.stringify(PrintAndroidReceiptData))
+    }
   }
 
-  // else if (typeof Android !== "undefined" && Android !== null && Android.getDatafromDevice("isWrapper") == true) {
-  //   if (!data || !data.url || data.url == "") { }
-  //   else {
-  //     var PrintAndroidReceiptData = {};
-  //     var PrintAndroidData = [];
-  //     PrintAndroidData.push({ "rn": 1, "cms": 1, "c1": "d_img", "c2": data.url, "c3": "", "bold": "0,0,0", "fs": "24", "alg": "1" });
-  //     PrintAndroidReceiptData["data"] = PrintAndroidData;
-  //     //console.log("PrintAndroidReceiptData-->",JSON.stringify(PrintAndroidReceiptData));
-  //     showAndroidReceipt("", PrintAndroidReceiptData)
-  //   }
-  // }
+  else if (typeof Android !== "undefined" && Android !== null && Android.getDatafromDevice("isWrapper") == true) {
+    if (!data || !data.url || data.url == "") { }
+    else {
+      var PrintAndroidReceiptData = {};
+      var PrintAndroidData = [];
+      PrintAndroidData.push({ "rn": 1, "cms": 1, "c1": "d_img", "c2": data.url, "c3": "", "bold": "0,0,0", "fs": "24", "alg": "1" });
+      PrintAndroidReceiptData["data"] = PrintAndroidData;
+      //console.log("PrintAndroidReceiptData-->",JSON.stringify(PrintAndroidReceiptData));
+      showAndroidReceipt("", PrintAndroidReceiptData);
+    }
+  }
   else {
     //   let imageURL = "https://cdn.glitch.com/4c9ebeb9-8b9a-4adc-ad0a-238d9ae00bb5%2Fmdn_logo-only_color.svg?1535749917189";
 

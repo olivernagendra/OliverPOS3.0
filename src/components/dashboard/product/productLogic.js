@@ -508,7 +508,7 @@ export const addtoCartProduct = (cartproductlist) => {
         } else {
             customefee += item.Price;
         }
-        if (item.product_discount_amount !== 0 && item.TaxStatus !== 'none') {
+        if (item.product_discount_amount !== 0 && item.TaxStatus !== 'none') { // indivisual product discount
             if (TAX_CASE == "incl") {
                 var incl_tax = 0;
                 if (item.discount_type == "Percentage") {
@@ -522,15 +522,16 @@ export const addtoCartProduct = (cartproductlist) => {
             } else {
                 var excl_tax = 0;
                 if (item.discount_type == "Percentage") {
-                    excl_tax = getExclusiveTax(item.after_discount, item.TaxClass)
+                    excl_tax = getExclusiveTax(item.product_after_discount, item.TaxClass)
+                    excl_tax= excl_tax * item.quantity;
                     //excl_tax = getExclusiveTax(item.after_discount * item.quantity, item.TaxClass)// 
                     if (isProdAddonsType && isProdAddonsType == true) {
-                        excl_tax = getExclusiveTax(item.after_discount, item.TaxClass)// quantity comment for addons
+                        excl_tax = getExclusiveTax(item.product_after_discount, item.TaxClass)// quantity comment for addons
                     }
                 } else {
                     excl_tax = getExclusiveTax(item.Price - (item.discount_amount ? item.discount_amount : 0), item.TaxClass)
                 }
-                item["excl_tax"] = excl_tax
+                item["excl_tax"] = excl_tax;
             }
         }
     })
@@ -538,12 +539,10 @@ export const addtoCartProduct = (cartproductlist) => {
 
     var incl_tax = 0;
     var excl_tax = 0;
-    if (cart !== null) {
+    if (cart !== null) {   //Calculating the cart Discount
         cartproductlist && cartproductlist.map(item => {
             var product_after_discount = 0;
-            var isProdAddonsType = "";// CommonJs.checkForProductXAddons(item.product_id);
-            // product_after_discount += parseFloat(item.product_discount_amount);
-            // var product_discount_amount = item.product_discount_amount; // remove quantity for test 
+            var isProdAddonsType = "";
 
             //  multiply by quantity in percentage discount case only...
             var product_discount_amount = item.discount_type == "Percentage" ? item.product_discount_amount * item.quantity : item.product_discount_amount; // test 
@@ -802,7 +801,7 @@ export const singleProductDiscount = (isProductX = false, productxQty = null, qt
 //             Tax_rate: 0,
 //             Id: selectedProductData.WPID
 //         }
-//         // added price and old  price here for addons type productx 
+//         // added price and old  price here for addons type productx
 //         var selectedProductX = { ...selectedProductData }
 //         var isProdAddonsType = CommonJs.checkForProductXAddons(selectedProductX.WPID);
 //         //if(isProdAddonsType && isProdAddonsType == true){  //update product old price and price with productx line_subtotal
@@ -899,7 +898,7 @@ export const singleProductDiscount = (isProductX = false, productxQty = null, qt
 //                     SingleProduct['cart_discount_amount'] = prdId.cart_discount_amount;
 //                     SingleProduct['line_item_id'] = prdId.line_item_id;
 
-//                     // test added 
+//                     // test added
 //                     // prodXData && prodXData.map((prodX)=>{
 //                     //     if(prodX && prodX.product_id == prdId.product_id){
 //                     //         // SingleProduct['quantity'] = productx_qty + prdId.quantity;
@@ -907,7 +906,7 @@ export const singleProductDiscount = (isProductX = false, productxQty = null, qt
 //                     //         productx_qty = productx_qty + prdId.quantity
 //                     //         prodX.quantity =  productx_qty
 //                     //     }
-//                     // }) 
+//                     // })
 //                     // localStorage.setItem("PRODUCTX_DATA", JSON.stringify(prodXData))
 //                     //
 //                 }
@@ -944,7 +943,7 @@ export const singleProductDiscount = (isProductX = false, productxQty = null, qt
 //     var _Price = productXItemPrice ? taxType == 'excl' ? productXItemPrice + parseFloat(productXItemTax) : parseFloat(productXItemPrice) : 0;
 
 //     // var _incl_tax = 0;
-//     // var _excl_tax=0;   
+//     // var _excl_tax=0;
 //     // if(taxType == 'excl' ) {
 //     //     _excl_tax = productXItemTax
 //     // }else if(taxType == 'incl'){

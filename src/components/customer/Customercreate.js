@@ -57,7 +57,7 @@ const Customercreate = (props) => {
     const [emailformat, setEmailformat] = useState(false)
 
 
-   
+
 
 
     // Toggle dropDown country and state
@@ -479,7 +479,7 @@ const Customercreate = (props) => {
 
     const BillingCountrySearch = () => {
         var _filteredCountry = [];
-        _filteredCountry = CountryList.filter((item) => (
+        _filteredCountry = CountryList && CountryList.filter((item) => (
             (item.Name.toString().toLowerCase().includes(BillingSerachString.toLowerCase()))
         ))
         setRenderBillingCountry(_filteredCountry)
@@ -487,7 +487,7 @@ const Customercreate = (props) => {
 
     const ShillingCountrySearch = () => {
         var _filteredCountry = [];
-        _filteredCountry = CountryList.filter((item) => (
+        _filteredCountry = CountryList && CountryList.filter((item) => (
             (item.Name.toString().toLowerCase().includes(ShippingSearchCountry.toLowerCase()))
         ))
         setRenderShippingCountry(_filteredCountry)
@@ -629,6 +629,7 @@ const Customercreate = (props) => {
     return (
         <>
             {customerres.status == STATUSES.LOADING ? <LoadingModal /> : null}
+            {/* {console.log("props.isShow",props.isShow)} */}
             <div className={props.isShow === true ? "subwindow-wrapper" : "subwindow-wrapper hidden"} onClick={(e) => outerClick(e)}>
                 <div className={props.isShow === true ? "subwindow create-customer current" : "subwindow create-customer"}>
                     <div className="subwindow-header">
@@ -652,8 +653,8 @@ const Customercreate = (props) => {
                                 <div className="input-col">
                                     <label for="newCustEmail">Email*</label>
                                     <input type="email" placeholder="Enter Email" name='email'
-                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput}  className={emailInvalid==true ? "error required": emailformat == true ? "error invalid-input":'' }  />
-                                   	<div class="error-wrapper"></div>
+                                        value={values.email ? values.email : props.searchSringCreate} onChange={(e) => handleChange(e.target.name, e.target.value)} autoComplete='off' ref={textInput} className={emailInvalid == true ? "error required" : emailformat == true ? "error invalid-input" : ''} />
+                                    <div class="error-wrapper"></div>
                                 </div>
 
                                 <div className="input-col">
