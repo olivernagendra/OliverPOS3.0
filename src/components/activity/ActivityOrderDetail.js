@@ -445,7 +445,7 @@ const ActivityOrderDetail = (props) => {
                                     : 0}  </b></p>
                             </div>
                             <div className="row">
-                                <p>Total Tax (15%)</p>
+                                <p>Total Tax </p>
                                 <p><b>{(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : (props.TotalTax - props.tax_refunded).toFixed(2)}</b></p>
                             </div>
 
