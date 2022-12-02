@@ -11,28 +11,28 @@ var moment_time_zone = require('moment-timezone');
  * @param {*} time_zone 
  */
 function formatDateAndTime(date_time, time_zone) {
-   //CHANGING THE DATE FORMAT FOR SAFARI BROWSER
-    var dtformat = isSafari? Config.key.DATETIME_FORMAT_SAFARI:Config.key.DATETIME_FORMAT;
-    var dformat = isSafari ? Config.key.DATE_FORMAT_SAFARI: Config.key.DATE_FORMAT;
-    if (time_zone == '+00:00') {
-        var DateTime = moment.utc(date_time)
-        return DateTime.local().format(dformat);
-    } else {
-      if( !date_time || !time_zone){
-        var _date = moment(date_time).format(dtformat);
-        var m = moment_time_zone.tz(_date, dtformat, time_zone);
-        //m.utc();
-        return m.format(dformat);
-      }
-       
-        var cutoffString = date_time; // in utc
-        var utcCutoff = moment.utc(cutoffString, 'YYYYMMDD HH:mm:ss');
-        var displayCutoff = utcCutoff.clone().tz(time_zone);
-        return displayCutoff.format(dformat);
+  //CHANGING THE DATE FORMAT FOR SAFARI BROWSER
+  var dtformat = isSafari ? Config.key.DATETIME_FORMAT_SAFARI : Config.key.DATETIME_FORMAT;
+  var dformat = isSafari ? Config.key.DATE_FORMAT_SAFARI : Config.key.DATE_FORMAT;
+  if (time_zone == '+00:00') {
+    var DateTime = moment.utc(date_time)
+    return DateTime.local().format(dformat);
+  } else {
+    if (!date_time || !time_zone) {
+      var _date = moment(date_time).format(dtformat);
+      var m = moment_time_zone.tz(_date, dtformat, time_zone);
+      //m.utc();
+      return m.format(dformat);
     }
-  }
 
-  /**
+    var cutoffString = date_time; // in utc
+    var utcCutoff = moment.utc(cutoffString, 'YYYYMMDD HH:mm:ss');
+    var displayCutoff = utcCutoff.clone().tz(time_zone);
+    return displayCutoff.format(dformat);
+  }
+}
+
+/**
 * Created By :Shakuntala Jatav
 * Created Date :27-07-2019
 * Description : date formate change according to time zone and date wise. 
@@ -40,88 +40,91 @@ function formatDateAndTime(date_time, time_zone) {
 * @param {*} time_zone  string
 */
 function recieptFormatDateAndTime(date_time, time_zone) {
-    if (time_zone == '+00:00') {
-      var DateTime = moment.utc(date_time)
-      return DateTime.local().format(Config.key.DATETIME_FORMAT);
-  
-    } else {
-      if( !date_time || !time_zone){
-        var _date = moment(date_time).format(Config.key.DATETIME_FORMAT);
-        var m = moment_time_zone.tz(_date, Config.key.DATETIME_FORMAT, time_zone);
-        //m.utc();
-        return m.format(Config.key.DATETIME_FORMAT);
-      }
-      if( !date_time || !time_zone) return '';
-        var cutoffString = date_time; // in utc
-        var utcCutoff = moment.utc(cutoffString, 'YYYYMMDD HH:mm:ss');
-        var displayCutoff = utcCutoff.clone().tz(time_zone);
-        return displayCutoff.format(Config.key.DATE_FORMAT);
-      }
-  }
+  if (time_zone == '+00:00') {
+    var DateTime = moment.utc(date_time)
+    return DateTime.local().format(Config.key.DATETIME_FORMAT);
 
-  function formatDateWithTime(date_time, time_zone) {
-    //CHANGING THE DATE FORMAT FOR SAFARI BROWSER
-    var dtformat = isSafari? Config.key.DATETIME_FORMAT_SAFARI:Config.key.DATETIME_FORMAT;
-
-    if ( ! time_zone) {//if timezone not avilable
-      var gmtDateTime = moment.utc(date_time)
-      return gmtDateTime.format('LT');
+  } else {
+    if (!date_time || !time_zone) {
+      var _date = moment(date_time).format(Config.key.DATETIME_FORMAT);
+      var m = moment_time_zone.tz(_date, Config.key.DATETIME_FORMAT, time_zone);
+      //m.utc();
+      return m.format(Config.key.DATETIME_FORMAT);
     }
-    if (time_zone == '+00:00') {
-         var gmtDateTime = moment.utc(date_time)
-         return gmtDateTime.local().format('LT');
-           } else {
-              // var _date = moment(date_time).format(Config.key.DATETIME_FORMAT);
-              // var m = moment_time_zone.tz(_date, Config.key.DATETIME_FORMAT, time_zone);
-         var _date = moment(date_time).format(dtformat);
-         var m = moment_time_zone.tz(_date, dtformat, time_zone);
-         //m.utc();
-         return m.local().format('LT');
-     }
+    if (!date_time || !time_zone) return '';
+    var cutoffString = date_time; // in utc
+    var utcCutoff = moment.utc(cutoffString, 'YYYYMMDD HH:mm:ss');
+    var displayCutoff = utcCutoff.clone().tz(time_zone);
+    return displayCutoff.format(Config.key.DATE_FORMAT);
   }
-  function dateFormatBySetting(date_time, time_zone,dateformate,timeformate) {
-    var _formatedDate="";
-    var _timeformate="";
-    if (time_zone == '+00:00') {
-      var DateTime = moment.utc(date_time)    
-      if(dateformate)     
-          _formatedDate=DateTime.local().format(dateformate.toUpperCase())
-      if(timeformate)
-          _timeformate=DateTime.local().format(timeformate)
-        //console.log("newformatedDate",dateformate +' '+_timeformate)  
-      return _formatedDate +' '+_timeformate;
-     //return DateTime.local().format(Config.key.DATETIME_FORMAT);
-  
-    } else {
-      var _date = moment(date_time).format(dateformate.toUpperCase());
-      var m = moment_time_zone.tz(_date, timeformate, time_zone);
-     // m.utc();
-     // retuenDate=m.format(Config.key.DATETIME_FORMAT);
-      if(dateformate)     
-      _formatedDate=m.format(dateformate.toUpperCase())
-       if(timeformate)
-      _timeformate=m.format(timeformate)
-       // console.log("newformatedDate1",_formatedDate +' '+_timeformate)  
-  return _formatedDate +' '+_timeformate;
-    }
+}
 
-  
+function formatDateWithTime(date_time, time_zone, timeformate = null) {
+  //CHANGING THE DATE FORMAT FOR SAFARI BROWSER
+  var dtformat = isSafari ? Config.key.DATETIME_FORMAT_SAFARI : Config.key.DATETIME_FORMAT;
+
+  if (!time_zone) {//if timezone not avilable
+    var gmtDateTime = moment.utc(date_time)
+    return gmtDateTime.format('LT');
   }
-  function timeCompare(time1,time2) {
-    var t1 = new Date();
-    var parts = time1.split(":");
-    t1.setHours(parts[0],parts[1],parts[2],0);
-    var t2 = new Date();
-    parts = time2.split(":");
-    t2.setHours(parts[0],parts[1],parts[2],0);
-  
-    // returns 1 if greater, -1 if less and 0 if the same
-    if (t1.getTime()>t2.getTime()) return 1;
-    if (t1.getTime()<t2.getTime()) return -1;
-    return 0;
+  if (time_zone == '+00:00') {
+    var gmtDateTime = moment.utc(date_time)
+    return gmtDateTime.local().format('LT');
+  } else {
+    // var _date = moment(date_time).format(Config.key.DATETIME_FORMAT);
+    // var m = moment_time_zone.tz(_date, Config.key.DATETIME_FORMAT, time_zone);
+    var _date = moment(date_time).format(dtformat);
+    var m = moment_time_zone.tz(_date, dtformat, time_zone);
+    //m.utc();
+    if (timeformate !== null)
+      return m.format(timeformate)
+    else
+      return m.local().format('LT');
   }
-  export const FormateDateAndTime = {
-    formatDateAndTime, recieptFormatDateAndTime, formatDateWithTime,dateFormatBySetting,timeCompare
+}
+function dateFormatBySetting(date_time, time_zone, dateformate, timeformate) {
+  var _formatedDate = "";
+  var _timeformate = "";
+  if (time_zone == '+00:00') {
+    var DateTime = moment.utc(date_time)
+    if (dateformate)
+      _formatedDate = DateTime.local().format(dateformate.toUpperCase())
+    if (timeformate)
+      _timeformate = DateTime.local().format(timeformate)
+    //console.log("newformatedDate",dateformate +' '+_timeformate)  
+    return _formatedDate + ' ' + _timeformate;
+    //return DateTime.local().format(Config.key.DATETIME_FORMAT);
+
+  } else {
+    var _date = moment(date_time).format(dateformate.toUpperCase());
+    var m = moment_time_zone.tz(_date, timeformate, time_zone);
+    // m.utc();
+    // retuenDate=m.format(Config.key.DATETIME_FORMAT);
+    if (dateformate)
+      _formatedDate = m.format(dateformate.toUpperCase())
+    if (timeformate)
+      _timeformate = m.format(timeformate)
+    // console.log("newformatedDate1",_formatedDate +' '+_timeformate)  
+    return _formatedDate + ' ' + _timeformate;
+  }
+
+
+}
+function timeCompare(time1, time2) {
+  var t1 = new Date();
+  var parts = time1.split(":");
+  t1.setHours(parts[0], parts[1], parts[2], 0);
+  var t2 = new Date();
+  parts = time2.split(":");
+  t2.setHours(parts[0], parts[1], parts[2], 0);
+
+  // returns 1 if greater, -1 if less and 0 if the same
+  if (t1.getTime() > t2.getTime()) return 1;
+  if (t1.getTime() < t2.getTime()) return -1;
+  return 0;
+}
+export const FormateDateAndTime = {
+  formatDateAndTime, recieptFormatDateAndTime, formatDateWithTime, dateFormatBySetting, timeCompare
 }
 
 export default FormateDateAndTime;

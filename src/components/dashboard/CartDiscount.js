@@ -219,7 +219,7 @@ const CartDiscount = (props) => {
                         <div id="cartDiscountDiv">
                             <div className="main">
                                 <label htmlFor="discountAmount">Discount amount:</label>
-                                <input style={{ direction: "LTL" }} type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onKeyDown={(e) => discount_Amount(e)} disabled={isDiscountBtnEnable == true ? false : true} />
+                                <input style={{ direction: "LTL" }} type="number" id="discountAmount" placeholder="0.00" value={discountAmount} onKeyDown={(e) => discount_Amount(e)} disabled={isDiscountBtnEnable == true ? false : true} onChange={()=>null}/>
                                 <p>Select type of discount to be applied to cart:</p>
                                 <div className="button-row">
                                     <button onClick={() => handleDiscount('$')} disabled={isDiscountBtnEnable == true ? false : true} className={isDiscountBtnEnable == true ? "" : "btn-disable"}>$ {LocalizedLanguage.discount}</button>

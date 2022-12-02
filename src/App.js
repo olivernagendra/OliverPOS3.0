@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
 } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 // import logo from './logo.svg';
 // import { Counter } from './features/counter/Counter';
 import './App.css';
@@ -29,9 +30,20 @@ import Refund from './components/refund/Refund';
 import SaleComplete from './components/salecomplete/SaleComplete';
 import RefundComplete from './components/refund/RefundComplete';
 import { checkForEnvirnmentAndDemoUser } from './settings/CommonJS';
-import { getFirebaseNotification } from './components/firebase/FirebaseNotifications';
+import { getFirebaseNotification,pingFirebaseRegister } from './components/firebase/FirebaseNotifications';
 initDB(DBConfig);
 function App() {
+  const dispatch = useDispatch();
+  var  _register =localStorage.getItem("register") 
+        var _user = localStorage.getItem('user')
+        var myInterval = setInterval(() => {
+            if (_register && _user) {
+               // console.log("ping register")
+               pingFirebaseRegister(dispatch)             
+            } else {
+                clearInterval(myInterval);
+            }
+          }, 240000)
 
   const authenticateComponent = (component) => {
     let isAuth = JSON.parse(localStorage.getItem('clientDetail'));

@@ -851,7 +851,7 @@ const Closeregistertwo = (props) => {
                     <p className="style2">Total Difference</p>
                     <div className="divider" />
                     <div className="row">
-                        <p className="style3">{_totalDiff.toFixed(2)}</p>
+                        <p className="style3">{_totalDiff && _totalDiff !== null ? _totalDiff.toFixed(2) : "0.00"}</p>
                     </div>
                 </div>
             </div>

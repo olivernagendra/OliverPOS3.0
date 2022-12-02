@@ -39,7 +39,7 @@ const ActivityView = () => {
     const [selectedOption, setSelectedOption] = useState('')
     const [sortbyvaluename, SetSortByValueName] = useState('Date (Newest)')
     const [emailnamephone, setEmailNamePhone] = useState(sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '')
-    const [orderidsearch, setorderId] = useState('')
+    const [orderidsearch, setorderId] = useState(sessionStorage.getItem("notificationRedirect") ? sessionStorage.getItem("notificationRedirect") : '')
     const [pricefrom, setPriceFrom] = useState('')
     const [priceto, setPriceTo] = useState('')
     const [filterByPlatform, setFilterByPlatform] = useState('')
@@ -139,9 +139,16 @@ const ActivityView = () => {
     useEffect(() => {
         if (useCancelled == false) {
             var transactionredirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '';
+            var orderNo = sessionStorage.getItem("notificationRedirect") ? sessionStorage.getItem("notificationRedirect") : '';
+
             if (transactionredirect !== '') {
                 applyServerFilter()
-            } else {
+            }
+            else if (orderNo != "") {
+                setorderId(orderNo);
+                applyServerFilter()
+            }
+            else {
                 reload(1)
                 dispatch(cashRecords(null));
             }
@@ -288,7 +295,7 @@ const ActivityView = () => {
             }
         }
         if (isCvmobile === true) {
-           // clearFilter();
+            // clearFilter();
         }
         return () => {
             useCancelled1 = true;
@@ -354,8 +361,8 @@ const ActivityView = () => {
             e_yy = _enddate.getFullYear();
         }
         if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" ||
-        selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '') {
-            
+            selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '') {
+
             var _filterParameter = {
                 "PageSize": pagesize,
                 "PageNumber": 0,
@@ -374,28 +381,28 @@ const ActivityView = () => {
                 //"groupSlug": this.state.filterByGroupList,
                 "MinAmount": pricefrom,
                 "MaxAmount": priceto,
-    
+
             };
             //console.log("_filterParameter",_filterParameter)
             dispatch(getFilteredActivities(_filterParameter));
-           // mobileTransactionsSearch()
+            // mobileTransactionsSearch()
             setFilterSearchActive(true)
 
         }
 
 
-     
+
 
     }
 
-   
+
 
 
     const clearFilter = () => {
         var fromdate = document.getElementById("dateFrom").value;
         var txttodate = document.getElementById("dateTo").value;
         if (filterByUser !== "" || filterByStatus !== "" || filterByPlatform !== "" || emailnamephone !== "" ||
-            selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '' || AllActivityList !=='') {
+            selectuserfilter !== "" || orderidsearch !== "" || pricefrom !== "" || priceto !== "" || fromdate !== '' || txttodate !== '' || AllActivityList !== '') {
             setupdateActivityId('')
             reload(1)
             setfilterByUser("")
@@ -412,6 +419,8 @@ const ActivityView = () => {
             document.getElementById('dateFrom').value = '';
             document.getElementById('dateTo').value = '';
             setAllActivityList("")
+            sessionStorage.removeItem('notificationRedirect');
+
         }
     }
 
@@ -439,7 +448,7 @@ const ActivityView = () => {
         setDefauldNumber(defauldnumber + 1)
         if (AllActivityList.length == activityListcount) {
 
-        } else if (defauldnumber != 1 && transactionsRedirect == '' &&filterSearchActive !==true ) {
+        } else if (defauldnumber != 1 && transactionsRedirect == '' && filterSearchActive !== true) {
             reload(defauldnumber)
         }
     }
@@ -456,9 +465,9 @@ const ActivityView = () => {
         if (e.keyCode == 13) {
             applyServerFilter();
         }
-      }
+    }
 
-   
+
     return <>
         <div className="transactions-wrapper">
             <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow} ></LeftNavBar>
@@ -491,7 +500,7 @@ const ActivityView = () => {
                 <div className="search-body">
                     <p className="mobile-only">Search for Order</p>
                     <label htmlFor="orderID">Order ID</label>
-                    <input type="text" id="orderID" placeholder="Order ID" onKeyUp={(e) => handleKeyUp(e)}  onChange={hundleChangeID} value={orderidsearch} />
+                    <input type="text" id="orderID" placeholder="Order ID" onKeyUp={(e) => handleKeyUp(e)} onChange={hundleChangeID} value={orderidsearch} />
                     <p>You can scan the order id anytime</p>
                     <div className="divider"></div>
                     <label htmlFor="custInfo">Customer Info</label>
@@ -503,7 +512,7 @@ const ActivityView = () => {
                         <div className="option-list">
                             {_orderstatus && _orderstatus.length > 0 && _orderstatus.map((item, index) => {
                                 return (
-                                    <div className="option" key={"status" + index}  onClick={() => SetFilterStatus("status", item.key)}>
+                                    <div className="option" key={"status" + index} onClick={() => SetFilterStatus("status", item.key)}>
                                         <p>{item.value}</p>
                                     </div>
                                 )
@@ -515,7 +524,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateFrom">Date From</label>
                             <div className="date-selector-wrapper left ">
-                                <input type="text" id="dateFrom" placeholder="Date" onChange={() => {handleCalenderFrom()}} />
+                                <input type="text" id="dateFrom" placeholder="Date" onChange={() => { handleCalenderFrom() }} />
                                 <button className="open-date-selector open" onClick={() => handleCalenderFrom()}>
                                     <img src={calendar} alt="" />
                                 </button>
@@ -525,7 +534,7 @@ const ActivityView = () => {
                         <div className="input-col">
                             <label htmlFor="dateTo">Date To</label>
                             <div className="date-selector-wrapper right">
-                                <input type="text" id="dateTo" placeholder="Date" onChange={() => {handleCalenderTo()}} />
+                                <input type="text" id="dateTo" placeholder="Date" onChange={() => { handleCalenderTo() }} />
                                 <button className="open-date-selector" onClick={() => handleCalenderTo()}>
                                     <img src={calendar} alt="" />
                                 </button>
@@ -573,7 +582,7 @@ const ActivityView = () => {
                             <input type="text" id="priceTo" placeholder="Price" onKeyUp={(e) => handleKeyUp(e)} onChange={hundleChangePriceTo} value={priceto} />
                         </div>
                     </div>
-                    <button id="searchTransactionButton" onClick={applyServerFilter }>Search</button>
+                    <button id="searchTransactionButton" onClick={applyServerFilter}>Search</button>
                 </div>
             </div>
 
