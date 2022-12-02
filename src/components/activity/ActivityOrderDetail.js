@@ -404,12 +404,12 @@ const ActivityOrderDetail = (props) => {
                                                 {showSubTitle(item) !== "" ? <p>{item.name} </p> : null}
                                                 {varDetail ? <p >{varDetail} </p> : null}
                                             </p>
-                                            <p>Price: &nbsp;  <td className="w-101" align="right">
+                                            <p>Price: &nbsp; $ <td>
                                                 {item.amount_refunded > 0 ||
                                                     isTotalRefund == true ? (
                                                     item.quantity_refunded < 0 ? (
                                                         <div>
-                                                            <del style={{ marginRight: 10 }}>
+                                                           $ <del style={{ marginRight: 10 }}>
                                                                 <NumericFormat
                                                                     value={_amount}
                                                                     displayType={"text"}
@@ -426,14 +426,14 @@ const ActivityOrderDetail = (props) => {
                                                                 fixedDecimalScale={true}
                                                             />{" "}
                                                         </div>
-                                                    ) : (
+                                                    ) : (<>$
                                                         <NumericFormat
                                                             value={item.total}
                                                             displayType={"text"}
                                                             thousandSeparator={true}
                                                             decimalScale={2}
                                                             fixedDecimalScale={true}
-                                                        />
+                                                        /></>
                                                     )
                                                 ) : item.subtotal - item.total != 0 &&
                                                     isIndivisualDiscountApply.length > 0 ? (
@@ -442,10 +442,10 @@ const ActivityOrderDetail = (props) => {
                                                         "no" ? (
                                                         // <div><del style={{ marginRight: 10 }}>{item.subtotal.toFixed(2)}</del><NumericFormat value={item.total +_productCartDiscountAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></div>
                                                         <div>
-                                                            <del style={{ marginRight: 10 }}>
+                                                           $ <del style={{ marginRight: 10 }}>
                                                                 {_amount.toFixed(2)}
                                                             </del>
-                                                            <NumericFormat
+                                                           $ <NumericFormat
                                                                 value={_final_amount}
                                                                 displayType={"text"}
                                                                 thousandSeparator={true}
@@ -455,7 +455,7 @@ const ActivityOrderDetail = (props) => {
                                                         </div>
                                                     ) : (
                                                         <div>
-                                                            <del style={{ marginRight: 10 }}>
+                                                           $ <del style={{ marginRight: 10 }}>
                                                                 {(
                                                                     item.subtotal +
                                                                     (taxInclusiveName == ""
@@ -463,7 +463,7 @@ const ActivityOrderDetail = (props) => {
                                                                         : item.subtotal_tax)
                                                                 ).toFixed(2)}
                                                             </del>
-                                                            <NumericFormat
+                                                           $ <NumericFormat
                                                                 value={(
                                                                     item.total +
                                                                     (taxInclusiveName == ""
@@ -478,8 +478,8 @@ const ActivityOrderDetail = (props) => {
                                                             />{" "}
                                                         </div>
                                                     )
-                                                ) : (
-                                                    <NumericFormat
+                                                ) : (<>
+                                                  $  <NumericFormat
                                                         value={Math.round(
                                                             item.subtotal +
                                                             (taxInclusiveName == ""
@@ -490,7 +490,7 @@ const ActivityOrderDetail = (props) => {
                                                         thousandSeparator={true}
                                                         decimalScale={2}
                                                         fixedDecimalScale={true}
-                                                    />
+                                                    /></>
                                                 )}
                                             </td>
                                             </p>
@@ -532,10 +532,10 @@ const ActivityOrderDetail = (props) => {
                                             <p>{item.note ? item.note : ""}</p>
                                             {item.amount_refunded > 0 ? (<>
                                                 <del><p>{item.amount}</p> </del>
-                                                <p>Price: &nbsp; <b>{FeeAmount}</b></p>
+                                                <p>Price: &nbsp; $<b>{FeeAmount}</b></p>
 
                                             </>) : (
-                                                <p>Price: &nbsp; <b>{item.amount}</b></p>
+                                                <p>Price: &nbsp; $<b>{item.amount}</b></p>
                                             )}
                                         </div>
                                     </div>
@@ -602,8 +602,8 @@ const ActivityOrderDetail = (props) => {
 
                             <div className="row">
                                 <p className="bold2"><b>{LocalizedLanguage.total} </b></p>
-                                <p><b className="bold2"> {(props.refunded_amount > 0) ? <div>$<NumericFormat value={(props.TotalAmount - props.refunded_amount)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> <del style={{ marginLeft: 5 }}><NumericFormat value={props.TotalAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></del> </div> : <NumericFormat value={props.TotalAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
-                                } </b></p>
+                                <p><b className="bold2">$ {(props.refunded_amount > 0) ? <div>$<NumericFormat value={(props.TotalAmount - props.refunded_amount)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> <del style={{ marginLeft: 5 }}>$<NumericFormat value={props.TotalAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></del> </div> : <>$<NumericFormat value={props.TotalAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                </> } </b></p>
                             </div>
 
                             <div className="row">
