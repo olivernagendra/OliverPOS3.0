@@ -1477,23 +1477,22 @@ const Refund = (props) => {
                     })}
                 </button>
                 <p id="bottomText" /*onClick={() => toggleShowPartialPayment()}*/>Click to make a partial payment</p>
-                <p className="style2">Quick Split</p>
+                {/* <p className="style2">Quick Split</p>
                 <div className="button-row">
                     <button onClick={() => showPartial(2)} disabled>1/2</button>
                     <button onClick={() => showPartial(3)} disabled>1/3</button>
                     <button onClick={() => showPartial(4)} disabled>1/4</button>
                 </div>
                 <div className="button-row">
-                    {/* <button id="splitByProductButton" onClick={() => toggleSplitByProduct()}>By Product</button> */}
                     <button id="splitByProductButton" disabled>By Product</button>
                     <button id="splitByPeopleButton" disabled>By Group (Coming Soon)</button>
-                </div>
+                </div> */}
                 <p className="style2">Customer Payment Types</p>
                 <p className="style3">Please add a customer to make customer payment types available</p>
                 <div className="button-row">
                     {/* <button disabled>Layaway</button>
 					<button disabled>Store Credit</button> */}
-                    <button disabled={hasCustomer == null ? true : false}>Layaway</button>
+                    {/* <button disabled={hasCustomer == null ? true : false}>Layaway</button> */}
                     <button disabled={hasCustomer == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit</button>
                 </div>
                 <div className="payment-types">
