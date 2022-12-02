@@ -701,6 +701,7 @@ code {
 .homepage-wrapper > .products > .products-container > button.category::before {
 	content: "" !important;
 }
+.notification-card{cursor:pointer;}
 
 .close-register-wrapper > header > .col > .divider {
     width: auto;
@@ -718,4 +719,36 @@ code {
 	text-align: center;
 	color: var(--error);
 	margin: -10px 0 20px 0;
+}
+.refund-wrapper > .refund-body > .balance-container {
+
+    transform: unset !important;
+}
+.refund-wrapper > .refund-body > .balance-container p.style2 {
+
+    color: var(--oliver-base-grey);
+}
+.refund-wrapper > .refund-body > .balance-container:hover {
+    border: 1px solid var(--oliver-border);
+	cursor:unset;
+}
+.refund-wrapper > .refund-body > #bottomText:hover {
+	color: var(--oliver-base-grey);
+}
+.avatar {
+   
+    line-height: 40px;
+}
+.payment-type-disable:hover
+{
+	border: 1px solid var(--oliver-border) !important;
+	cursor:unset !important;
+}
+.payment-type-disable-txt
+{
+	color: var(--oliver-base-grey) !important;
+	cursor:unset !important;
+}
+.cart > .footer > .totals > .row > p:first-of-type {
+    margin-right: unset;
 }

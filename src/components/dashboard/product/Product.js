@@ -41,6 +41,7 @@ import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import { getInventory } from "../slices/inventorySlice";
 import { NumericFormat } from 'react-number-format';
 import { RoundAmount } from "../../common/TaxSetting";
+import { UpdateProductInventoryDB } from "../../loadProduct/loadProductSlice";
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -94,7 +95,7 @@ const Product = (props) => {
         //     itemQauntity = prodcut && prodcut.StockQuantity
         //     console.log("itemQauntity", itemQauntity)
         //     variationStockQunatity = itemQauntity;
-        // });
+        // }); 
 
         // var prodcut = await getProductByID(_product.WPID).then((row) => {
         //     return row;
@@ -128,6 +129,7 @@ const Product = (props) => {
                 setStockStatusInOut(_stockStatus);
             }
             else {
+                dispatch(UpdateProductInventoryDB([_product.WPID]));// update the inventory in the local database
                 setStockStatusInOut("In Stock");
             }
 
@@ -172,43 +174,49 @@ const Product = (props) => {
     }
 
     const quantityUpdate = (type) => {
-        const { selProduct } = props;
-        if (selProduct) {
-            if (type === "plus") {
-                var qty = parseInt(productQty);
-                //if (this.state.variationfound ? selProduct.WPID == this.state.variationfound.WPID : selProduct.WPID == this.props.getVariationProductData.WPID) {
-                var maxQty = (selProduct.ManagingStock == false && selProduct.StockStatus == "outofstock") ? "outofstock" :
-                    (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
-                // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
-                //-- maxQty update after inventory check
-                if (typeof _currentStock != "undefined" && _currentStock != null) {
-                    maxQty = _currentStock;
+
+        if (checkLength() === true) {
+            const { selProduct } = props;
+            if (selProduct) {
+                if (type === "plus") {
+                    var qty = parseInt(productQty);
+                    //if (this.state.variationfound ? selProduct.WPID == this.state.variationfound.WPID : selProduct.WPID == this.props.getVariationProductData.WPID) {
+                    var maxQty = (selProduct.ManagingStock == false && selProduct.StockStatus == "outofstock") ? "outofstock" :
+                        (selProduct.StockStatus == null || selProduct.StockStatus == 'instock') && selProduct.ManagingStock == false ? "Unlimited" : (typeof selProduct.StockQuantity != 'undefined') && selProduct.StockQuantity != '' ? parseFloat(selProduct.StockQuantity) : 0;
+                    // var maxQty = this.state.variationStockQunatity == 'Unlimited' ? 'Unlimited' : parseFloat(this.state.variationStockQunatity) + parseFloat(showSelectedProduct.quantity);
+                    //-- maxQty update after inventory check
+                    if (typeof _currentStock != "undefined" && _currentStock != null) {
+                        maxQty = _currentStock;
+                    }
+                    //---
+                    if (maxQty == 'Unlimited' || qty <= maxQty) {
+                        qty++;
+                    }
+                    setProductQty(qty)
                 }
-                //---
-                if (maxQty == 'Unlimited' || qty <= maxQty) {
-                    qty++;
+                else if (type === "minus") {
+                    var qty = parseInt(productQty);
+                    if (qty > 1) {
+                        qty--;
+                        setProductQty(qty);
+                    };
+
                 }
-                setProductQty(qty)
+
+                //} else {
+                //     var maxQty = $("#txtInScock").text();
+                //     if (maxQty == 'Unlimited' || qty < maxQty) {
+                //         qty++;
+                //     }
+                //     if (qty > this.state.variationStockQunatity)
+                //         qty = this.state.variationStockQunatity;
+
+                //         this.setDefaultQuantity(qty);
+                // }
             }
-            else if (type === "minus") {
-                var qty = parseInt(productQty);
-                if (qty > 1) {
-                    qty--;
-                    setProductQty(qty);
-                };
-
-            }
-
-            //} else {
-            //     var maxQty = $("#txtInScock").text();
-            //     if (maxQty == 'Unlimited' || qty < maxQty) {
-            //         qty++;
-            //     }
-            //     if (qty > this.state.variationStockQunatity)
-            //         qty = this.state.variationStockQunatity;
-
-            //         this.setDefaultQuantity(qty);
-            // }
+        }
+        else {
+            toggleNoVariationSelected();
         }
         // else {
         //     var maxQty = $("#txtInScock").text();
@@ -930,12 +938,11 @@ const Product = (props) => {
                             var _selVar = selVari.find(a => a.Position = _index);
                             // var _slug = _DistictAttribute.filter(b => b.Slug === _selVar.Slug);
                             var _slug = _DistictAttribute.filter(b => b.OptionAll.includes(_selVar.Slug));
-                            if(typeof _slug!="undefined" && _slug!=null && _slug.length>0)
-                            {
-                                _slug.map(m=>{
+                            if (typeof _slug != "undefined" && _slug != null && _slug.length > 0) {
+                                _slug.map(m => {
                                     _all.push(m.OptionAll);
                                 })
-                                
+
                             }
                             console.log("---_slug---" + _slug.OptionAll);
 
@@ -1178,7 +1185,7 @@ const Product = (props) => {
                     var array3 = allVariations.filter(function (obj) { return _disableAttribute.indexOf(obj.toLowerCase()) == -1; });
                     // //_disableAttribute=array3;
                     if (_selVariations && _selVariations.length == 1 && array3 && _attribute && _attribute.length > 1) {
-                       // setDisableAttribute(array3);
+                        // setDisableAttribute(array3);
                     }
                     console.log("--array3--- ", JSON.stringify(array3));
                 }
@@ -1431,7 +1438,7 @@ const Product = (props) => {
 
     var _currentStock = currentWareHouseDetail && currentWareHouseDetail !== "" ? currentWareHouseDetail.Quantity : variationStockQunatity;
     //console.log("Quantity", currentWareHouseDetail.Quantity, variationStockQunatity)
-
+    var _price=_product && RoundAmount(((product_price * productQty) - after_discount_total_price) + (_product.excl_tax ? _product.excl_tax : 0));
     return (
         props.isShowPopups == false ? null :
             <React.Fragment>
@@ -1767,7 +1774,7 @@ const Product = (props) => {
                                 <img src={Pencil} alt="" />
                                 {LocalizedLanguage.addNote}
                             </button>
-                            <button id="addProductDiscount" onClick={() => toggleProductDiscount()}>{discounts}</button>
+                            <button id="addProductDiscount" onClick={() => toggleProductDiscount()} disabled={_price===0?true:false} className={_price===0?"btn-disable":""}>{discounts}</button>
                         </div>
                         <div className="row">
                             <div className="increment-input">
@@ -1782,7 +1789,7 @@ const Product = (props) => {
                             <button id="addProductToCart" onClick={() => addToCart()}>
                                 <img src={CircledPlus_White} alt="" />
                                 {LocalizedLanguage.addToCart} - $
-                                <NumericFormat value={_product && RoundAmount(((product_price * productQty) - after_discount_total_price) + (_product.excl_tax ? _product.excl_tax : 0))} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                <NumericFormat value={_price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                             </button>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { loadProductAPI, productCountAPI } from './loadProductAPI';
+import { loadProductAPI, productCountAPI,UpdateProductInventoryDBAPI } from './loadProductAPI';
 import STATUSES from '../../constants/apiStatus';
 
 
@@ -81,4 +81,52 @@ export const productLoaderSlice = createSlice({
 //export const { productLoaderPanding, productLoaderSuccess, productLoaderFail } = productLoaderSlice.actions;
 const { productLoading, productReceived } = productLoaderSlice.actions;
 
-export default productLoaderSlice;
+// Product quantity update
+export const UpdateProductInventoryDB = createAsyncThunk(
+    'productLoader/UpdateProductInventoryDBAPI',
+    async (parameter, { rejectWithValue }) => {
+
+        try {
+            const response = await UpdateProductInventoryDBAPI(parameter);
+            return response;
+        } catch (err) {
+
+            return rejectWithValue(err.response.data)
+        }
+
+    }
+);
+
+export const UpdateProductInventoryDBSlice = createSlice({
+    name: 'UpdateProductInventoryDB',
+    initialState,
+    reducers: {
+        extraReducers: (builder) => {
+            builder
+                .addCase(UpdateProductInventoryDB.pending, (state) => {
+                    state.status = STATUSES.LOADING;
+                    state.data = "";
+                    state.error = "";
+                    state.is_success = false;
+                })
+                .addCase(UpdateProductInventoryDB.fulfilled, (state, action) => {
+                    state.status = action.payload && action.payload.is_success == true ? STATUSES.IDLE : STATUSES.ERROR;
+                    state.data = (action.payload && action.payload.is_success == true ? action.payload : "");
+                    state.error = action.payload && action.payload.is_success == false ? action.payload.hasOwnProperty('message')?action.payload.message:"" : action.payload ? "Fail to fetch" : "";;
+                    state.is_success = action.payload && action.payload.is_success == true ? true : false;
+                })
+                .addCase(UpdateProductInventoryDB.rejected, (state, action) => {
+                    state.status = STATUSES.IDLE;
+                    state.data = "";
+                    state.error = action.error;
+                    state.is_success = false;
+                })
+
+        },
+    }
+});
+
+//export const { productLoaderPanding, productLoaderSuccess, productLoaderFail } = productLoaderSlice.actions;
+const { } = UpdateProductInventoryDBSlice.actions;
+
+export default {productLoaderSlice,UpdateProductInventoryDBSlice};

@@ -82,7 +82,7 @@ const ViewReceipt = (props) => {
 						<button disabled={hasCustomer == null ? true : false} style={{ opacity: hasCustomer == null ? 0.5 : 1 }} onClick={()=>setisSendEmail(true)} id="receiptChooseEmail">Email</button>
 					</div>
 					<div className={isSendEmail==true?"receipt-email": "receipt-email hidden"}>
-						<label for="receiptEmail">Email Address</label>
+						<label htmlFor="receiptEmail">Email Address</label>
 						<input type="email" id="receiptEmail" placeholder="Enter email address" />
 						{/* <button>Send Receipt</button> */}
                         <button disabled={hasCustomer == null ? true : false} style={{ opacity: hasCustomer == null ? 0.5 : 1 }} onClick={() => sendReceiptByMail()}>Send Receipt</button>

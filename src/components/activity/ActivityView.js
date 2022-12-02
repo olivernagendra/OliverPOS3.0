@@ -39,7 +39,7 @@ const ActivityView = () => {
     const [selectedOption, setSelectedOption] = useState('')
     const [sortbyvaluename, SetSortByValueName] = useState('Date (Newest)')
     const [emailnamephone, setEmailNamePhone] = useState(sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '')
-    const [orderidsearch, setorderId] = useState('')
+    const [orderidsearch, setorderId] = useState(sessionStorage.getItem("notificationRedirect") ? sessionStorage.getItem("notificationRedirect") : '')
     const [pricefrom, setPriceFrom] = useState('')
     const [priceto, setPriceTo] = useState('')
     const [filterByPlatform, setFilterByPlatform] = useState('')
@@ -139,9 +139,16 @@ const ActivityView = () => {
     useEffect(() => {
         if (useCancelled == false) {
             var transactionredirect = sessionStorage.getItem("transactionredirect") ? sessionStorage.getItem("transactionredirect") : '';
+            var orderNo = sessionStorage.getItem("notificationRedirect") ? sessionStorage.getItem("notificationRedirect") : '';
+
             if (transactionredirect !== '') {
                 applyServerFilter()
-            } else {
+            }
+            else if (orderNo != "") {
+                setorderId(orderNo);
+                applyServerFilter()
+            }
+            else {
                 reload(1)
                 dispatch(cashRecords(null));
             }
@@ -410,6 +417,7 @@ const ActivityView = () => {
             localStorage.removeItem("CUSTOMER_TO_ACTVITY");
             localStorage.removeItem('CUSTOMER_TO_OrderId');
             sessionStorage.removeItem('transactionredirect');
+            sessionStorage.removeItem('notificationRedirect');
             document.getElementById('dateFrom').value = '';
             document.getElementById('dateTo').value = '';
             if(filterSearchActive == true){

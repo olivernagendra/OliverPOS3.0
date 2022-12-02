@@ -48,6 +48,8 @@ import { getCloudPrinters } from "../common/commonAPIs/cloudPrinterSlice"
 import Customercreate from "../customer/Customercreate";
 import { cashRounding } from "../common/commonAPIs/cashRoundingSlice";
 import { get_UDid } from "../common/localSettings";
+import AdjustInventory from "./product/AdjustInventory";
+import LinkLauncherPage from "../common/commonComponents/LinkLauncherPage";
 const Home = () => {
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
     const [isShowPopups, setisShowPopups] = useState(false);
@@ -80,6 +82,9 @@ const Home = () => {
     const [msgTitle, setmsgTitle] = useState('');
     const [msgBody, setmsgBody] = useState('');
     const [productxItem, setProductxItem] = useState('');
+    const [isAdjustInventory, setisAdjustInventory] = useState(false);
+    const [isShowLinkLauncherPage, setisShowLinkLauncherPage] = useState(false);
+    const [linkLauncherData, setLinkLauncherData] = useState(null);
     const navigate = useNavigate()
     var Cash_Management_ID = localStorage.getItem('Cash_Management_ID')
     const dispatch = useDispatch();
@@ -246,7 +251,7 @@ const Home = () => {
             //this.props.showPopuponcartlistView(item, document.getElementById("qualityUpdater") ? document.getElementById("qualityUpdater").value : this.props.variationDefaultQunatity);
         }
         else
-            if ((type !== "simple" && type !== "variable" && type !== "variation") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
+            if ((type !== "simple" && type !== "variable" && type !== "variation") /*&& (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)*/) {
                 //alert(LocalizedLanguage.productxOutOfStock);
                 var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
                 dispatch(popupMessage(data));
@@ -331,6 +336,10 @@ const Home = () => {
     // const toggleSwitchUser = () => {
     //     setisShowSwitchUser(!isShowSwitchUser)
     // }
+    const toggleLinkLauncherPage = (data) => {
+        setLinkLauncherData(data);
+        setisShowLinkLauncherPage(!isShowLinkLauncherPage);
+    }
     const toggleOrderNote = () => {
         setisShowOptionPage(false)
         setisShowOrderNote(!isShowOrderNote)
@@ -382,7 +391,10 @@ const Home = () => {
     const toggleOptionPage = () => {
         setisShowOptionPage(!isShowOptionPage)
     }
-    const toggleOutOfStock = () => {
+    const toggleOutOfStock = (product) => {
+        if (typeof product != "undefined" && product != null) {
+            setSelProduct(product[0])
+        }
         setisOutOfStock(!isOutOfStock)
     }
     const toggleCreateCustomer = (serachString) => {
@@ -414,6 +426,11 @@ const Home = () => {
         // else {
         //     alert('This "Feature" is not included in your plan! ;In order to upgrade please go to the Oliver HUB')
         // }
+    }
+    const toggleAdjustInventory = (istoggle) => {
+        // console.log("istoggle", istoggle)
+        // console.log("isAdjustInventory", isAdjustInventory)
+        setisAdjustInventory(istoggle == null || istoggle == "undefined" ? !isAdjustInventory : istoggle)
     }
     const clearDeleteTileBtn = (e) => {
         if (!e.target.classList.contains("remove-state") && !e.target.classList.contains("remove-cover")) {
@@ -702,7 +719,7 @@ const Home = () => {
                 <LeftNavBar isShowMobLeftNav={isShowMobLeftNav} toggleLinkLauncher={toggleLinkLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow} ></LeftNavBar>
                 <HeadereBar isShow={isShowOptionPage} isShowLinkLauncher={isShowLinkLauncher} isShowAppLauncher={isShowAppLauncher}
                     toggleAdvancedSearch={toggleAdvancedSearch} toggleShowMobLeftNav={toggleShowMobLeftNav}
-                    toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} ToggleiFrameWindow={ToggleiFrameWindow} toggleOptionPage={toggleOptionPage}></HeadereBar>
+                    toggleCartDiscount={toggleCartDiscount} toggleNotifications={toggleNotifications} toggleOrderNote={toggleOrderNote} toggleAppLauncher={toggleAppLauncher} toggleLinkLauncher={toggleLinkLauncher} ToggleiFrameWindow={ToggleiFrameWindow} toggleOptionPage={toggleOptionPage}  toggleLinkLauncherPage={toggleLinkLauncherPage}></HeadereBar>
                 {isShowAppLauncher === true ? <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} ToggleiFrameWindow={ToggleiFrameWindow}></AppLauncher> : null}
                 {isShowLinkLauncher === true ? <LinkLauncher isShow={isShowLinkLauncher} toggleLinkLauncher={toggleLinkLauncher} ></LinkLauncher> : null}
                 {isShowiFrameWindow === true ? <IframeWindow isShow={isShowiFrameWindow} ToggleiFrameWindow={ToggleiFrameWindow}></IframeWindow> : null}
@@ -719,6 +736,7 @@ const Home = () => {
                 {/* <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo> */}
                 {/* <AppLauncher></AppLauncher> */}
                 {/* <LinkLauncher></LinkLauncher> */}
+                {isShowLinkLauncherPage === true ? <LinkLauncherPage isShow={isShowLinkLauncherPage} toggleLinkLauncherPage={toggleLinkLauncherPage} data={linkLauncherData}></LinkLauncherPage> : null}
                 {isShowNotifications === true ? <Notifications isShow={isShowNotifications} toggleNotifications={toggleNotifications}></Notifications> : null}
                 <div id="navCover" className="nav-cover"></div>
             </div>
@@ -735,7 +753,14 @@ const Home = () => {
             <Customercreate searchSringCreate={searchSringCreate} childEmail={parentEmail} isShow={isShowCreateCustomer} toggleCreateCustomer={toggleCreateCustomer} />
             {/* <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
             <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession> */}
-            <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock}></MsgPopupOutOfStock>
+            {isAdjustInventory == true && <AdjustInventory isShow={isAdjustInventory} toggleAdjustInventory={toggleAdjustInventory}
+                productStockQuantity={selProduct ? selProduct.StockQuantity : 0}
+                product={selProduct}
+                fatchUpdateInventory={null}
+                isAdjustInventory={isAdjustInventory}
+            ></AdjustInventory>
+            }
+            <MsgPopupOutOfStock isShow={isOutOfStock} toggleOutOfStock={toggleOutOfStock} toggleAdjustInventory={toggleAdjustInventory}></MsgPopupOutOfStock>
             <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
             {/* iframe subview */}
             {/* create customer */}

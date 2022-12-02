@@ -42,6 +42,7 @@ import GlobalPayment from "../common/commonComponents/paymentComponents/GlobalPa
 import MsgPopup from "../common/commonComponents/MsgPopup";
 import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
 import IframeWindow from "../dashboard/IframeWindow";
+import { v4 as uniqueKey } from 'uuid';
 const Checkout = (props) => {
 
     const [subTotal, setSubTotal] = useState(0.00);
@@ -126,6 +127,7 @@ const Checkout = (props) => {
             }
             else {
                 //localStorage.removeItem('paybyproduct');
+                localStorage.removeItem("payType");
                 navigate('/salecomplete');
             }
         }
@@ -268,6 +270,7 @@ const Checkout = (props) => {
         return new_total_price;
     }
     const pay_by_cash = (amount) => {
+
         toggleNumberPad();
         setPaidAmount(amount);
         setPartialAmount(null);
@@ -276,6 +279,7 @@ const Checkout = (props) => {
         //setPayment_Type("cash");
     }
     const pay_partial = (amount, item) => {
+        if (!localStorage.getItem("payType")) { localStorage.setItem("payType", "partial"); }
         toggleShowPartialPayment();
         //setPaidAmount(amount);
         setPartialAmount(amount);
@@ -285,6 +289,7 @@ const Checkout = (props) => {
         //setPayment_Type("cash");
     }
     const pay_by_product = (amount) => {
+        
         toggleSplitByProduct();
         setPartialAmount(amount);
         setPaidAmount(amount);
@@ -427,8 +432,8 @@ const Checkout = (props) => {
             window.addEventListener('message', function (e) {
                 var data = e && e.data;
                 if (typeof data == 'string' && data !== "" && location.pathname == "/checkout") {
-                    if(data.includes("{"))
-                    responseData(JSON.parse(data))
+                    if (data.includes("{"))
+                        responseData(JSON.parse(data))
                     //compositeSwitchCases(JSON.parse(data))
                     console.log("leftnavigation")
                 }
@@ -1016,6 +1021,9 @@ const Checkout = (props) => {
 
             localStorage.setItem("paybyproduct", JSON.stringify(_pbpun));
             localStorage.removeItem("paybyproduct_unpaid");
+           // if (!localStorage.getItem("payType")) { 
+                localStorage.setItem("payType", "byproduct"); 
+           // }
         }
 
         //var checkList = JSON.parse(localStorage.getItem('CHECKLIST'));
@@ -2152,9 +2160,11 @@ const Checkout = (props) => {
 
         localStorage.removeItem('paybyproduct');
         localStorage.removeItem("paybyproduct_unpaid");
+        localStorage.removeItem("payType");
         navigate('/home');
     }
     const pay_amount_cash = (item) => {
+        if (!localStorage.getItem("payType")) { localStorage.setItem("payType", "normal"); }
         setPaymentTypeItem(item);
         //item.Code.toLowerCase() === "cash"
         if (item.Code == paymentsType.typeName.cashPayment) {
@@ -2227,9 +2237,16 @@ const Checkout = (props) => {
             }
         })
     }
+    const isEnablePaymentType = (type) => {
+        var pay_type = localStorage.getItem("payType") ? localStorage.getItem("payType") : null;
+        if (pay_type == null || pay_type === type) { return false }
+        else { return true }
+
+    }
     //console.log("---extensionPayments--"+JSON.stringify(extensionPayments))
     var _activeDisplay = true;
     var global_payment = null;
+
     return (<React.Fragment>
         {loading === true ? <LoadingModal></LoadingModal> : null}
         <div className="checkout-wrapper">
@@ -2282,13 +2299,13 @@ const Checkout = (props) => {
                 </div>
             </div>
             <div className="checkout-body">
-                <button id="balanceButton" className="balance-container" onClick={() => toggleShowPartialPayment()}>
+                <button id="balanceButton" className={isEnablePaymentType("partial")?"balance-container payment-type-disable":"balance-container"} onClick={() => toggleShowPartialPayment()} disabled={isEnablePaymentType("partial")}>
                     <div className="row">
                         <p className="style1">Balance Due</p>
                         <p className="style2">${(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)}</p>
                     </div>
                     {paymentsArr && paymentsArr.map(p => {
-                        return <div className="row">
+                        return <div className="row" key={uniqueKey()}>
                             <p className="style3">{p.payment_type}</p>
                             <p className="style3">${(parseFloat(p.payment_amount)).toFixed(2)}</p>
                             {/* -(paymentsArr && paymentsArr.length>0 ?(paymentsArr.reduce((a,v) =>  a = parseFloat( a) + parseFloat(v.payment_amount) , 0 )):0) */}
@@ -2308,22 +2325,22 @@ const Checkout = (props) => {
                     </div>}
 
                 </button>
-                <p id="bottomText" onClick={() => toggleShowPartialPayment()}>Click to make a partial payment</p>
+                <p id="bottomText" onClick={() => isEnablePaymentType("partial") == false ? toggleShowPartialPayment() : null} disabled={isEnablePaymentType("partial")} className={isEnablePaymentType("partial")?"payment-type-disable-txt":""}>Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
                 <div className="button-row">
-                    <button onClick={() => showPartial(2)}>1/2</button>
-                    <button onClick={() => showPartial(3)}>1/3</button>
-                    <button onClick={() => showPartial(4)}>1/4</button>
+                    <button onClick={() => showPartial(2)} disabled={isEnablePaymentType("partial")}>1/2</button>
+                    <button onClick={() => showPartial(3)} disabled={isEnablePaymentType("partial")}>1/3</button>
+                    <button onClick={() => showPartial(4)} disabled={isEnablePaymentType("partial")}>1/4</button>
                 </div>
                 <div className="button-row">
-                    <button onClick={() => toggleSplitByProduct()}>By Product</button>
+                    <button onClick={() => toggleSplitByProduct()} disabled={isEnablePaymentType("byproduct")}>By Product</button>
                     <button disabled>By Group (Coming Soon)</button>
                 </div>
                 <p className="style2">Customer Payment Types</p>
                 <p className="style3">Please add a customer to make customer payment types available</p>
                 <div className="button-row">
                     <button disabled={get_customerName() == null ? true : false} onClick={() => toggleParkSale('lay_away')}>Layaway</button>
-                    <button disabled={storeCredit == 0 || get_customerName() == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit  {storeCredit == 0 || get_customerName() == null ?<> (${parseFloat(storeCredit).toFixed(2)})</> :null}   </button>
+                    <button disabled={storeCredit == 0 || get_customerName() == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit  {storeCredit == 0 || get_customerName() == null ? <> (${parseFloat(storeCredit).toFixed(2)})</> : null}   </button>
                 </div>
 
                 <div className="payment-types">
@@ -2333,16 +2350,16 @@ const Checkout = (props) => {
                             paymentTypeName && paymentTypeName.length > 0 && paymentTypeName.map(payment => {
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
-                                    <button key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                    <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
-                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={CashButtonImage} alt=""></img></button>
                                         :
-                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                             <img src={CardButtonImage} alt=""></img></button>
                                             :
-                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                                 {payment.Name}
                                             </button>
                             })

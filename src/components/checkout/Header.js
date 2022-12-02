@@ -24,6 +24,7 @@ import ActiveUser from '../../settings/ActiveUser';
 import Config from '../../Config';
 import { removeCheckOutList } from '../dashboard/product/productLogic';
 import { product } from "../dashboard/product/productSlice";
+import RegisterTakeOver from "../common/commonComponents/RegisterTakeOver";
 const Header = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -74,6 +75,7 @@ const Header = (props) => {
         else {
             localStorage.removeItem('paybyproduct');
             localStorage.removeItem('paybyproduct_unpaid');
+            localStorage.removeItem("payType");
             navigate('/home');
         }
     }
@@ -126,8 +128,9 @@ const Header = (props) => {
                 <img src={Arrow_Left} alt="" />
             </button>
             <p>{props.title ? props.title : LocalizedLanguage.checkout}</p>
-            <button id="userInfoButton" onClick={() => toggleUserProfile()}>
-                <img src={avatar_2} alt="" />
+            <button id="userInfoButton" /*onClick={() => toggleUserProfile()}*/>
+                {/* <img src={avatar_2} alt="" /> */}
+                {get_userName_Initial()!=""?<div className="avatar">{get_userName_Initial()}</div>: <img src={avatar_2} alt="" />}
                 {/* {get_userName_Initial()!=""?<div class="avatar">{get_userName_Initial()}</div>: <img src={avatar_2} alt="" />} */}
             </button>
             <button id="mobileOptionsButton" onClick={() => toggleOptionPage()} className={isShowOptionPage ? "filter" : ""}>
@@ -141,12 +144,12 @@ const Header = (props) => {
             <div id="pageOptions" className={isShowOptionPage ? "page-options-wrapper" : "page-options-wrapper hidden"}>
                 <div className="page-options">
                     <p>Options Menu</p>
-                    <button id="clearCartButton" onClick={() => clearCart()}>
+                    {/* <button id="clearCartButton" onClick={() => clearCart()}>
                         <div className="img-container">
                             <img src={ClearCart_Icon} alt="" />
                         </div>
                         <p>Clear Cart</p>
-                    </button>
+                    </button> */}
                     <button id="parkSaleButton" onClick={() => props.toggleParkSale('park_sale')}>
                         <div className="img-container">
                             <img src={Clock} alt="" />
@@ -168,6 +171,7 @@ const Header = (props) => {
         {/* <ParkSale toggleParkSale={toggleParkSale} isShow={isShowParkSale} addNote={addNote}></ParkSale> */}
         <AppLauncher isShow={isShowAppLauncher} toggleAppLauncher={toggleAppLauncher} toggleiFrameWindow={toggleiFrameWindow}></AppLauncher>
         <IframeWindow isShow={isShowiFrameWindow} toggleiFrameWindow={toggleiFrameWindow}></IframeWindow>
+        <RegisterTakeOver></RegisterTakeOver>
     </React.Fragment>)
 }
 

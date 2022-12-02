@@ -33,7 +33,7 @@ const AdjustInventory = (props) => {
     let useCancelled = false;
     useEffect(() => {
         if (useCancelled == false) {
-            if (currentWareHouseDetail && currentWareHouseDetail.Quantity) {
+            if (currentWareHouseDetail && currentWareHouseDetail.hasOwnProperty("Quantity")) {
                 setInventory(currentWareHouseDetail.Quantity)
             }
             //dispatch(updateInventory(null));
@@ -49,10 +49,9 @@ const AdjustInventory = (props) => {
                             () => {
                                 console.log("stock Updated", prodcut)
                                 setTimeout(() => {
-                                    props.fatchUpdateInventory();
-                                    props.toggleAdjustInventory(false); //close inventory popup
-                                    dispatch(updateInventory(null));
-
+                                    props.fatchUpdateInventory && props.fatchUpdateInventory();
+                                    props.toggleAdjustInventory && props.toggleAdjustInventory(false); //close inventory popup
+                                    dispatch(updateInventory("clear"));
                                 }, 100);
                             },
                             error => {

@@ -427,6 +427,7 @@ const CustomerView = () => {
     //console.log("customerDetailData",customerDetailData.Email)
     if (customerDetailData.Email !== '') {
       sessionStorage.setItem("transactionredirect", customerDetailData.Email ? customerDetailData.Email : "");
+      sessionStorage.removeItem('notificationRedirect');
       navigate('/transactions')
     }
   }

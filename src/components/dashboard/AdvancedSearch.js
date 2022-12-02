@@ -21,6 +21,7 @@ import CommonModuleJS from "../../settings/CommonModuleJS";
 import LocalizedLanguage from "../../settings/LocalizedLanguage";
 import { useNavigate } from "react-router-dom";
 import { postMeta, getPostMeta } from "../common/commonAPIs/postMetaSlice";
+import { popupMessage } from "../common/commonAPIs/messageSlice";
 const AdvancedSearch = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -341,8 +342,10 @@ const AdvancedSearch = (props) => {
     // updated on 27sep2022: check permission for product x
     const addToCart = (item) => {
         let type = item.Type;
-        if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
-            alert(LocalizedLanguage.productxOutOfStock);
+        if ((type !== "simple" && type !== "variable" && type !== "variation") /*&& (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)*/) {
+           // alert(LocalizedLanguage.productxOutOfStock);
+            var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
+                dispatch(popupMessage(data));
         }
         else {
             var result = addSimpleProducttoCart(item);

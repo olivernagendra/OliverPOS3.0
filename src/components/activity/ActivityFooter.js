@@ -55,13 +55,64 @@ export const ActivityFooter = (props) => {
         print_bar_code = canvas.toDataURL("image/png");
         return print_bar_code;
     }
-
-
+    const getPSummary=(single_Order_list,_item)=> {
+        var psummary = "";
+        var getorderlist = single_Order_list && single_Order_list.content && single_Order_list.content.meta_datas && single_Order_list.content.meta_datas !== null ? single_Order_list.content.meta_datas.find(data => data.ItemName == '_order_oliverpos_product_discount_amount') : null;
+        if (getorderlist !== null) {
+            getorderlist = getorderlist && getorderlist.ItemValue && JSON.parse(getorderlist.ItemValue);
+            getorderlist && getorderlist.map((item, index) => {
+                if ((item.hasOwnProperty("product_id") && _item.product_id == item.product_id) || (item.hasOwnProperty("variation_id") && _item.product_id == item.variation_id)) {
+                    psummary = item.psummary && item.psummary != "" ? item.psummary : "";
+                }
+            })
+        }
+        return psummary;
+    }
+    const getPTaxable = (single_Order_list, _item) => {
+        var isTaxable = true;
+        var getorderlist = [];
+        if(single_Order_list && single_Order_list.hasOwnProperty("content"))
+        {
+            getorderlist= single_Order_list && single_Order_list.content && single_Order_list.content.meta_datas && single_Order_list.content.meta_datas !== null ? single_Order_list.content.meta_datas.find(data => data.ItemName == '_order_oliverpos_product_discount_amount') : null;
+        }
+        else
+        {
+            getorderlist=single_Order_list  && single_Order_list.meta_datas && single_Order_list.meta_datas !== null ? single_Order_list.meta_datas.find(data => data.ItemName == '_order_oliverpos_product_discount_amount') : null;
+        }
+      
+        if (getorderlist !== null) {
+            getorderlist = getorderlist && getorderlist.ItemValue && JSON.parse(getorderlist.ItemValue);
+            getorderlist && getorderlist.map((item, index) => {
+                if ((item.hasOwnProperty("product_id") && _item.product_id == item.product_id) || (item.hasOwnProperty("variation_id") && _item.product_id == item.variation_id)) {
+                    if (typeof item.isTaxable !== 'undefined')
+                        isTaxable = item.isTaxable && item.isTaxable;
+                }
+            })
+        }
+        return isTaxable;
+    }
     // Getting Response from activitygetDetail Api
     const [activitygetdetails] = useSelector((state) => [state.activityGetDetail])
     useEffect(() => {
         if (activitygetdetails && activitygetdetails.status == STATUSES.IDLE && activitygetdetails.is_success && activitygetdetails.data) {
-            setActivityOrderDetails(activitygetdetails.data.content);
+            var single_Order_list = {...activitygetdetails.data};
+            var refund_tax = 0.0;
+            if (single_Order_list && single_Order_list.content && single_Order_list.content.line_items && single_Order_list.content.line_items.length > 0) {
+                var items = single_Order_list.content.line_items.map(item => {
+                    var _item={...item};
+                    _item["isTaxable"] = getPTaxable(single_Order_list, item);
+                    if (item.isTaxable == true && item.quantity_refunded && Math.abs(item.quantity_refunded) > 0) {
+                        refund_tax += (parseFloat(item.total_tax / item.quantity) * Math.abs(item.quantity_refunded));
+                    }
+                    return _item;
+                });
+                single_Order_list = {...single_Order_list.content, tax_refunded: refund_tax,line_items: items};
+               // single_Order_list = {...single_Order_list.content, line_items: items};
+                //single_Order_list.content.tax_refunded = refund_tax;
+                //single_Order_list.content.line_items = items;
+                //this.setState({ Details: single_Order_list, isloading_activity: false });
+            }
+            setActivityOrderDetails(single_Order_list);
         }
     }, [activitygetdetails]);
 
@@ -134,7 +185,16 @@ export const ActivityFooter = (props) => {
                 // $('#common_msg_popup').modal('show');
                 //  showModal('common_msg_popup');
             } else {
-                var single_Order_list = activityOrderDetails && activityOrderDetails;
+                var single_Order_list = activityOrderDetails;
+                single_Order_list.line_items && single_Order_list.line_items.length > 0 &&
+                    single_Order_list.line_items.map(item => {
+                        if (!item.ProductSummery || item.ProductSummery.length == 0) {
+                            var psummary = getPSummary(single_Order_list,item)
+                            item["ProductSummery"] = psummary;
+                        }
+                        item["isTaxable"] = getPTaxable(single_Order_list, item);
+                    });
+
                 single_Order_list.order_custom_fee && single_Order_list.order_custom_fee.length > 0 &&
                     single_Order_list.order_custom_fee.map(item => {
                         item = getCustomFeeDetails(item);
@@ -299,7 +359,7 @@ export const ActivityFooter = (props) => {
                 localStorage.setItem("CARD_PRODUCT_LIST", JSON.stringify(ListItem))
                 localStorage.removeItem("VOID_SALE")
             } else {
-                if (single_Order_list.order_status != "park_sale" && single_Order_list.order_status != "pending" && single_Order_list.order_status !== 'on-hold' && single_Order_list.order_status !== 'lay_away') {
+                if ((typeof single_Order_list !== 'undefined') && single_Order_list.order_status != "park_sale" && single_Order_list.order_status != "pending" && single_Order_list.order_status !== 'on-hold' && single_Order_list.order_status !== 'lay_away') {
                     // if (single_Order_list.order_status != "park_sale" && single_Order_list.order_status != "pending") {
                     localStorage.setItem("VOID_SALE", "void_sale")
                     localStorage.removeItem("CARD_PRODUCT_LIST")
@@ -433,17 +493,17 @@ export const ActivityFooter = (props) => {
     return (
         <React.Fragment>
             <div className="footer">
-                <button id="refundButton" disabled={activityOrderDetails && activityOrderDetails !== null && (activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
+                <button id="refundButton" disabled={activityOrderDetails && activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
                     || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
-                    || activityOrderDetails.order_status == "") ? true : false} style={{
-                        opacity: activityOrderDetails && activityOrderDetails !== null && (activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
+                    || activityOrderDetails.order_status == "" ? true : false} style={{
+                        opacity: activityOrderDetails && activityOrderDetails.order_status == "refunded" || activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"
                             || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing"
-                            || activityOrderDetails.order_status == "" || activityOrderDetails.order_status == "cancelled") ? 0.5 : 1
+                            || activityOrderDetails.order_status == "" || activityOrderDetails.order_status == "cancelled" ? 0.5 : 1
                     }} onClick={() =>
                         activityOrderDetails.order_status == 'completed' ? onClick1()
                             : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold" || activityOrderDetails.order_status == "park_sale" || activityOrderDetails.order_status == "init sale" || activityOrderDetails.order_status == "processing") ? onClick2("statuspending", activityOrderDetails ? activityOrderDetails && activityOrderDetails.order_id : '')
                                 : activityOrderDetails.order_status == "refunded" ? RefundPOP
-                                    : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails && activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP('voidsale')
+                                    : (activityOrderDetails.order_status == "void_sale" || activityOrderDetails && activityOrderDetails.order_status == "cancelled" || activityOrderDetails.order_status == "cancelled_sale") ? VoidPOP
                                         : null
                     }  > {activityOrderDetails.order_status == 'completed' ? LocalizedLanguage.refundSale
                         : (activityOrderDetails.order_status == "pending" || activityOrderDetails.order_status == "lay_away" || activityOrderDetails.order_status == "on-hold"

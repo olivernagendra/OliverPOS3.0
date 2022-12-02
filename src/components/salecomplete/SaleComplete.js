@@ -90,7 +90,6 @@ const SaleComplete = () => {
         localStorage.removeItem('CHECKLIST');
         localStorage.removeItem('oliver_order_payments');
         localStorage.removeItem('AdCusDetail');
-        localStorage.removeItem('CARD_PRODUCT_LIST');
         localStorage.removeItem("CART");
         localStorage.removeItem("SINGLE_PRODUCT");
         localStorage.removeItem("PRODUCT");
@@ -103,6 +102,7 @@ const SaleComplete = () => {
         localStorage.removeItem('PENDING_PAYMENTS');
         localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
         localStorage.removeItem('PrintCHECKLIST');
+        localStorage.removeItem("payType");
 
         // dispatch(addtoCartProduct(null));
         navigate('/home');
@@ -130,10 +130,14 @@ const SaleComplete = () => {
         if (TempOrders && TempOrders.length > 0) {
             var tempOrderId = localStorage.getItem('tempOrder_Id') ? JSON.parse(localStorage.getItem('tempOrder_Id')) : '';
             TempOrders.map(ele => {
-                if (ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID')) {
+                if (ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID') && ele.OrderID!=0) {
                     var option = { "udid": get_UDid(), "orderId": ele.OrderID, "status": _orderStatus }
                     setIsLoading(true);
                     dispatch(updateOrderStatus(option));
+                }
+                else if(ele.TempOrderID == tempOrderId && ele.hasOwnProperty('OrderID'))
+                {
+                    alert('order is still syncking on the server')
                 }
             })
         }

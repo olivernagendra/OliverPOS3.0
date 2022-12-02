@@ -38,6 +38,7 @@ import { getDetail } from "../activity/ActivitySlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
 import { getDetails } from "../cashmanagement/CashmanagementSlice";
+import { v4 as uniqueKey } from 'uuid';
 const Refund = (props) => {
 
     const [refundSubTotal, setRefundSubTotal] = useState(0.00);
@@ -339,7 +340,8 @@ const Refund = (props) => {
                     'tax': (element.total_tax / element.quantity) * element.quantity_to_refund,
                     'item_id': parseInt(element.line_item_id),
                     'taxes': updateMultiTax && updateMultiTax.length > 0 ? updateMultiTax : ((element.total_tax / element.quantity) * element.quantity_to_refund),
-                    'item_type': element.product_id == 0 ? 'customFee' : 'product'
+                    'item_type': element.product_id == 0 ? 'customFee' : 'product',
+                    'product_id': element.product_id == 0 ? 0 : element.product_id
                 });
             });
             var _paymentNotes = [];
@@ -822,10 +824,17 @@ const Refund = (props) => {
     }
     
     const pay_partial = (amount, item) => {
-        toggleShowPartialPayment();
-        setPartialAmount(amount);
-        setPaymentTypeItem(item);
-        dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        if (refundItemList.length !== 0) {
+            toggleShowPartialPayment();
+            setPartialAmount(amount);
+            setPaymentTypeItem(item);
+            dispatch(paymentAmount({ "type": item.Code, "amount": amount }));
+        }
+        else {
+            toggleShowPartialPayment();
+            setmsgBody(LocalizedLanguage.refundZeroPaymentMsg);
+            setisShowMsg(true)
+        }
     }
     const pay_by_product = (amount) => {
         toggleSplitByProduct();
@@ -1357,6 +1366,11 @@ const Refund = (props) => {
         setLoading(false);
     }
     const pay_amount_cash = (item) => {
+        if (refundItemList.length == 0) {
+            setmsgBody(LocalizedLanguage.refundZeroPaymentMsg);
+            setisShowMsg(true)
+            return;
+        }
         setPaymentTypeItem(item);
         //item.Code.toLowerCase() === "cash"
         if (item.Code == paymentsType.typeName.cashPayment) {
@@ -1498,7 +1512,7 @@ const Refund = (props) => {
                 </div>
             </div>
             <div className="refund-body">
-                <button id="balanceButton" className="balance-container" onClick={() => toggleShowPartialPayment()}>
+                <button id="balanceButton" className="balance-container" /*onClick={() => toggleShowPartialPayment()}*/>
                     <div className="row">
                         <p className="style1">Refund Amount</p>
                         <p className="style2">${(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)}</p>
@@ -1511,24 +1525,23 @@ const Refund = (props) => {
                         </div>
                     })}
                 </button>
-                <p id="bottomText" onClick={() => toggleShowPartialPayment()}>Click to make a partial payment</p>
-                <p className="style2">Quick Split</p>
+                <p id="bottomText" /*onClick={() => toggleShowPartialPayment()}*/>Click to make a partial payment</p>
+                {/* <p className="style2">Quick Split</p>
                 <div className="button-row">
-                    <button onClick={() => showPartial(2)}>1/2</button>
-                    <button onClick={() => showPartial(3)}>1/3</button>
-                    <button onClick={() => showPartial(4)}>1/4</button>
+                    <button onClick={() => showPartial(2)} disabled>1/2</button>
+                    <button onClick={() => showPartial(3)} disabled>1/3</button>
+                    <button onClick={() => showPartial(4)} disabled>1/4</button>
                 </div>
                 <div className="button-row">
-                    {/* <button id="splitByProductButton" onClick={() => toggleSplitByProduct()}>By Product</button> */}
                     <button id="splitByProductButton" disabled>By Product</button>
                     <button id="splitByPeopleButton" disabled>By Group (Coming Soon)</button>
-                </div>
+                </div> */}
                 <p className="style2">Customer Payment Types</p>
                 <p className="style3">Please add a customer to make customer payment types available</p>
                 <div className="button-row">
                     {/* <button disabled>Layaway</button>
 					<button disabled>Store Credit</button> */}
-                    <button disabled={hasCustomer == null ? true : false}>Layaway</button>
+                    {/* <button disabled={hasCustomer == null ? true : false}>Layaway</button> */}
                     <button disabled={hasCustomer == null ? true : false} onClick={() => pay_by_store_credit()}>Store Credit</button>
                 </div>
                 <div className="payment-types">
@@ -1544,17 +1557,17 @@ const Refund = (props) => {
 
                                 return payment.image || payment.Code === "stripe_terminal" ?
                                     // <img src={payment.image}  alt=""></img>
-                                    <button onClick={() => pay_amount_cash(payment)}>
+                                    <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={Stripe_Icon} alt=""></img></button>
                                     :
-                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                    payment.Code === "cash" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                         <img src={CashButtonImage} alt=""></img></button>
                                         :
-                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={payment.Id}>
+                                        payment.Code === "card" ? <button onClick={() => pay_amount_cash(payment)} key={uniqueKey()}>
                                             <img src={CardButtonImage} alt=""></img></button>
                                             :
                                             //(payment.HasTerminal == true && payment.Support == "Terminal" && payment.Code != paymentsType.typeName.stripePayment)?
-                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={payment.Id} onClick={() => pay_amount_cash(payment)}>
+                                            <button style={{ backgroundColor: payment.ColorCode, borderColor: payment.ColorCode }} key={uniqueKey()} onClick={() => pay_amount_cash(payment)}>
                                                 {payment.Name}
                                             </button>
                                 //:null

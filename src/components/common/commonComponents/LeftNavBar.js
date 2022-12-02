@@ -116,6 +116,9 @@ function LeftNavBar(props) {
         setisShowAppLauncher(false)
     }
     const navigateTo = (page) => {
+        sessionStorage.removeItem('notificationRedirect');
+        sessionStorage.removeItem('transactionredirect');
+        sessionStorage.removeItem('customerredirect');
         navigate(page);
     }
     function ToggleiFrameWindow(_exApp = null) {

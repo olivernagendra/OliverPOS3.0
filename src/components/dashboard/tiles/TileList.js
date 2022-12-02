@@ -16,6 +16,8 @@ import { addSimpleProducttoCart } from "../product/productLogic";
 import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { CommonModuleJS } from "../../../settings";
 import { product } from "../product/productSlice";
+import { Markup } from "interweave";
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
 // var AllProduct = [];
 // var ParentProductList = [];
 // var filtered = [];
@@ -461,8 +463,9 @@ const TileList = (props) => {
 
 
                 let type = item.Type;
-                if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
-                    alert(LocalizedLanguage.productxOutOfStock);
+                if ((type !== "simple" && type !== "variable" && type !== "variation")/* && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)*/) {
+                    var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
+                    dispatch(popupMessage(data));
                 }
                 else if (type === "simple") {
                     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);
@@ -472,7 +475,7 @@ const TileList = (props) => {
                             var result = addSimpleProducttoCart(_product[0]);
 
                         if (result === 'outofstock') {
-                            props.toggleOutOfStock && props.toggleOutOfStock();
+                            props.toggleOutOfStock && props.toggleOutOfStock(_product);
                         }
                         else {
                             dispatch(product());
@@ -680,7 +683,8 @@ const TileList = (props) => {
                                     </div>
                                     <div className="footer">
                                         <p>
-                                            {item.Title}
+                                            <Markup content={(item.Title).replace(" - ", "-")} />
+                                            {/* {item.Title} */}
                                         </p>
                                     </div>
                                     <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.Id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
@@ -690,7 +694,8 @@ const TileList = (props) => {
                             case "sub-attribute":
                                 return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
                                     <p>
-                                        {item.attribute_slug}
+                                        {/* {item.attribute_slug} */}
+                                        <Markup content={(item.attribute_slug).replace(" - ", "-")} />
                                     </p>
                                     <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                                 </button>
@@ -698,7 +703,8 @@ const TileList = (props) => {
                             case "sub-category":
                                 return <button className="category" key={index} onClick={() => filterProductByTile(item.type, item, null)} {...bind()} style={{ backgroundColor: item.TileColor != null && item.TileColor != "" ? item.TileColor : "var(--oliver-blue)" }}>
                                     <p>
-                                        {item.name ? item.name : item.Value}
+                                        {/* {item.name ? item.name : item.Value} */}
+                                        <Markup content={(item.name ? item.name : item.Value).replace(" - ", "-")} />
                                     </p>
                                     <div className="remove-cover hide"><div className="remove-button" onClick={() => delete_tile(item.id)}><img src={X_Icon_DarkBlue} alt="" /></div></div>
                                 </button>
