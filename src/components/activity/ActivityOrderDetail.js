@@ -3,15 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import STATUSES from "../../constants/apiStatus";
 import { showSubTitle, showTitle, getInclusiveTaxType } from "../../settings/CommonModuleJS";
 import { FormateDateAndTime } from '../../settings/FormateDateAndTime';
-import shirt from '../../assets/images/Temp/shirt.png'
-import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { useIndexedDB } from 'react-indexed-db';
-import { Await } from "react-router-dom";
+import { NumericFormat } from 'react-number-format';
 import { useNavigate } from "react-router-dom";
 import OnlineSale from '../../assets/images/svg/OnlineSale.svg'
 import InStoreSale from '../../assets/images/svg/InStoreSale.svg'
+import LocalizedLanguage from "../../settings/LocalizedLanguage";
 const ActivityOrderDetail = (props) => {
-    // console.log("props", props)
+    console.log("props", props)
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("products");
 
 
@@ -405,22 +404,95 @@ const ActivityOrderDetail = (props) => {
                                                 {showSubTitle(item) !== "" ? <p>{item.name} </p> : null}
                                                 {varDetail ? <p >{varDetail} </p> : null}
                                             </p>
-                                            <p>Price: &nbsp; <b>
-
-                                                {
-                                                    (item.amount_refunded > 0 || isTotalRefund == true) ?
-                                                        (item.quantity_refunded < 0) ?
-                                                            <div><del style={{ marginRight: 10 }}>
-                                                                {parseFloat(_amount).toFixed(2)} </del>{parseFloat(_final_amount).toFixed(2)} </div>
-                                                            : parseFloat(item.total).toFixed(2)
-                                                        :
-                                                        ((item.subtotal - item.total) != 0) && isIndivisualDiscountApply.length > 0 ?
-                                                            TaxSetting && TaxSetting.pos_prices_include_tax == 'no' ?
-                                                                <div><del >{parseFloat(_amount).toFixed(2)}</del> {parseFloat(_final_amount).toFixed(2)} </div>
-                                                                : <div><del>{parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2)}</del> {(item.total + (taxInclusiveName == "" ? 0 : item.subtotal_tax) + _productCartDiscountAmount).toFixed(2)} </div>
-                                                            : Math.round(parseFloat(item.subtotal + (taxInclusiveName == "" ? 0 : item.subtotal_tax)).toFixed(2))
-                                                }
-                                            </b>
+                                            <p>Price: &nbsp;  <td className="w-101" align="right">
+                                                {item.amount_refunded > 0 ||
+                                                    isTotalRefund == true ? (
+                                                    item.quantity_refunded < 0 ? (
+                                                        <div>
+                                                            <del style={{ marginRight: 10 }}>
+                                                                <NumericFormat
+                                                                    value={_amount}
+                                                                    displayType={"text"}
+                                                                    thousandSeparator={true}
+                                                                    decimalScale={2}
+                                                                    fixedDecimalScale={true}
+                                                                />
+                                                            </del>
+                                                            <NumericFormat
+                                                                value={_final_amount}
+                                                                displayType={"text"}
+                                                                thousandSeparator={true}
+                                                                decimalScale={2}
+                                                                fixedDecimalScale={true}
+                                                            />{" "}
+                                                        </div>
+                                                    ) : (
+                                                        <NumericFormat
+                                                            value={item.total}
+                                                            displayType={"text"}
+                                                            thousandSeparator={true}
+                                                            decimalScale={2}
+                                                            fixedDecimalScale={true}
+                                                        />
+                                                    )
+                                                ) : item.subtotal - item.total != 0 &&
+                                                    isIndivisualDiscountApply.length > 0 ? (
+                                                    TaxSetting &&
+                                                        TaxSetting.pos_prices_include_tax ==
+                                                        "no" ? (
+                                                        // <div><del style={{ marginRight: 10 }}>{item.subtotal.toFixed(2)}</del><NumericFormat value={item.total +_productCartDiscountAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></div>
+                                                        <div>
+                                                            <del style={{ marginRight: 10 }}>
+                                                                {_amount.toFixed(2)}
+                                                            </del>
+                                                            <NumericFormat
+                                                                value={_final_amount}
+                                                                displayType={"text"}
+                                                                thousandSeparator={true}
+                                                                decimalScale={2}
+                                                                fixedDecimalScale={true}
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <del style={{ marginRight: 10 }}>
+                                                                {(
+                                                                    item.subtotal +
+                                                                    (taxInclusiveName == ""
+                                                                        ? 0
+                                                                        : item.subtotal_tax)
+                                                                ).toFixed(2)}
+                                                            </del>
+                                                            <NumericFormat
+                                                                value={(
+                                                                    item.total +
+                                                                    (taxInclusiveName == ""
+                                                                        ? 0
+                                                                        : item.subtotal_tax) +
+                                                                    _productCartDiscountAmount
+                                                                ).toFixed(2)}
+                                                                displayType={"text"}
+                                                                thousandSeparator={true}
+                                                                decimalScale={2}
+                                                                fixedDecimalScale={true}
+                                                            />{" "}
+                                                        </div>
+                                                    )
+                                                ) : (
+                                                    <NumericFormat
+                                                        value={Math.round(
+                                                            item.subtotal +
+                                                            (taxInclusiveName == ""
+                                                                ? 0
+                                                                : item.subtotal_tax)
+                                                        )}
+                                                        displayType={"text"}
+                                                        thousandSeparator={true}
+                                                        decimalScale={2}
+                                                        fixedDecimalScale={true}
+                                                    />
+                                                )}
+                                            </td>
                                             </p>
                                         </div>
                                         <div className="item-fields">
@@ -498,29 +570,41 @@ const ActivityOrderDetail = (props) => {
                         <div className="transaction-totals">
                             <div className="row">
                                 <p>Sub-total</p>
-                                <p><b>{props.Subtotal != 'NaN' ? (props.TotalAmount - props.refunded_amount) == 0 ? 0.00
-                                    : taxInclusiveName !== "" ?
-                                        ((parseFloat(props.Subtotal) + parseFloat(props.TotalTax) + totalDiscount - props.tax_refunded - props.cash_round)).toFixed(2)
-                                        : (parseFloat(props.Subtotal) + totalDiscount).toFixed(2) //- props.cash_round
-                                    : 0}  </b></p>
+                                <p>$<b>
+                                    <NumericFormat value={props.Subtotal != 'NaN' ? (props.TotalAmount - props.refunded_amount) == 0 ? 0.00
+                                        : taxInclusiveName !== "" ?
+                                            (parseFloat(props.Subtotal) + parseFloat(props.TotalTax) + totalDiscount - props.tax_refunded - props.cash_round)
+                                            : (parseFloat(props.Subtotal) + totalDiscount) //- props.cash_round
+                                        : 0} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></b></p>
                             </div>
-                            <div className="row">
-                                <p>Total Tax (15%)</p>
-                                <p><b>{(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : (props.TotalTax - props.tax_refunded).toFixed(2)}</b></p>
+                            <div className="row" key={'totalTax' + props.key}>
+                                <p>{LocalizedLanguage.totalTax + taxInclusiveName} </p>
+                                <p>{
+                                    (props.tax_refunded > 0) ?
+                                        <div>$<NumericFormat value={(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : (props.TotalTax - props.tax_refunded)}
+                                            displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> $<del style={{ marginLeft: 5 }}> <NumericFormat value={props.TotalTax} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></del> </div> : <>$<NumericFormat value={(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : props.TotalTax} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></>
+                                }</p>
                             </div>
 
                             {totalDiscount !== 0 ?
                                 <div className="row border-bottom">
-                                    <p><b className="bold2">Discount</b></p>
-                                    <p><b className="bold2">{totalDiscount == 0 ? 0.00 : (totalDiscount).toFixed(2)}</b></p>
+                                    <p>Discount</p>
+                                    <p>$ <NumericFormat value={totalDiscount == 0 ? 0.00 : (totalDiscount)}
+                                        displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
                                 </div> : null}
-
 
                             {props.cash_round !== 0 ?
                                 <div className="row border-bottom">
-                                    <p><b className="bold2">Cash Rounding</b></p>
-                                    <p><b className="bold2">{(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : props.cash_round}</b></p>
+                                    <p><b>Cash Rounding</b></p>
+                                    <p> <NumericFormat value={(props.TotalAmount - props.refunded_amount) == 0 ? 0.00 : props.cash_round} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
                                 </div> : null}
+
+
+                            <div className="row">
+                                <p className="bold2"><b>{LocalizedLanguage.total} </b></p>
+                                <p><b className="bold2"> {(props.refunded_amount > 0) ? <div>$<NumericFormat value={(props.TotalAmount - props.refunded_amount)} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /> <del style={{ marginLeft: 5 }}><NumericFormat value={props.TotalAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></del> </div> : <NumericFormat value={props.TotalAmount} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                } </b></p>
+                            </div>
 
                             <div className="row">
                                 <p className="style2">Payments</p>
@@ -531,7 +615,7 @@ const ActivityOrderDetail = (props) => {
                                     return (
                                         <div className="row">
                                             <p>{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)}) `} </p>
-                                            <p><b>{item.amount.toFixed(2)}</b></p>
+                                            <p>${item.amount.toFixed(2)}</p>
                                         </div>
                                     )
                                 }
@@ -539,33 +623,33 @@ const ActivityOrderDetail = (props) => {
 
                             {cashChange !== '' && cashChange ? (
                                 <div className="row border-bottom">
-                                    <p><b className="bold2">{`${Capitalize('change')}`} </b></p>
-                                    <p><b className="bold2">{cashChange}</b></p>
+                                    <p>{`${Capitalize('change')}`} </p>
+                                    <p><b>${cashChange}</b></p>
                                 </div>) : null}
 
 
                             {cashPayment !== '' && cashPayment ? (
                                 <div className="row border-bottom">
-                                    <p><b className="bold2">{`${Capitalize('cash payment')}`} </b></p>
-                                    <p><b className="bold2">{cashPayment}</b></p>
+                                    <p>{`${Capitalize('cash payment')}`}</p>
+                                    <p>${cashPayment}</p>
                                 </div>) : null}
 
                             {(props.refunded_amount > 0) ?
                                 <div className="row border-bottom">
-                                    <p><b className="bold2">Refunded tax  </b></p>
-                                    <p><b className="bold2">{(props.tax_refunded).toFixed(2)}</b></p>
+                                    <p>Refunded tax  </p>
+                                    <p>${(props.tax_refunded).toFixed(2)}</p>
                                 </div> : null}
 
                             {props.refundCashRounding !== 0 &&
                                 <div className="row border-bottom">
-                                    <p><b className="bold2">Refund Cash Rounding   </b></p>
-                                    <p><b className="bold2">{(props.refunded_amount - props.refundCashRounding) == 0 ? 0.00 : (props.refundCashRounding)}</b></p>
+                                    <p><b>Refund Cash Rounding   </b></p>
+                                    <p><b>${(props.refunded_amount - props.refundCashRounding) == 0 ? 0.00 : (props.refundCashRounding)}</b></p>
                                 </div>}
 
                             {(props.refunded_amount > 0) ?
                                 <div className="row border-bottom">
                                     <p><b className="bold2">Refunded Amount   </b></p>
-                                    <p><b className="bold2">{(props.refunded_amount).toFixed(2)}</b></p>
+                                    <p><b className="bold2">${(props.refunded_amount).toFixed(2)}</b></p>
                                 </div> : null}
 
                             {(props.refunded_amount > 0) ?
@@ -581,7 +665,7 @@ const ActivityOrderDetail = (props) => {
                                             return (
                                                 <div className="row">
                                                     <p>{`${Capitalize(item.type)} (${FormateDateAndTime.formatDateAndTime(item.payment_date, props.TimeZone)}) `} </p>
-                                                    <p><b>{item.amount.toFixed(2)}</b></p>
+                                                    <p>${item.amount.toFixed(2)}</p>
                                                 </div>
                                             )
                                         })
@@ -590,7 +674,7 @@ const ActivityOrderDetail = (props) => {
                             }
                             <div className="row border-top">
                                 <p><b className="bold2">Balance</b></p>
-                                <p><b className="bold2">{remaining_balance >= 0 ? parseFloat(remaining_balance).toFixed(2) : parseFloat(props.balence).toFixed(2)} </b></p>
+                                <p><b className="bold2">${remaining_balance >= 0 ? parseFloat(remaining_balance).toFixed(2) : parseFloat(props.balence).toFixed(2)} </b></p>
                             </div>
                         </div>
                     </div>

@@ -37,6 +37,7 @@ import moment from "moment";
 import { getDetail } from "../activity/ActivitySlice";
 import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import SplitByProduct from "../common/commonComponents/paymentComponents/SplitByProduct";
+import { getDetails } from "../cashmanagement/CashmanagementSlice";
 const Refund = (props) => {
 
     const [refundSubTotal, setRefundSubTotal] = useState(0.00);
@@ -101,6 +102,7 @@ const Refund = (props) => {
         TerminalCount: 0,
         TerminalSerialNo: []
     });
+
     const [isManualPayment, setisManualPayment] = useState(false);
     const [isUPIPayment, setisUPIPayment] = useState(false);
     const [isStripeTerminalPayment, setisStripeTerminalPayment] = useState(false);
@@ -109,6 +111,7 @@ const Refund = (props) => {
     const [paymentTypeName, setPaymentTypeName] = useState(localStorage.getItem("PAYMENT_TYPE_NAME") && JSON.parse(localStorage.getItem("PAYMENT_TYPE_NAME")));
     const [getorder, setGetorder] = useState(localStorage.getItem("getorder") ? JSON.parse(localStorage.getItem("getorder")) : null);
     const [UID, setUID] = useState(get_UDid('UDID'));
+    const [CashBalance, setCashBalance] = useState('')
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -152,6 +155,43 @@ const Refund = (props) => {
         //     set_calculator_remaining_amount: amount,
         // })
     }
+
+    let useCancelled = false;
+    useEffect(() => {
+        if (useCancelled == false) {
+            var cashManagementID = localStorage.getItem('Cash_Management_ID');
+            dispatch(getDetails(cashManagementID));
+        }
+        return () => {
+            useCancelled = true;
+        }
+    }, []);
+
+    // Getting Response  and set CashPayment
+    const [cashDrawerAllDetails] = useSelector((state) => [state.cashmanagementgetdetail])
+    useEffect(() => {
+      if (cashDrawerAllDetails && cashDrawerAllDetails.statusgetdetail == STATUSES.IDLE && cashDrawerAllDetails.is_successgetdetail && cashDrawerAllDetails.getdetail
+        && cashDrawerAllDetails.getdetail.content) {
+            if (cashDrawerAllDetails.getdetail.content.Status == "Close"){
+                setCashBalance(cashDrawerAllDetails.getdetail.content.Actual)
+            }else{
+                var _paymentListlog = cashDrawerAllDetails && cashDrawerAllDetails.getdetail && cashDrawerAllDetails.getdetail.content ? cashDrawerAllDetails.getdetail.content.CashRegisterlog: [];   
+                var _paymentList  =  _paymentListlog &&_paymentListlog.filter(item=>item.Description=="cash")
+                if(_paymentList) {
+                    if( _paymentList.length>0) {
+                        _paymentList.reverse();
+                        setCashBalance(_paymentList[0].RemainingBalance)
+                    }else{
+                        setCashBalance(cashDrawerAllDetails && cashDrawerAllDetails.getdetail&&cashDrawerAllDetails.getdetail.content.OpeningBalance)
+                    }
+                }
+            } 
+      }
+    }, [cashDrawerAllDetails]);
+
+
+
+
     const [respPaymentAmount] = useSelector((state) => [state.paymentAmount])
     useEffect(() => {
         if ((respPaymentAmount && respPaymentAmount.status == STATUSES.IDLE && respPaymentAmount.is_success)) {
@@ -767,11 +807,20 @@ const Refund = (props) => {
         }
     }
     const pay_by_cash = (amount) => {
-        toggleNumberPad();
-        setPaidAmount(amount);
-        setPartialAmount(null);
-        dispatch(paymentAmount({ "type": "cash", "amount": amount }));
+        var IsCashDrawerOpen = localStorage.getItem('IsCashDrawerOpen');
+        if ( IsCashDrawerOpen && (IsCashDrawerOpen==true || IsCashDrawerOpen=="true") && CashBalance  < amount) {
+            setisShowMsg(true)
+            setmsgTitle(LocalizedLanguage.inSufficientAmoutCashDrawer)
+            return;
+        }else{
+            setCashBalance(CashBalance-amount)
+            toggleNumberPad();
+            setPaidAmount(amount);
+            setPartialAmount(null);
+            dispatch(paymentAmount({ "type": "cash", "amount": CashBalance }));
+        }
     }
+    
     const pay_partial = (amount, item) => {
         toggleShowPartialPayment();
         setPartialAmount(amount);

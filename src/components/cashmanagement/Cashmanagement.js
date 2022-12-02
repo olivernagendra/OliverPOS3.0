@@ -255,6 +255,7 @@ function Cashmanagement() {
   var openDateTime = CashDrawerPaymentDetail && CashDrawerPaymentDetail ? CashDrawerPaymentDetail.UtcOpenDateTime : "";
   var _openDateTime = moment.utc(openDateTime).local().format(Config.key.MONTH_DAY_FORMAT);
   var Status = CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status
+  var OpeningBalance =  CashDrawerPaymentDetail && CashDrawerPaymentDetail.OpeningBalance
   var localCashData = ''
 
   return (
@@ -296,15 +297,12 @@ function Cashmanagement() {
                     <div className="text-row">
                       <p>{openingCashDrawerRecord && openingCashDrawerRecord.RegisterName}</p>
                       <p className="open"> {openingCashDrawerRecord && openingCashDrawerRecord.ClosedTimeUtc == null ? "Open" : "Closed "}  </p>
-                      {/* <p className="smobile-fake-button">Closed</p> */}
+                     
                     </div>
                     <p className="style2">User: {openingCashDrawerRecord && openingCashDrawerRecord.SalePersonName}</p>
                     <div className="mobile-fake-button">{openingCashDrawerRecord && openingCashDrawerRecord.ClosedTimeUtc == null ? "Open" : "Closed "}</div>
                   </button>
-                  {/* <div className="prev-registers"> */}
-
                   {
-
                     orders && ordersDate && ordersDate.map((getDate, index) => {
                       return (<React.Fragment> <div className="date"><p>{current_date == getDate ? 'Today' : getDate} </p></div>
                         {getDate && orders && orders[getDate] && orders[getDate].map((order, index) => {
@@ -316,60 +314,18 @@ function Cashmanagement() {
                               </div>
                               <div className="row">
                                 <p className="style2">User:   {order.SalePersonName}</p>
-                                <p className="style2">{order.OpenTime}</p>
+                                <p className="style2">{moment.utc(order.OpenTime.TransactionDateOffset).local().format(Config.key.ONLY_TIME)}</p>
                               </div>
                             </button>
                           )
                         })
                         }
-
                       </React.Fragment>)
                     })}
-                  {/* </div> */}
                 </>
               }
             </div>
           </div>
-
-          {/* <div className={isMobileList === true ? "cm-detailed open " : "cm-detailed"}>
-            <div className="detailed-header-mobile">
-              <div id="mobileDetailedExit" onClick={toggleListWrapp}   >
-                <img src={AngledBracket_Left_Blue} alt="" />
-                Go Back
-              </div>
-            </div>
-            <div className="cm-detailed-header">
-              <p>Transaction History</p>
-              <div className="row">
-                <div className="col">
-                  <div className="text-row">
-                    <p>{CashDrawerPaymentDetail && CashDrawerPaymentDetail.RegisterName}</p>
-                    <p className="open">{CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status}</p>
-                  </div>
-
-                  <p className="style1">{Status === "Open"
-                    ? _openDateTime : _openDateTime + " to "}</p>
-                  {Status !== "Open" ? <p>{_closeDateTime}</p> : ''}
-
-                </div>
-                <div className="col">
-                  <p className="style1 mobile-difference">Cash Drawer Ending Balance</p>
-                  <p className="style2"><NumericFormat value={_balance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
-                </div>
-                <button>Print History</button>
-              </div>
-            </div>
-            <div className="cm-detailed-body">
-              <CashDrawerPaymentDetailList />
-
-            </div>
-            <div className="cm-detailed-footer">
-              <button onClick={() => HundleCashPopup('remove')}> Remove Cash</button>
-              <button onClick={() => HundleCashPopup('add')}  >Add Cash  </button>
-            </div>
-
-          </div> */}
-
           <div id="cmDetailed" className={isMobileList === true ? "cm-detailed open " : "cm-detailed"}>
             <div className="detailed-header-landscape" >
               <img src={TransactionHistoryIcon} alt="" />
@@ -392,10 +348,19 @@ function Cashmanagement() {
                 <p className="active"> {CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status == 'Close' ? <>Currenly Close</> : <>Currenly Active</>} </p>
               </div>
               <div className="row">
-                <div className="col-group">
+
+            {CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Close' ?<>  <div className="col-group">
+                  <p className="style1">Cash Drawer Open Balance:</p>
+                  <p className="style2"><NumericFormat value={OpeningBalance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
+                </div> </>: <div className="col-group">
                   <p className="style1">Cash Drawer Ending Balance:</p>
                   <p className="style2"><NumericFormat value={_balance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
-                </div>
+                </div>  }
+
+                {/* <div className="col-group">
+                  <p className="style1">Cash Drawer Ending Balance:</p>
+                  <p className="style2"><NumericFormat value={_balance} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
+                </div> */}
                 <button >
                   <img src={PrinterIcon} alt="" />
                   Print
@@ -407,7 +372,7 @@ function Cashmanagement() {
             </div>
 
             {/* Footer only available if register is active */}
-            <div className="detailed-footer">
+            <div style={{display : CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? "none":""  }} className="detailed-footer">
               <button style={{ opacity: CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? 0.5 : 1 }} disabled={ CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? true : false} onClick={() => HundleCashPopup('remove')} id="removeCashSubwindowButton">Remove Cash</button>
               <button style={{ opacity: CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? 0.5 : 1 }} disabled={ CashDrawerPaymentDetail && CashDrawerPaymentDetail.Status !== 'Open' ? true : false}  onClick={() => HundleCashPopup('add')} id="addCashSubwindowButton">Add Cash</button>
             </div>

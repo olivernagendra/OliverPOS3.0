@@ -196,7 +196,7 @@ const Closeregister = () => {
 
                             <div className="input-column">
                                 {isSaveCount === true ? <>
-                                    <label style={{ "color": "red" }}>Amount should not be blank or empty!
+                                    <label className="error-message">Amount should not be blank or empty!
                                     </label>
                                 </> : null}
                                 <div className="input-row">

@@ -236,6 +236,21 @@ export const permissionsForRefund = () => {
     }
     return allowRefund;
 }
+export const permissionsForDeleteNotes = () => {
+    var allowDeleteNotes = false;
+    var userLocal = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : '';
+    var userData = userLocal && userLocal.permissions;
+    var allowDeleteNotes = userData && userData.filter(perm => (perm.PermissionKey && perm.PermissionKey == 'DeleteCustomerNotes' && perm.IsAllow));
+    console.log("allowDeleteNotes",allowDeleteNotes)
+    if (allowDeleteNotes && allowDeleteNotes.length > 0) {
+        return allowDeleteNotes = (allowDeleteNotes[0].PermissionKey == 'IssueRefund' && allowDeleteNotes[0].IsAllow == true) ? true : false;
+    }
+    return allowDeleteNotes;
+}
+
+
+
+
 
 export const showProductxModal = () => {
     var productxPermission = localStorage.getItem('clientDetail') ? JSON.parse(localStorage.getItem('clientDetail')).subscription_permission.product_x : false;
@@ -263,7 +278,7 @@ export const getInclusiveTaxType=(meta_datas)=>{
     }
 
 export const CommonModuleJS = {
-    productxArray, productxRender, showTitle, showSubTitle, permissionsForDiscount, permissionsForRefund, showProductxModal,
+    productxArray, productxRender,permissionsForDeleteNotes, showTitle, showSubTitle, permissionsForDiscount, permissionsForRefund, showProductxModal,
     getInclusiveTaxType
 }
 

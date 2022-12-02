@@ -32,6 +32,8 @@ import { LoadingModal } from "../common/commonComponents/LoadingModal";
 import { cashRecords } from "../cashmanagement/CashmanagementSlice";
 import { activityRecords, getDetail } from "../activity/ActivitySlice";
 import { NumericFormat } from 'react-number-format';
+import { CommonModuleJS } from "../../settings/CommonModuleJS";
+import MsgPopup from "../common/commonComponents/MsgPopup";
 const CustomerView = () => {
 
   var orderCount = ''
@@ -69,6 +71,9 @@ const CustomerView = () => {
   const [editcustomerparam, seteditcustomerparam] = useState('')
   const [customerupdatedetails, setcustomerupdatedetails] = useState(false)
   const [updateCustomerState, setupdateCustomerState] = useState(false)
+  const [isShowMsg, setisShowMsg] = useState(false);
+  const [msgTitle, setmsgTitle] = useState('');
+  const [msgBody, setmsgBody] = useState('');
   const navigate = useNavigate()
   const toggleAppLauncher = () => {
     setisShowAppLauncher(!isShowAppLauncher)
@@ -118,6 +123,9 @@ const CustomerView = () => {
   const CustomerSearchMobi = () => {
     setCvmobile(!isCvmobile)
   }
+  const toggleMsgPopup = () => {
+    setisShowMsg(!isShowMsg)
+}
 
 
 
@@ -448,8 +456,15 @@ const CustomerView = () => {
 
   const deleteNotes = (Id) => {
     if (Id !== "") {
-      dispatch(deleteCustomerNote(Id))
-      updateSomething(updateCustomerId);
+      if (CommonModuleJS.permissionsForDeleteNotes() == false) {
+            toggleMsgPopup(true);
+            setmsgTitle("Message")
+            setmsgBody("This Feature Is Disabled From Admin Side.")
+
+      }else{
+        dispatch(deleteCustomerNote(Id))
+        updateSomething(updateCustomerId);
+      }
     }
   }
 
@@ -600,9 +615,6 @@ const CustomerView = () => {
           </div>
 
           <div className="body">
-
-
-
             {isCustomerListLoaded == true ? <LoadingSmallModal /> : <>
               {filteredCustomer && filteredCustomer.length > 0 ? filteredCustomer.map((item, index) => {
                 return (
@@ -624,9 +636,7 @@ const CustomerView = () => {
                 <p className="style2">Sorry, you search did not <br /> match any results.</p>
               </div>}
             </>}
-
           </div>
-
           <div className="mobile-footer">
             <button id="mobileAddCustomerButton" onClick={() => toggleCreateCustomer()} >Create New</button>
           </div>
@@ -638,7 +648,6 @@ const CustomerView = () => {
               Go Back
             </button>
           </div>
-
           <div className="quick-info">
             <div className="avatar">
               <img src={AvatarIcon} alt="" />
@@ -653,11 +662,6 @@ const CustomerView = () => {
               Edit
             </button>
           </div>
-
-
-
-
-
           <div className="cust-totals">
             <div className="col">
               <p className="style1">$<NumericFormat value={OrderAmount ? OrderAmount : 0} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} /></p>
@@ -709,9 +713,6 @@ const CustomerView = () => {
               <p>Customer Notes</p>
               <button id="addCustNoteButton" onClick={toggleNoteModel} >Add Note</button>
             </div>
-
-
-
             {eventCollection && eventCollection.length > 0 ? eventCollection.map((item, index) => {
               return (
                 item.eventtype.toLowerCase() == 'add new note' && item.Description !== null && item.Description !== "" ?
@@ -728,18 +729,8 @@ const CustomerView = () => {
                   : ""
               )
             }) : noteslength.length > 0 ? <div>Record not found</div> : ''}
-
             {noteslength.length == 0 ? <p style={{ color: "gray" }}>Record not found</p> : ''}
-
-
-
-
-
           </div>
-
-
-
-
           <AddCustomersNotepoup updateSomething={updateSomething} isShow={isShowNoteModel} UID={UID} customerId={updateCustomerId} toggleNoteModel={toggleNoteModel} />
           <AdjustCreditpopup updateSomething={updateSomething} isShow={isShowCreditModel} toggleCreditModel={toggleCreditModel} details={customerDetailData} UID={UID} />
          
@@ -763,6 +754,8 @@ const CustomerView = () => {
             getCustomerFromIDB={getCustomerFromIDB}
             updateSomething={updateSomething}
           />
+          <MsgPopup isShow={isShowMsg} toggleMsgPopup={toggleMsgPopup} msgTitle={msgTitle} msgBody={msgBody}></MsgPopup>
+          
     </React.Fragment>
   )
 }

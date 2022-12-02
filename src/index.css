@@ -706,3 +706,16 @@ code {
     width: auto;
  
 }
+
+.error-message {
+	padding: 11px 28px;
+	background-color: #ffe7e8;
+	border-radius: 8px;
+	font-family: Poppins;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	text-align: center;
+	color: var(--error);
+	margin: -10px 0 20px 0;
+}
