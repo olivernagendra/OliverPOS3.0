@@ -90,7 +90,6 @@ const SaleComplete = () => {
         localStorage.removeItem('CHECKLIST');
         localStorage.removeItem('oliver_order_payments');
         localStorage.removeItem('AdCusDetail');
-        localStorage.removeItem('CARD_PRODUCT_LIST');
         localStorage.removeItem("CART");
         localStorage.removeItem("SINGLE_PRODUCT");
         localStorage.removeItem("PRODUCT");
@@ -103,6 +102,7 @@ const SaleComplete = () => {
         localStorage.removeItem('PENDING_PAYMENTS');
         localStorage.setItem('DEFAULT_TAX_STATUS', 'true');
         localStorage.removeItem('PrintCHECKLIST');
+        localStorage.removeItem("payType");
 
         // dispatch(addtoCartProduct(null));
         navigate('/home');

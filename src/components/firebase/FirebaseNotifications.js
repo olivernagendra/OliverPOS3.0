@@ -1,14 +1,16 @@
 //import firebase from './firebase';
 import { initializeApp } from "firebase/app";
-import { getMessaging,getToken,onMessage } from "firebase/messaging";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import ActiveUser from '../../settings/ActiveUser';
-import { sendToken,removeSubscription,registerAccessed,pingRegister } from './firebaseSlice';
+import { sendToken, removeSubscription, registerAccessed, pingRegister } from './firebaseSlice';
 import { updateOrderStatusNotification } from "./orderCompleteNotification";
 import { updatQuantityOnIndexDB } from "./updateProductQuantityNotification";
 import { updateNewCustomerList } from "./customerAddedNotification";
 import { attribute } from "../common/commonAPIs/attributeSlice";
 import { store } from "../../app/store";
-const firebaseConfig= {
+import Config from "../../Config";
+
+const firebaseConfig = {
     apiKey: "AIzaSyDIchZt-7bPvGktHrZXvTVIrVdGcGpSJ0o",
     authDomain: "oliver-pos-287408.firebaseapp.com",
     databaseURL: "https://oliver-pos-287408.firebaseio.com",
@@ -20,44 +22,16 @@ const firebaseConfig= {
 }
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
-// import { firebaseAdminActions } from './action/firebaseAdmin.action'
-// import { history, store } from '../_helpers';
-// import { showProductxModal } from '../_components';
-// import ActiveUser from "../settings/ActiveUser";
-// import Config from '../Config'
-// import { updateOrderStatusNotification } from './components/OrderCompleteNotification'
-// import { updatQuantityOnIndexDB } from './components/UpdateProductQuantity'
-// import { updateNewCustomerList } from './components/CustomerAddedNotification';
-// import { openDb } from 'idb';
-// import { get_UDid } from '../ALL_localstorage';
-// import { attributesActions } from '../_actions';
-
 // get device token via firebase and sent to the firebase server to get notification
 export const getFirebaseNotification = () => {
-    //const messaging = firebase.messaging()
     var firebaseRegisters = []
-    // messaging.requestPermission().then(() => {
-    //     return messaging.getToken();
-    // }).then((token) => {
-    getToken(messaging).then((token) => {
-        //console.log('---token---------------------', token);
-        // var requestOptions = {
-        //     method: 'POST',
-        //     headers: {
-        //         "access-control-allow-origin": "*",
-        //         "access-control-allow-credentials": "true",
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //     }
-        //     , mode: 'cors',
-        //     body: JSON.stringify({ token: token })
 
-        // };
+    getToken(messaging).then((token) => {
         onMessage(messaging, (payload) => {
             console.log('Message received. ', payload);
             if (payload) {
                 var _data = payload.data;
-                
+
                 if (_data && _data.oliver_receipt_id && _data.event_name == "order") {
                     updateOrderStatusNotification.updateOrderStatus(_data)
                 }
@@ -76,38 +50,37 @@ export const getFirebaseNotification = () => {
                 if (_data && _data.event_name == "Plan-Changed") { // notification when plan updated
                     //showModal('commonFirebaseNotificationPopup')
                 }
-                var _staffName=_data.staff_name && _data.staff_name !=='undefined' ?_data.staff_name:'Another User';
-                localStorage.setItem('firebaseStaffName', _staffName)
-                const firebasePopupDetails = {
-                    FIREBASE_POPUP_TITLE: 'Register Already In Use.',
-                    FIREBASE_POPUP_SUBTITLE: `${_staffName} is now logged into this register.`,
-                    FIREBASE_POPUP_SUBTITLE_TWO: `To overtake this register, please login again.`,
-                    FIREBASE_BUTTON_TITLE: 'Back To login'
-                }
-                ActiveUser.key.firebasePopupDetails = firebasePopupDetails;
+                if (_data && _data.event_name == "register-accessed") {
 
-                firebaseRegisters.push(_data)
-                localStorage.setItem('firebaseSelectedRegisters', JSON.stringify(firebaseRegisters))
-
-                var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem('selectedRegister')) : ''
-
-
-                if (_data && _data.token && selectedRegister.id == _data.registerId) {
-                    if (token !== _data.token) {
-                        // var parent_element =  document.getElementById("register-taken-parent");
-                        // if(typeof parent_element!="undefined" && parent_element!=null)
-                        // {
-                        //     parent_element.classList.remove("hidden");
-                        // }
-                        // var _element =  document.getElementById("register-taken");
-                        // if(typeof _element!="undefined" && _element!=null)
-                        // {
-                        //     _element.classList.add("current");
-                        // }
-                        //etTimeout(() => {
-                            console.log('-firebaseRegisterAlreadyusedPopup-')
-                           // showModal('firebaseRegisterAlreadyusedPopup')
-                        //}, 500);
+                    var _staffName = _data.staff_name && _data.staff_name !== 'undefined' ? _data.staff_name : 'Another User';
+                    localStorage.setItem('firebaseStaffName', _staffName)
+                    const firebasePopupDetails = {
+                        FIREBASE_POPUP_TITLE: 'Register Already In Use.',
+                        FIREBASE_POPUP_SUBTITLE: `${_staffName} is now logged into this register.`,
+                        FIREBASE_POPUP_SUBTITLE_TWO: `To overtake this register, please login again.`,
+                        FIREBASE_BUTTON_TITLE: 'Back To login'
+                    }
+                    ActiveUser.key.firebasePopupDetails = firebasePopupDetails;
+                    firebaseRegisters.push(_data)
+                    localStorage.setItem('firebaseSelectedRegisters', JSON.stringify(firebaseRegisters))
+                    var selectedRegister = localStorage.getItem('selectedRegister') ? JSON.parse(localStorage.getItem('selectedRegister')) : ''
+                    if (_data && _data.token && selectedRegister.id == _data.registerId) {
+                        if (token !== _data.token) {
+                            var parent_element = document.getElementById("register-taken-parent");
+                            if (typeof parent_element != "undefined" && parent_element != null) {
+                                parent_element.classList.remove("hidden");
+                            }
+                            var _element = document.getElementById("register-taken");
+                            if (typeof _element != "undefined" && _element != null) {
+                                _element.classList.add("current");
+                            }
+                            if (typeof parent_element != "undefined" && parent_element != null && typeof _element != "undefined" && _element != null) {
+                                // setTimeout(() => {
+                                //     window.location.href = '/pin';
+                                // }, Config.key.REGISTER_TAKE_OVER_LOGOUT_TIME);
+                                log_out();
+                            }
+                        }
                     }
                 }
             }
@@ -118,91 +91,47 @@ export const getFirebaseNotification = () => {
 }
 
 export const sendFireBaseTokenToAdmin = (dispatch) => {
-
     getToken(messaging).then((currentToken) => {
         if (currentToken) {
             console.log('---Admin token-----', currentToken);
-        var ClientGuid = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")).subscription_detail.client_guid : "";
-        if (ClientGuid !== "") {
-            dispatch(sendToken({"currentToken":currentToken, "ClientGuid":ClientGuid}));
-        }
-          // Send the token to your server and update the UI if necessary
-          // ...
+            var ClientGuid = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")).subscription_detail.client_guid : "";
+            if (ClientGuid !== "") {
+                dispatch(sendToken({ "currentToken": currentToken, "ClientGuid": ClientGuid }));
+            }
+            // Send the token to your server and update the UI if necessary
+            // ...
         } else {
-          // Show permission request UI
-          console.log('No registration token available. Request permission to generate one.');
-          // ...
+            // Show permission request UI
+            console.log('No registration token available. Request permission to generate one.');
+            // ...
         }
-      }).catch((err) => {
+    }).catch((err) => {
         console.log('An error occurred while retrieving token. ', err);
         // ...
-      });
-
-    //const messaging = firebase.messaging();
-    // messaging.requestPermission().then(() => {
-    //     return messaging.getToken();
-    // }).then((token) => {
-
-    //     console.log('---Admin token-----', token);
-    //     var ClientGuid = localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")).subscription_detail.client_guid : "";
-    //     if (ClientGuid !== "") {
-    //         dispatch(sendToken(token, ClientGuid));
-    //     }
-
-    // }).catch((err) => {
-    //     console.log('error---', err);
-    // })
+    });
 }
 export const removeFirebaseSubscription = (dispatch) => {
-    //const messaging = firebase.messaging()
-    // messaging.requestPermission().then(() => {
-    //     return messaging.getToken();
-    // }).then((token) => {
-    //    dispatch(removeSubscription(token));
-
-    // })
     getToken(messaging).then((currentToken) => {
         if (currentToken) {
             dispatch(removeSubscription(currentToken));
         } else {
-          // Show permission request UI
-          console.log('No registration token available. Request permission to generate one.');
-          // ...
+            // Show permission request UI
+            console.log('No registration token available. Request permission to generate one.');
+            // ...
         }
-      }).catch((err) => {
+    }).catch((err) => {
         console.log('An error occurred while retrieving token. ', err);
         // ...
-      });
+    });
 }
 
 export const SendRegisterAccessed = (dispatch) => {
-    //const messaging = firebase.messaging()
-    // messaging.requestPermission().then(() => {
-    //     return messaging.getToken();
-    // }).then((token) => {
-    //     console.log('---Admin token-----', token);
-
-    //     var staff = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "";
-
-    //     var parameters = {
-    //         ClientId: localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")).subscription_detail.client_guid : "",
-    //         FirbaseDeviceToken: token,
-    //         RegisterId: localStorage.getItem("register") ? localStorage.getItem("register") : null,
-    //         //AccessTime:""	,
-    //         StaffName: staff && staff !== "" ? staff.display_name : "",
-    //         StaffId: staff && staff !== "" ? staff.user_id : "",
-    //     }
-
-    //     dispatch(registerAccessed(parameters));
-
-    // })
-
     getToken(messaging).then((currentToken) => {
         if (currentToken) {
             console.log('---Admin token-----', currentToken);
 
             var staff = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "";
-    
+
             var parameters = {
                 ClientId: localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")).subscription_detail.client_guid : "",
                 FirbaseDeviceToken: currentToken,
@@ -211,17 +140,24 @@ export const SendRegisterAccessed = (dispatch) => {
                 StaffName: staff && staff !== "" ? staff.display_name : "",
                 StaffId: staff && staff !== "" ? staff.user_id : "",
             }
-    
+            //--02/12/2022 If register local storage is null then we get the register id from selectedRegister
+            if (parameters.RegisterId == null && localStorage.getItem("selectedRegister")) {
+                var reg = localStorage.getItem("selectedRegister") ? JSON.parse(localStorage.getItem("selectedRegister")) : null;
+                if (reg && reg.id) {
+                    localStorage.setItem("register",reg.id);
+                    parameters["RegisterId"] = reg.id;
+                }
+            }
             dispatch(registerAccessed(parameters));
         } else {
-          // Show permission request UI
-          console.log('No registration token available. Request permission to generate one.');
-          // ...
+            // Show permission request UI
+            console.log('No registration token available. Request permission to generate one.');
+            // ...
         }
-      }).catch((err) => {
+    }).catch((err) => {
         console.log('An error occurred while retrieving token. ', err);
         // ...
-      });
+    });
 }
 export const GetUsedRegisters = (dispatch) => {
 
@@ -265,39 +201,24 @@ export const log_out = () => {
     localStorage.removeItem('discountlst');
     //localStorage.removeItem('userId');   this is client Id, Do not remove on it
     localStorage.removeItem('orderreciept');
-    var _env = localStorage.getItem('env_type');
-    setTimeout(function () {
-        var url = _env && (_env == 'ios' || _env == 'android' || _env == 'Android') ? "/login" : "/login";
-        if (_env && (_env == 'ios' || _env == 'android' || _env == 'Android')) {
-            // url = url + "?goto=logout";
-            window.location = url;
-        }
-        else{}
-            //history.push(url);
+    localStorage.removeItem("payType");
+    // var _env = localStorage.getItem('env_type');
+    // setTimeout(function () {
+    //     var url = _env && (_env == 'ios' || _env == 'android' || _env == 'Android') ? "/login" : "/login";
+    //     if (_env && (_env == 'ios' || _env == 'android' || _env == 'Android')) {
+    //         // url = url + "?goto=logout";
+    //         window.location = url;
+    //     }
+    //     else { }
+    //     //history.push(url);
 
-    }.bind(this), 100)
+    // }.bind(this), 100);
+    setTimeout(() => {
+        window.location.href = '/pin';
+    }, Config.key.REGISTER_TAKE_OVER_LOGOUT_TIME);
 }
 
 export const pingFirebaseRegister = (dispatch) => {
-    //const messaging = firebase.messaging()
-    // messaging.requestPermission().then(() => {
-    //     return messaging.getToken();
-    // }).then((token) => {
-    //     console.log('---Admin token-----', token);
-
-    //     var staff = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : "";
-
-    //     var parameters = {
-    //         ClientId: localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")).subscription_detail.client_guid : "",
-    //         FirbaseDeviceToken: token,
-    //         RegisterId: localStorage.getItem("register") ? localStorage.getItem("register") : null,
-    //         //AccessTime:""	,
-    //         StaffName: staff && staff !== "" ? staff.display_name : "",
-    //         StaffId: staff && staff !== "" ? staff.user_id : "",
-    //     }
-    //    dispatch(pingRegister (parameters));
-    // })
-
     getToken(messaging).then((currentToken) => {
         if (currentToken) {
             console.log('---Admin token-----', currentToken);
@@ -306,19 +227,18 @@ export const pingFirebaseRegister = (dispatch) => {
                 ClientId: localStorage.getItem("clientDetail") ? JSON.parse(localStorage.getItem("clientDetail")).subscription_detail.client_guid : "",
                 FirbaseDeviceToken: currentToken,
                 RegisterId: localStorage.getItem("register") ? localStorage.getItem("register") : null,
-                //AccessTime:""	,
                 StaffName: staff && staff !== "" ? staff.display_name : "",
                 StaffId: staff && staff !== "" ? staff.user_id : "",
             }
-           dispatch(pingRegister (parameters));
+            dispatch(pingRegister(parameters));
         } else {
-          // Show permission request UI
-          console.log('No registration token available. Request permission to generate one.');
-          // ...
+            // Show permission request UI
+            console.log('No registration token available. Request permission to generate one.');
+            // ...
         }
-      }).catch((err) => {
+    }).catch((err) => {
         console.log('An error occurred while retrieving token. ', err);
         // ...
-      });
+    });
 
 }

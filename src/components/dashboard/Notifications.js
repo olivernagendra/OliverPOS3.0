@@ -350,9 +350,9 @@ const Notifications = (props) => {
                 <div className="noti-header">
                     <p>{LocalizedLanguage.notification}</p>
                     {/* <div className="dropdown-options"></div> */}
-                    <button id="notiSettingButton" onClick={() => toggleiSoundNotification()}>
+                    {/* <button id="notiSettingButton" onClick={() => toggleiSoundNotification()}>
                         <img src={SettingsCog} alt="" />
-                    </button>
+                    </button> */}
                     <button id="mobileNotiExit" onClick={() => props.toggleNotifications()}>
                         <img src={X_Icon_DarkBlue} alt="" />
                     </button>

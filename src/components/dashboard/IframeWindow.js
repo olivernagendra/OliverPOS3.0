@@ -11,7 +11,7 @@ const IframeWindow = (props) => {
                     <img id="appIconSRC" src={AppIconPlaceholder} alt="" />
                     <div className="text-col">
                         <p id="appName" className="style1">{props && props.exApp && props.exApp.Name}</p>
-                        <p id="appAuthorName" className="style2">Author Name</p>
+                        {/* <p id="appAuthorName" className="style2">Author Name</p> */}
 
                     </div>
                 </div>

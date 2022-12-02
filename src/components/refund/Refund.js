@@ -300,7 +300,8 @@ const Refund = (props) => {
                     'tax': (element.total_tax / element.quantity) * element.quantity_to_refund,
                     'item_id': parseInt(element.line_item_id),
                     'taxes': updateMultiTax && updateMultiTax.length > 0 ? updateMultiTax : ((element.total_tax / element.quantity) * element.quantity_to_refund),
-                    'item_type': element.product_id == 0 ? 'customFee' : 'product'
+                    'item_type': element.product_id == 0 ? 'customFee' : 'product',
+                    'product_id': element.product_id == 0 ? 0 : element.product_id
                 });
             });
             var _paymentNotes = [];
@@ -1462,7 +1463,7 @@ const Refund = (props) => {
                 </div>
             </div>
             <div className="refund-body">
-                <button id="balanceButton" className="balance-container" onClick={() => toggleShowPartialPayment()}>
+                <button id="balanceButton" className="balance-container" /*onClick={() => toggleShowPartialPayment()}*/>
                     <div className="row">
                         <p className="style1">Refund Amount</p>
                         <p className="style2">${(parseFloat(balance) - (paymentsArr && paymentsArr.length > 0 ? (paymentsArr.reduce((a, v) => a = parseFloat(a) + parseFloat(v.payment_amount), 0)) : 0)).toFixed(2)}</p>
@@ -1475,12 +1476,12 @@ const Refund = (props) => {
                         </div>
                     })}
                 </button>
-                <p id="bottomText" onClick={() => toggleShowPartialPayment()}>Click to make a partial payment</p>
+                <p id="bottomText" /*onClick={() => toggleShowPartialPayment()}*/>Click to make a partial payment</p>
                 <p className="style2">Quick Split</p>
                 <div className="button-row">
-                    <button onClick={() => showPartial(2)}>1/2</button>
-                    <button onClick={() => showPartial(3)}>1/3</button>
-                    <button onClick={() => showPartial(4)}>1/4</button>
+                    <button onClick={() => showPartial(2)} disabled>1/2</button>
+                    <button onClick={() => showPartial(3)} disabled>1/3</button>
+                    <button onClick={() => showPartial(4)} disabled>1/4</button>
                 </div>
                 <div className="button-row">
                     {/* <button id="splitByProductButton" onClick={() => toggleSplitByProduct()}>By Product</button> */}

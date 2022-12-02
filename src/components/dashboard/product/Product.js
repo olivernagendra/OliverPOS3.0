@@ -41,6 +41,7 @@ import { popupMessage } from "../../common/commonAPIs/messageSlice";
 import { getInventory } from "../slices/inventorySlice";
 import { NumericFormat } from 'react-number-format';
 import { RoundAmount } from "../../common/TaxSetting";
+import { UpdateProductInventoryDB } from "../../loadProduct/loadProductSlice";
 const Product = (props) => {
     const dispatch = useDispatch();
     const { add, update, getByID, getAll, deleteRecord } = useIndexedDB("modifiers");
@@ -94,7 +95,7 @@ const Product = (props) => {
         //     itemQauntity = prodcut && prodcut.StockQuantity
         //     console.log("itemQauntity", itemQauntity)
         //     variationStockQunatity = itemQauntity;
-        // });
+        // }); 
 
         // var prodcut = await getProductByID(_product.WPID).then((row) => {
         //     return row;
@@ -128,6 +129,7 @@ const Product = (props) => {
                 setStockStatusInOut(_stockStatus);
             }
             else {
+                dispatch(UpdateProductInventoryDB([_product.WPID]));// update the inventory in the local database
                 setStockStatusInOut("In Stock");
             }
 
@@ -1436,7 +1438,7 @@ const Product = (props) => {
 
     var _currentStock = currentWareHouseDetail && currentWareHouseDetail !== "" ? currentWareHouseDetail.Quantity : variationStockQunatity;
     //console.log("Quantity", currentWareHouseDetail.Quantity, variationStockQunatity)
-
+    var _price=_product && RoundAmount(((product_price * productQty) - after_discount_total_price) + (_product.excl_tax ? _product.excl_tax : 0));
     return (
         props.isShowPopups == false ? null :
             <React.Fragment>
@@ -1772,7 +1774,7 @@ const Product = (props) => {
                                 <img src={Pencil} alt="" />
                                 {LocalizedLanguage.addNote}
                             </button>
-                            <button id="addProductDiscount" onClick={() => toggleProductDiscount()}>{discounts}</button>
+                            <button id="addProductDiscount" onClick={() => toggleProductDiscount()} disabled={_price===0?true:false} className={_price===0?"btn-disable":""}>{discounts}</button>
                         </div>
                         <div className="row">
                             <div className="increment-input">
@@ -1787,7 +1789,7 @@ const Product = (props) => {
                             <button id="addProductToCart" onClick={() => addToCart()}>
                                 <img src={CircledPlus_White} alt="" />
                                 {LocalizedLanguage.addToCart} - $
-                                <NumericFormat value={_product && RoundAmount(((product_price * productQty) - after_discount_total_price) + (_product.excl_tax ? _product.excl_tax : 0))} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
+                                <NumericFormat value={_price} displayType={'text'} thousandSeparator={true} decimalScale={2} fixedDecimalScale={true} />
                             </button>
                         </div>
                     </div>

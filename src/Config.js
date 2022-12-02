@@ -2,6 +2,10 @@
 exports.key = {
     OP_API_URL: process.env.NODE_ENV == 'development' ? 'https://dev1.app.olivertest.com/api/' : 'https://app.oliverpos.com/api/',
     BRIDGE_DOMAIN: process.env.NODE_ENV == 'development' ? 'https://dev1.shop.olivertest.com/' : 'https://hub.oliverpos.com',
+    
+    // OP_API_URL:  'https://app.oliverpos.com/api/',
+    // BRIDGE_DOMAIN:  'https://hub.oliverpos.com',
+
     AUTH_KEY: sessionStorage.getItem("AUTH_KEY"),
     //"posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6" + ":" +  "poss_5a3f7d8d34dc3605ea5796eda8d6dfcf6cf82254",
     // AUTH_NAME           : "posk_3dd80552ca15f4fe59bd42875d618e3ccf560bd6",
@@ -34,7 +38,8 @@ exports.key = {
     SEGMENT_ANALYTIC_KEY: 'xnSztkKDSndS5XpNN7rrj8sJBvfABbvh',
     FIREBASE_NOTIFICATION_COUNT: 5,
     ALTERNATIVE_PRODUCT_SEARCH_START: 20000, // starting the product searching on alternative input character by this limit
-    APPLE_LOGIN_RETURN_URL: window.location.href.includes('qac.sell.oliverpos.com') ? 'https://qac.sell.oliverpos.com/login' : window.location.href.includes('qa1.sell.olivertest.com') ? 'https://qa1.sell.olivertest.com/login' : 'https://sell.oliverpos.com/login'
+    APPLE_LOGIN_RETURN_URL: window.location.href.includes('qac.sell.oliverpos.com') ? 'https://qac.sell.oliverpos.com/login' : window.location.href.includes('qa1.sell.olivertest.com') ? 'https://qa1.sell.olivertest.com/login' : 'https://sell.oliverpos.com/login',
+    REGISTER_TAKE_OVER_LOGOUT_TIME:10000
     //New google tag script has been placed in live branch
     // GA_KEY                  : process.env.ENVIRONMENT=='production'? 'UA-114926859-8':'UA-141287502-1'
 

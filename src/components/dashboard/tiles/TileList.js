@@ -17,6 +17,7 @@ import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 import { CommonModuleJS } from "../../../settings";
 import { product } from "../product/productSlice";
 import { Markup } from "interweave";
+import { popupMessage } from "../../common/commonAPIs/messageSlice";
 // var AllProduct = [];
 // var ParentProductList = [];
 // var filtered = [];
@@ -462,8 +463,9 @@ const TileList = (props) => {
 
 
                 let type = item.Type;
-                if ((type !== "simple" && type !== "variable") && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)) {
-                    alert(LocalizedLanguage.productxOutOfStock);
+                if ((type !== "simple" && type !== "variable" && type !== "variation")/* && (CommonModuleJS.showProductxModal() !== null && CommonModuleJS.showProductxModal() == false)*/) {
+                    var data = { title: "", msg: LocalizedLanguage.productxOutOfStock, is_success: true }
+                    dispatch(popupMessage(data));
                 }
                 else if (type === "simple") {
                     var _item = await getByID(item.product_id ? item.product_id : item.WPID ? item.WPID : item.Product_Id);

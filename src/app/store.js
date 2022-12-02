@@ -10,7 +10,7 @@ import taxSettingSlice from '../components/serverSetting/taxSettingSlice';
 
 import { tileSlice, addTileSlice, deleteTileSlice } from '../components/dashboard/tiles/tileSlice';
 import { CashmanagementSlice, CashmanagementSecondSlice, CashmanagementThirdSlice, CashmanagementFourthSlice, CashmanagementFifthSlice, GetOpenRegisterSlice, addRemoveCashSlice } from '../components/cashmanagement/CashmanagementSlice';
-import { productLoaderSlice } from '../components/loadProduct/loadProductSlice';
+import { productLoaderSlice,UpdateProductInventoryDBSlice } from '../components/loadProduct/loadProductSlice';
 import { productCountSlice } from '../components/loadProduct/productCountSlice'
 import { categorySlice } from '../components/common/commonAPIs/categorySlice';
 import { attributeSlice } from '../components/common/commonAPIs/attributeSlice';
@@ -110,7 +110,8 @@ export const store = configureStore({
     removeSubscription:removeSubscriptionSlice.reducer,
     registerAccessed:registerAccessedSlice.reducer,
     pingRegister:pingRegisterSlice.reducer,
-    orderToCancelSale:orderToCancelSaleSlice.reducer
+    orderToCancelSale:orderToCancelSaleSlice.reducer,
+    UpdateProductInventoryDB:UpdateProductInventoryDBSlice.reducer
   }
   ,
   middleware: getDefaultMiddleware =>

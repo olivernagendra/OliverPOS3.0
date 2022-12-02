@@ -325,8 +325,14 @@ export const removeCheckOutList = () => {
     //const { dispatch } = this.props;
 
     var checklist = localStorage.getItem('CHECKLIST') && JSON.parse(localStorage.getItem('CHECKLIST'))
+   
     if (checklist && (checklist.status == "pending" || checklist.status == "park_sale" || checklist.status == "lay_away" || checklist.status == "on-hold")) {
-        store.dispatch(orderToCancelSale(checklist.order_id,get_UDid()))
+        var data = {
+            order_id: checklist.order_id,
+            udid: get_UDid(),
+            WarehouseId: localStorage.getItem("WarehouseId") ? parseInt(localStorage.getItem("WarehouseId")) : 0
+        }
+        store.dispatch(orderToCancelSale(data))
         localStorage.removeItem('PENDING_PAYMENTS');
     }
    

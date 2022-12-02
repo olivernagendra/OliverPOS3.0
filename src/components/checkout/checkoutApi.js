@@ -8,6 +8,7 @@ import { handleAppEvent } from '../common/AppHandeler/commonAppHandler';
 import { postMeta } from "../common/commonAPIs/postMetaSlice";
 import { addPaymentListLog } from '../../components/cashmanagement/CashmanagementSlice';
 import { store } from '../../app/store';
+import { UpdateProductInventoryDB } from '../loadProduct/loadProductSlice';
 export function checkStockAPI(cartlist) {
     var items = [];
     var data;
@@ -174,7 +175,12 @@ export function saveAPI(shopOrder, path, updatedBy = "") {
 
 
                 //update Refund qty for product......................
-                // dispatch(idbProductActions.updateOrderProductDB(line_items));
+                var ids = []
+                shopOrder.line_items && shopOrder.line_items.map(value => {
+                    var pid = value.variation_id == 0 ? value.product_id : value.variation_id ? value.variation_id : value.WPID
+                    ids.push(pid);
+                })
+                if (ids.length > 0) { store.dispatch(UpdateProductInventoryDB(ids)) }
                 //----------------------------------------------------  
                 setTimeout(function () {
                     if (shop_order.content && shop_order.content.tempOrderId && shop_order.content.tempOrderId != '') {
@@ -348,18 +354,17 @@ export function checkTempOrderSyncAPI(tempOrderId) {
                     if (ele.TempOrderID == tempOrderId) {
                         if (order_status && order_status.message == "Success") {
 
-                            //var placedOrderList = localStorage.getItem('placedOrderList') ? JSON.parse(localStorage.getItem('placedOrderList')) : "";
-                            //if (placedOrderList) {
-                            // for order complete then call api for pruduct quantity update
-                            //localStorage.removeItem('placedOrderList')
-                            // dispatch(idbProductActions.updateOrderProductDB(placedOrderList));
-                            // setTimeout(function () {
-                            //     dispatch(idbProductActions.updateConfirmProductDB(true));
-                            //     //AllProduct.someMethod()
-                            //     // history.push('/shopview')
-                            //     // location.reload()
-                            // }, 1000)
-                            // }
+                            var placedOrderList = localStorage.getItem('placedOrderList') ? JSON.parse(localStorage.getItem('placedOrderList')) : "";
+                            if (placedOrderList) {
+                                //for order complete then call api for pruduct quantity update
+                                localStorage.removeItem('placedOrderList')
+                                var ids = []
+                                placedOrderList.map(value => {
+                                    var pid = value.variation_id == 0 ? value.product_id : value.variation_id ? value.variation_id : value.WPID
+                                    ids.push(pid);
+                                })
+                                if (ids.length > 0) { store.dispatch(UpdateProductInventoryDB(ids)) }
+                            }
                             ele.Status = "true";
                             if (order_status.content && order_status.content.hasOwnProperty('OrderNumber')) {
                                 ele.OrderID = order_status.content.OrderNumber;
@@ -405,15 +410,14 @@ export function checkTempOrderStatusAPI(tempOrderId) {
 
                             var placedOrderList = localStorage.getItem('placedOrderList') ? JSON.parse(localStorage.getItem('placedOrderList')) : "";
                             if (placedOrderList) {
-                                // for order complete then call api for pruduct quantity update
-                                //localStorage.removeItem('placedOrderList')
-                                // dispatch(idbProductActions.updateOrderProductDB(placedOrderList));
-                                // setTimeout(function () {
-                                //     dispatch(idbProductActions.updateConfirmProductDB(true));
-                                //     //AllProduct.someMethod()
-                                //     // history.push('/shopview')
-                                //     // location.reload()
-                                // }, 1000)
+                                //for order complete then call api for pruduct quantity update
+                                localStorage.removeItem('placedOrderList')
+                                var ids = []
+                                placedOrderList.map(value => {
+                                    var pid = value.variation_id == 0 ? value.product_id : value.variation_id ? value.variation_id : value.WPID
+                                    ids.push(pid);
+                                })
+                                if (ids.length > 0) { store.dispatch(UpdateProductInventoryDB(ids)) }
                             }
                             ele.Status = "true";
                             ele.OrderID = order_status.content.OrderNumber;

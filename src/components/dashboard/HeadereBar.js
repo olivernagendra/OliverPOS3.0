@@ -36,6 +36,10 @@ const HeadereBar = (props) => {
     const toggleShowEndSession = () => {
         setisShowEndSession(!isShowEndSession);
     }
+    const toggleLinkLauncher=(data)=>
+    {   setisShowUserProfile(false);
+        props.toggleLinkLauncherPage && props.toggleLinkLauncherPage(data);
+    }
     const toggleSwitchUser = () => {
         setisShowSwitchUser(!isShowSwitchUser)
     }
@@ -144,10 +148,10 @@ const HeadereBar = (props) => {
                 </button>
             </div>
         </div>
-        <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession}></UserInfo>
+        <UserInfo isShow={isShowUserProfile} toggleSwitchUser={toggleSwitchUser} toggleUserProfile={toggleUserProfile} toggleShowEndSession={toggleShowEndSession} toggleLinkLauncher={toggleLinkLauncher}></UserInfo>
         <SwitchUser toggleSwitchUser={toggleSwitchUser} isShow={isShowSwitchUser}></SwitchUser>
         <EndSession toggleShowEndSession={toggleShowEndSession} isShow={isShowEndSession}></EndSession>
-    <RegisterTakeOver></RegisterTakeOver>
+        <RegisterTakeOver></RegisterTakeOver>
     </React.Fragment >)
 }
 

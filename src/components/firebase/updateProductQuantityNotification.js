@@ -1,7 +1,8 @@
+import { UpdateProductInventoryDB } from "../loadProduct/loadProductSlice"
+import { store } from "../../app/store"
 
 export const updateQuantity = (productId) => {
-    // productId = 76 // test product id data
-    //store.dispatch(firebaseAdminActions.updateOrderProductDB(productId));
+   store.dispatch(UpdateProductInventoryDB([productId])) 
 }
 
 export const updatQuantityOnIndexDB = {

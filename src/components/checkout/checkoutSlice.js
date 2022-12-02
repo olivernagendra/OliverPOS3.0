@@ -450,7 +450,7 @@ export const orderToCancelSale = createAsyncThunk(
   'checkout/orderToCancelSaleAPI',
   async (parameter, { rejectWithValue }) => {
     try {
-      const response = await orderToCancelSaleAPI(parameter);
+      const response = await orderToCancelSaleAPI(parameter.order_id,parameter.udid,parameter.WarehouseId);
       return response;
     } catch (err) {
       return rejectWithValue(err.response.data)

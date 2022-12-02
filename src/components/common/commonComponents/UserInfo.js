@@ -6,10 +6,11 @@ import knowledgeBase_Icon from '../../../assets/images/svg/knowledgeBase-Icon.sv
 import SwitchUser_Icon from '../../../assets/images/svg/SwitchUser-Icon.svg';
 import star from '../../../assets/images/svg/star.svg';
 import LogOut_Icon from '../../../assets/images/svg/LogOut-Icon.svg';
-// import { changeLanguage } from "../../../settings/LocalizedLanguage";
+import { changeLanguage } from "../../../settings/LocalizedLanguage";
 import ClockIn_Icon from '../../../assets/images/Temp/ClockIn_Icon.png';
 import DownArrowGrey from '../../../assets/images/svg/DownArrowGrey.svg';
 import { get_regName, get_userName, get_userName_Initial } from "../../common/localSettings";
+import LocalizedLanguage from "../../../settings/LocalizedLanguage";
 const UserInfo = (props) => {
     const [isSelectLangugage, setisSelectLangugage] = useState(false);
     const [selLangugage, setSelLangugage] = useState("English");
@@ -17,24 +18,29 @@ const UserInfo = (props) => {
         setisSelectLangugage(!isSelectLangugage)
     }
     const SetLangugage = (lang) => {
-        // switch (lang) {
-        //     case "French":
-        //         changeLanguage("fr");
-        //         break;
-        //     case "English":
-        //         changeLanguage("en");
-        //         break;
-        //     case "Spanish":
-        //         changeLanguage("hi");
-        //         break;
+        switch (lang) {
+            case "French":
+                changeLanguage("fr");
+                localStorage.setItem("LANG","fr");
+                break;
+            case "English":
+                changeLanguage("en");
+                localStorage.setItem("LANG","en");
+                break;
+            case "Spanish":
+                changeLanguage("hi");
+                localStorage.setItem("LANG","hi");
+                break;
         
-        //     default:
-        //         break;
-        // }
+            default:
+                break;
+         }
        
 
         setSelLangugage(lang)
         setisSelectLangugage(false);
+        props.toggleUserProfile();
+        window.location.reload(false);
     }
     const outerClick = (e) => {
         if (e && e.target && e.target.className && e.target.className === "user-info-wrapper") {
@@ -65,11 +71,11 @@ const UserInfo = (props) => {
                             <div className="language-option" onClick={()=>SetLangugage("Spanish")}><p>Spanish</p></div>
                         </div>
                     </div>
-                    <button id="knowledgeBaseButton">
+                    <button id="knowledgeBaseButton" onClick={()=>props.toggleLinkLauncher({"link":"https://help.oliverpos.com/portal/en/kb","Name":LocalizedLanguage.KnowledgeBase,"Img":"knowledgebase","Title":"","Subtitle":""})}>
                         <div className="img-container">
                             <img src={knowledgeBase_Icon} alt="" />
                         </div>
-                        Knowledge Base
+                        {LocalizedLanguage.KnowledgeBase}
                     </button>
                     {localStorage.getItem('user_List') && JSON.parse(localStorage.getItem('user_List')).length > 0 ?
                         <button id="switchUserButton" onClick={() => props.toggleSwitchUser()}>
